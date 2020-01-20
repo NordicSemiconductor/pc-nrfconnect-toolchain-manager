@@ -1,0 +1,55 @@
+{
+  "name": "pc-nrfconnect-dtm",
+  "version": "1.1.0",
+  "description": "Direct Test Mode",
+  "displayName": "Direct Test Mode",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NordicSemiconductor/pc-nrfconnect-dtm.git"
+  },
+  "author": "Nordic Semiconductor ASA",
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "nrfconnect": "^3.2.0"
+  },
+  "main": "dist/bundle.js",
+  "files": [
+    "dist/",
+    "firmware/*.hex",
+    "resources/icon.*",
+    "icon.png",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "nrfconnect-scripts build-watch",
+    "webpack": "nrfconnect-scripts build-dev",
+    "build": "nrfconnect-scripts build-prod",
+    "nordic-publish": "nrfconnect-scripts nordic-publish",
+    "lint": "nrfconnect-scripts lint lib index.jsx",
+    "lint-init": "nrfconnect-scripts lint-init",
+    "lintfix": "nrfconnect-scripts lint --fix lib index.jsx",
+    "test": "nrfconnect-scripts test",
+    "test-watch": "nrfconnect-scripts test --watch",
+    "clean": "npm run clean-dist && npm run clean-modules",
+    "clean-dist": "rimraf dist",
+    "clean-modules": "rimraf \"node_modules/!(rimraf|.bin)\""
+  },
+  "devDependencies": {
+    "chart.js": "^2.8.0",
+    "nrf-dtm-js": "git+https://github.com/NordicPlayground/nrf-dtm-js",
+    "pc-nrfconnect-devdep": "git+https://github.com/NordicSemiconductor/pc-nrfconnect-devdep.git#semver:3.4.0",
+    "react-chartjs-2": "^2.7.6",
+    "react-rangeslider": "^2.2.0"
+  },
+  "dependencies": {
+    "electron-store": "^3.2.0"
+  },
+  "bundledDependencies": [
+    "electron-store"
+  ],
+  "jest": {
+    "moduleNameMapper": {
+      "nrfconnect/core": "<rootDir>/mocks/coreMock.js"
+    }
+  }
+}
