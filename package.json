@@ -1,8 +1,8 @@
 {
-  "name": "pc-nrfconnect-dtm",
-  "version": "1.1.0",
-  "description": "Direct Test Mode",
-  "displayName": "Direct Test Mode",
+  "name": "pc-nrfconnect-manager",
+  "version": "0.1.0",
+  "description": "nRF Connect SDK Manager",
+  "displayName": "nRF Connect SDK Manager",
   "repository": {
     "type": "git",
     "url": "https://github.com/NordicSemiconductor/pc-nrfconnect-dtm.git"
