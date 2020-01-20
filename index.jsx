@@ -38,46 +38,14 @@
 
 import './resources/css/index.scss';
 
-import path from 'path';
-
-import {
-    getAppDir,
-    logger,
-    startWatchingDevices,
-    stopWatchingDevices,
-} from 'nrfconnect/core';
 import React from 'react';
-import serialport from 'serialport';
 
-import { deselectDevice, selectDevice } from './lib/actions/testActions';
-import {
-    clearAllWarnings,
-} from './lib/actions/warningActions';
 import AppMainView from './lib/containers/appMainView';
 import AppSidePanelView from './lib/containers/appSidePanelView';
 import appReducer from './lib/reducers';
-import { compatiblePCAs } from './lib/utils/constants';
 
 export default {
     config: {
-        selectorTraits: {
-            serialport: true,
-            jlink: true,
-        },
-        deviceSetup: {
-            jprog: {
-                pca10040: {
-                    fw: path.resolve(getAppDir(), 'firmware/direct_test_mode_pca10040.hex'),
-                    fwVersion: 'dtm-fw-1.0.0',
-                    fwIdAddress: 0x6000,
-                },
-                pca10056: {
-                    fw: path.resolve(getAppDir(), 'firmware/direct_test_mode_pca10056.hex'),
-                    fwVersion: 'dtm-fw-1.0.0',
-                    fwIdAddress: 0x6000,
-                },
-            },
-        },
     },
 
     decorateMainView: MainView => () => (
@@ -100,60 +68,7 @@ export default {
     reduceApp: appReducer,
 
     middleware: store => next => async action => {
-        const { dispatch } = store;
-        const { type, device } = action;
-        const getPortComOne = serialport.list()
-            .then(ports => ports.find(p => p.comName === 'COM1'));
-
         switch (type) {
-            case 'DEVICES_DETECTED': {
-                const { devices } = action;
-                const port = await getPortComOne;
-                if (port) {
-                    action.devices = [
-                        {
-                            boardVersion: undefined,
-                            serialNumber: 'COM1',
-                            serialport: port,
-                            traits: ['serialport'],
-                        },
-                        ...devices,
-                    ];
-                }
-                break;
-            }
-
-            case 'DEVICE_SELECTED': {
-                const { serialNumber, boardVersion } = device;
-                dispatch(clearAllWarnings());
-                if (compatiblePCAs.includes(boardVersion)) {
-                    logger.info(`Validating firmware for device with s/n ${serialNumber}`);
-                }
-                break;
-            }
-
-            case 'DEVICE_SETUP_INPUT_REQUIRED': {
-                action.message = 'In order to use this application you need a firmware '
-                    + 'that supports Direct Test Mode. '
-                    + 'You may use the provided pre-compiled firmware or your own. '
-                    + 'Would you like to program the pre-compiled firmware to the device?';
-                break;
-            }
-
-            case 'DEVICE_SETUP_COMPLETE': {
-                const { serialport: port, boardVersion } = device;
-                logger.info('Device selected successfully');
-                dispatch(stopWatchingDevices());
-                dispatch(selectDevice(port.comName, boardVersion));
-                break;
-            }
-
-            case 'DEVICE_DESELECTED':
-                dispatch(deselectDevice());
-                dispatch(startWatchingDevices());
-                dispatch(clearAllWarnings());
-                break;
-
             default:
         }
 

@@ -34,16 +34,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// eslint-disable-next-line import/no-unresolved
 import React from 'react';
-import ChartView from '../containers/chartView';
-import WarningView from '../containers/warningView';
 
 const AppMainView = () => (
-    <div className="app-main-view">
-        <WarningView />
-        <ChartView />
-    </div>
+    <div className="app-main-view" />
 );
 
 export default AppMainView;
