@@ -34,8 +34,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* eslint-disable no-param-reassign */
-
 import './resources/css/index.scss';
 
 import React from 'react';
@@ -45,9 +43,6 @@ import AppSidePanelView from './lib/containers/appSidePanelView';
 import appReducer from './lib/reducers';
 
 export default {
-    config: {
-    },
-
     decorateMainView: MainView => () => (
         <MainView cssClass="main-view">
             <AppMainView />
@@ -60,10 +55,8 @@ export default {
         </SidePanel>
     ),
 
-    mapDeviceSelectorState: (state, props) => ({
-        portIndicatorStatus: (state.app.device.serialNumber !== null) ? 'on' : 'off',
-        ...props,
-    }),
+    decorateSerialPortSelector: () => () => null,
+    decorateNavMenu: () => () => <h4>nRF Connect SDK Manager</h4>,
 
     reduceApp: appReducer,
 
