@@ -34,44 +34,30 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* eslint-disable no-param-reassign */
-
-import './resources/css/index.scss';
-
 import React from 'react';
+import ToolchainItemView from './ToolchainItemView';
 
-import AppMainView from './lib/containers/appMainView';
-import AppSidePanelView from './lib/containers/appSidePanelView';
-import appReducer from './lib/reducers';
+const ToolchainListView = () => (
+    <>
+        <ToolchainItemView
+            toolchain={{
+                name: 'v1.1.0',
+                version: 'v1.1.0',
+            }}
+        />
+        <ToolchainItemView
+            toolchain={{
+                name: 'v1.1.0',
+                version: 'v1.1.0',
+            }}
+        />
+        <ToolchainItemView
+            toolchain={{
+                name: 'v1.1.0',
+                version: 'v1.1.0',
+            }}
+        />
+    </>
+);
 
-export default {
-    config: {
-    },
-
-    decorateMainView: MainView => () => (
-        <MainView cssClass="main-view">
-            <AppMainView />
-        </MainView>
-    ),
-
-    decorateSidePanel: SidePanel => () => (
-        <SidePanel>
-            <AppSidePanelView cssClass="side-panel" />
-        </SidePanel>
-    ),
-
-    mapDeviceSelectorState: (state, props) => ({
-        portIndicatorStatus: (state.app.device.serialNumber !== null) ? 'on' : 'off',
-        ...props,
-    }),
-
-    reduceApp: appReducer,
-
-    middleware: store => next => async action => {
-        switch (action.type) {
-            default:
-        }
-
-        next(action);
-    },
-};
+export default ToolchainListView;

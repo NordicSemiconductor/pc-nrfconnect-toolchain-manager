@@ -34,9 +34,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// eslint-disable-next-line import/no-unresolved
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
 const AppSidePanelView = () => (
     <>

@@ -35,9 +35,13 @@
  */
 
 import React from 'react';
+import Nav from 'react-bootstrap/Nav';
+import Tab from 'react-bootstrap/Tab';
+
+import ToolchainListView from './ToolchainListView';
 
 const AppMainView = () => (
-    <div className="app-main-view" />
+    <ToolchainListView />
 );
 
 export default AppMainView;
