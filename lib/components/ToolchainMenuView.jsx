@@ -35,15 +35,17 @@
  */
 
 import React from 'react';
+import Button from 'react-bootstrap/Button';
+import { installLatest } from '../actions/toolchainActions';
 
-import ToolchainListView from './ToolchainListView';
-import ToolchainMenuView from './ToolchainMenuView';
-
-const AppMainView = () => (
+const ToolchainMenuView = () => (
     <>
-        <ToolchainMenuView />
-        <ToolchainListView />
+        <Button
+            onClick={installLatest}
+        >
+            Install
+        </Button>
     </>
 );
 
-export default AppMainView;
+export default ToolchainMenuView;

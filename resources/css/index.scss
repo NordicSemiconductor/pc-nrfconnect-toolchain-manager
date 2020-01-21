@@ -34,6 +34,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+.core-main-layout > div:nth-child(1) > div:nth-child(1).core-main-view {
+    height: 100%;
+}
+
+.core-nav-bar h4 {
+    color: white;
+    margin-top: 20px;
+}
+
 .main-view, .side-panel {
     padding: 10px 15px;
 }
@@ -110,42 +119,4 @@
 
 .form-label {
     font-weight: bold;
-}
-
-
-.rangeslider.rangeslider-horizontal {
-    flex: 1;
-    margin: 5px 10px 40px 10px;
-    border-radius: 0px;
-    .rangeslider__fill {
-        background-color: #0080B7;
-        border-radius: 0px;
-    }
-    .rangeslider__handle {
-        width: 10px;
-        border-radius: 0px;
-        box-shadow: none;
-        transform: translate(-50%, -50%);
-        &:after {
-            display: none;
-        }
-    }
-    .rangeslider__handle:focus {
-        outline: none;
-    }
-    .rangeslider__labels .rangeslider__label-item {
-        transform: translate(-50%, 0);
-    }
-
-    li.rangeslider__label-item:nth-child(2) {
-        background: white;
-        z-index: 100;
-        padding: 0 10px;
-        font-weight: bold;
-    }
-}
-
-.dropdown-toggle {
-    font-size: 0.9em;
-    width: 100%;
 }
