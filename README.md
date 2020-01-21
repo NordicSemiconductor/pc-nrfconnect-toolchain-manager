@@ -2,8 +2,6 @@
 
 [![License](https://img.shields.io/badge/license-Modified%20BSD%20License-blue.svg)](LICENSE)
 
-*nRF Connect Direct Test Mode* lets you perform RF PHY testing of Bluetooth Low Energy devices with the Bluetooth specified Direct Test Mode. See the [Bluetooth Core specification](https://www.bluetooth.com/specifications/bluetooth-core-specification/) (volume 6, part F) for more information on the Direct Test Mode specification.
-
 ## Installation
 
 See the [InfoCenter](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fstruct_nrftools%2Fstruct%2Fnrftools_nrfconnect.html) pages for information on how to install the application.
