@@ -36,7 +36,7 @@
 
 import React from 'react';
 import Button from 'react-bootstrap/Button';
-import { installLatest } from '../actions/toolchainActions';
+import { installLatest, openLatest } from '../actions/toolchainActions';
 
 const ToolchainMenuView = () => (
     <>
@@ -44,6 +44,11 @@ const ToolchainMenuView = () => (
             onClick={installLatest}
         >
             Install
+        </Button>
+        <Button
+            onClick={openLatest}
+        >
+            Open
         </Button>
     </>
 );
