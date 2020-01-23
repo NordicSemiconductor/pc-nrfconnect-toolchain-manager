@@ -48,23 +48,12 @@ export default {
             <AppMainView />
         </MainView>
     ),
-
     decorateSidePanel: SidePanel => () => (
         <SidePanel>
             <AppSidePanelView cssClass="side-panel" />
         </SidePanel>
     ),
-
     decorateSerialPortSelector: () => () => null,
-    decorateNavMenu: () => () => <h4>nRF Connect SDK Manager</h4>,
-
+    decorateNavMenu: () => () => <h4>nRF Connect Toolchain Manager</h4>,
     reduceApp: appReducer,
-
-    middleware: store => next => async action => {
-        switch (action.type) {
-            default:
-        }
-
-        next(action);
-    },
 };

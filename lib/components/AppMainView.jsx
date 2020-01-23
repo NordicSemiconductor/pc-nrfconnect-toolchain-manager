@@ -34,16 +34,26 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 import ToolchainListView from './ToolchainListView';
 import ToolchainMenuView from './ToolchainMenuView';
 
-const AppMainView = () => (
-    <>
-        <ToolchainMenuView />
-        <ToolchainListView />
-    </>
-);
+const AppMainView = ({ downloadToolchainList }) => {
+    useEffect(() => {
+        downloadToolchainList();
+    }, []);
+    return (
+        <>
+            <ToolchainMenuView />
+            <ToolchainListView />
+        </>
+    );
+};
+
+AppMainView.propTypes = {
+    downloadToolchainList: PropTypes.func.isRequired,
+};
 
 export default AppMainView;
