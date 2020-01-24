@@ -38,11 +38,15 @@ import './resources/css/index.scss';
 
 import React from 'react';
 
+import { initAction } from './lib/actions/toolchainActions';
 import AppMainView from './lib/containers/appMainView';
 import AppSidePanelView from './lib/containers/appSidePanelView';
 import appReducer from './lib/reducers';
 
 export default {
+    onReady: (dispatch, getState) => {
+        dispatch(initAction());
+    },
     decorateMainView: MainView => () => (
         <MainView cssClass="main-view">
             <AppMainView />

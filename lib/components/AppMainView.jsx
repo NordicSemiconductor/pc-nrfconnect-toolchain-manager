@@ -40,9 +40,9 @@ import PropTypes from 'prop-types';
 import ToolchainListView from '../containers/toolchainListView';
 import ToolchainMenuView from '../containers/toolchainMenuView';
 
-const AppMainView = ({ downloadToolchainList }) => {
+const AppMainView = ({ init }) => {
     useEffect(() => {
-        downloadToolchainList();
+        init();
     }, []);
     return (
         <>
@@ -53,7 +53,7 @@ const AppMainView = ({ downloadToolchainList }) => {
 };
 
 AppMainView.propTypes = {
-    downloadToolchainList: PropTypes.func.isRequired,
+    init: PropTypes.func.isRequired,
 };
 
 export default AppMainView;
