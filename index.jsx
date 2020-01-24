@@ -39,7 +39,6 @@ import './resources/css/index.scss';
 import React from 'react';
 
 import AppMainView from './lib/containers/appMainView';
-import AppSidePanelView from './lib/containers/appSidePanelView';
 import appReducer from './lib/reducers';
 
 export default {
@@ -48,11 +47,8 @@ export default {
             <AppMainView />
         </MainView>
     ),
-    decorateSidePanel: SidePanel => () => (
-        <SidePanel>
-            <AppSidePanelView cssClass="side-panel" />
-        </SidePanel>
-    ),
+    decorateSidePanel: () => () => null,
+    decorateLogViewer: () => () => null,
     decorateSerialPortSelector: () => () => null,
     decorateNavMenu: () => () => <h4>nRF Connect Toolchain Manager</h4>,
     reduceApp: appReducer,
