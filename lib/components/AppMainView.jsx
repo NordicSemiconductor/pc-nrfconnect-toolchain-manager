@@ -46,7 +46,7 @@ const AppMainView = ({ init }) => {
     }, []);
     return (
         <>
-            <ToolchainMenuView />
+            {/* <ToolchainMenuView /> */}
             <ToolchainListView />
         </>
     );

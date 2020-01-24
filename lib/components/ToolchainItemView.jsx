@@ -36,6 +36,7 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Col from 'react-bootstrap/Col';
@@ -45,65 +46,77 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Row from 'react-bootstrap/Row';
 
 const ToolchainItemView = ({
-    toolchain,
-}) => (
-    <ListGroup.Item>
-        <Row noGutters className="py-1">
-            <Col xs="auto my-2 mr-3" className="d-flex align-items-start">
-                {/* <AppIcon toolchain={toolchain} /> */}
-            </Col>
-            <Col>
-                <div className="h8">
-                    {toolchain.version}
-                </div>
-                <div className="small text-muted">
-                    {toolchain.package}
-                </div>
-                <div className="small text-muted">
-                    {toolchain.md5}
-                </div>
-                <div className="small text-muted">
-                    {toolchain.url}
-                </div>
-            </Col>
-            <Col xs="auto ml-auto" className="d-flex align-items-center my-3 pl-3">
-                <ButtonToolbar className="wide-btns">
-                    <Button
-                        variant="outline-primary"
-                        title="Update"
-                    >
-                       Update
-                    </Button>
-                    <DropdownButton
-                        // variant={installed ? 'outline-primary' : 'outline-secondary'}
-                        title=""
-                        alignRight
-                    >
-                        <Dropdown.Item
-                            title="Go to toolchain website"
+    toolchain: {
+        toolchainDir,
+        version,
+        package: pkg, // package is reserved name
+        url,
+    },
+    open,
+    install,
+}) => {
+    const isInstalled = !!toolchainDir;
+    return (
+        <ListGroup.Item>
+            <Row noGutters className="py-1">
+                <Col xs="auto my-2 mr-3" className="d-flex align-items-start">
+                    {/* <AppIcon toolchain={toolchain} /> */}
+                </Col>
+                <Col>
+                    <div className="h8">
+                        nRF Connect SDK {version}
+                    </div>
+                    <div className="small text-muted">
+                        {toolchainDir}
+                    </div>
+                    <Badge variant={isInstalled ? 'success' : 'info'}>
+                        {isInstalled ? 'installed' : 'available'}
+                    </Badge>
+                </Col>
+                <Col xs="auto ml-auto" className="d-flex align-items-center my-3 pl-3">
+                    <ButtonToolbar className="wide-btns">
+                        <Button
+                            variant="outline-primary"
+                            onClick={isInstalled ? open : install}
                         >
-                            More info
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                            title="Show release notes"
+                            {isInstalled ? 'Open' : 'Install'}
+                        </Button>
+                        <DropdownButton
+                            // variant={installed ? 'outline-primary' : 'outline-secondary'}
+                            title=""
+                            alignRight
                         >
-                            Release notes
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                            title="Create a desktop shortcut for this toolchain"
-                        >
-                            Create shortcut
-                        </Dropdown.Item>
-                    </DropdownButton>
-                </ButtonToolbar>
-            </Col>
-        </Row>
-    </ListGroup.Item>
-);
+                            {isInstalled && (
+                                <Dropdown.Item
+                                    title="Install again :)"
+                                    onClick={install}
+                                >
+                                    Update
+                                </Dropdown.Item>
+                            )}
+                            <Dropdown.Item
+                                title="Remove"
+                            >
+                                Remove
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                title="Create a desktop shortcut for this toolchain"
+                            >
+                                Create shortcut
+                            </Dropdown.Item>
+                        </DropdownButton>
+                    </ButtonToolbar>
+                </Col>
+            </Row>
+        </ListGroup.Item>
+    );
+}
 
 ToolchainItemView.propTypes = {
     toolchain: PropTypes.shape({
         version: PropTypes.string.isRequired,
     }).isRequired,
+    open: PropTypes.func.isRequired,
+    install: PropTypes.func.isRequired,
 };
 export default ToolchainItemView;
