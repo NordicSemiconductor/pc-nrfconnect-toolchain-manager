@@ -44,12 +44,14 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Row from 'react-bootstrap/Row';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 const ToolchainItemView = ({
     toolchain: {
         toolchainDir,
         version,
         package: pkg, // package is reserved name
+        progress,
         url,
     },
     open,
@@ -69,9 +71,14 @@ const ToolchainItemView = ({
                     <div className="small text-muted">
                         {toolchainDir}
                     </div>
-                    <Badge variant={isInstalled ? 'success' : 'info'}>
-                        {isInstalled ? 'installed' : 'available'}
-                    </Badge>
+                    {progress === undefined &&
+                        <Badge variant={isInstalled ? 'success' : 'info'}>
+                            {isInstalled ? 'installed' : 'available'}
+                        </Badge>
+                    }
+                    {progress !== undefined &&
+                        <ProgressBar now={progress} label={`${progress}%`} />
+                    }
                 </Col>
                 <Col xs="auto ml-auto" className="d-flex align-items-center my-3 pl-3">
                     <ButtonToolbar className="wide-btns">
