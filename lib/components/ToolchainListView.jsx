@@ -34,30 +34,22 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import PropTypes from 'prop-types';
 import React from 'react';
+
 import ToolchainItemView from './ToolchainItemView';
 
-const ToolchainListView = () => (
-    <>
-        <ToolchainItemView
-            toolchain={{
-                name: 'v1.1.0',
-                version: 'v1.1.0',
-            }}
-        />
-        <ToolchainItemView
-            toolchain={{
-                name: 'v1.1.0',
-                version: 'v1.1.0',
-            }}
-        />
-        <ToolchainItemView
-            toolchain={{
-                name: 'v1.1.0',
-                version: 'v1.1.0',
-            }}
-        />
-    </>
-);
+const ToolchainListView = ({
+    toolchainList,
+}) => toolchainList.map(toolchain => (
+    <ToolchainItemView
+        key={toolchain.version}
+        toolchain={toolchain}
+    />
+));
+
+ToolchainListView.propTypes = {
+    // toolchainList: PropTypes.shape(PropTypes.array).isRequired,
+};
 
 export default ToolchainListView;

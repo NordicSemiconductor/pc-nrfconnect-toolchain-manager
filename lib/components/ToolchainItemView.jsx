@@ -54,10 +54,16 @@ const ToolchainItemView = ({
             </Col>
             <Col>
                 <div className="h8">
-                    {toolchain.name}
+                    {toolchain.version}
                 </div>
                 <div className="small text-muted">
-                    {toolchain.version}
+                    {toolchain.package}
+                </div>
+                <div className="small text-muted">
+                    {toolchain.md5}
+                </div>
+                <div className="small text-muted">
+                    {toolchain.url}
                 </div>
             </Col>
             <Col xs="auto ml-auto" className="d-flex align-items-center my-3 pl-3">
@@ -97,7 +103,6 @@ const ToolchainItemView = ({
 
 ToolchainItemView.propTypes = {
     toolchain: PropTypes.shape({
-        name: PropTypes.string.isRequired,
         version: PropTypes.string.isRequired,
     }).isRequired,
 };

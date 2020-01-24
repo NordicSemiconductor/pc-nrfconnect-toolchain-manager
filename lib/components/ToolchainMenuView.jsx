@@ -36,21 +36,23 @@
 
 import React from 'react';
 import Button from 'react-bootstrap/Button';
-import { installLatest, openLatest } from '../actions/toolchainActions';
 
-const ToolchainMenuView = () => (
-    <>
+const ToolchainMenuView = ({
+    installLatest,
+    openLatest,
+}) => (
+    <div className="toolchain-menu-container">
         <Button
             onClick={installLatest}
         >
-            Install
+            Install latest
         </Button>
         <Button
             onClick={openLatest}
         >
-            Open
+            Open latest
         </Button>
-    </>
+    </div>
 );
 
 export default ToolchainMenuView;
