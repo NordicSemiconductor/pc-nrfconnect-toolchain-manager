@@ -58,6 +58,8 @@ const ToolchainItemView = ({
     install,
 }) => {
     const isInstalled = !!toolchainDir;
+    const progressPct = isInstalled ? 100 : (progress || 0);
+    const progressLabel = isInstalled ? 'installed' : (progress ? `${progress}%` : '');
     return (
         <ListGroup.Item>
             <Row noGutters className="py-1">
@@ -71,14 +73,16 @@ const ToolchainItemView = ({
                     <div className="small text-muted">
                         {toolchainDir}
                     </div>
-                    {progress === undefined &&
-                        <Badge variant={isInstalled ? 'success' : 'info'}>
-                            {isInstalled ? 'installed' : 'available'}
-                        </Badge>
-                    }
-                    {progress !== undefined &&
-                        <ProgressBar now={progress} label={`${progress}%`} />
-                    }
+                    <ProgressBar className="toolchain-item-progress">
+                        <ProgressBar
+                            variant={isInstalled ? 'success' : 'warning'}
+                            now={progressPct}
+                            label={progressLabel}
+                        />
+                        {(progressPct === 0) && (
+                            <ProgressBar variant="info" now={100} label="available" />
+                        )}
+                    </ProgressBar>
                 </Col>
                 <Col xs="auto ml-auto" className="d-flex align-items-center my-3 pl-3">
                     <ButtonToolbar className="wide-btns">

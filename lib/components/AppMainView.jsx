@@ -38,12 +38,15 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import ToolchainListView from '../containers/toolchainListView';
-import ToolchainMenuView from '../containers/toolchainMenuView';
+import ToolchainMenuView from '../containers/toolchainMenuView'
 
 const AppMainView = ({ init }) => {
     useEffect(() => {
         init();
     }, []);
+    if (process.platform !== 'win32') {
+        return (<>Sorry</>);
+    }
     return (
         <>
             {/* <ToolchainMenuView /> */}
