@@ -36,7 +36,6 @@
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Col from 'react-bootstrap/Col';
@@ -56,6 +55,7 @@ const ToolchainItemView = ({
     },
     open,
     install,
+    removeToolchain,
 }) => {
     const isInstalled = !!toolchainDir;
     const progressPct = isInstalled ? 100 : (progress || 0);
@@ -87,13 +87,16 @@ const ToolchainItemView = ({
                 <Col xs="auto ml-auto" className="d-flex align-items-center my-3 pl-3">
                     <ButtonToolbar className="wide-btns">
                         <Button
-                            variant="outline-primary"
+                            className="toolchain-item-button"
+                            variant="primary"
                             onClick={isInstalled ? open : install}
                         >
                             {isInstalled ? 'Open' : 'Install'}
                         </Button>
                         <DropdownButton
+                            className="ml-2"
                             // variant={installed ? 'outline-primary' : 'outline-secondary'}
+                            variant="outline-primary"
                             title=""
                             alignRight
                         >
@@ -106,9 +109,10 @@ const ToolchainItemView = ({
                                 </Dropdown.Item>
                             )}
                             <Dropdown.Item
-                                title="Remove"
+                                title="Remove toolchain"
+                                onClick={removeToolchain}
                             >
-                                Remove
+                                Remove toolchain
                             </Dropdown.Item>
                             <Dropdown.Item
                                 title="Create a desktop shortcut for this toolchain"
@@ -129,5 +133,6 @@ ToolchainItemView.propTypes = {
     }).isRequired,
     open: PropTypes.func.isRequired,
     install: PropTypes.func.isRequired,
+    removeToolchain: PropTypes.func.isRequired,
 };
 export default ToolchainItemView;

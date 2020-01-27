@@ -43,12 +43,14 @@ const ToolchainListView = ({
     toolchainList,
     install,
     open,
+    removeToolchain,
 }) => toolchainList.map(toolchain => (
     <ToolchainItemView
         key={toolchain.version}
         toolchain={toolchain}
         open={() => open(toolchain.version)}
         install={() => install(toolchain.version)}
+        removeToolchain={() => removeToolchain(toolchain.version)}
     />
 ));
 
