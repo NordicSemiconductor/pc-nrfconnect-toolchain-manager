@@ -42,24 +42,25 @@ import Col from 'react-bootstrap/Col';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import ListGroup from 'react-bootstrap/ListGroup';
-import Row from 'react-bootstrap/Row';
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import Row from 'react-bootstrap/Row';
 
 const ToolchainItemView = ({
     toolchain: {
         toolchainDir,
         version,
-        package: pkg, // package is reserved name
+        // package: pkg, // package is reserved name
         progress,
-        url,
+        // url,
     },
     open,
     install,
     removeToolchain,
+    cloneNcs,
 }) => {
     const isInstalled = !!toolchainDir;
     const progressPct = isInstalled ? 100 : (progress || 0);
-    const progressLabel = isInstalled ? 'installed' : (progress ? `${progress}%` : '');
+    const progressLabel = progress ? `${progress}%` : '';
     return (
         <ListGroup.Item>
             <Row noGutters className="py-1">
@@ -77,7 +78,7 @@ const ToolchainItemView = ({
                         <ProgressBar
                             variant={isInstalled ? 'success' : 'warning'}
                             now={progressPct}
-                            label={progressLabel}
+                            label={isInstalled ? 'installed' : progressLabel}
                         />
                         {(progressPct === 0) && (
                             <ProgressBar variant="info" now={100} label="available" />
@@ -116,8 +117,9 @@ const ToolchainItemView = ({
                             </Dropdown.Item>
                             <Dropdown.Item
                                 title="Create a desktop shortcut for this toolchain"
+                                onClick={cloneNcs}
                             >
-                                Create shortcut
+                                Clone NCS
                             </Dropdown.Item>
                         </DropdownButton>
                     </ButtonToolbar>
@@ -125,14 +127,20 @@ const ToolchainItemView = ({
             </Row>
         </ListGroup.Item>
     );
-}
+};
 
 ToolchainItemView.propTypes = {
     toolchain: PropTypes.shape({
+        toolchainDir: PropTypes.string.isRequired,
         version: PropTypes.string.isRequired,
+        package: PropTypes.string.isRequired,
+        url: PropTypes.string.isRequired,
+        progress: PropTypes.number,
     }).isRequired,
     open: PropTypes.func.isRequired,
     install: PropTypes.func.isRequired,
     removeToolchain: PropTypes.func.isRequired,
+    cloneNcs: PropTypes.func.isRequired,
+
 };
 export default ToolchainItemView;

@@ -55,4 +55,9 @@ const ToolchainMenuView = ({
     </div>
 );
 
+ToolchainMenuView.propTypes = {
+    installLatest: PropTypes.func.isRequired,
+    openLatest: PropTypes.func.isRequired,
+};
+
 export default ToolchainMenuView;

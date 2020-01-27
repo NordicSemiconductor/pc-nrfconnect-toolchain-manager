@@ -44,6 +44,7 @@ const ToolchainListView = ({
     install,
     open,
     removeToolchain,
+    cloneNcs,
 }) => toolchainList.map(toolchain => (
     <ToolchainItemView
         key={toolchain.version}
@@ -51,11 +52,16 @@ const ToolchainListView = ({
         open={() => open(toolchain.version)}
         install={() => install(toolchain.version)}
         removeToolchain={() => removeToolchain(toolchain.version)}
+        cloneNcs={() => cloneNcs(toolchain.version)}
     />
 ));
 
 ToolchainListView.propTypes = {
-    // toolchainList: PropTypes.shape(PropTypes.array).isRequired,
+    toolchainList: PropTypes.shape(PropTypes.array).isRequired,
+    install: PropTypes.func.isRequired,
+    open: PropTypes.func.isRequired,
+    removeToolchain: PropTypes.func.isRequired,
+    cloneNcs: PropTypes.func.isRequired,
 };
 
 export default ToolchainListView;
