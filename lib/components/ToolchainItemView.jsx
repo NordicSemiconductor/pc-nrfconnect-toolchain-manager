@@ -49,10 +49,8 @@ const ToolchainItemView = ({
     toolchain: {
         toolchainDir,
         version,
-        // package: pkg, // package is reserved name
         progress,
         isRemoving,
-        // url,
     },
     open,
     install,
@@ -134,10 +132,8 @@ const ToolchainItemView = ({
 
 ToolchainItemView.propTypes = {
     toolchain: PropTypes.shape({
-        toolchainDir: PropTypes.string.isRequired,
+        toolchainDir: PropTypes.string,
         version: PropTypes.string.isRequired,
-        package: PropTypes.string.isRequired,
-        url: PropTypes.string.isRequired,
         progress: PropTypes.number,
         isRemoving: PropTypes.bool,
     }).isRequired,
