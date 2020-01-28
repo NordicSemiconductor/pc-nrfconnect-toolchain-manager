@@ -34,6 +34,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+.core-main-layout > div:nth-child(1) {
+    padding-right: initial;
+}
+
 .core-main-layout > div:nth-child(1) > div:nth-child(1).core-main-view {
     height: 100%;
 }
@@ -43,8 +47,16 @@
     margin-top: 20px;
 }
 
+.core-main-layout > div > .core-splitter {
+    display: none;
+}
+
 .main-view, .side-panel {
     padding: 10px 15px;
+}
+
+.core-main-area {
+    min-width: initial;
 }
 
 .core-main-layout > div:nth-child(2) {

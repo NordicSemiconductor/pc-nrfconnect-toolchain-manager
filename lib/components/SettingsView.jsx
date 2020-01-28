@@ -34,28 +34,42 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { TOOLCHAIN_LIST_UPDATE, TOOLCHAIN_LATEST_UPDATE } from '../actions/toolchainActions';
+import React from 'react';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
-const InitialState = {
-    versionList: [],
-    latest: null,
+import { string, func } from 'prop-types';
+
+const SettingsView = ({
+    installDir,
+    selectInstallDir,
+}) => (
+    <>
+        <Card body>
+            <Row>
+                <Col><Card.Title>Installation directory</Card.Title></Col>
+                <Col xs="auto">
+                    <Button
+                        variant="outline-primary"
+                        onClick={selectInstallDir}
+                    >
+                        Select directory
+                    </Button>
+                </Col>
+            </Row>
+
+            <p className="small text-muted">
+                {installDir}
+            </p>
+        </Card>
+    </>
+);
+
+SettingsView.propTypes = {
+    installDir: string.isRequired,
+    selectInstallDir: func.isRequired,
 };
 
-const reducer = (state = InitialState, action) => {
-    switch (action.type) {
-        case TOOLCHAIN_LIST_UPDATE:
-            return {
-                ...state,
-                versionList: action.toolchainList,
-            };
-        case TOOLCHAIN_LATEST_UPDATE:
-            return {
-                ...state,
-                latest: action.version,
-            };
-        default:
-            return state;
-    }
-};
-
-export default reducer;
+export default SettingsView;
