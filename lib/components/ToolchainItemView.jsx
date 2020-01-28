@@ -51,6 +51,7 @@ const ToolchainItemView = ({
         version,
         // package: pkg, // package is reserved name
         progress,
+        isRemoving,
         // url,
     },
     open,
@@ -60,7 +61,9 @@ const ToolchainItemView = ({
 }) => {
     const isInstalled = !!toolchainDir;
     const progressPct = isInstalled ? 100 : (progress || 0);
-    const progressLabel = progress ? `${progress}%` : '';
+    let progressLabel = progress ? `${progress}%` : '';
+    progressLabel = isInstalled ? 'Installed' : progressLabel;
+    progressLabel = isRemoving ? 'Removing' : progressLabel;
     return (
         <ListGroup.Item>
             <Row noGutters className="py-1">
@@ -78,7 +81,7 @@ const ToolchainItemView = ({
                         <ProgressBar
                             variant={isInstalled ? 'success' : 'warning'}
                             now={progressPct}
-                            label={isInstalled ? 'installed' : progressLabel}
+                            label={progressLabel}
                         />
                         {(progressPct === 0) && (
                             <ProgressBar variant="info" now={100} label="available" />
@@ -136,6 +139,7 @@ ToolchainItemView.propTypes = {
         package: PropTypes.string.isRequired,
         url: PropTypes.string.isRequired,
         progress: PropTypes.number,
+        isRemoving: PropTypes.bool,
     }).isRequired,
     open: PropTypes.func.isRequired,
     install: PropTypes.func.isRequired,
