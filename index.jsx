@@ -39,17 +39,34 @@ import './resources/css/index.scss';
 import React from 'react';
 
 import AppMainView from './lib/containers/appMainView';
+import SettingsView from './lib/containers/settingsView';
 import appReducer from './lib/reducers';
 
 export default {
-    decorateMainView: MainView => () => (
+    mapMainViewState: ({ core }, props) => ({
+        ...props,
+        viewId: core.navMenu.selectedItemId < 0 ? 0 : core.navMenu.selectedItemId,
+    }),
+    /* eslint-disable-next-line react/prop-types */
+    decorateMainView: MainView => ({ viewId }) => (
         <MainView cssClass="main-view">
-            <AppMainView />
+            {viewId === 0 && <AppMainView />}
+            {viewId === 1 && <SettingsView />}
         </MainView>
     ),
     decorateSidePanel: () => () => null,
     decorateLogViewer: () => () => null,
     decorateSerialPortSelector: () => () => null,
-    decorateNavMenu: () => () => <h4>nRF Connect Toolchain Manager</h4>,
+    /* eslint-disable-next-line react/prop-types */
+    decorateNavMenu: NavMenu => ({ selectedItemId, ...rest }) => (
+        <NavMenu
+            {...rest}
+            selectedItemId={selectedItemId < 0 ? 0 : selectedItemId}
+            menuItems={[
+                { id: 0, text: 'SDK Environments', iconClass: 'mdi mdi-folder' },
+                { id: 1, text: 'Settings', iconClass: 'mdi mdi-settings' },
+            ]}
+        />
+    ),
     reduceApp: appReducer,
 };
