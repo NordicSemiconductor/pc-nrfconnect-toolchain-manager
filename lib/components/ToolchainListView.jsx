@@ -57,7 +57,7 @@ const ToolchainListView = ({
 ));
 
 ToolchainListView.propTypes = {
-    toolchainList: PropTypes.shape(PropTypes.array).isRequired,
+    toolchainList: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     install: PropTypes.func.isRequired,
     open: PropTypes.func.isRequired,
     removeToolchain: PropTypes.func.isRequired,
