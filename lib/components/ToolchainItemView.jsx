@@ -51,6 +51,7 @@ const ToolchainItemView = ({
         version,
         progress,
         isRemoving,
+        westPresent,
     },
     open,
     install,
@@ -91,9 +92,9 @@ const ToolchainItemView = ({
                         <Button
                             className="toolchain-item-button"
                             variant="primary"
-                            onClick={isInstalled ? open : install}
+                            onClick={isInstalled ? (westPresent ? open : cloneNcs) : install}
                         >
-                            {isInstalled ? 'Open' : 'Install'}
+                            {isInstalled ? (westPresent ? 'Open' : 'Clone NCS') : 'Install'}
                         </Button>
                         <DropdownButton
                             className="ml-2"
@@ -116,12 +117,14 @@ const ToolchainItemView = ({
                             >
                                 Remove toolchain
                             </Dropdown.Item>
-                            <Dropdown.Item
-                                title="Create a desktop shortcut for this toolchain"
-                                onClick={cloneNcs}
-                            >
-                                Clone NCS
-                            </Dropdown.Item>
+                            { westPresent || (
+                                <Dropdown.Item
+                                    title="Create a desktop shortcut for this toolchain"
+                                    onClick={cloneNcs}
+                                >
+                                    Clone NCS
+                                </Dropdown.Item>
+                            )}
                         </DropdownButton>
                     </ButtonToolbar>
                 </Col>
@@ -136,6 +139,7 @@ ToolchainItemView.propTypes = {
         version: PropTypes.string.isRequired,
         progress: PropTypes.number,
         isRemoving: PropTypes.bool,
+        westPresent: PropTypes.bool,
     }).isRequired,
     open: PropTypes.func.isRequired,
     install: PropTypes.func.isRequired,
