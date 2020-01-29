@@ -34,13 +34,36 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { combineReducers } from 'redux';
-import toolchain from './toolchainReducer';
-import settings from './settingsReducer';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-const rootReducer = combineReducers({
-    toolchain,
-    settings,
-});
+import EnvironmentItem from './EnvironmentItem';
 
-export default rootReducer;
+import './style.scss';
+
+const EnvironmentList = ({
+    toolchainList,
+    install,
+    open,
+    removeToolchain,
+    cloneNcs,
+}) => toolchainList.map(toolchain => (
+    <EnvironmentItem
+        key={toolchain.version}
+        toolchain={toolchain}
+        open={() => open(toolchain.version)}
+        install={() => install(toolchain.version)}
+        removeToolchain={() => removeToolchain(toolchain.version)}
+        cloneNcs={() => cloneNcs(toolchain.version)}
+    />
+));
+
+EnvironmentList.propTypes = {
+    toolchainList: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    install: PropTypes.func.isRequired,
+    open: PropTypes.func.isRequired,
+    removeToolchain: PropTypes.func.isRequired,
+    cloneNcs: PropTypes.func.isRequired,
+};
+
+export default EnvironmentList;

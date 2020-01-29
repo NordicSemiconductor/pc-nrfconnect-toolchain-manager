@@ -166,6 +166,7 @@ export const downloadZip = (ncsVersion, toolchainVersion) => (dispatch, getState
     const request = net.request({
         url,
     });
+    fse.mkdirpSync(path.resolve(installDir, 'downloads'));
     const zipLocation = path.resolve(installDir, 'downloads', name);
     const writeStream = fs.createWriteStream(zipLocation);
     request.on('response', response => {
@@ -301,9 +302,9 @@ export const cloneNcs = version => (dispatch, getState) => {
     const { versionList } = getState().app.toolchain;
     const toolchain = versionList.find(v => v.version === version);
     const { toolchainDir } = toolchain;
-    console.log('clone');
-    exec(
-        `"${path.resolve(toolchainDir, 'git-bash.exe')}" -c "unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3"`,
-        () => {dispatch(checkLocalToolchains());},
-    );
+    const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
+    const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
+    exec(`"${gitBash}" -c "${initScript}"`, () => {
+        dispatch(checkLocalToolchains());
+    });
 };
