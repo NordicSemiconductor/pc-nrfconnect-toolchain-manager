@@ -34,39 +34,16 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './resources/css/index.scss';
+import { connect } from 'react-redux';
+import ManagerView from './ManagerView';
+import { initAction } from '../actions/toolchainActions';
 
-import React from 'react';
-
-import AppMainView from './lib/containers/appMainView';
-import SettingsView from './lib/containers/settingsView';
-import appReducer from './lib/reducers';
-
-export default {
-    mapMainViewState: ({ core }, props) => ({
+export default connect(
+    (state, props) => ({
         ...props,
-        viewId: core.navMenu.selectedItemId < 0 ? 0 : core.navMenu.selectedItemId,
     }),
-    /* eslint-disable-next-line react/prop-types */
-    decorateMainView: MainView => ({ viewId }) => (
-        <MainView cssClass="main-view">
-            {viewId === 0 && <AppMainView />}
-            {viewId === 1 && <SettingsView />}
-        </MainView>
-    ),
-    decorateSidePanel: () => () => null,
-    decorateLogViewer: () => () => null,
-    decorateSerialPortSelector: () => () => null,
-    /* eslint-disable-next-line react/prop-types */
-    decorateNavMenu: NavMenu => ({ selectedItemId, ...rest }) => (
-        <NavMenu
-            {...rest}
-            selectedItemId={selectedItemId < 0 ? 0 : selectedItemId}
-            menuItems={[
-                { id: 0, text: 'SDK Environments', iconClass: 'mdi mdi-folder' },
-                { id: 1, text: 'Settings', iconClass: 'mdi mdi-settings' },
-            ]}
-        />
-    ),
-    reduceApp: appReducer,
-};
+    (dispatch, props) => ({
+        ...props,
+        init: () => dispatch(initAction()),
+    }),
+)(ManagerView);

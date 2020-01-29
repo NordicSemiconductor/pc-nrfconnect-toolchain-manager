@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,16 +34,25 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { connect } from 'react-redux';
-import AppMainView from '../components/AppMainView';
-import { initAction } from '../actions/toolchainActions';
+import { homedir } from 'os';
+import { resolve } from 'path';
 
-export default connect(
-    (state, props) => ({
-        ...props,
-    }),
-    (dispatch, props) => ({
-        ...props,
-        init: () => dispatch(initAction()),
-    }),
-)(AppMainView);
+import { UPDATE_INSTALL_DIR } from './settingsActions';
+
+const InitialState = {
+    installDir: resolve(homedir(), 'ncs'),
+};
+
+const reducer = (state = InitialState, { type, installDir }) => {
+    switch (type) {
+        case UPDATE_INSTALL_DIR:
+            return {
+                ...state,
+                installDir,
+            };
+        default:
+            return state;
+    }
+};
+
+export default reducer;

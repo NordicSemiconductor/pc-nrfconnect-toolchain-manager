@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,26 +34,52 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { connect } from 'react-redux';
+.core-main-layout > div:nth-child(1) {
+    padding-right: initial;
+}
 
-import {
-    cloneNcs,
-    installLatestToolchain,
-    open,
-    removeToolchain,
-} from '../actions/toolchainActions';
-import ToolchainListView from '../components/ToolchainListView';
+.core-main-layout > div:nth-child(1) > div:nth-child(1).core-main-view {
+    height: 100%;
+}
 
-export default connect(
-    (state, props) => ({
-        ...props,
-        toolchainList: state.app.toolchain.versionList,
-    }),
-    (dispatch, props) => ({
-        ...props,
-        install: version => dispatch(installLatestToolchain(version)),
-        open: version => dispatch(open(version)),
-        removeToolchain: version => dispatch(removeToolchain(version)),
-        cloneNcs: version => dispatch(cloneNcs(version)),
-    }),
-)(ToolchainListView);
+.core-nav-bar h4 {
+    color: white;
+    margin-top: 20px;
+}
+
+.core-main-layout > div > .core-splitter {
+    display: none;
+}
+
+.main-view, .side-panel {
+    padding: 10px 15px;
+}
+
+.core-main-area {
+    min-width: initial;
+}
+
+.core-main-layout > div:nth-child(2) {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.btn-lg {
+    border-radius: 0;
+}
+
+.btn-group {
+    display: flex;
+}
+
+.btn:not(.btn-primary) .glyphicon {
+    color: #0080c0;
+}
+
+.btn:not(.core-btn):not(.btn-xs):not(.transparent) .glyphicon {
+    margin-right: 15px;
+}
+
+.form-label {
+    font-weight: bold;
+}

@@ -34,11 +34,23 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { connect } from 'react-redux';
-import AppSidePanelView from '../components/AppSidePanelView';
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 
-export default connect(
-    (state, props) => ({
-        ...props,
-    }),
-)(AppSidePanelView);
+import EnvironmentList from './EnvironmentList';
+
+const AppMainView = ({ init }) => {
+    useEffect(() => {
+        init();
+    }, []);
+    if (process.platform !== 'win32') {
+        return (<>Sorry</>);
+    }
+    return (<EnvironmentList />);
+};
+
+AppMainView.propTypes = {
+    init: PropTypes.func.isRequired,
+};
+
+export default AppMainView;

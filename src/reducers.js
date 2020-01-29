@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,114 +34,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.core-main-layout > div:nth-child(1) {
-    padding-right: initial;
-}
+import { combineReducers } from 'redux';
+import toolchain from './reducers/toolchainReducer';
+import settings from './SettingsView/settingsReducer';
 
-.core-main-layout > div:nth-child(1) > div:nth-child(1).core-main-view {
-    height: 100%;
-}
+const rootReducer = combineReducers({
+    toolchain,
+    settings,
+});
 
-.core-nav-bar h4 {
-    color: white;
-    margin-top: 20px;
-}
-
-.core-main-layout > div > .core-splitter {
-    display: none;
-}
-
-.main-view, .side-panel {
-    padding: 10px 15px;
-}
-
-.core-main-area {
-    min-width: initial;
-}
-
-.core-main-layout > div:nth-child(2) {
-    height: 100%;
-    overflow-y: auto;
-}
-
-.app-sidepanel-panel {
-    font-size: 0.9em;
-    .btn-primary {
-        width: 100%;
-    }
-}
-
-.app-main-view {
-    display: flex;
-    height: 100%;
-    width: 100%;
-    flex-direction: column;
-    padding: 0px;
-}
-
-.control-panel > div:nth-child(1) {
-    height: 100%;
-
-    button {
-        font-size: 0.9em;
-        display: block;
-        width: 100%;
-        text-align: left;
-
-        span.glyphicon {
-            margin-right: 15px;
-        }
-    }
-}
-
-.btn-lg {
-    border-radius: 0;
-}
-
-.btn-group {
-    display: flex;
-}
-
-.btn:not(.btn-primary) .glyphicon {
-    color: #0080c0;
-}
-.btn:not(.core-btn):not(.btn-xs):not(.transparent) .glyphicon {
-    margin-right: 15px;
-}
-
-.panel-body {
-    padding: 15px;
-    background-color: #f5f5f5;
-}
-
-.app-sidepanel-component-slider {
-    line-height: 32px;
-    margin-bottom: 0px;
-    margin-top: 0px;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-.app-sidepanel-component-inputbox {
-    margin-bottom: 15px;
-}
-
-.app-sidepanel-panel {
-    margin-bottom: 16px;
-}
-
-.form-label {
-    font-weight: bold;
-}
-
-.toolchain-menu-container {
-    display: grid;
-    margin-bottom: 16px;
-}
-
-.toolchain-item-button {
-    min-width: 10ch;
-}
-
-.toolchain-item-progress {
-    width: 100px;
-}
+export default rootReducer;
