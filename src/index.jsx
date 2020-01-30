@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,25 +34,39 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { homedir } from 'os';
-import { resolve } from 'path';
+import './style.scss';
 
-import { UPDATE_INSTALL_DIR } from '../actions/settingsActions';
+import React from 'react';
 
-const InitialState = {
-    installDir: resolve(homedir(), 'ncs'),
+import ManagerView from './ManagerView';
+import SettingsView from './SettingsView';
+import appReducer from './reducers';
+
+export default {
+    mapMainViewState: ({ core }, props) => ({
+        ...props,
+        viewId: core.navMenu.selectedItemId < 0 ? 0 : core.navMenu.selectedItemId,
+    }),
+    /* eslint-disable-next-line react/prop-types */
+    decorateMainView: MainView => ({ viewId }) => (
+        <MainView cssClass="main-view">
+            {viewId === 0 && <ManagerView />}
+            {viewId === 1 && <SettingsView />}
+        </MainView>
+    ),
+    decorateSidePanel: () => () => null,
+    decorateLogViewer: () => () => null,
+    decorateSerialPortSelector: () => () => null,
+    /* eslint-disable-next-line react/prop-types */
+    decorateNavMenu: NavMenu => ({ selectedItemId, ...rest }) => (
+        <NavMenu
+            {...rest}
+            selectedItemId={selectedItemId < 0 ? 0 : selectedItemId}
+            menuItems={[
+                { id: 0, text: 'SDK Environments', iconClass: 'mdi mdi-folder' },
+                { id: 1, text: 'Settings', iconClass: 'mdi mdi-settings' },
+            ]}
+        />
+    ),
+    reduceApp: appReducer,
 };
-
-const reducer = (state = InitialState, { type, installDir }) => {
-    switch (type) {
-        case UPDATE_INSTALL_DIR:
-            return {
-                ...state,
-                installDir,
-            };
-        default:
-            return state;
-    }
-};
-
-export default reducer;

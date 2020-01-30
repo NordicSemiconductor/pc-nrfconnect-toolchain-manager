@@ -45,7 +45,17 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Row from 'react-bootstrap/Row';
 
-const ToolchainItemView = ({
+const PrimaryButton = ({ onClick, label }) => (
+    <Button className="toolchain-item-button" variant="primary" onClick={onClick}>
+        {label}
+    </Button>
+);
+PrimaryButton.propTypes = {
+    onClick: PropTypes.func.isRequired,
+    label: PropTypes.string.isRequired,
+};
+
+const EnvironmentItem = ({
     toolchain: {
         toolchainDir,
         version,
@@ -89,13 +99,15 @@ const ToolchainItemView = ({
                 </Col>
                 <Col xs="auto ml-auto" className="d-flex align-items-center my-3 pl-3">
                     <ButtonToolbar className="wide-btns">
-                        <Button
-                            className="toolchain-item-button"
-                            variant="primary"
-                            onClick={isInstalled ? (westPresent ? open : cloneNcs) : install}
-                        >
-                            {isInstalled ? (westPresent ? 'Open' : 'Clone NCS') : 'Install'}
-                        </Button>
+                        { !isInstalled && (
+                            <PrimaryButton onClick={install} label="Install" />
+                        )}
+                        { isInstalled && !westPresent && (
+                            <PrimaryButton onClick={cloneNcs} label="Clone NCS" />
+                        )}
+                        { isInstalled && westPresent && (
+                            <PrimaryButton onClick={open} label="Open" />
+                        )}
                         <DropdownButton
                             className="ml-2"
                             // variant={installed ? 'outline-primary' : 'outline-secondary'}
@@ -133,7 +145,7 @@ const ToolchainItemView = ({
     );
 };
 
-ToolchainItemView.propTypes = {
+EnvironmentItem.propTypes = {
     toolchain: PropTypes.shape({
         toolchainDir: PropTypes.string,
         version: PropTypes.string.isRequired,
@@ -147,4 +159,4 @@ ToolchainItemView.propTypes = {
     cloneNcs: PropTypes.func.isRequired,
 
 };
-export default ToolchainItemView;
+export default EnvironmentItem;

@@ -34,34 +34,27 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import PropTypes from 'prop-types';
-import React from 'react';
+import { connect } from 'react-redux';
 
-import ToolchainItemView from './ToolchainItemView';
-
-const ToolchainListView = ({
-    toolchainList,
-    install,
+import {
+    cloneNcs,
+    installLatestToolchain,
     open,
     removeToolchain,
-    cloneNcs,
-}) => toolchainList.map(toolchain => (
-    <ToolchainItemView
-        key={toolchain.version}
-        toolchain={toolchain}
-        open={() => open(toolchain.version)}
-        install={() => install(toolchain.version)}
-        removeToolchain={() => removeToolchain(toolchain.version)}
-        cloneNcs={() => cloneNcs(toolchain.version)}
-    />
-));
+} from '../../actions/toolchainActions';
 
-ToolchainListView.propTypes = {
-    toolchainList: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    install: PropTypes.func.isRequired,
-    open: PropTypes.func.isRequired,
-    removeToolchain: PropTypes.func.isRequired,
-    cloneNcs: PropTypes.func.isRequired,
-};
+import EnvironmentList from './EnvironmentList';
 
-export default ToolchainListView;
+export default connect(
+    (state, props) => ({
+        ...props,
+        toolchainList: state.app.toolchain.versionList,
+    }),
+    (dispatch, props) => ({
+        ...props,
+        install: version => dispatch(installLatestToolchain(version)),
+        open: version => dispatch(open(version)),
+        removeToolchain: version => dispatch(removeToolchain(version)),
+        cloneNcs: version => dispatch(cloneNcs(version)),
+    }),
+)(EnvironmentList);

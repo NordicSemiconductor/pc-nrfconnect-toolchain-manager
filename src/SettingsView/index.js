@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,15 +34,17 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import PropTypes from 'prop-types';
-import React from 'react';
+import { connect } from 'react-redux';
+import SettingsView from './SettingsView';
+import { selectInstallDir } from './settingsActions';
 
-const AppSidePanelView = () => (
-    <>
-    </>
-);
-
-AppSidePanelView.propTypes = {
-};
-
-export default AppSidePanelView;
+export default connect(
+    (state, props) => ({
+        ...props,
+        installDir: state.app.settings.installDir,
+    }),
+    (dispatch, props) => ({
+        ...props,
+        selectInstallDir: () => dispatch(selectInstallDir()),
+    }),
+)(SettingsView);
