@@ -253,15 +253,22 @@ export const installLatestToolchain = environmentVersion => (dispatch, getState)
     dispatch(install(environmentVersion, toolchain.version));
 };
 
-export const open = version => (dispatch, getState) => {
+export const openSes = version => (dispatch, getState) => {
     const { environmentList } = getState().app.manager;
     const { toolchainDir } = environmentList.find(v => v.version === version);
     exec(`"${path.resolve(toolchainDir, 'SEGGER Embedded Studio.cmd')}"`);
 };
 
-export const openLatest = () => (dispatch, getState) => {
-    const { latest } = getState().app.toolchain;
-    dispatch(open(latest));
+export const openCmd = version => (dispatch, getState) => {
+    const { environmentList } = getState().app.manager;
+    const { toolchainDir } = environmentList.find(v => v.version === version);
+    exec(`"${path.resolve(toolchainDir, 'git-cmd.cmd')}"`);
+};
+
+export const openBash = version => (dispatch, getState) => {
+    const { environmentList } = getState().app.manager;
+    const { toolchainDir } = environmentList.find(v => v.version === version);
+    exec(`"${path.resolve(toolchainDir, 'git-bash.exe')}"`);
 };
 
 export const initAction = () => (dispatch, getState) => {

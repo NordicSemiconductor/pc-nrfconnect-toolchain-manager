@@ -44,14 +44,18 @@ import EnvironmentItem from '../EnvironmentItem';
 const EnvironmentList = ({
     environmentList,
     install,
-    open,
+    openSes,
+    openCmd,
+    openBash,
     removeToolchain,
     cloneNcs,
 }) => environmentList.map(environment => (
     <EnvironmentItem
         key={environment.version}
         environment={environment}
-        open={() => open(environment.version)}
+        open={() => openSes(environment.version)}
+        openCmd={() => openCmd(environment.version)}
+        openBash={() => openBash(environment.version)}
         install={() => install(environment.version)}
         removeToolchain={() => removeToolchain(environment.version)}
         cloneNcs={() => cloneNcs(environment.version)}
@@ -61,7 +65,9 @@ const EnvironmentList = ({
 EnvironmentList.propTypes = {
     environmentList: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     install: PropTypes.func.isRequired,
-    open: PropTypes.func.isRequired,
+    openSes: PropTypes.func.isRequired,
+    openCmd: PropTypes.func.isRequired,
+    openBash: PropTypes.func.isRequired,
     removeToolchain: PropTypes.func.isRequired,
     cloneNcs: PropTypes.func.isRequired,
 };

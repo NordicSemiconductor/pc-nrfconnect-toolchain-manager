@@ -39,7 +39,9 @@ import { connect } from 'react-redux';
 import {
     cloneNcs,
     installLatestToolchain,
-    open,
+    openSes,
+    openCmd,
+    openBash,
     removeToolchain,
 } from '../managerActions';
 
@@ -53,7 +55,9 @@ export default connect(
     (dispatch, props) => ({
         ...props,
         install: version => dispatch(installLatestToolchain(version)),
-        open: version => dispatch(open(version)),
+        openSes: version => dispatch(openSes(version)),
+        openCmd: version => dispatch(openCmd(version)),
+        openBash: version => dispatch(openBash(version)),
         removeToolchain: version => dispatch(removeToolchain(version)),
         cloneNcs: version => dispatch(cloneNcs(version)),
     }),

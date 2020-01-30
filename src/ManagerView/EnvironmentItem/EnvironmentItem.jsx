@@ -64,6 +64,8 @@ const EnvironmentItem = ({
         isWestPresent,
     },
     open,
+    openCmd,
+    openBash,
     install,
     removeToolchain,
     cloneNcs,
@@ -116,19 +118,33 @@ const EnvironmentItem = ({
                             alignRight
                         >
                             {isInstalled && (
-                                <Dropdown.Item
-                                    title="Install again :)"
-                                    onClick={install}
-                                >
-                                    Update
-                                </Dropdown.Item>
+                                <>
+                                    <Dropdown.Item
+                                        title="Open CMD terminal"
+                                        onClick={openCmd}
+                                    >
+                                        Open CMD
+                                    </Dropdown.Item>
+                                    <Dropdown.Item
+                                        title="Open bash terminal"
+                                        onClick={openBash}
+                                    >
+                                        Open Bash
+                                    </Dropdown.Item>
+                                    <Dropdown.Item
+                                        title="Install again :)"
+                                        onClick={install}
+                                    >
+                                        Update
+                                    </Dropdown.Item>
+                                    <Dropdown.Item
+                                        title="Remove toolchain"
+                                        onClick={removeToolchain}
+                                    >
+                                        Remove toolchain
+                                    </Dropdown.Item>
+                                </>
                             )}
-                            <Dropdown.Item
-                                title="Remove toolchain"
-                                onClick={removeToolchain}
-                            >
-                                Remove toolchain
-                            </Dropdown.Item>
                             { isWestPresent || (
                                 <Dropdown.Item
                                     title="Create a desktop shortcut for this toolchain"
@@ -154,6 +170,8 @@ EnvironmentItem.propTypes = {
         isWestPresent: PropTypes.bool,
     }).isRequired,
     open: PropTypes.func.isRequired,
+    openCmd: PropTypes.func.isRequired,
+    openBash: PropTypes.func.isRequired,
     install: PropTypes.func.isRequired,
     removeToolchain: PropTypes.func.isRequired,
     cloneNcs: PropTypes.func.isRequired,
