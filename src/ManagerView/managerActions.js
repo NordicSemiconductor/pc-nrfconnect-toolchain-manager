@@ -36,12 +36,12 @@
 
 import { exec } from 'child_process';
 import fs from 'fs';
-import fse from 'fs-extra';
 import path from 'path';
 
 import axios from 'axios';
 import DecompressZip from 'decompress-zip';
 import { remote } from 'electron';
+import fse from 'fs-extra';
 import semver from 'semver';
 
 const { net } = remote;
@@ -273,14 +273,15 @@ export const initAction = () => (dispatch, getState) => {
 
 export const removeToolchain = version => async (dispatch, getState) => {
     const { environmentList } = getState().app.manager;
-    const { toolchainDir } = environmentList.find(v => v.version === version);
-    dispatch(toolchainUpdateAction({
-        ...toolchain,
+    const environment = environmentList.find(v => v.version === version);
+    const { toolchainDir } = environment;
+    dispatch(environmentUpdateAction({
+        ...environment,
         isRemoving: true,
     }));
     await fse.remove(toolchainDir);
-    dispatch(toolchainUpdateAction({
-        ...toolchain,
+    dispatch(environmentUpdateAction({
+        ...environment,
         toolchainDir: null,
         isRemoving: false,
     }));
