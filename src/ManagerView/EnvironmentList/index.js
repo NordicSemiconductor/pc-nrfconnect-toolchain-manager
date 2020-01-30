@@ -41,14 +41,14 @@ import {
     installLatestToolchain,
     open,
     removeToolchain,
-} from '../../actions/toolchainActions';
+} from '../managerActions';
 
 import EnvironmentList from './EnvironmentList';
 
 export default connect(
     (state, props) => ({
         ...props,
-        toolchainList: state.app.toolchain.versionList,
+        environmentList: state.app.manager.environmentList,
     }),
     (dispatch, props) => ({
         ...props,

@@ -34,28 +34,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { TOOLCHAIN_LIST_UPDATE, TOOLCHAIN_LATEST_UPDATE } from '../actions/toolchainActions';
+import { connect } from 'react-redux';
 
-const InitialState = {
-    versionList: [],
-    latest: null,
-};
+import EnvironmentItem from './EnvironmentItem';
 
-const reducer = (state = InitialState, action) => {
-    switch (action.type) {
-        case TOOLCHAIN_LIST_UPDATE:
-            return {
-                ...state,
-                versionList: action.toolchainList,
-            };
-        case TOOLCHAIN_LATEST_UPDATE:
-            return {
-                ...state,
-                latest: action.version,
-            };
-        default:
-            return state;
-    }
-};
-
-export default reducer;
+export default connect(
+)(EnvironmentItem);

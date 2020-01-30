@@ -35,8 +35,9 @@
  */
 
 import { connect } from 'react-redux';
+
+import { initAction } from './managerActions';
 import ManagerView from './ManagerView';
-import { initAction } from '../actions/toolchainActions';
 
 export default connect(
     (state, props) => ({

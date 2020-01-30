@@ -56,12 +56,12 @@ PrimaryButton.propTypes = {
 };
 
 const EnvironmentItem = ({
-    toolchain: {
+    environment: {
         toolchainDir,
         version,
         progress,
         isRemoving,
-        westPresent,
+        isWestPresent,
     },
     open,
     install,
@@ -102,10 +102,10 @@ const EnvironmentItem = ({
                         { !isInstalled && (
                             <PrimaryButton onClick={install} label="Install" />
                         )}
-                        { isInstalled && !westPresent && (
+                        { isInstalled && !isWestPresent && (
                             <PrimaryButton onClick={cloneNcs} label="Clone NCS" />
                         )}
-                        { isInstalled && westPresent && (
+                        { isInstalled && isWestPresent && (
                             <PrimaryButton onClick={open} label="Open" />
                         )}
                         <DropdownButton
@@ -129,7 +129,7 @@ const EnvironmentItem = ({
                             >
                                 Remove toolchain
                             </Dropdown.Item>
-                            { westPresent || (
+                            { isWestPresent || (
                                 <Dropdown.Item
                                     title="Create a desktop shortcut for this toolchain"
                                     onClick={cloneNcs}
@@ -146,12 +146,12 @@ const EnvironmentItem = ({
 };
 
 EnvironmentItem.propTypes = {
-    toolchain: PropTypes.shape({
+    environment: PropTypes.shape({
         toolchainDir: PropTypes.string,
         version: PropTypes.string.isRequired,
         progress: PropTypes.number,
         isRemoving: PropTypes.bool,
-        westPresent: PropTypes.bool,
+        isWestPresent: PropTypes.bool,
     }).isRequired,
     open: PropTypes.func.isRequired,
     install: PropTypes.func.isRequired,

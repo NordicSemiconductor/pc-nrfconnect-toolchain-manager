@@ -34,6 +34,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* eslint-disable react/prop-types */
+
 import './style.scss';
 
 import React from 'react';
@@ -47,7 +49,6 @@ export default {
         ...props,
         viewId: core.navMenu.selectedItemId < 0 ? 0 : core.navMenu.selectedItemId,
     }),
-    /* eslint-disable-next-line react/prop-types */
     decorateMainView: MainView => ({ viewId }) => (
         <MainView cssClass="main-view">
             {viewId === 0 && <ManagerView />}
@@ -57,7 +58,6 @@ export default {
     decorateSidePanel: () => () => null,
     decorateLogViewer: () => () => null,
     decorateSerialPortSelector: () => () => null,
-    /* eslint-disable-next-line react/prop-types */
     decorateNavMenu: NavMenu => ({ selectedItemId, ...rest }) => (
         <NavMenu
             {...rest}

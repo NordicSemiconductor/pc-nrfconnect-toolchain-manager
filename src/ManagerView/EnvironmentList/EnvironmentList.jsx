@@ -34,32 +34,32 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import './style.scss';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import EnvironmentItem from './EnvironmentItem';
-
-import './style.scss';
+import EnvironmentItem from '../EnvironmentItem';
 
 const EnvironmentList = ({
-    toolchainList,
+    environmentList,
     install,
     open,
     removeToolchain,
     cloneNcs,
-}) => toolchainList.map(toolchain => (
+}) => environmentList.map(environment => (
     <EnvironmentItem
-        key={toolchain.version}
-        toolchain={toolchain}
-        open={() => open(toolchain.version)}
-        install={() => install(toolchain.version)}
-        removeToolchain={() => removeToolchain(toolchain.version)}
-        cloneNcs={() => cloneNcs(toolchain.version)}
+        key={environment.version}
+        environment={environment}
+        open={() => open(environment.version)}
+        install={() => install(environment.version)}
+        removeToolchain={() => removeToolchain(environment.version)}
+        cloneNcs={() => cloneNcs(environment.version)}
     />
 ));
 
 EnvironmentList.propTypes = {
-    toolchainList: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+    environmentList: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     install: PropTypes.func.isRequired,
     open: PropTypes.func.isRequired,
     removeToolchain: PropTypes.func.isRequired,

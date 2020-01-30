@@ -35,11 +35,11 @@
  */
 
 import { combineReducers } from 'redux';
-import toolchain from './reducers/toolchainReducer';
+import manager from './ManagerView/managerReducer';
 import settings from './SettingsView/settingsReducer';
 
 const rootReducer = combineReducers({
-    toolchain,
+    manager,
     settings,
 });
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,18 +34,22 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { connect } from 'react-redux';
+import { ENVIRONMENT_LIST_UPDATE } from './managerActions';
 
-import { selectInstallDir } from './settingsActions';
-import SettingsView from './SettingsView';
+const InitialState = {
+    environmentList: [],
+};
 
-export default connect(
-    (state, props) => ({
-        ...props,
-        installDir: state.app.settings.installDir,
-    }),
-    (dispatch, props) => ({
-        ...props,
-        selectInstallDir: () => dispatch(selectInstallDir()),
-    }),
-)(SettingsView);
+const reducer = (state = InitialState, action) => {
+    switch (action.type) {
+        case ENVIRONMENT_LIST_UPDATE:
+            return {
+                ...state,
+                environmentList: action.environmentList,
+            };
+        default:
+            return state;
+    }
+};
+
+export default reducer;
