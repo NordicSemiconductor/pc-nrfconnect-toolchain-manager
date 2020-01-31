@@ -45,14 +45,20 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Row from 'react-bootstrap/Row';
 
-const PrimaryButton = ({ onClick, label }) => (
-    <Button className="toolchain-item-button" variant="primary" onClick={onClick}>
+const PrimaryButton = ({ onClick, label, disabled }) => (
+    <Button
+        className="toolchain-item-button"
+        variant="primary"
+        onClick={onClick}
+        disabled={disabled}
+    >
         {label}
     </Button>
 );
 PrimaryButton.propTypes = {
     onClick: PropTypes.func.isRequired,
     label: PropTypes.string.isRequired,
+    disabled: PropTypes.bool.isRequired,
 };
 
 const EnvironmentItem = ({
@@ -69,6 +75,7 @@ const EnvironmentItem = ({
     install,
     removeToolchain,
     cloneNcs,
+    isInProcess,
 }) => {
     const isInstalled = !!toolchainDir;
     const progressPct = isInstalled ? 100 : (progress || 0);
@@ -102,20 +109,32 @@ const EnvironmentItem = ({
                 <Col xs="auto ml-auto" className="d-flex align-items-center my-3 pl-3">
                     <ButtonToolbar className="wide-btns">
                         { !isInstalled && (
-                            <PrimaryButton onClick={install} label="Install" />
+                            <PrimaryButton
+                                onClick={install}
+                                label="Install"
+                                disabled={isInProcess}
+                            />
                         )}
                         { isInstalled && !isWestPresent && (
-                            <PrimaryButton onClick={cloneNcs} label="Clone NCS" />
+                            <PrimaryButton
+                                onClick={cloneNcs}
+                                label="Clone NCS"
+                                disabled={isInProcess}
+                            />
                         )}
                         { isInstalled && isWestPresent && (
-                            <PrimaryButton onClick={open} label="Open" />
+                            <PrimaryButton
+                                onClick={open}
+                                label="Open"
+                                disabled={isInProcess}
+                            />
                         )}
                         <DropdownButton
                             className="ml-2"
-                            // variant={installed ? 'outline-primary' : 'outline-secondary'}
                             variant="outline-primary"
                             title=""
                             alignRight
+                            disabled={isInProcess}
                         >
                             {isInstalled && (
                                 <>
@@ -175,6 +194,6 @@ EnvironmentItem.propTypes = {
     install: PropTypes.func.isRequired,
     removeToolchain: PropTypes.func.isRequired,
     cloneNcs: PropTypes.func.isRequired,
-
+    isInProcess: PropTypes.bool.isRequired,
 };
 export default EnvironmentItem;

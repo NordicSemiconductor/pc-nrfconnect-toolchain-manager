@@ -34,10 +34,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { ENVIRONMENT_LIST_UPDATE } from './managerActions';
+import { ENVIRONMENT_LIST_UPDATE, ENVIRONMENT_IN_PROCESS } from './managerActions';
 
 const InitialState = {
     environmentList: [],
+    isInProcess: false,
 };
 
 const reducer = (state = InitialState, action) => {
@@ -46,6 +47,11 @@ const reducer = (state = InitialState, action) => {
             return {
                 ...state,
                 environmentList: action.environmentList,
+            };
+        case ENVIRONMENT_IN_PROCESS:
+            return {
+                ...state,
+                isInProcess: action.isInProcess,
             };
         default:
             return state;
