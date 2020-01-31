@@ -63,7 +63,7 @@ export default {
             {...rest}
             selectedItemId={selectedItemId < 0 ? 0 : selectedItemId}
             menuItems={[
-                { id: 0, text: 'SDK Environments', iconClass: 'mdi mdi-folder' },
+                { id: 0, text: 'SDK environments', iconClass: 'mdi mdi-folder' },
                 { id: 1, text: 'Settings', iconClass: 'mdi mdi-settings' },
             ]}
         />
