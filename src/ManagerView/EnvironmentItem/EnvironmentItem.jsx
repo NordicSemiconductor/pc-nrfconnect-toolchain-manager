@@ -151,11 +151,12 @@ const EnvironmentItem = ({
                                     >
                                         Open bash
                                     </Dropdown.Item>
+                                    <Dropdown.Divider />
                                     <Dropdown.Item
                                         title="Install again :)"
                                         onClick={install}
                                     >
-                                        Update
+                                        Update toolchain
                                     </Dropdown.Item>
                                     <Dropdown.Item
                                         title="Remove toolchain"
@@ -170,14 +171,6 @@ const EnvironmentItem = ({
                                         Remove all
                                     </Dropdown.Item>
                                 </>
-                            )}
-                            { isWestPresent || (
-                                <Dropdown.Item
-                                    title="Create a desktop shortcut for this toolchain"
-                                    onClick={cloneNcs}
-                                >
-                                    Clone NCS
-                                </Dropdown.Item>
                             )}
                         </DropdownButton>
                     </ButtonToolbar>

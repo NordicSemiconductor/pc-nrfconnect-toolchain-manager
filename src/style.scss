@@ -42,9 +42,15 @@
     height: 100%;
 }
 
-.core-nav-bar h4 {
-    color: white;
-    margin-top: 20px;
+.core-nav-bar {
+    > .core-nav-section:nth-child(2) {
+        // this is the placeholder of the device-selector, not needed in this app
+        display: none;
+    }
+    h4 {
+        color: white;
+        margin-top: 20px;
+    }
 }
 
 .core-main-layout > div > .core-splitter {
