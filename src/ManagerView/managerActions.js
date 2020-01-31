@@ -325,7 +325,8 @@ export const removeToolchain = version => async (dispatch, getState) => {
 
 export const removeEnvironment = version => async (dispatch, getState) => {
     const { environmentList } = getState().app.manager;
-    environmentList.filter(v => v.version !== version);
+    console.log(environmentList);
+    // environmentList.filter(v => v.version !== version);
     console.log(environmentList);
     console.log(version);
     // const { toolchainDir } = environment;
