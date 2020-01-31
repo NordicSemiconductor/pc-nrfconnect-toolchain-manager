@@ -43,6 +43,7 @@ import {
     openFolder,
     openBash,
     removeToolchain,
+    removeEnvironment,
 } from '../managerActions';
 
 import EnvironmentList from './EnvironmentList';
@@ -60,6 +61,7 @@ export default connect(
         openFolder: version => dispatch(openFolder(version)),
         openBash: version => dispatch(openBash(version)),
         removeToolchain: version => dispatch(removeToolchain(version)),
+        removeEnvironment: version => dispatch(removeEnvironment(version)),
         cloneNcs: version => dispatch(cloneNcs(version)),
     }),
 )(EnvironmentList);

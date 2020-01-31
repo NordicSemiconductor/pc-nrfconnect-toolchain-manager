@@ -48,6 +48,7 @@ const EnvironmentList = ({
     openFolder,
     openBash,
     removeToolchain,
+    removeEnvironment,
     cloneNcs,
     isInProcess,
 }) => environmentList.map(environment => (
@@ -59,6 +60,7 @@ const EnvironmentList = ({
         openBash={() => openBash(environment.version)}
         install={() => install(environment.version)}
         removeToolchain={() => removeToolchain(environment.version)}
+        removeEnvironment={() => removeEnvironment(environment.version)}
         cloneNcs={() => cloneNcs(environment.version)}
         isInProcess={isInProcess}
     />
@@ -71,6 +73,7 @@ EnvironmentList.propTypes = {
     openFolder: PropTypes.func.isRequired,
     openBash: PropTypes.func.isRequired,
     removeToolchain: PropTypes.func.isRequired,
+    removeEnvironment: PropTypes.func.isRequired,
     cloneNcs: PropTypes.func.isRequired,
     isInProcess: PropTypes.bool.isRequired,
 };

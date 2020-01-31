@@ -74,6 +74,7 @@ const EnvironmentItem = ({
     openBash,
     install,
     removeToolchain,
+    removeEnvironment,
     cloneNcs,
     isInProcess,
 }) => {
@@ -162,6 +163,12 @@ const EnvironmentItem = ({
                                     >
                                         Remove toolchain
                                     </Dropdown.Item>
+                                    <Dropdown.Item
+                                        title="Remove all"
+                                        onClick={removeEnvironment}
+                                    >
+                                        Remove all
+                                    </Dropdown.Item>
                                 </>
                             )}
                             { isWestPresent || (
@@ -193,6 +200,7 @@ EnvironmentItem.propTypes = {
     openBash: PropTypes.func.isRequired,
     install: PropTypes.func.isRequired,
     removeToolchain: PropTypes.func.isRequired,
+    removeEnvironment: PropTypes.func.isRequired,
     cloneNcs: PropTypes.func.isRequired,
     isInProcess: PropTypes.bool.isRequired,
 };

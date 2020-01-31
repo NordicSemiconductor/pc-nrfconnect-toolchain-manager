@@ -323,6 +323,26 @@ export const removeToolchain = version => async (dispatch, getState) => {
     dispatch(environmentInProcessAction(false));
 };
 
+export const removeEnvironment = version => async (dispatch, getState) => {
+    const { environmentList } = getState().app.manager;
+    environmentList.filter(v => v.version !== version);
+    console.log(environmentList);
+    console.log(version);
+    // const { toolchainDir } = environment;
+    // dispatch(environmentInProcessAction(true));
+    // dispatch(environmentUpdateAction({
+    //     ...environment,
+    //     isRemoving: true,
+    // }));
+    // await fse.remove(path.dirname(toolchainDir));
+    // dispatch(environmentUpdateAction({
+    //     ...environment,
+    //     toolchainDir: null,
+    //     isRemoving: false,
+    // }));
+    // dispatch(environmentInProcessAction(false));
+};
+
 export const cloneNcs = version => (dispatch, getState) => {
     const { toolchainDir } = getEnvironment(version, getState);
     const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
