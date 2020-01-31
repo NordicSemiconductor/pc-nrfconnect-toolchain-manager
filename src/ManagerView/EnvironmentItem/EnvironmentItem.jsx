@@ -45,20 +45,13 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Row from 'react-bootstrap/Row';
 
-const PrimaryButton = ({ onClick, label, disabled }) => (
-    <Button
-        className="toolchain-item-button"
-        variant="primary"
-        onClick={onClick}
-        disabled={disabled}
-    >
+const PrimaryButton = ({ label, ...props }) => (
+    <Button className="toolchain-item-button" variant="primary" {...props}>
         {label}
     </Button>
 );
 PrimaryButton.propTypes = {
-    onClick: PropTypes.func.isRequired,
     label: PropTypes.string.isRequired,
-    disabled: PropTypes.bool.isRequired,
 };
 
 const EnvironmentItem = ({
@@ -134,7 +127,7 @@ const EnvironmentItem = ({
                             variant="outline-primary"
                             title=""
                             alignRight
-                            disabled={isInProcess}
+                            disabled={isInProcess || !isInstalled}
                         >
                             {isInstalled && (
                                 <>

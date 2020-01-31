@@ -49,9 +49,17 @@ const { net } = remote;
 export const ENVIRONMENT_LIST_UPDATE = 'ENVIRONMENT_LIST_UPDATE';
 export const ENVIRONMENT_IN_PROCESS = 'ENVIRONMENT_IN_PROCESS';
 
+const compareBy = prop => (a, b) => {
+    switch (true) {
+        case (a[prop] < b[prop]): return 1;
+        case (a[prop] > b[prop]): return -1;
+        default: return 0;
+    }
+};
+
 export const environmentListUpdateAction = environmentList => ({
     type: ENVIRONMENT_LIST_UPDATE,
-    environmentList,
+    environmentList: [...environmentList.sort(compareBy('version'))],
 });
 
 export const environmentInProcessAction = isInProcess => ({
@@ -74,7 +82,7 @@ export const environmentUpdateAction = environment => (dispatch, getState) => {
             ...environment,
         };
     }
-    dispatch(environmentListUpdateAction([...environmentList]));
+    dispatch(environmentListUpdateAction(environmentList));
 };
 
 const toolchainUpdateAction = (
@@ -106,15 +114,7 @@ const toolchainUpdateAction = (
         ...environmentList[envIndex],
         toolchainList,
     };
-    dispatch(environmentListUpdateAction([...environmentList]));
-};
-
-const compareBy = prop => (a, b) => {
-    switch (true) {
-        case (a[prop] < b[prop]): return -1;
-        case (a[prop] > b[prop]): return 1;
-        default: return 0;
-    }
+    dispatch(environmentListUpdateAction(environmentList));
 };
 
 const getEnvironment = (version, getState) => {
@@ -156,10 +156,11 @@ export const downloadIndex = () => async (dispatch, getState) => {
         net.request({ url: toolchainIndexUrl })
             .on('response', response => {
                 let result = '';
+                response.on('end', () => {
+                    resolve({ data: JSON.parse(result), status: response.statusCode });
+                });
                 response.on('data', buf => {
                     result += `${buf}`;
-                }).on('end', () => {
-                    resolve({ data: result, status: response.statusCode });
                 });
             }).end();
     });
@@ -280,7 +281,7 @@ export const install = (environmentVersion, toolchainVersion) => async (dispatch
 
 export const installLatestToolchain = version => (dispatch, getState) => {
     const toolchain = getEnvironment(version, getState)
-        .toolchainList.sort(compareBy('version')).reverse()[0];
+        .toolchainList.sort(compareBy('version'))[0];
     dispatch(install(version, toolchain.version));
 };
 
