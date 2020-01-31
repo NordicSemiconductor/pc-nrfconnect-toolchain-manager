@@ -43,6 +43,8 @@ import store from '../util/persistentStore';
 
 const InitialState = {
     installDir: store.get('installDir', resolve(homedir(), 'ncs')),
+    toolchainIndexUrl: store.get('toolchainIndexUrl',
+        'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json'),
 };
 
 const reducer = (state = InitialState, { type, installDir }) => {

@@ -37,8 +37,8 @@
 import { exec } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { createHash } from 'crypto';
 
-import axios from 'axios';
 import DecompressZip from 'decompress-zip';
 import { remote, shell } from 'electron';
 import fse from 'fs-extra';
@@ -150,12 +150,22 @@ export const checkLocalEnvironmnets = () => (dispatch, getState) => {
         });
 };
 
-export const downloadIndex = () => async dispatch => {
-    const indexUrl = 'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json';
-    const { status, data } = await axios.get(indexUrl);
+export const downloadIndex = () => async (dispatch, getState) => {
+    const { toolchainIndexUrl } = getState().app.settings;
+    const { status, data } = await new Promise(resolve => {
+        net.request({ url: toolchainIndexUrl })
+            .on('response', response => {
+                let result = '';
+                response.on('data', buf => {
+                    result += `${buf}`;
+                }).on('end', () => {
+                    resolve({ data: result, status: response.statusCode });
+                });
+            }).end();
+    });
 
     if (status !== 200) {
-        throw new Error(`Unable to download ${indexUrl}. Got status code ${status}`);
+        throw new Error(`Unable to download ${toolchainIndexUrl}. Got status code ${status}`);
     }
 
     data.sort((a, b) => -semver.compare(a.version, b.version));
@@ -175,23 +185,25 @@ export const downloadZip = (
     environmentVersion,
     toolchainVersion,
 ) => (dispatch, getState) => new Promise((resolve, reject) => {
-    const { environmentList } = getState().app.manager;
-    const { installDir } = getState().app.settings;
-    const environment = environmentList.find(v => v.version === environmentVersion);
-    const toolchain = environment.toolchainList.find(v => v.version === toolchainVersion);
-    const { name } = toolchain;
-    const url = `https://developer.nordicsemi.com/.pc-tools/toolchain/${name}`;
-    const request = net.request({ url });
-    fse.mkdirpSync(path.resolve(installDir, 'downloads'));
-    const downloadDir = 'downloads';
-    const zipLocation = path.resolve(installDir, downloadDir, name);
+    const { installDir, toolchainIndexUrl } = getState().app.settings;
+    const { toolchainList } = getEnvironment(environmentVersion, getState);
+    const { name, sha512 } = toolchainList.find(v => v.version === toolchainVersion);
+
+    const hash = createHash('sha512');
+
+    const downloadDir = path.resolve(installDir, 'downloads');
+    const zipLocation = path.resolve(downloadDir, name);
+    fse.mkdirpSync(downloadDir);
     const writeStream = fs.createWriteStream(zipLocation);
-    request.on('response', response => {
+
+    const url = `${path.dirname(toolchainIndexUrl)}/${name}`;
+
+    net.request({ url }).on('response', response => {
         const totalLength = response.headers['content-length'][0];
         let currentLength = 0;
         response.on('data', data => {
-            const { environmentList: updatedEnvList } = getState().app.manager;
-            const updatedEnvironment = updatedEnvList.find(v => v.version === environmentVersion);
+            hash.update(data);
+            const updatedEnvironment = getEnvironment(environmentVersion, getState);
             currentLength += data.length;
             writeStream.write(data);
             const progress = Math.round(currentLength / totalLength * 50);
@@ -203,13 +215,19 @@ export const downloadZip = (
                 }));
             }
         });
-        response.on('end', () => { writeStream.end(() => resolve(zipLocation)); });
+        response.on('end', () => {
+            writeStream.end(() => {
+                if (hash.digest('hex') !== sha512) {
+                    return reject(new Error(`Checksum verification failed ${url}`));
+                }
+                return resolve(zipLocation);
+            });
+        });
         response.on('error', error => reject(new Error(`Error when reading ${url}: `
             + `${error.message}`)));
-    });
-    request.on('error', error => reject(new Error(`unable to download ${url}: `
-    + `${error.message}`)));
-    request.end();
+    })
+        .on('error', error => reject(new Error(`Unable to download ${url}: ${error.message}`)))
+        .end();
 });
 
 export const unzip = (
