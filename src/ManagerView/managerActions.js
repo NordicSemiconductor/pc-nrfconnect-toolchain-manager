@@ -40,7 +40,7 @@ import path from 'path';
 
 import axios from 'axios';
 import DecompressZip from 'decompress-zip';
-import { remote } from 'electron';
+import { remote, shell } from 'electron';
 import fse from 'fs-extra';
 import semver from 'semver';
 
@@ -77,7 +77,7 @@ export const environmentUpdateAction = environment => (dispatch, getState) => {
     dispatch(environmentListUpdateAction([...environmentList]));
 };
 
-export const toolchainUpdateAction = (
+const toolchainUpdateAction = (
     environmentVersion,
     toolchain,
 ) => (dispatch, getState) => {
@@ -91,7 +91,7 @@ export const toolchainUpdateAction = (
         throw new Error(`No environment version found for ${environmentVersion}`);
     }
 
-    const toolchainList = environmentList[envIndex].toolchains || [];
+    const toolchainList = environmentList[envIndex].toolchainList || [];
     const toolchainIndex = toolchainList.findIndex(v => (v.version === toolchain.version));
     if (toolchainIndex < 0) {
         toolchainList.push(toolchain);
@@ -117,9 +117,16 @@ const compareBy = prop => (a, b) => {
     }
 };
 
+const getEnvironment = (version, getState) => {
+    const { environmentList } = getState().app.manager;
+    return environmentList.find(v => v.version === version);
+};
+
 export const checkLocalEnvironmnets = () => (dispatch, getState) => {
     const { installDir } = getState().app.settings;
-    const subDirs = fs.readdirSync(installDir).map(dir => path.resolve(installDir, dir));
+    const subDirs = fs.readdirSync(installDir, { withFileTypes: true })
+        .filter(dirEnt => dirEnt.isDirectory())
+        .map(({ name }) => path.resolve(installDir, name));
     subDirs.map(subDir => fs.readdirSync(path.resolve(installDir, subDir))
         .filter(d => !d.endsWith('.zip'))
         .map(dir => path.resolve(installDir, subDir, dir, 'ncsmgr/manifest.env'))
@@ -253,28 +260,24 @@ export const install = (environmentVersion, toolchainVersion) => async (dispatch
     dispatch(environmentInProcessAction(false));
 };
 
-export const installLatestToolchain = environmentVersion => (dispatch, getState) => {
-    const { environmentList } = getState().app.manager;
-    const environment = environmentList.find(v => v.version === environmentVersion);
-    const toolchain = environment.toolchainList.sort(compareBy('name')).reverse()[0];
-    dispatch(install(environmentVersion, toolchain.version));
+export const installLatestToolchain = version => (dispatch, getState) => {
+    const toolchain = getEnvironment(version, getState)
+        .toolchainList.sort(compareBy('version')).reverse()[0];
+    dispatch(install(version, toolchain.version));
 };
 
 export const openSes = version => (dispatch, getState) => {
-    const { environmentList } = getState().app.manager;
-    const { toolchainDir } = environmentList.find(v => v.version === version);
+    const { toolchainDir } = getEnvironment(version, getState);
     exec(`"${path.resolve(toolchainDir, 'SEGGER Embedded Studio.cmd')}"`);
 };
 
-export const openCmd = version => (dispatch, getState) => {
-    const { environmentList } = getState().app.manager;
-    const { toolchainDir } = environmentList.find(v => v.version === version);
-    exec(`"${path.resolve(toolchainDir, 'git-cmd.cmd')}"`);
+export const openFolder = version => (dispatch, getState) => {
+    const { toolchainDir } = getEnvironment(version, getState);
+    shell.openItem(path.dirname(toolchainDir));
 };
 
 export const openBash = version => (dispatch, getState) => {
-    const { environmentList } = getState().app.manager;
-    const { toolchainDir } = environmentList.find(v => v.version === version);
+    const { toolchainDir } = getEnvironment(version, getState);
     exec(`"${path.resolve(toolchainDir, 'git-bash.exe')}"`);
 };
 
@@ -286,8 +289,7 @@ export const initAction = () => (dispatch, getState) => {
 };
 
 export const removeToolchain = version => async (dispatch, getState) => {
-    const { environmentList } = getState().app.manager;
-    const environment = environmentList.find(v => v.version === version);
+    const environment = getEnvironment(version, getState);
     const { toolchainDir } = environment;
     dispatch(environmentInProcessAction(true));
     dispatch(environmentUpdateAction({
@@ -304,8 +306,7 @@ export const removeToolchain = version => async (dispatch, getState) => {
 };
 
 export const cloneNcs = version => (dispatch, getState) => {
-    const { environmentList } = getState().app.manager;
-    const { toolchainDir } = environmentList.find(v => v.version === version);
+    const { toolchainDir } = getEnvironment(version, getState);
     const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
     const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
     dispatch(environmentInProcessAction(true));

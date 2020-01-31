@@ -40,7 +40,7 @@ import {
     cloneNcs,
     installLatestToolchain,
     openSes,
-    openCmd,
+    openFolder,
     openBash,
     removeToolchain,
 } from '../managerActions';
@@ -57,7 +57,7 @@ export default connect(
         ...props,
         install: version => dispatch(installLatestToolchain(version)),
         openSes: version => dispatch(openSes(version)),
-        openCmd: version => dispatch(openCmd(version)),
+        openFolder: version => dispatch(openFolder(version)),
         openBash: version => dispatch(openBash(version)),
         removeToolchain: version => dispatch(removeToolchain(version)),
         cloneNcs: version => dispatch(cloneNcs(version)),

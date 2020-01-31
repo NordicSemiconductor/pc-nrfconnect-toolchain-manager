@@ -39,13 +39,16 @@ import { resolve } from 'path';
 
 import { UPDATE_INSTALL_DIR } from './settingsActions';
 
+import store from '../util/persistentStore';
+
 const InitialState = {
-    installDir: resolve(homedir(), 'ncs'),
+    installDir: store.get('installDir', resolve(homedir(), 'ncs')),
 };
 
 const reducer = (state = InitialState, { type, installDir }) => {
     switch (type) {
         case UPDATE_INSTALL_DIR:
+            store.set('installDir', installDir);
             return {
                 ...state,
                 installDir,

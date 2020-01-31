@@ -45,7 +45,7 @@ const EnvironmentList = ({
     environmentList,
     install,
     openSes,
-    openCmd,
+    openFolder,
     openBash,
     removeToolchain,
     cloneNcs,
@@ -55,7 +55,7 @@ const EnvironmentList = ({
         key={environment.version}
         environment={environment}
         open={() => openSes(environment.version)}
-        openCmd={() => openCmd(environment.version)}
+        openFolder={() => openFolder(environment.version)}
         openBash={() => openBash(environment.version)}
         install={() => install(environment.version)}
         removeToolchain={() => removeToolchain(environment.version)}
@@ -68,7 +68,7 @@ EnvironmentList.propTypes = {
     environmentList: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     install: PropTypes.func.isRequired,
     openSes: PropTypes.func.isRequired,
-    openCmd: PropTypes.func.isRequired,
+    openFolder: PropTypes.func.isRequired,
     openBash: PropTypes.func.isRequired,
     removeToolchain: PropTypes.func.isRequired,
     cloneNcs: PropTypes.func.isRequired,

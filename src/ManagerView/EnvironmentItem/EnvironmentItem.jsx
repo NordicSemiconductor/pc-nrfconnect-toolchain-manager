@@ -70,7 +70,7 @@ const EnvironmentItem = ({
         isWestPresent,
     },
     open,
-    openCmd,
+    openFolder,
     openBash,
     install,
     removeToolchain,
@@ -139,16 +139,16 @@ const EnvironmentItem = ({
                             {isInstalled && (
                                 <>
                                     <Dropdown.Item
-                                        title="Open CMD terminal"
-                                        onClick={openCmd}
+                                        title="Open folder"
+                                        onClick={openFolder}
                                     >
-                                        Open CMD
+                                        Open folder
                                     </Dropdown.Item>
                                     <Dropdown.Item
                                         title="Open bash terminal"
                                         onClick={openBash}
                                     >
-                                        Open Bash
+                                        Open bash
                                     </Dropdown.Item>
                                     <Dropdown.Item
                                         title="Install again :)"
@@ -189,7 +189,7 @@ EnvironmentItem.propTypes = {
         isWestPresent: PropTypes.bool,
     }).isRequired,
     open: PropTypes.func.isRequired,
-    openCmd: PropTypes.func.isRequired,
+    openFolder: PropTypes.func.isRequired,
     openBash: PropTypes.func.isRequired,
     install: PropTypes.func.isRequired,
     removeToolchain: PropTypes.func.isRequired,
