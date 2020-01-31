@@ -51,6 +51,7 @@ export default connect(
     (state, props) => ({
         ...props,
         environmentList: state.app.manager.environmentList,
+        isInProcess: state.app.manager.isInProcess,
     }),
     (dispatch, props) => ({
         ...props,

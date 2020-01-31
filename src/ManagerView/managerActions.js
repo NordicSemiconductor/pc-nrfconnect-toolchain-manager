@@ -47,12 +47,16 @@ import semver from 'semver';
 const { net } = remote;
 
 export const ENVIRONMENT_LIST_UPDATE = 'ENVIRONMENT_LIST_UPDATE';
-export const ENVIRONMENT_LATEST_UPDATE = 'ENVIRONMENT_LATEST_UPDATE';
-export const ENVIRONMENT_DIR_UPDATE = 'ENVIRONMENT_DIR_UPDATE';
+export const ENVIRONMENT_IN_PROCESS = 'ENVIRONMENT_IN_PROCESS';
 
 export const environmentListUpdateAction = environmentList => ({
     type: ENVIRONMENT_LIST_UPDATE,
     environmentList,
+});
+
+export const environmentInProcessAction = isInProcess => ({
+    type: ENVIRONMENT_IN_PROCESS,
+    isInProcess,
 });
 
 export const environmentUpdateAction = environment => (dispatch, getState) => {
@@ -241,9 +245,12 @@ export const install = (environmentVersion, toolchainVersion) => async (dispatch
     const { installDir } = getState().app.settings;
     const toolchainDir = 'toolchain';
     const unzipDest = path.resolve(installDir, environmentVersion, toolchainDir);
+
+    dispatch(environmentInProcessAction(true));
     fse.mkdirpSync(unzipDest);
     const zipLocation = await dispatch(downloadZip(environmentVersion, toolchainVersion));
     await dispatch(unzip(environmentVersion, zipLocation, unzipDest));
+    dispatch(environmentInProcessAction(false));
 };
 
 export const installLatestToolchain = environmentVersion => (dispatch, getState) => {
@@ -282,6 +289,7 @@ export const removeToolchain = version => async (dispatch, getState) => {
     const { environmentList } = getState().app.manager;
     const environment = environmentList.find(v => v.version === version);
     const { toolchainDir } = environment;
+    dispatch(environmentInProcessAction(true));
     dispatch(environmentUpdateAction({
         ...environment,
         isRemoving: true,
@@ -292,6 +300,7 @@ export const removeToolchain = version => async (dispatch, getState) => {
         toolchainDir: null,
         isRemoving: false,
     }));
+    dispatch(environmentInProcessAction(false));
 };
 
 export const cloneNcs = version => (dispatch, getState) => {
@@ -299,7 +308,9 @@ export const cloneNcs = version => (dispatch, getState) => {
     const { toolchainDir } = environmentList.find(v => v.version === version);
     const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
     const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
+    dispatch(environmentInProcessAction(true));
     exec(`"${gitBash}" -c "${initScript}"`, () => {
         dispatch(checkLocalEnvironmnets());
+        dispatch(environmentInProcessAction(false));
     });
 };
