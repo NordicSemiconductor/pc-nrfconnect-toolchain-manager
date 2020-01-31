@@ -307,7 +307,7 @@ export const initAction = () => (dispatch, getState) => {
     dispatch(downloadIndex());
 };
 
-export const removeToolchain = version => async (dispatch, getState) => {
+export const removeToolchain = (version, withParent = false) => async (dispatch, getState) => {
     const environment = getEnvironment(version, getState);
     const { toolchainDir } = environment;
     dispatch(environmentInProcessAction(true));
@@ -315,7 +315,12 @@ export const removeToolchain = version => async (dispatch, getState) => {
         ...environment,
         isRemoving: true,
     }));
-    await fse.remove(toolchainDir);
+
+    if (!withParent) {
+        await fse.remove(toolchainDir);
+    } else {
+        await fse.remove(path.dirname(toolchainDir));
+    }
     dispatch(environmentUpdateAction({
         ...environment,
         toolchainDir: null,
@@ -325,24 +330,7 @@ export const removeToolchain = version => async (dispatch, getState) => {
 };
 
 export const removeEnvironment = version => async (dispatch, getState) => {
-    const { environmentList } = getState().app.manager;
-    console.log(environmentList);
-    // environmentList.filter(v => v.version !== version);
-    console.log(environmentList);
-    console.log(version);
-    // const { toolchainDir } = environment;
-    // dispatch(environmentInProcessAction(true));
-    // dispatch(environmentUpdateAction({
-    //     ...environment,
-    //     isRemoving: true,
-    // }));
-    // await fse.remove(path.dirname(toolchainDir));
-    // dispatch(environmentUpdateAction({
-    //     ...environment,
-    //     toolchainDir: null,
-    //     isRemoving: false,
-    // }));
-    // dispatch(environmentInProcessAction(false));
+    await dispatch(removeToolchain(version, true))
 };
 
 export const cloneNcs = version => (dispatch, getState) => {
