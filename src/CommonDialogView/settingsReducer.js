@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,13 +34,30 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.settings-container {
-    height: 7em;
-    max-width: 800px;
-    margin: auto;
-    margin-top: 2em;
-}
+import { homedir } from 'os';
+import { resolve } from 'path';
 
-.settings-info {
-    height: 2em;
-}
+import { UPDATE_INSTALL_DIR } from './settingsActions';
+
+import store from '../util/persistentStore';
+
+const InitialState = {
+    installDir: store.get('installDir', resolve(homedir(), 'ncs')),
+    toolchainIndexUrl: store.get('toolchainIndexUrl',
+        'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json'),
+};
+
+const reducer = (state = InitialState, { type, installDir }) => {
+    switch (type) {
+        case UPDATE_INSTALL_DIR:
+            store.set('installDir', installDir);
+            return {
+                ...state,
+                installDir,
+            };
+        default:
+            return state;
+    }
+};
+
+export default reducer;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,13 +34,18 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.settings-container {
-    height: 7em;
-    max-width: 800px;
-    margin: auto;
-    margin-top: 2em;
-}
+import { connect } from 'react-redux';
 
-.settings-info {
-    height: 2em;
-}
+import { selectInstallDir } from './settingsActions';
+import SettingsView from './SettingsView';
+
+export default connect(
+    (state, props) => ({
+        ...props,
+        installDir: state.app.settings.installDir,
+    }),
+    (dispatch, props) => ({
+        ...props,
+        selectInstallDir: () => dispatch(selectInstallDir()),
+    }),
+)(SettingsView);

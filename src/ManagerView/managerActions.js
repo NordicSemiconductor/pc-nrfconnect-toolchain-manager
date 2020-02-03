@@ -123,6 +123,7 @@ const getEnvironment = (version, getState) => {
 };
 
 export const checkLocalEnvironmnets = () => (dispatch, getState) => {
+    dispatch(environmentListUpdateAction([]));
     const { installDir } = getState().app.settings;
     const subDirs = fs.readdirSync(installDir, { withFileTypes: true })
         .filter(dirEnt => dirEnt.isDirectory())

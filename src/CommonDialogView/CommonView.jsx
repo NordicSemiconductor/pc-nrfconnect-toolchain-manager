@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,13 +34,44 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.settings-container {
-    height: 7em;
-    max-width: 800px;
-    margin: auto;
-    margin-top: 2em;
-}
+import PropTypes from 'prop-types';
+import React from 'react';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
-.settings-info {
-    height: 2em;
-}
+const CommonDialogView = ({
+    title,
+    description,
+    isVisible,
+    onYes,
+    onNo,
+}) => (
+    <Modal show={isVisible} backdrop>
+        <Modal.Header closeButton={false}>
+            <Modal.Title>{title}</Modal.Title>
+        </Modal.Header>
+            <Modal.Body>{description}</Modal.Body>
+        <Modal.Footer>
+            <Button
+                onClick={onYes}
+            >
+                Yes
+            </Button>
+            <Button
+                onClick={onNo}
+            >
+                No
+            </Button>
+        </Modal.Footer>
+    </Modal>
+);
+
+CommonDialogView.propTypes = {
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    isVisible: PropTypes.bool.isRequired,
+    onYes: PropTypes.func.isRequired,
+    onNo: PropTypes.func.isRequired,
+};
+
+export default CommonDialogView;
