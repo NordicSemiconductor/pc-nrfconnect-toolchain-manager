@@ -41,7 +41,6 @@ import './style.scss';
 import React from 'react';
 
 import ManagerView from './ManagerView';
-import QuickStartView from './QuickStartView';
 import appReducer from './reducers';
 import SettingsView from './SettingsView';
 
@@ -52,9 +51,8 @@ export default {
     }),
     decorateMainView: MainView => ({ viewId }) => (
         <MainView cssClass="main-view">
-            {viewId === 0 && <QuickStartView />}
-            {viewId === 1 && <ManagerView />}
-            {viewId === 2 && <SettingsView />}
+            {viewId === 0 && <ManagerView />}
+            {viewId === 1 && <SettingsView />}
         </MainView>
     ),
     decorateSidePanel: () => () => null,
@@ -65,9 +63,8 @@ export default {
             {...rest}
             selectedItemId={selectedItemId < 0 ? 0 : selectedItemId}
             menuItems={[
-                { id: 0, text: 'Quick Start', iconClass: 'mdi mdi-star' },
-                { id: 1, text: 'SDK environments', iconClass: 'mdi mdi-folder' },
-                { id: 2, text: 'Settings', iconClass: 'mdi mdi-settings' },
+                { id: 0, text: 'SDK environments', iconClass: 'mdi mdi-folder' },
+                { id: 1, text: 'Settings', iconClass: 'mdi mdi-settings' },
             ]}
         />
     ),

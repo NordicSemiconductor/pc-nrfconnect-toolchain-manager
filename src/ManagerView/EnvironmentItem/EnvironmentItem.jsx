@@ -79,6 +79,8 @@ const EnvironmentItem = ({
     let progressLabel = progress ? `${progress}%` : '';
     progressLabel = isInstalled ? 'Installed' : progressLabel;
     progressLabel = isRemoving ? 'Removing' : progressLabel;
+    let progressClassName = isInstalled ? 'toolchain-installed' : 'toolchain-installing';
+    progressClassName = isRemoving ? 'toolchain-removing' : progressClassName;
     return (
         <ListGroup.Item className="toolchain-item-container">
             <Row noGutters className="py-1">
@@ -86,22 +88,36 @@ const EnvironmentItem = ({
                     {/* <AppIcon toolchain={toolchain} /> */}
                 </Col>
                 <Col>
-                    <div className="h4">
-                        nRF Connect SDK {version}
-                    </div>
-                    <div className="text-muted">
-                        {toolchainDir}
-                    </div>
-                    <ProgressBar className="toolchain-item-progress">
-                        <ProgressBar
-                            variant={isInstalled ? 'success' : 'warning'}
-                            now={progressPct}
-                            label={progressLabel}
-                        />
-                        {(progressPct === 0) && (
-                            <ProgressBar variant="info" now={100} label="available" />
-                        )}
-                    </ProgressBar>
+                    <Row className="toolchain-item-info">
+                        <Col className="h4">
+                            nRF Connect SDK {version}
+                        </Col>
+                    </Row>
+                    <Row className="toolchain-item-info">
+                        <Col className="text-muted">
+                            {toolchainDir}
+                        </Col>
+                    </Row>
+                    <Row className="toolchain-item-info">
+                        <Col className="toolchain-item-progress">
+                            <ProgressBar>
+                                <ProgressBar
+                                    now={progressPct}
+                                    label={progressLabel}
+                                    striped={!isInstalled || isRemoving}
+                                    animated={!isInstalled || isRemoving}
+                                    className={progressClassName}
+                                />
+                                {(progressPct === 0) && (
+                                    <ProgressBar
+                                        now={100}
+                                        label="Available"
+                                        className="toolchain-available"
+                                    />
+                                )}
+                            </ProgressBar>
+                        </Col>
+                    </Row>
                 </Col>
                 <Col xs="auto ml-auto" className="d-flex align-items-center my-3 pl-3">
                     <ButtonToolbar className="wide-btns">

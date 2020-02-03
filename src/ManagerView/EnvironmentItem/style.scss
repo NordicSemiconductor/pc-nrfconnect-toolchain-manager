@@ -35,15 +35,42 @@
  */
 
 .toolchain-item-container {
-    height: 12em;
+    height: 9em;
+    max-width: 800px;
+    margin: auto;
     margin-top: 2em;
 }
 
-.toolchain-item-button {
-    min-width: 10ch;
+.toolchain-item-info {
+    height: 2em;
 }
 
-.toolchain-item-progress {
-    width: 20em;
-    height: 2em;
+.toolchain-item-button {
+    min-width: 8em;
+}
+
+.toolchain-item-progress.col {
+    padding: 0px 14px;
+    .progress {
+        font-size: 0.8em;
+        width: 20em;
+        height: 2.4em;
+        border-radius: 0;
+    }
+}
+
+.toolchain-available {
+    background-color: #333F48 !important;
+}
+
+.toolchain-installed {
+    background-color: #4CAF50 !important;
+}
+
+.toolchain-installing {
+    background-color: #0080B7 !important;
+}
+
+.toolchain-removing {
+    background-color: #E91E63 !important;
 }

@@ -34,22 +34,25 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import './style.scss';
+
+import { func, string } from 'prop-types';
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
-import { string, func } from 'prop-types';
-
 const SettingsView = ({
     installDir,
     selectInstallDir,
 }) => (
     <>
-        <Card body>
-            <Row>
-                <Col><Card.Title>Installation directory</Card.Title></Col>
+        <Card body className="settings-container">
+            <Row className="settings-info">
+                <Col className="h4">
+                    Installation directory
+                </Col>
                 <Col xs="auto">
                     <Button
                         variant="outline-primary"
@@ -60,9 +63,11 @@ const SettingsView = ({
                 </Col>
             </Row>
 
-            <p className="small text-muted">
-                {installDir}
-            </p>
+            <Row className="settings-info">
+                <Col className="text-muted">
+                    {installDir}
+                </Col>
+            </Row>
         </Card>
     </>
 );

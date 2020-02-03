@@ -207,7 +207,7 @@ export const downloadZip = (
             const updatedEnvironment = getEnvironment(environmentVersion, getState);
             currentLength += data.length;
             writeStream.write(data);
-            const progress = Math.round(currentLength / totalLength * 50);
+            const progress = Math.round(currentLength / totalLength * 49);
 
             if (progress !== updatedEnvironment.progress) {
                 dispatch(environmentUpdateAction({
@@ -255,7 +255,7 @@ export const unzip = (
     unzipper.on('progress', (fileIndex, fileCount) => {
         const { environmentList } = getState().app.manager;
         const environment = environmentList.find(v => v.version === environmentVersion);
-        const progress = Math.round((fileIndex) / fileCount * 50) + 50;
+        const progress = Math.round((fileIndex) / fileCount * 50) + 49;
 
         if (progress !== environment.progress) {
             dispatch(environmentUpdateAction({
