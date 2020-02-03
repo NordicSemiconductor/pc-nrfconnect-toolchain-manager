@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,42 +34,24 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* eslint-disable react/prop-types */
+import { remote } from 'electron';
 
-import './style.scss';
+export const UPDATE_INSTALL_DIR = 'UPDATE_INSTALL_DIR';
 
-import React from 'react';
+function updateInstallDirAction(installDir) {
+    return {
+        type: UPDATE_INSTALL_DIR,
+        installDir,
+    };
+}
 
-import ManagerView from './ManagerView';
-import QuickStartView from './QuickStartView';
-import appReducer from './reducers';
-import SettingsView from './SettingsView';
-
-export default {
-    mapMainViewState: ({ core }, props) => ({
-        ...props,
-        viewId: core.navMenu.selectedItemId < 0 ? 0 : core.navMenu.selectedItemId,
-    }),
-    decorateMainView: MainView => ({ viewId }) => (
-        <MainView cssClass="main-view">
-            {viewId === 0 && <QuickStartView />}
-            {viewId === 1 && <ManagerView />}
-            {viewId === 2 && <SettingsView />}
-        </MainView>
-    ),
-    decorateSidePanel: () => () => null,
-    decorateLogViewer: () => () => null,
-    decorateSerialPortSelector: () => () => null,
-    decorateNavMenu: NavMenu => ({ selectedItemId, ...rest }) => (
-        <NavMenu
-            {...rest}
-            selectedItemId={selectedItemId < 0 ? 0 : selectedItemId}
-            menuItems={[
-                { id: 0, text: 'Quick Start', iconClass: 'mdi mdi-star' },
-                { id: 1, text: 'SDK environments', iconClass: 'mdi mdi-folder' },
-                { id: 2, text: 'Settings', iconClass: 'mdi mdi-settings' },
-            ]}
-        />
-    ),
-    reduceApp: appReducer,
+export const selectInstallDir = () => (dispatch, getState) => {
+    const selection = remote.dialog.showOpenDialog({
+        title: 'Select installation directory',
+        defaultPath: getState().app.installDir,
+        properties: ['openDirectory', 'createDirectory'],
+    });
+    if (selection) {
+        dispatch(updateInstallDirAction(selection[0]));
+    }
 };

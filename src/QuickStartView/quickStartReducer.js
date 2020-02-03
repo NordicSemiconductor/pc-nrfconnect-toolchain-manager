@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,42 +34,30 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* eslint-disable react/prop-types */
+import { homedir } from 'os';
+import { resolve } from 'path';
 
-import './style.scss';
+import { UPDATE_INSTALL_DIR } from './quickStartActions';
 
-import React from 'react';
+import store from '../util/persistentStore';
 
-import ManagerView from './ManagerView';
-import QuickStartView from './QuickStartView';
-import appReducer from './reducers';
-import SettingsView from './SettingsView';
-
-export default {
-    mapMainViewState: ({ core }, props) => ({
-        ...props,
-        viewId: core.navMenu.selectedItemId < 0 ? 0 : core.navMenu.selectedItemId,
-    }),
-    decorateMainView: MainView => ({ viewId }) => (
-        <MainView cssClass="main-view">
-            {viewId === 0 && <QuickStartView />}
-            {viewId === 1 && <ManagerView />}
-            {viewId === 2 && <SettingsView />}
-        </MainView>
-    ),
-    decorateSidePanel: () => () => null,
-    decorateLogViewer: () => () => null,
-    decorateSerialPortSelector: () => () => null,
-    decorateNavMenu: NavMenu => ({ selectedItemId, ...rest }) => (
-        <NavMenu
-            {...rest}
-            selectedItemId={selectedItemId < 0 ? 0 : selectedItemId}
-            menuItems={[
-                { id: 0, text: 'Quick Start', iconClass: 'mdi mdi-star' },
-                { id: 1, text: 'SDK environments', iconClass: 'mdi mdi-folder' },
-                { id: 2, text: 'Settings', iconClass: 'mdi mdi-settings' },
-            ]}
-        />
-    ),
-    reduceApp: appReducer,
+const InitialState = {
+    installDir: store.get('installDir', resolve(homedir(), 'ncs')),
+    toolchainIndexUrl: store.get('toolchainIndexUrl',
+        'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json'),
 };
+
+const reducer = (state = InitialState, { type, installDir }) => {
+    switch (type) {
+        case UPDATE_INSTALL_DIR:
+            store.set('installDir', installDir);
+            return {
+                ...state,
+                installDir,
+            };
+        default:
+            return state;
+    }
+};
+
+export default reducer;

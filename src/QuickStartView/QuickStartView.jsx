@@ -34,42 +34,42 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* eslint-disable react/prop-types */
-
-import './style.scss';
-
 import React from 'react';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
-import ManagerView from './ManagerView';
-import QuickStartView from './QuickStartView';
-import appReducer from './reducers';
-import SettingsView from './SettingsView';
+import { string, func } from 'prop-types';
 
-export default {
-    mapMainViewState: ({ core }, props) => ({
-        ...props,
-        viewId: core.navMenu.selectedItemId < 0 ? 0 : core.navMenu.selectedItemId,
-    }),
-    decorateMainView: MainView => ({ viewId }) => (
-        <MainView cssClass="main-view">
-            {viewId === 0 && <QuickStartView />}
-            {viewId === 1 && <ManagerView />}
-            {viewId === 2 && <SettingsView />}
-        </MainView>
-    ),
-    decorateSidePanel: () => () => null,
-    decorateLogViewer: () => () => null,
-    decorateSerialPortSelector: () => () => null,
-    decorateNavMenu: NavMenu => ({ selectedItemId, ...rest }) => (
-        <NavMenu
-            {...rest}
-            selectedItemId={selectedItemId < 0 ? 0 : selectedItemId}
-            menuItems={[
-                { id: 0, text: 'Quick Start', iconClass: 'mdi mdi-star' },
-                { id: 1, text: 'SDK environments', iconClass: 'mdi mdi-folder' },
-                { id: 2, text: 'Settings', iconClass: 'mdi mdi-settings' },
-            ]}
-        />
-    ),
-    reduceApp: appReducer,
+const QuickStartView = ({
+    installDir,
+    selectInstallDir,
+}) => (
+    <>
+        <Card body>
+            <Row>
+                <Col><Card.Title>Installation directory</Card.Title></Col>
+                <Col xs="auto">
+                    <Button
+                        variant="outline-primary"
+                        onClick={selectInstallDir}
+                    >
+                        Select directory
+                    </Button>
+                </Col>
+            </Row>
+
+            <p className="small text-muted">
+                {installDir}
+            </p>
+        </Card>
+    </>
+);
+
+QuickStartView.propTypes = {
+    installDir: string.isRequired,
+    selectInstallDir: func.isRequired,
 };
+
+export default QuickStartView;

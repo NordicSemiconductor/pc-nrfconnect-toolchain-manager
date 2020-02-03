@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,42 +34,18 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* eslint-disable react/prop-types */
+import { connect } from 'react-redux';
 
-import './style.scss';
+import { selectInstallDir } from './quickStartActions';
+import SettingsView from './QuickStartView';
 
-import React from 'react';
-
-import ManagerView from './ManagerView';
-import QuickStartView from './QuickStartView';
-import appReducer from './reducers';
-import SettingsView from './SettingsView';
-
-export default {
-    mapMainViewState: ({ core }, props) => ({
+export default connect(
+    (state, props) => ({
         ...props,
-        viewId: core.navMenu.selectedItemId < 0 ? 0 : core.navMenu.selectedItemId,
+        installDir: state.app.settings.installDir,
     }),
-    decorateMainView: MainView => ({ viewId }) => (
-        <MainView cssClass="main-view">
-            {viewId === 0 && <QuickStartView />}
-            {viewId === 1 && <ManagerView />}
-            {viewId === 2 && <SettingsView />}
-        </MainView>
-    ),
-    decorateSidePanel: () => () => null,
-    decorateLogViewer: () => () => null,
-    decorateSerialPortSelector: () => () => null,
-    decorateNavMenu: NavMenu => ({ selectedItemId, ...rest }) => (
-        <NavMenu
-            {...rest}
-            selectedItemId={selectedItemId < 0 ? 0 : selectedItemId}
-            menuItems={[
-                { id: 0, text: 'Quick Start', iconClass: 'mdi mdi-star' },
-                { id: 1, text: 'SDK environments', iconClass: 'mdi mdi-folder' },
-                { id: 2, text: 'Settings', iconClass: 'mdi mdi-settings' },
-            ]}
-        />
-    ),
-    reduceApp: appReducer,
-};
+    (dispatch, props) => ({
+        ...props,
+        selectInstallDir: () => dispatch(selectInstallDir()),
+    }),
+)(SettingsView);
