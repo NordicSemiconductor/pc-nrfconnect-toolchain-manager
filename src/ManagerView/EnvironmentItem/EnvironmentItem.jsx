@@ -34,6 +34,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import './style.scss';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 import Button from 'react-bootstrap/Button';
@@ -77,16 +79,16 @@ const EnvironmentItem = ({
     progressLabel = isInstalled ? 'Installed' : progressLabel;
     progressLabel = isRemoving ? 'Removing' : progressLabel;
     return (
-        <ListGroup.Item>
+        <ListGroup.Item className="toolchain-item-container">
             <Row noGutters className="py-1">
                 <Col xs="auto my-2 mr-3" className="d-flex align-items-start">
                     {/* <AppIcon toolchain={toolchain} /> */}
                 </Col>
                 <Col>
-                    <div className="h8">
+                    <div className="h4">
                         nRF Connect SDK {version}
                     </div>
-                    <div className="small text-muted">
+                    <div className="text-muted">
                         {toolchainDir}
                     </div>
                     <ProgressBar className="toolchain-item-progress">
