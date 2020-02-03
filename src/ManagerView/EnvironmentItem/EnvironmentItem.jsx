@@ -64,14 +64,15 @@ const EnvironmentItem = ({
         isRemoving,
         isWestPresent,
     },
-    open,
-    openFolder,
-    openBash,
-    install,
-    removeToolchain,
-    removeEnvironment,
     cloneNcs,
+    install,
     isInProcess,
+    open,
+    openBash,
+    openFolder,
+    openToolchainFolder,
+    removeEnvironment,
+    removeToolchain,
 }) => {
     const isInstalled = !!toolchainDir;
     const progressPct = isInstalled ? 100 : (progress || 0);
@@ -135,16 +136,23 @@ const EnvironmentItem = ({
                             {isInstalled && (
                                 <>
                                     <Dropdown.Item
-                                        title="Open folder"
-                                        onClick={openFolder}
-                                    >
-                                        Open folder
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
                                         title="Open bash terminal"
                                         onClick={openBash}
                                     >
                                         Open bash
+                                    </Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item
+                                        title="Open SDK folder"
+                                        onClick={openFolder}
+                                    >
+                                        Open SDK folder
+                                    </Dropdown.Item>
+                                    <Dropdown.Item
+                                        title="Open toolchain folder"
+                                        onClick={openToolchainFolder}
+                                    >
+                                        Open toolchain folder
                                     </Dropdown.Item>
                                     <Dropdown.Divider />
                                     <Dropdown.Item
@@ -183,13 +191,14 @@ EnvironmentItem.propTypes = {
         isRemoving: PropTypes.bool,
         isWestPresent: PropTypes.bool,
     }).isRequired,
-    open: PropTypes.func.isRequired,
-    openFolder: PropTypes.func.isRequired,
-    openBash: PropTypes.func.isRequired,
-    install: PropTypes.func.isRequired,
-    removeToolchain: PropTypes.func.isRequired,
-    removeEnvironment: PropTypes.func.isRequired,
     cloneNcs: PropTypes.func.isRequired,
+    install: PropTypes.func.isRequired,
     isInProcess: PropTypes.bool.isRequired,
+    open: PropTypes.func.isRequired,
+    openBash: PropTypes.func.isRequired,
+    openFolder: PropTypes.func.isRequired,
+    openToolchainFolder: PropTypes.func.isRequired,
+    removeEnvironment: PropTypes.func.isRequired,
+    removeToolchain: PropTypes.func.isRequired,
 };
 export default EnvironmentItem;

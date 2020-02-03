@@ -42,39 +42,42 @@ import EnvironmentItem from '../EnvironmentItem';
 
 const EnvironmentList = ({
     environmentList,
-    install,
-    openSes,
-    openFolder,
-    openBash,
-    removeToolchain,
-    removeEnvironment,
     cloneNcs,
+    install,
     isInProcess,
+    openBash,
+    openFolder,
+    openToolchainFolder,
+    openSes,
+    removeEnvironment,
+    removeToolchain,
 }) => environmentList.map(environment => (
     <EnvironmentItem
         key={environment.version}
         environment={environment}
-        open={() => openSes(environment.version)}
-        openFolder={() => openFolder(environment.version)}
-        openBash={() => openBash(environment.version)}
-        install={() => install(environment.version)}
-        removeToolchain={() => removeToolchain(environment.version)}
-        removeEnvironment={() => removeEnvironment(environment.version)}
         cloneNcs={() => cloneNcs(environment.version)}
+        install={() => install(environment.version)}
         isInProcess={isInProcess}
+        open={() => openSes(environment.version)}
+        openBash={() => openBash(environment.version)}
+        openFolder={() => openFolder(environment.version)}
+        openToolchainFolder={() => openToolchainFolder(environment.version)}
+        removeEnvironment={() => removeEnvironment(environment.version)}
+        removeToolchain={() => removeToolchain(environment.version)}
     />
 ));
 
 EnvironmentList.propTypes = {
     environmentList: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    install: PropTypes.func.isRequired,
-    openSes: PropTypes.func.isRequired,
-    openFolder: PropTypes.func.isRequired,
-    openBash: PropTypes.func.isRequired,
-    removeToolchain: PropTypes.func.isRequired,
-    removeEnvironment: PropTypes.func.isRequired,
     cloneNcs: PropTypes.func.isRequired,
+    install: PropTypes.func.isRequired,
     isInProcess: PropTypes.bool.isRequired,
+    openBash: PropTypes.func.isRequired,
+    openFolder: PropTypes.func.isRequired,
+    openToolchainFolder: PropTypes.func.isRequired,
+    openSes: PropTypes.func.isRequired,
+    removeEnvironment: PropTypes.func.isRequired,
+    removeToolchain: PropTypes.func.isRequired,
 };
 
 export default EnvironmentList;

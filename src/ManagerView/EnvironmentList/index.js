@@ -39,11 +39,12 @@ import { connect } from 'react-redux';
 import {
     cloneNcs,
     installLatestToolchain,
-    openSes,
-    openFolder,
     openBash,
-    removeToolchain,
+    openFolder,
+    openToolchainFolder,
+    openSes,
     removeEnvironment,
+    removeToolchain,
 } from '../managerActions';
 
 import EnvironmentList from './EnvironmentList';
@@ -56,12 +57,13 @@ export default connect(
     }),
     (dispatch, props) => ({
         ...props,
-        install: version => dispatch(installLatestToolchain(version)),
-        openSes: version => dispatch(openSes(version)),
-        openFolder: version => dispatch(openFolder(version)),
-        openBash: version => dispatch(openBash(version)),
-        removeToolchain: version => dispatch(removeToolchain(version)),
-        removeEnvironment: version => dispatch(removeEnvironment(version)),
         cloneNcs: version => dispatch(cloneNcs(version)),
+        install: version => dispatch(installLatestToolchain(version)),
+        openBash: version => dispatch(openBash(version)),
+        openFolder: version => dispatch(openFolder(version)),
+        openToolchainFolder: version => dispatch(openToolchainFolder(version)),
+        openSes: version => dispatch(openSes(version)),
+        removeEnvironment: version => dispatch(removeEnvironment(version)),
+        removeToolchain: version => dispatch(removeToolchain(version)),
     }),
 )(EnvironmentList);

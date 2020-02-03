@@ -295,6 +295,11 @@ export const openFolder = version => (dispatch, getState) => {
     shell.openItem(path.dirname(toolchainDir));
 };
 
+export const openToolchainFolder = version => (dispatch, getState) => {
+    const { toolchainDir } = getEnvironment(version, getState);
+    shell.openItem(toolchainDir);
+};
+
 export const openBash = version => (dispatch, getState) => {
     const { toolchainDir } = getEnvironment(version, getState);
     exec(`"${path.resolve(toolchainDir, 'git-bash.exe')}"`);
@@ -329,8 +334,8 @@ export const removeToolchain = (version, withParent = false) => async (dispatch,
     dispatch(environmentInProcessAction(false));
 };
 
-export const removeEnvironment = version => async (dispatch, getState) => {
-    await dispatch(removeToolchain(version, true))
+export const removeEnvironment = version => async dispatch => {
+    await dispatch(removeToolchain(version, true));
 };
 
 export const cloneNcs = version => (dispatch, getState) => {
