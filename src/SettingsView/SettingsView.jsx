@@ -86,10 +86,11 @@ const SettingsView = ({
         <CommonDialogView
             isVisible={isDialogShow}
             title="Change install directory"
-            description={DialogDescription}
             onYes={selectInstallDir}
             onNo={hideDialog}
-        />
+        >
+            {DialogDescription}
+        </CommonDialogView>
     </>
 );
 
