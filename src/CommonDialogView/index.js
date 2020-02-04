@@ -37,7 +37,7 @@
 import { connect } from 'react-redux';
 
 import { selectInstallDir } from './settingsActions';
-import SettingsView from './SettingsView';
+import SettingsView from '../SettingsView';
 
 export default connect(
     (state, props) => ({

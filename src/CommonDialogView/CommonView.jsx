@@ -50,7 +50,7 @@ const CommonDialogView = ({
         <Modal.Header closeButton={false}>
             <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
-            <Modal.Body>{description}</Modal.Body>
+        <Modal.Body>{description}</Modal.Body>
         <Modal.Footer>
             <Button
                 onClick={onYes}
