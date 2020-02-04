@@ -39,12 +39,7 @@ import { connect } from 'react-redux';
 import { initAction } from './managerActions';
 import ManagerView from './ManagerView';
 
-export default connect(
-    (state, props) => ({
-        ...props,
-    }),
-    (dispatch, props) => ({
-        ...props,
+export default connect(undefined,
+    dispatch => ({
         init: () => dispatch(initAction()),
-    }),
-)(ManagerView);
+    }))(ManagerView);

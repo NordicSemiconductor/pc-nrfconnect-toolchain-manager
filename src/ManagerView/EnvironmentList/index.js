@@ -50,13 +50,11 @@ import {
 import EnvironmentList from './EnvironmentList';
 
 export default connect(
-    (state, props) => ({
-        ...props,
+    state => ({
         environmentList: state.app.manager.environmentList,
         isInProcess: state.app.manager.isInProcess,
     }),
-    (dispatch, props) => ({
-        ...props,
+    dispatch => ({
         cloneNcs: version => dispatch(cloneNcs(version)),
         install: version => dispatch(installLatestToolchain(version)),
         openBash: version => dispatch(openBash(version)),

@@ -44,7 +44,7 @@ const AppMainView = ({ init }) => {
         init();
     }, []);
     if (process.platform !== 'win32') {
-        return (<>Sorry</>);
+        return 'This app is designed only for Windows.';
     }
     return (<EnvironmentList />);
 };

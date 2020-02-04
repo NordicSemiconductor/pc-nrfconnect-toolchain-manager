@@ -25,21 +25,17 @@
     "webpack": "nrfconnect-scripts build-dev",
     "build": "nrfconnect-scripts build-prod",
     "nordic-publish": "nrfconnect-scripts nordic-publish",
-    "lint": "nrfconnect-scripts lint lib index.jsx",
+    "lint": "nrfconnect-scripts lint src",
     "lint-init": "nrfconnect-scripts lint-init",
-    "lintfix": "nrfconnect-scripts lint --fix lib index.jsx",
-    "test": "nrfconnect-scripts test",
+    "lintfix": "nrfconnect-scripts lint --fix src",
+    "test": "nrfconnect-scripts test --passWithNoTests",
     "test-watch": "nrfconnect-scripts test --watch",
     "clean": "npm run clean-dist && npm run clean-modules",
     "clean-dist": "rimraf dist",
     "clean-modules": "rimraf \"node_modules/!(rimraf|.bin)\""
   },
   "devDependencies": {
-    "chart.js": "^2.8.0",
-    "nrf-dtm-js": "git+https://github.com/NordicPlayground/nrf-dtm-js",
-    "pc-nrfconnect-devdep": "git+https://github.com/NordicSemiconductor/pc-nrfconnect-devdep.git#semver:3.4.0",
-    "react-chartjs-2": "^2.7.6",
-    "react-rangeslider": "^2.2.0"
+    "pc-nrfconnect-shared": "git+https://github.com/NordicSemiconductor/pc-nrfconnect-shared.git#semver:4.3.0"
   },
   "dependencies": {
     "decompress-zip": "^0.2.2",
