@@ -40,13 +40,11 @@ import { selectInstallDir, settingsDialogShowAction } from './settingsActions';
 import SettingsView from './SettingsView';
 
 export default connect(
-    (state, props) => ({
-        ...props,
+    state => ({
         installDir: state.app.settings.installDir,
         isDialogShow: state.app.settings.isDialogShow,
     }),
-    (dispatch, props) => ({
-        ...props,
+    dispatch => ({
         showDialog: () => dispatch(settingsDialogShowAction(true)),
         hideDialog: () => dispatch(settingsDialogShowAction(false)),
         selectInstallDir: () => dispatch(selectInstallDir()),

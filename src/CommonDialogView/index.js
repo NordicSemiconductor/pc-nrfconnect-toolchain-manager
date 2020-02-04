@@ -37,12 +37,13 @@
 import { connect } from 'react-redux';
 
 import CommonDialogView from './CommonDialogView';
+import { selectInstallDir } from './settingsActions';
 
 export default connect(
-    (state, props) => ({
-        ...props,
+    state => ({
+        installDir: state.app.settings.installDir,
     }),
-    (dispatch, props) => ({
-        ...props,
+    dispatch => ({
+        selectInstallDir: () => dispatch(selectInstallDir()),
     }),
 )(CommonDialogView);
