@@ -36,16 +36,27 @@
 
 import './style.scss';
 
-import { func, string } from 'prop-types';
+import { func, string, bool } from 'prop-types';
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import CommonDialogView from '../CommonDialogView/CommonDialogView';
 
+const DialogDescription = (
+    <>
+        <p>You are changing installation directory.</p>
+        <p>SDK environments will not display from your current installation directory.</p>
+        <p>Are you sure you want to change?</p>
+    </>
+);
 const SettingsView = ({
     installDir,
     selectInstallDir,
+    showDialog,
+    hideDialog,
+    isDialogShow,
 }) => (
     <>
         <Card body className="settings-container">
@@ -56,7 +67,7 @@ const SettingsView = ({
                 <Col xs="auto">
                     <Button
                         variant="outline-primary"
-                        onClick={selectInstallDir}
+                        onClick={showDialog}
                     >
                         Select directory
                     </Button>
@@ -69,12 +80,22 @@ const SettingsView = ({
                 </Col>
             </Row>
         </Card>
+        <CommonDialogView
+            isVisible={isDialogShow}
+            title="Change install directory"
+            description={DialogDescription}
+            onYes={selectInstallDir}
+            onNo={hideDialog}
+        />
     </>
 );
 
 SettingsView.propTypes = {
     installDir: string.isRequired,
     selectInstallDir: func.isRequired,
+    showDialog: func.isRequired,
+    hideDialog: func.isRequired,
+    isDialogShow: bool.isRequired,
 };
 
 export default SettingsView;

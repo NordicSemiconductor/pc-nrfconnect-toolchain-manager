@@ -36,16 +36,19 @@
 
 import { connect } from 'react-redux';
 
-import { selectInstallDir } from './settingsActions';
+import { selectInstallDir, settingsDialogShowAction } from './settingsActions';
 import SettingsView from './SettingsView';
 
 export default connect(
     (state, props) => ({
         ...props,
         installDir: state.app.settings.installDir,
+        isDialogShow: state.app.settings.isDialogShow,
     }),
     (dispatch, props) => ({
         ...props,
+        showDialog: () => dispatch(settingsDialogShowAction(true)),
+        hideDialog: () => dispatch(settingsDialogShowAction(false)),
         selectInstallDir: () => dispatch(selectInstallDir()),
     }),
 )(SettingsView);

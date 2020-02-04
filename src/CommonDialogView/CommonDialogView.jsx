@@ -46,11 +46,11 @@ const CommonDialogView = ({
     onYes,
     onNo,
 }) => (
-    <Modal show={isVisible} backdrop>
+    <Modal show={isVisible} onHide={onNo} backdrop>
         <Modal.Header closeButton={false}>
             <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
-            <Modal.Body>{description}</Modal.Body>
+        <Modal.Body>{description}</Modal.Body>
         <Modal.Footer>
             <Button
                 onClick={onYes}
@@ -68,7 +68,10 @@ const CommonDialogView = ({
 
 CommonDialogView.propTypes = {
     title: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
+    description: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({}),
+    ]).isRequired,
     isVisible: PropTypes.bool.isRequired,
     onYes: PropTypes.func.isRequired,
     onNo: PropTypes.func.isRequired,
