@@ -40,12 +40,10 @@ import { selectInstallDir } from './settingsActions';
 import SettingsView from '../SettingsView';
 
 export default connect(
-    (state, props) => ({
-        ...props,
+    state => ({
         installDir: state.app.settings.installDir,
     }),
-    (dispatch, props) => ({
-        ...props,
+    dispatch => ({
         selectInstallDir: () => dispatch(selectInstallDir()),
     }),
 )(SettingsView);
