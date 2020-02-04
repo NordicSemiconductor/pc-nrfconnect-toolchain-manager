@@ -40,9 +40,9 @@ import './style.scss';
 
 import React from 'react';
 
-import ManagerView from './ManagerView';
 import appReducer from './reducers';
-import SettingsView from './SettingsView';
+import ManagerView from './ManagerView/ManagerView';
+import SettingsView from './SettingsView/SettingsView';
 
 export default {
     mapMainViewState: ({ core }, props) => ({

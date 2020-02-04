@@ -35,49 +35,39 @@
  */
 
 
-import PropTypes from 'prop-types';
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import EnvironmentItem from '../EnvironmentItem';
-
-const EnvironmentList = ({
-    environmentList,
+import {
     cloneNcs,
-    install,
-    isInProcess,
+    installLatestToolchain,
     openBash,
     openFolder,
     openToolchainFolder,
     openSes,
     removeEnvironment,
     removeToolchain,
-}) => environmentList.map(environment => (
-    <EnvironmentItem
-        key={environment.version}
-        environment={environment}
-        cloneNcs={() => cloneNcs(environment.version)}
-        install={() => install(environment.version)}
-        isInProcess={isInProcess}
-        open={() => openSes(environment.version)}
-        openBash={() => openBash(environment.version)}
-        openFolder={() => openFolder(environment.version)}
-        openToolchainFolder={() => openToolchainFolder(environment.version)}
-        removeEnvironment={() => removeEnvironment(environment.version)}
-        removeToolchain={() => removeToolchain(environment.version)}
-    />
-));
+} from '../managerActions';
+import EnvironmentItem from '../EnvironmentItem/EnvironmentItem';
 
-EnvironmentList.propTypes = {
-    environmentList: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-    cloneNcs: PropTypes.func.isRequired,
-    install: PropTypes.func.isRequired,
-    isInProcess: PropTypes.bool.isRequired,
-    openBash: PropTypes.func.isRequired,
-    openFolder: PropTypes.func.isRequired,
-    openToolchainFolder: PropTypes.func.isRequired,
-    openSes: PropTypes.func.isRequired,
-    removeEnvironment: PropTypes.func.isRequired,
-    removeToolchain: PropTypes.func.isRequired,
+export default () => {
+    const dispatch = useDispatch();
+    const environmentList = useSelector(state => state.app.manager.environmentList);
+    const isInProcess = useSelector(state => state.app.manager.isInProcess);
+
+    return environmentList.map(environment => (
+        <EnvironmentItem
+            key={environment.version}
+            environment={environment}
+            isInProcess={isInProcess}
+            cloneNcs={() => dispatch(cloneNcs(environment.version))}
+            install={() => dispatch(installLatestToolchain(environment.version))}
+            open={() => dispatch(openSes(environment.version))}
+            openBash={() => dispatch(openBash(environment.version))}
+            openFolder={() => dispatch(openFolder(environment.version))}
+            openToolchainFolder={() => dispatch(openToolchainFolder(environment.version))}
+            removeEnvironment={() => dispatch(removeEnvironment(environment.version))}
+            removeToolchain={() => dispatch(removeToolchain(environment.version))}
+        />
+    ));
 };
-
-export default EnvironmentList;
