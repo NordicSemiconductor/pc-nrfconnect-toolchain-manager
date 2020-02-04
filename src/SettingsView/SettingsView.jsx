@@ -46,8 +46,11 @@ import CommonDialogView from '../CommonDialogView/CommonDialogView';
 
 const DialogDescription = (
     <>
-        <p>You are changing installation directory.</p>
-        <p>SDK environments will not display from your current installation directory.</p>
+        <p>
+            When you change the installation directory, SDK environments installed in the old
+            directory will not be shown in the list anymore. They will not deleted, so changing
+            back to the old directory will show them again.
+        </p>
         <p>Are you sure you want to change?</p>
     </>
 );
