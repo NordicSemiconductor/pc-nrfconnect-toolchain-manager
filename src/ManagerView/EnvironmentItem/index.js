@@ -34,9 +34,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { connect } from 'react-redux';
-
 import EnvironmentItem from './EnvironmentItem';
 
-export default connect(
-)(EnvironmentItem);
+export default EnvironmentItem;
