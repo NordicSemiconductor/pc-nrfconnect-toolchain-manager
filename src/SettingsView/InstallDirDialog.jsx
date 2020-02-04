@@ -34,50 +34,28 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
-
-import { func, string } from 'prop-types';
 import React from 'react';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import InstallDirDialog from './InstallDirDialog';
+import { useDispatch, useSelector } from 'react-redux';
+import CommonDialogView from '../CommonDialogView/CommonDialogView';
+import { selectInstallDir, settingsDialogShowAction } from './settingsActions';
 
-const SettingsView = ({
-    installDir,
-    showDialog,
-}) => (
-    <>
-        <Card body className="settings-container">
-            <Row className="settings-info">
-                <Col className="h4">
-                    Installation directory
-                </Col>
-                <Col xs="auto">
-                    <Button
-                        variant="outline-primary"
-                        onClick={showDialog}
-                    >
-                        Select directory
-                    </Button>
-                </Col>
-            </Row>
+export default () => {
+    const dispatch = useDispatch();
+    const isVisible = useSelector(state => state.app.settings.isDialogShow);
 
-            <Row className="settings-info">
-                <Col className="text-muted">
-                    {installDir}
-                </Col>
-            </Row>
-        </Card>
-
-        <InstallDirDialog />
-    </>
-);
-
-SettingsView.propTypes = {
-    installDir: string.isRequired,
-    showDialog: func.isRequired,
+    return (
+        <CommonDialogView
+            isVisible={isVisible}
+            title="Change install directory"
+            onYes={() => dispatch(selectInstallDir())}
+            onNo={() => dispatch(settingsDialogShowAction(false))}
+        >
+            <p>
+                When you change the installation directory, SDK environments installed in the old
+                directory will not be shown in the list anymore. They will not deleted, so changing
+                back to the old directory will show them again.
+            </p>
+            <p>Are you sure you want to change?</p>
+        </CommonDialogView>
+    );
 };
-
-export default SettingsView;
