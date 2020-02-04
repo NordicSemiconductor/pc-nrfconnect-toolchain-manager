@@ -46,7 +46,7 @@ import InstallDirDialog from './InstallDirDialog';
 
 const SettingsView = ({
     installDir,
-    showDialog,
+    showInstallDirDialog,
 }) => (
     <>
         <Card body className="settings-container">
@@ -57,7 +57,7 @@ const SettingsView = ({
                 <Col xs="auto">
                     <Button
                         variant="outline-primary"
-                        onClick={showDialog}
+                        onClick={showInstallDirDialog}
                     >
                         Select directory
                     </Button>
@@ -77,7 +77,7 @@ const SettingsView = ({
 
 SettingsView.propTypes = {
     installDir: string.isRequired,
-    showDialog: func.isRequired,
+    showInstallDirDialog: func.isRequired,
 };
 
 export default SettingsView;

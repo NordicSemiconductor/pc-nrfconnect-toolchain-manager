@@ -37,12 +37,12 @@
 import { homedir } from 'os';
 import { resolve } from 'path';
 
-import { UPDATE_INSTALL_DIR, SETTINGS_DIALOG_SHOW } from './settingsActions';
+import { UPDATE_INSTALL_DIR, SHOW_INSTALL_DIR_DIALOG, HIDE_INSTALL_DIR_DIALOG } from './settingsActions';
 
 import store from '../util/persistentStore';
 
 const InitialState = {
-    isDialogShow: false,
+    isInstallDirDialogVisible: false,
     installDir: store.get('installDir', resolve(homedir(), 'ncs')),
     toolchainIndexUrl: store.get('toolchainIndexUrl',
         'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json'),
@@ -56,11 +56,8 @@ const reducer = (state = InitialState, action) => {
                 ...state,
                 installDir: action.installDir,
             };
-        case SETTINGS_DIALOG_SHOW:
-            return {
-                ...state,
-                isDialogShow: action.isDialogShow,
-            };
+        case SHOW_INSTALL_DIR_DIALOG: return { ...state, isInstallDirDialogVisible: true };
+        case HIDE_INSTALL_DIR_DIALOG: return { ...state, isInstallDirDialogVisible: false };
         default:
             return state;
     }

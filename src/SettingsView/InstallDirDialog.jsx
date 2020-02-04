@@ -37,18 +37,18 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CommonDialogView from '../CommonDialogView/CommonDialogView';
-import { selectInstallDir, settingsDialogShowAction } from './settingsActions';
+import { selectInstallDir, hideInstallDirDialog } from './settingsActions';
 
 export default () => {
     const dispatch = useDispatch();
-    const isVisible = useSelector(state => state.app.settings.isDialogShow);
+    const isVisible = useSelector(state => state.app.settings.isInstallDirDialogVisible);
 
     return (
         <CommonDialogView
             isVisible={isVisible}
             title="Change install directory"
             onYes={() => dispatch(selectInstallDir())}
-            onNo={() => dispatch(settingsDialogShowAction(false))}
+            onNo={() => dispatch(hideInstallDirDialog())}
         >
             <p>
                 When you change the installation directory, SDK environments installed in the old
