@@ -1,6 +1,6 @@
 {
   "name": "pc-nrfconnect-toolchain-manager",
-  "version": "0.1.0",
+  "version": "0.1.0-experimental.1",
   "description": "nRF Connect SDK Toolchain Manager",
   "displayName": "nRF Connect SDK Toolchain Manager",
   "repository": {
