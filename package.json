@@ -45,7 +45,8 @@
   },
   "bundledDependencies": [
     "decompress-zip",
-    "electron-store"
+    "electron-store",
+    "fs-extra"
   ],
   "jest": {
     "moduleNameMapper": {
