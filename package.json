@@ -44,6 +44,7 @@
     "semver": "^7.1.1"
   },
   "bundledDependencies": [
+    "decompress-zip",
     "electron-store"
   ],
   "jest": {
