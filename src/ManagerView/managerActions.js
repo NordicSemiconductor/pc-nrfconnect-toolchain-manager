@@ -250,7 +250,6 @@ export const unzip = (
             toolchainDir: dest,
             progress: undefined,
         }));
-        dispatch(checkLocalEnvironments());
         resolve();
     });
     unzipper.on('progress', (fileIndex, fileCount) => {
@@ -268,6 +267,17 @@ export const unzip = (
     unzipper.extract({ path: dest });
 });
 
+export const updateAction = () => dispatch => {
+    dispatch(checkLocalEnvironments());
+    dispatch(downloadIndex());
+};
+
+export const initAction = () => (dispatch, getState) => {
+    const { installDir } = getState().app.settings;
+    fse.mkdirpSync(installDir);
+    dispatch(updateAction());
+};
+
 export const install = (environmentVersion, toolchainVersion) => async (dispatch, getState) => {
     const { installDir } = getState().app.settings;
     const toolchainDir = 'toolchain';
@@ -277,6 +287,7 @@ export const install = (environmentVersion, toolchainVersion) => async (dispatch
     fse.mkdirpSync(unzipDest);
     const zipLocation = await dispatch(downloadZip(environmentVersion, toolchainVersion));
     await dispatch(unzip(environmentVersion, zipLocation, unzipDest));
+    dispatch(updateAction());
     dispatch(environmentInProcessAction(false));
 };
 
@@ -304,13 +315,6 @@ export const openToolchainFolder = version => (dispatch, getState) => {
 export const openBash = version => (dispatch, getState) => {
     const { toolchainDir } = getEnvironment(version, getState);
     exec(`"${path.resolve(toolchainDir, 'git-bash.exe')}"`);
-};
-
-export const initAction = () => (dispatch, getState) => {
-    const { installDir } = getState().app.settings;
-    fse.mkdirpSync(installDir);
-    dispatch(checkLocalEnvironments());
-    dispatch(downloadIndex());
 };
 
 export const removeToolchain = (version, withParent = false) => async (dispatch, getState) => {
@@ -345,7 +349,7 @@ export const cloneNcs = version => (dispatch, getState) => {
     const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
     dispatch(environmentInProcessAction(true));
     exec(`"${gitBash}" -c "${initScript}"`, () => {
-        dispatch(checkLocalEnvironments());
+        dispatch(updateAction());
         dispatch(environmentInProcessAction(false));
     });
 };
