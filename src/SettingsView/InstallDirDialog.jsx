@@ -34,6 +34,28 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import EnvironmentItem from './EnvironmentItem';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import CommonDialogView from '../CommonDialogView/CommonDialogView';
+import { selectInstallDir, hideInstallDirDialog } from './settingsActions';
 
-export default EnvironmentItem;
+export default () => {
+    const dispatch = useDispatch();
+    const isVisible = useSelector(state => state.app.settings.isInstallDirDialogVisible);
+
+    return (
+        <CommonDialogView
+            isVisible={isVisible}
+            title="Change install directory"
+            onYes={() => dispatch(selectInstallDir())}
+            onNo={() => dispatch(hideInstallDirDialog())}
+        >
+            <p>
+                When you change the installation directory, SDK environments installed in the old
+                directory will not be shown in the list anymore. They will not deleted, so changing
+                back to the old directory will show them again.
+            </p>
+            <p>Are you sure you want to change?</p>
+        </CommonDialogView>
+    );
+};

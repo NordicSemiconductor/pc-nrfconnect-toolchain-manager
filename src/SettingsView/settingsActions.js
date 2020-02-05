@@ -35,16 +35,19 @@
  */
 
 import { remote } from 'electron';
-import { checkLocalEnvironmnets } from '../ManagerView/managerActions';
+import { checkLocalEnvironments } from '../ManagerView/managerActions';
 
 export const UPDATE_INSTALL_DIR = 'UPDATE_INSTALL_DIR';
+export const SHOW_INSTALL_DIR_DIALOG = 'SHOW_INSTALL_DIR_DIALOG';
+export const HIDE_INSTALL_DIR_DIALOG = 'HIDE_INSTALL_DIR_DIALOG';
 
-function updateInstallDirAction(installDir) {
-    return {
-        type: UPDATE_INSTALL_DIR,
-        installDir,
-    };
-}
+const updateInstallDirAction = installDir => ({
+    type: UPDATE_INSTALL_DIR,
+    installDir,
+});
+
+export const showInstallDirDialog = () => ({ type: 'SHOW_INSTALL_DIR_DIALOG' });
+export const hideInstallDirDialog = () => ({ type: 'HIDE_INSTALL_DIR_DIALOG' });
 
 export const selectInstallDir = () => (dispatch, getState) => {
     const selection = remote.dialog.showOpenDialog({
@@ -54,6 +57,7 @@ export const selectInstallDir = () => (dispatch, getState) => {
     });
     if (selection) {
         dispatch(updateInstallDirAction(selection[0]));
-        dispatch(checkLocalEnvironmnets());
+        dispatch(checkLocalEnvironments());
+        dispatch(hideInstallDirDialog());
     }
 };

@@ -36,45 +36,44 @@
 
 import './style.scss';
 
-import { func, string } from 'prop-types';
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import InstallDirDialog from './InstallDirDialog';
+import { showInstallDirDialog } from './settingsActions';
 
-const SettingsView = ({
-    installDir,
-    selectInstallDir,
-}) => (
-    <>
-        <Card body className="settings-container">
-            <Row className="settings-info">
-                <Col className="h4">
-                    Installation directory
-                </Col>
-                <Col xs="auto">
-                    <Button
-                        variant="outline-primary"
-                        onClick={selectInstallDir}
-                    >
-                        Select directory
-                    </Button>
-                </Col>
-            </Row>
+export default () => {
+    const dispatch = useDispatch();
+    const installDir = useSelector(state => state.app.settings.installDir);
 
-            <Row className="settings-info">
-                <Col className="text-muted">
-                    {installDir}
-                </Col>
-            </Row>
-        </Card>
-    </>
-);
+    return (
+        <>
+            <Card body className="settings-container">
+                <Row className="settings-info">
+                    <Col className="h4">
+                        Installation directory
+                    </Col>
+                    <Col xs="auto">
+                        <Button
+                            variant="outline-primary"
+                            onClick={() => dispatch(showInstallDirDialog())}
+                        >
+                            Select directory
+                        </Button>
+                    </Col>
+                </Row>
 
-SettingsView.propTypes = {
-    installDir: string.isRequired,
-    selectInstallDir: func.isRequired,
+                <Row className="settings-info">
+                    <Col className="text-muted">
+                        {installDir}
+                    </Col>
+                </Row>
+            </Card>
+
+            <InstallDirDialog />
+        </>
+    );
 };
-
-export default SettingsView;

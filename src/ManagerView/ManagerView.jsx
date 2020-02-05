@@ -35,22 +35,17 @@
  */
 
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 
-import EnvironmentList from './EnvironmentList';
+import EnvironmentList from './EnvironmentList/EnvironmentList';
+import { initAction } from './managerActions';
 
-const AppMainView = ({ init }) => {
-    useEffect(() => {
-        init();
-    }, []);
+export default () => {
+    const dispatch = useDispatch();
+    useEffect(() => dispatch(initAction()), []);
+
     if (process.platform !== 'win32') {
         return 'This app is designed only for Windows.';
     }
     return (<EnvironmentList />);
 };
-
-AppMainView.propTypes = {
-    init: PropTypes.func.isRequired,
-};
-
-export default AppMainView;

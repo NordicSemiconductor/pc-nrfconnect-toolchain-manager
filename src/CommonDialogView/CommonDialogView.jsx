@@ -34,12 +34,44 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import React from 'react';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
-import { initAction } from './managerActions';
-import ManagerView from './ManagerView';
+const CommonDialogView = ({
+    title,
+    children,
+    isVisible,
+    onYes,
+    onNo,
+}) => (
+    <Modal show={isVisible} onHide={onNo} backdrop>
+        <Modal.Header closeButton={false}>
+            <Modal.Title>{title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{children}</Modal.Body>
+        <Modal.Footer>
+            <Button
+                onClick={onYes}
+            >
+                Yes
+            </Button>
+            <Button
+                onClick={onNo}
+            >
+                No
+            </Button>
+        </Modal.Footer>
+    </Modal>
+);
 
-export default connect(undefined,
-    dispatch => ({
-        init: () => dispatch(initAction()),
-    }))(ManagerView);
+CommonDialogView.propTypes = {
+    title: PropTypes.string.isRequired,
+    children: PropTypes.node.isRequired,
+    isVisible: PropTypes.bool.isRequired,
+    onYes: PropTypes.func.isRequired,
+    onNo: PropTypes.func.isRequired,
+};
+
+export default CommonDialogView;

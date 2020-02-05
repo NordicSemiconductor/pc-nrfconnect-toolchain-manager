@@ -122,7 +122,7 @@ const getEnvironment = (version, getState) => {
     return environmentList.find(v => v.version === version);
 };
 
-export const checkLocalEnvironmnets = () => (dispatch, getState) => {
+export const checkLocalEnvironments = () => (dispatch, getState) => {
     dispatch(environmentListUpdateAction([]));
     const { installDir } = getState().app.settings;
     const subDirs = fs.readdirSync(installDir, { withFileTypes: true })
@@ -250,7 +250,7 @@ export const unzip = (
             toolchainDir: dest,
             progress: undefined,
         }));
-        dispatch(checkLocalEnvironmnets());
+        dispatch(checkLocalEnvironments());
         resolve();
     });
     unzipper.on('progress', (fileIndex, fileCount) => {
@@ -309,7 +309,7 @@ export const openBash = version => (dispatch, getState) => {
 export const initAction = () => (dispatch, getState) => {
     const { installDir } = getState().app.settings;
     fse.mkdirpSync(installDir);
-    dispatch(checkLocalEnvironmnets());
+    dispatch(checkLocalEnvironments());
     dispatch(downloadIndex());
 };
 
@@ -345,7 +345,7 @@ export const cloneNcs = version => (dispatch, getState) => {
     const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
     dispatch(environmentInProcessAction(true));
     exec(`"${gitBash}" -c "${initScript}"`, () => {
-        dispatch(checkLocalEnvironmnets());
+        dispatch(checkLocalEnvironments());
         dispatch(environmentInProcessAction(false));
     });
 };
