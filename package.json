@@ -1,8 +1,8 @@
 {
   "name": "pc-nrfconnect-toolchain-manager",
-  "version": "0.1.0-experimental.1",
-  "description": "nRF Connect SDK Toolchain Manager",
-  "displayName": "nRF Connect SDK Toolchain Manager",
+  "version": "0.1.0-experimental.2",
+  "description": "nRF Connect SDK Tools",
+  "displayName": "nRF Connect SDK Tools",
   "repository": {
     "type": "git",
     "url": "https://github.com/NordicSemiconductor/pc-nrfconnect-.git"
@@ -48,7 +48,8 @@
     "decompress-zip",
     "electron-store",
     "fs-extra",
-    "semver"
+    "semver",
+    "xml2js"
   ],
   "jest": {
     "moduleNameMapper": {
