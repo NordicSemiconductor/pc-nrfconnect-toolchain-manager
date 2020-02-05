@@ -41,7 +41,8 @@
     "decompress-zip": "^0.2.2",
     "electron-store": "^3.2.0",
     "fs-extra": "^8.1.0",
-    "semver": "^7.1.1"
+    "semver": "^7.1.1",
+    "xml2js": "^0.4.23"
   },
   "bundledDependencies": [
     "decompress-zip",
