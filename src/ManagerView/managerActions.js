@@ -154,16 +154,17 @@ export const checkLocalEnvironments = () => (dispatch, getState) => {
 export const downloadIndex = () => async (dispatch, getState) => {
     const { toolchainIndexUrl } = getState().app.settings;
     const { status, data } = await new Promise(resolve => {
-        net.request({ url: toolchainIndexUrl })
-            .on('response', response => {
-                let result = '';
-                response.on('end', () => {
-                    resolve({ data: JSON.parse(result), status: response.statusCode });
-                });
-                response.on('data', buf => {
-                    result += `${buf}`;
-                });
-            }).end();
+        const request = net.request({ url: toolchainIndexUrl });
+        request.setHeader('pragma', 'no-cache');
+        request.on('response', response => {
+            let result = '';
+            response.on('end', () => {
+                resolve({ data: JSON.parse(result), status: response.statusCode });
+            });
+            response.on('data', buf => {
+                result += `${buf}`;
+            });
+        }).end();
     });
 
     if (status !== 200) {
