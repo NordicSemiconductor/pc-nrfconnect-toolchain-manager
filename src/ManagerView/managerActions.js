@@ -35,9 +35,9 @@
  */
 
 import { exec } from 'child_process';
+import { createHash } from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { createHash } from 'crypto';
 
 import DecompressZip from 'decompress-zip';
 import { remote, shell } from 'electron';
@@ -295,11 +295,6 @@ export const installLatestToolchain = version => (dispatch, getState) => {
     const toolchain = getEnvironment(version, getState)
         .toolchainList.sort(compareBy('version'))[0];
     dispatch(install(version, toolchain.version));
-};
-
-export const openSes = version => (dispatch, getState) => {
-    const { toolchainDir } = getEnvironment(version, getState);
-    exec(`"${path.resolve(toolchainDir, 'SEGGER Embedded Studio.cmd')}"`);
 };
 
 export const openFolder = version => (dispatch, getState) => {

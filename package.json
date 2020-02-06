@@ -1,8 +1,8 @@
 {
   "name": "pc-nrfconnect-toolchain-manager",
-  "version": "0.1.0-experimental.1",
-  "description": "nRF Connect SDK Toolchain Manager",
-  "displayName": "nRF Connect SDK Toolchain Manager",
+  "version": "0.1.0-experimental.3",
+  "description": "nRF Connect SDK Tools",
+  "displayName": "nRF Connect SDK Tools",
   "repository": {
     "type": "git",
     "url": "https://github.com/NordicSemiconductor/pc-nrfconnect-.git"
@@ -28,7 +28,7 @@
     "lint": "nrfconnect-scripts lint src",
     "lint-init": "nrfconnect-scripts lint-init",
     "lintfix": "nrfconnect-scripts lint --fix src",
-    "test": "nrfconnect-scripts test --passWithNoTests",
+    "test": "nrfconnect-scripts test",
     "test-watch": "nrfconnect-scripts test --watch",
     "clean": "npm run clean-dist && npm run clean-modules",
     "clean-dist": "rimraf dist",
