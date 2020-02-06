@@ -34,19 +34,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* eslint-disable no-param-reassign */
-
 import { exec } from 'child_process';
 import { createHash } from 'crypto';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 
 import DecompressZip from 'decompress-zip';
 import { remote, shell } from 'electron';
 import fse from 'fs-extra';
 import semver from 'semver';
-import xml2js from 'xml2js';
 
 const { net } = remote;
 
@@ -299,39 +295,6 @@ export const installLatestToolchain = version => (dispatch, getState) => {
     const toolchain = getEnvironment(version, getState)
         .toolchainList.sort(compareBy('version'))[0];
     dispatch(install(version, toolchain.version));
-};
-
-export const updateSesSettings = async (settingsPath, toolchainDir) => {
-    const parser = new xml2js.Parser();
-    const xml = fs.readFileSync(settingsPath);
-    const updatedXml = await parser.parseStringPromise(xml)
-        .then(result => {
-            result.settings.setting.map(element => {
-                if (element.$.name === 'Nordic/ZephyrBase') {
-                    element._ = path.resolve(toolchainDir, '..', 'zephyr');
-                }
-                if (element.$.name === 'Nordic/ToolchainDir') {
-                    element._ = path.resolve(toolchainDir, 'opt');
-                }
-                return element;
-            });
-            const builder = new xml2js.Builder();
-            return builder.buildObject(result);
-        });
-    fs.writeFileSync(settingsPath, updatedXml);
-};
-
-export const openSes = version => async (dispatch, getState) => {
-    const { toolchainDir } = getEnvironment(version, getState);
-    const settingsPath = path.resolve(os.homedir(),
-        'Nordic/SEGGER Embedded Studio/v3/settings.xml');
-    const settingsBakPath = path.resolve(os.homedir(),
-        'Nordic/SEGGER Embedded Studio/v3/settings.xml.bak');
-
-    await updateSesSettings(settingsPath, toolchainDir);
-    await updateSesSettings(settingsBakPath, toolchainDir);
-
-    exec(`"${path.resolve(toolchainDir, 'SEGGER Embedded Studio.cmd')}"`);
 };
 
 export const openFolder = version => (dispatch, getState) => {

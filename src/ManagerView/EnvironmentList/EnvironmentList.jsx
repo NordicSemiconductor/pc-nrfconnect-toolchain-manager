@@ -44,10 +44,10 @@ import {
     openBash,
     openFolder,
     openToolchainFolder,
-    openSes,
     removeEnvironment,
     removeToolchain,
 } from '../managerActions';
+import { openSegger } from '../segger';
 import EnvironmentItem from '../EnvironmentItem/EnvironmentItem';
 
 export default () => {
@@ -62,7 +62,7 @@ export default () => {
             isInProcess={isInProcess}
             cloneNcs={() => dispatch(cloneNcs(environment.version))}
             install={() => dispatch(installLatestToolchain(environment.version))}
-            open={() => dispatch(openSes(environment.version))}
+            open={() => dispatch(openSegger(environment.version))}
             openBash={() => dispatch(openBash(environment.version))}
             openFolder={() => dispatch(openFolder(environment.version))}
             openToolchainFolder={() => dispatch(openToolchainFolder(environment.version))}
