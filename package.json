@@ -28,7 +28,7 @@
     "lint": "nrfconnect-scripts lint src",
     "lint-init": "nrfconnect-scripts lint-init",
     "lintfix": "nrfconnect-scripts lint --fix src",
-    "test": "nrfconnect-scripts test --passWithNoTests",
+    "test": "nrfconnect-scripts test",
     "test-watch": "nrfconnect-scripts test --watch",
     "clean": "npm run clean-dist && npm run clean-modules",
     "clean-dist": "rimraf dist",
@@ -41,15 +41,13 @@
     "decompress-zip": "^0.2.2",
     "electron-store": "^3.2.0",
     "fs-extra": "^8.1.0",
-    "semver": "^7.1.1",
-    "xml2js": "^0.4.23"
+    "semver": "^7.1.1"
   },
   "bundledDependencies": [
     "decompress-zip",
     "electron-store",
     "fs-extra",
-    "semver",
-    "xml2js"
+    "semver"
   ],
   "jest": {
     "moduleNameMapper": {
