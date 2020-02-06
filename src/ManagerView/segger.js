@@ -39,6 +39,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import fse from 'fs-extra';
+
 const findOrCreateSettingsNode = xml => {
     let settings = xml.querySelector('settings');
     if (settings == null) {
@@ -91,12 +93,9 @@ const readFile = filePath => {
 };
 
 const updateSettingsFile = async (settingsFileName, toolchainDir) => {
-    const seggerSettingsDir = 'Nordic/SEGGER Embedded Studio/v3';
-    const settingsPath = path.resolve(
-        os.homedir(),
-        seggerSettingsDir,
-        settingsFileName,
-    );
+    const seggerSettingsDir = path.resolve(os.homedir(), 'Nordic/SEGGER Embedded Studio/v3');
+    fse.mkdirpSync(seggerSettingsDir);
+    const settingsPath = path.resolve(seggerSettingsDir, settingsFileName);
 
     const xml = readFile(settingsPath);
     const updatedXml = updateSettingsXml(xml, toolchainDir);
