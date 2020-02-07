@@ -78,6 +78,10 @@ ${xmlString}`,
 const expectNrfSettingAreCorrect = xml => {
     expect(xml).toContainNode('settings setting[name="Nordic/ToolchainDir"]', toolchainDir);
     expect(xml).toContainNode('settings setting[name="Nordic/ZephyrBase"]', zephyrBase);
+    expect(xml).toContainNode('settings setting[name="Nordic/CMakeExecutable"]', '');
+    expect(xml).toContainNode('settings setting[name="Nordic/DTCExecutable"]', '');
+    expect(xml).toContainNode('settings setting[name="Nordic/NinjaExecutable"]', '');
+    expect(xml).toContainNode('settings setting[name="Nordic/PythonExecutable"]', '');
 };
 
 /* This test is disabled, because it needs a newer vesion of jest than we currently have in shared.
