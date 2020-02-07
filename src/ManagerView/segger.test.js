@@ -84,12 +84,7 @@ const expectNrfSettingAreCorrect = xml => {
     expect(xml).toContainNode('settings setting[name="Nordic/PythonExecutable"]', '');
 };
 
-/* This test is disabled, because it needs a newer vesion of jest than we currently have in shared.
-   This test needs jest 25, but we currently only have jest 24 there. When upgrading to jest 25,
-   we also experienced some problems with jsdom (SecurityError: localStorage is not available for
-    opaque origins). This was fixed by setting testURL to http://localhost/ but we not not know yet
-    whether this might break other things. */
-xdescribe('update segger settings', () => {
+describe('update segger settings', () => {
     it('updates existing settings', () => {
         const xml = `<!DOCTYPE CrossWorks_Settings_File>
 <settings>
