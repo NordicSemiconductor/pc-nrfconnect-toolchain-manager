@@ -79,6 +79,10 @@ export const updateSettingsXml = (xmlString, toolchainDir) => {
 
     setSetting(xml, 'Nordic/ZephyrBase', path.resolve(toolchainDir, '..', 'zephyr'));
     setSetting(xml, 'Nordic/ToolchainDir', path.resolve(toolchainDir, 'opt'));
+    setSetting(xml, 'Nordic/CMakeExecutable', '');
+    setSetting(xml, 'Nordic/DTCExecutable', '');
+    setSetting(xml, 'Nordic/NinjaExecutable', '');
+    setSetting(xml, 'Nordic/PythonExecutable', '');
 
     return new XMLSerializer().serializeToString(xml);
 };
