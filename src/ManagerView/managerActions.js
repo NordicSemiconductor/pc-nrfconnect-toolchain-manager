@@ -309,16 +309,29 @@ export const openBash = version => (dispatch, getState) => {
 export const removeToolchain = (version, withParent = false) => async (dispatch, getState) => {
     const environment = getEnvironment(version, getState);
     const { toolchainDir } = environment;
+    const toBeDeletedDir = path.resolve(toolchainDir, '..', '..', 'toBeDeleted');
     dispatch(environmentInProcessAction(true));
     dispatch(environmentUpdateAction({
         ...environment,
         isRemoving: true,
     }));
 
-    if (!withParent) {
-        await fse.remove(toolchainDir);
-    } else {
-        await fse.remove(path.dirname(toolchainDir));
+    try {
+        let srcDir;
+        if (!withParent) {
+            srcDir = toolchainDir;
+        } else {
+            srcDir = path.dirname(toolchainDir);
+        }
+        await new Promise((resolve, reject) => {
+            fse.move(srcDir, toBeDeletedDir, { overwrite: true }, error => {
+                if (error) return reject(error);
+                return resolve();
+            });
+        });
+        await fse.remove(toBeDeletedDir);
+    } catch (error) {
+        console.log(`Failed to remove files with error: ${error}`);
     }
     dispatch(environmentUpdateAction({
         ...environment,
