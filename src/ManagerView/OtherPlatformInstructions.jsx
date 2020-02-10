@@ -34,21 +34,33 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
+import NrfCard from '../NrfCard/NrfCard';
 
-import EnvironmentList from './EnvironmentList/EnvironmentList';
-import OtherPlatformInstructions from './OtherPlatformInstructions';
-import { initAction } from './managerActions';
-
-export default () => {
-    const dispatch = useDispatch();
-    useEffect(() => dispatch(initAction()), []);
-
-    const isSupportedPlatform = process.platform === 'win32';
-    if (isSupportedPlatform) {
-        return <EnvironmentList />;
+const platformDocs = () => {
+    switch (process.platform) {
+        case 'darwin': return {
+            url: 'https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_ins_mac.html',
+            description: 'on macOS',
+        };
+        case 'linux': return {
+            url: 'https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_ins_linux.html',
+            description: 'on Linux',
+        };
+        default: return {
+            url: 'https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_installing.html',
+            description: 'manually',
+        };
     }
-
-    return <OtherPlatformInstructions />;
 };
+
+export default () => (
+    <NrfCard>
+        This app is designed only for Windows. For instructions on setting up an
+        environment on your machine, please read the{' '}
+        <a target="_blank" rel="noopener noreferrer" href={platformDocs().url}>
+            installing {platformDocs().description} instructions
+        </a>{' '}
+        online.
+    </NrfCard>
+);
