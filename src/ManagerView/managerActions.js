@@ -261,6 +261,25 @@ export const unzip = (
     unzipper.extract({ path: dest });
 });
 
+export const cloneNcs = version => (dispatch, getState) => new Promise((resolve, reject) => {
+    const { toolchainDir } = getEnvironment(version, getState);
+    const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
+    const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
+
+    dispatch(environmentUpdateAction({
+        ...environment,
+        isCloning: true,
+    }));
+    exec(`"${gitBash}" -c "${initScript}"`, error => {
+        if (error) return reject(new Error(`Failed to clone NCS with error: ${error}`));
+        dispatch(environmentUpdateAction({
+            ...environment,
+            isCloning: false,
+        }));
+        return resolve();
+    });
+});
+
 export const updateAction = () => dispatch => {
     dispatch(checkLocalEnvironments());
     dispatch(downloadIndex());
@@ -281,6 +300,7 @@ export const install = (environmentVersion, toolchainVersion) => async (dispatch
     fse.mkdirpSync(unzipDest);
     const zipLocation = await dispatch(downloadZip(environmentVersion, toolchainVersion));
     await dispatch(unzip(environmentVersion, zipLocation, unzipDest));
+    await dispatch(cloneNcs(environmentVersion));
     dispatch(updateAction());
     dispatch(environmentInProcessAction(false));
 };
@@ -332,26 +352,16 @@ export const removeToolchain = (version, withParent = false) => async (dispatch,
         await fse.remove(toBeDeletedDir);
     } catch (error) {
         console.log(`Failed to remove files with error: ${error}`);
+    } finally {
+        dispatch(environmentUpdateAction({
+            ...environment,
+            toolchainDir: null,
+            isRemoving: false,
+        }));
+        dispatch(environmentInProcessAction(false));
     }
-    dispatch(environmentUpdateAction({
-        ...environment,
-        toolchainDir: null,
-        isRemoving: false,
-    }));
-    dispatch(environmentInProcessAction(false));
 };
 
 export const removeEnvironment = version => async dispatch => {
     await dispatch(removeToolchain(version, true));
-};
-
-export const cloneNcs = version => (dispatch, getState) => {
-    const { toolchainDir } = getEnvironment(version, getState);
-    const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
-    const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
-    dispatch(environmentInProcessAction(true));
-    exec(`"${gitBash}" -c "${initScript}"`, () => {
-        dispatch(updateAction());
-        dispatch(environmentInProcessAction(false));
-    });
 };
