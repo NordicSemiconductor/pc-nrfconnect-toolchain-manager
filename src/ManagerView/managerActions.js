@@ -262,7 +262,8 @@ export const unzip = (
 });
 
 export const cloneNcs = version => (dispatch, getState) => new Promise((resolve, reject) => {
-    const { toolchainDir } = getEnvironment(version, getState);
+    const environment = getEnvironment(version, getState);
+    const { toolchainDir } = environment;
     const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
     const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
 
