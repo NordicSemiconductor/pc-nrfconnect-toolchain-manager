@@ -337,6 +337,7 @@ export const removeToolchain = (version, withParent = false) => async (dispatch,
         isRemoving: true,
     }));
 
+    let updatedToolchainDir;
     try {
         let srcDir;
         if (!withParent) {
@@ -351,12 +352,14 @@ export const removeToolchain = (version, withParent = false) => async (dispatch,
             });
         });
         await fse.remove(toBeDeletedDir);
+        updatedToolchainDir = null;
     } catch (error) {
         console.log(`Failed to remove files with error: ${error}`);
+        updatedToolchainDir = toolchainDir;
     } finally {
         dispatch(environmentUpdateAction({
             ...environment,
-            toolchainDir: null,
+            toolchainDir: updatedToolchainDir,
             isRemoving: false,
         }));
         dispatch(environmentInProcessAction(false));
