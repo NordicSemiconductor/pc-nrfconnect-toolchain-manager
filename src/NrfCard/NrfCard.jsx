@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,47 +34,21 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
+import { node } from 'prop-types';
+import Card from 'react-bootstrap/Card';
 
-import NrfCard from '../NrfCard/NrfCard';
-import InstallDirDialog from './InstallDirDialog';
-import { showInstallDirDialog } from './settingsActions';
+import './nrfCard.scss';
 
-export default () => {
-    const dispatch = useDispatch();
-    const installDir = useSelector(state => state.app.settings.installDir);
+const NrfCard = ({ children }) => (
+    <Card body className="nrf-card">
+        {children}
+    </Card>
+);
 
-    return (
-        <>
-            <NrfCard>
-                <Row className="settings-info">
-                    <Col className="h4">
-                        Installation directory
-                    </Col>
-                    <Col xs="auto">
-                        <Button
-                            variant="outline-primary"
-                            onClick={() => dispatch(showInstallDirDialog())}
-                        >
-                            Select directory
-                        </Button>
-                    </Col>
-                </Row>
-
-                <Row className="settings-info">
-                    <Col className="text-muted">
-                        {installDir}
-                    </Col>
-                </Row>
-            </NrfCard>
-
-            <InstallDirDialog />
-        </>
-    );
+NrfCard.propTypes = {
+    children: node.isRequired,
 };
+
+export default NrfCard;

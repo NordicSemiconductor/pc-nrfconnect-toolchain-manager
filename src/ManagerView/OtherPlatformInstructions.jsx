@@ -34,47 +34,33 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
-
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-
 import NrfCard from '../NrfCard/NrfCard';
-import InstallDirDialog from './InstallDirDialog';
-import { showInstallDirDialog } from './settingsActions';
 
-export default () => {
-    const dispatch = useDispatch();
-    const installDir = useSelector(state => state.app.settings.installDir);
-
-    return (
-        <>
-            <NrfCard>
-                <Row className="settings-info">
-                    <Col className="h4">
-                        Installation directory
-                    </Col>
-                    <Col xs="auto">
-                        <Button
-                            variant="outline-primary"
-                            onClick={() => dispatch(showInstallDirDialog())}
-                        >
-                            Select directory
-                        </Button>
-                    </Col>
-                </Row>
-
-                <Row className="settings-info">
-                    <Col className="text-muted">
-                        {installDir}
-                    </Col>
-                </Row>
-            </NrfCard>
-
-            <InstallDirDialog />
-        </>
-    );
+const platformDocs = () => {
+    switch (process.platform) {
+        case 'darwin': return {
+            url: 'https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_ins_mac.html',
+            description: 'on macOS',
+        };
+        case 'linux': return {
+            url: 'https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_ins_linux.html',
+            description: 'on Linux',
+        };
+        default: return {
+            url: 'https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_installing.html',
+            description: 'manually',
+        };
+    }
 };
+
+export default () => (
+    <NrfCard>
+        This app is designed only for Windows. For instructions on setting up an
+        environment on your machine, please read the{' '}
+        <a target="_blank" rel="noopener noreferrer" href={platformDocs().url}>
+            installing {platformDocs().description} instructions
+        </a>{' '}
+        online.
+    </NrfCard>
+);

@@ -38,14 +38,17 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import EnvironmentList from './EnvironmentList/EnvironmentList';
+import OtherPlatformInstructions from './OtherPlatformInstructions';
 import { initAction } from './managerActions';
 
 export default () => {
     const dispatch = useDispatch();
     useEffect(() => dispatch(initAction()), []);
 
-    if (process.platform !== 'win32') {
-        return 'This app is designed only for Windows.';
+    const isSupportedPlatform = process.platform === 'win32';
+    if (isSupportedPlatform) {
+        return <EnvironmentList />;
     }
-    return (<EnvironmentList />);
+
+    return <OtherPlatformInstructions />;
 };

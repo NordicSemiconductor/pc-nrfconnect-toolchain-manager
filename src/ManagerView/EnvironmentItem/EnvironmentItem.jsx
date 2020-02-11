@@ -43,9 +43,9 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Col from 'react-bootstrap/Col';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import ListGroup from 'react-bootstrap/ListGroup';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Row from 'react-bootstrap/Row';
+import NrfCard from '../../NrfCard/NrfCard';
 
 const PrimaryButton = ({ label, ...props }) => (
     <Button className="toolchain-item-button" variant="primary" {...props}>
@@ -82,7 +82,7 @@ const EnvironmentItem = ({
     let progressClassName = isInstalled ? 'toolchain-installed' : 'toolchain-installing';
     progressClassName = isRemoving ? 'toolchain-removing' : progressClassName;
     return (
-        <ListGroup.Item className="toolchain-item-container">
+        <NrfCard>
             <Row noGutters className="py-1">
                 <Col xs="auto my-2 mr-3" className="d-flex align-items-start">
                     {/* <AppIcon toolchain={toolchain} /> */}
@@ -195,7 +195,7 @@ const EnvironmentItem = ({
                     </ButtonToolbar>
                 </Col>
             </Row>
-        </ListGroup.Item>
+        </NrfCard>
     );
 };
 
