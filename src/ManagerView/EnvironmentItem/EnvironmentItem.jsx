@@ -62,6 +62,7 @@ const EnvironmentItem = ({
         version,
         progress,
         isRemoving,
+        isCloning,
         isWestPresent,
     },
     cloneNcs,
@@ -78,8 +79,10 @@ const EnvironmentItem = ({
     const progressPct = isInstalled ? 100 : (progress || 0);
     let progressLabel = progress ? `${progress}%` : '';
     progressLabel = isInstalled ? 'Installed' : progressLabel;
+    progressLabel = isCloning ? 'Cloning SDK' : progressLabel;
     progressLabel = isRemoving ? 'Removing' : progressLabel;
     let progressClassName = isInstalled ? 'toolchain-installed' : 'toolchain-installing';
+    progressClassName = isCloning ? 'toolchain-installing' : progressClassName;
     progressClassName = isRemoving ? 'toolchain-removing' : progressClassName;
     return (
         <NrfCard>
@@ -104,8 +107,8 @@ const EnvironmentItem = ({
                                 <ProgressBar
                                     now={progressPct}
                                     label={progressLabel}
-                                    striped={!isInstalled || isRemoving}
-                                    animated={!isInstalled || isRemoving}
+                                    striped={!isInstalled || isRemoving || isCloning}
+                                    animated={!isInstalled || isRemoving || isCloning}
                                     className={progressClassName}
                                 />
                                 {(progressPct === 0) && (
@@ -128,17 +131,10 @@ const EnvironmentItem = ({
                                 disabled={isInProcess}
                             />
                         )}
-                        { isInstalled && !isWestPresent && (
-                            <PrimaryButton
-                                onClick={cloneNcs}
-                                label="Clone NCS"
-                                disabled={isInProcess}
-                            />
-                        )}
                         { isInstalled && isWestPresent && (
                             <PrimaryButton
                                 onClick={open}
-                                label="Open"
+                                label="Open IDE"
                                 disabled={isInProcess}
                             />
                         )}
@@ -172,11 +168,18 @@ const EnvironmentItem = ({
                                     </Dropdown.Item>
                                     <Dropdown.Divider />
                                     <Dropdown.Item
+                                        title="Update SDK"
+                                        onClick={cloneNcs}
+                                    >
+                                        Update SDK
+                                    </Dropdown.Item>
+                                    <Dropdown.Item
                                         title="Install again :)"
                                         onClick={install}
                                     >
                                         Update toolchain
                                     </Dropdown.Item>
+                                    <Dropdown.Divider />
                                     <Dropdown.Item
                                         title="Remove toolchain"
                                         onClick={removeToolchain}
@@ -187,7 +190,7 @@ const EnvironmentItem = ({
                                         title="Remove all"
                                         onClick={removeEnvironment}
                                     >
-                                        Remove all
+                                        Remove toochain & SDK
                                     </Dropdown.Item>
                                 </>
                             )}
@@ -204,6 +207,7 @@ EnvironmentItem.propTypes = {
         toolchainDir: PropTypes.string,
         version: PropTypes.string.isRequired,
         progress: PropTypes.number,
+        isCloning: PropTypes.bool,
         isRemoving: PropTypes.bool,
         isWestPresent: PropTypes.bool,
     }).isRequired,
