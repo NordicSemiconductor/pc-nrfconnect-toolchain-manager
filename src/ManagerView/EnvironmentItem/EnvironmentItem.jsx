@@ -131,17 +131,10 @@ const EnvironmentItem = ({
                                 disabled={isInProcess}
                             />
                         )}
-                        { isInstalled && !isWestPresent && (
-                            <PrimaryButton
-                                onClick={cloneNcs}
-                                label="Clone NCS"
-                                disabled={isInProcess}
-                            />
-                        )}
                         { isInstalled && isWestPresent && (
                             <PrimaryButton
                                 onClick={open}
-                                label="Open"
+                                label="Open IDE"
                                 disabled={isInProcess}
                             />
                         )}

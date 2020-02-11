@@ -41,12 +41,50 @@ const testPath = '/test/path';
 const toolchainDir = path.resolve(testPath, 'opt');
 const zephyrBase = path.resolve(testPath, '..', 'zephyr');
 
-/* This test is disabled, because it needs a newer vesion of jest than we currently have in shared.
-   This test needs jest 25, but we currently only have jest 24 there. When upgrading to jest 25,
-   we also experienced some problems with jsdom (SecurityError: localStorage is not available for
-    opaque origins). This was fixed by setting testURL to http://localhost/ but we not not know yet
-    whether this might break other things. */
-xdescribe('update segger settings', () => {
+expect.extend({
+    toContainNode(xmlString, nodeSelector, nodeContent) {
+        const xml = new DOMParser().parseFromString(xmlString, 'application/xml');
+
+        const node = xml.querySelector(nodeSelector);
+        if (node == null) {
+            return {
+                pass: false,
+                message: () => `Expected to find a node matching the selector '${nodeSelector}'
+but this XML does not contain such a node:
+${xmlString}`,
+            };
+        }
+
+        if (node.textContent !== nodeContent) {
+            return {
+                pass: false,
+                message: () => `Expected that the node matching the selector '${nodeSelector}'
+contains '${nodeContent}'
+but it did contain '${node.textContent}' in this XML:
+${xmlString}`,
+            };
+        }
+
+        return {
+            pass: true,
+            message: () => `Found a node matching the selector '${nodeSelector}'
+containing '${nodeContent}'
+while it should be absent from this XML:
+${xmlString}`,
+        };
+    },
+});
+
+const expectNrfSettingAreCorrect = xml => {
+    expect(xml).toContainNode('settings setting[name="Nordic/ToolchainDir"]', toolchainDir);
+    expect(xml).toContainNode('settings setting[name="Nordic/ZephyrBase"]', zephyrBase);
+    expect(xml).toContainNode('settings setting[name="Nordic/CMakeExecutable"]', '');
+    expect(xml).toContainNode('settings setting[name="Nordic/DTCExecutable"]', '');
+    expect(xml).toContainNode('settings setting[name="Nordic/NinjaExecutable"]', '');
+    expect(xml).toContainNode('settings setting[name="Nordic/PythonExecutable"]', '');
+};
+
+describe('update segger settings', () => {
     it('updates existing settings', () => {
         const xml = `<!DOCTYPE CrossWorks_Settings_File>
 <settings>
@@ -57,8 +95,7 @@ xdescribe('update segger settings', () => {
 </settings>`;
         const updatedSettings = updateSettingsXml(xml, testPath);
 
-        expect(updatedSettings).toContain(`<setting name="Nordic/ToolchainDir">${toolchainDir}</setting>`);
-        expect(updatedSettings).toContain(`<setting name="Nordic/ZephyrBase">${zephyrBase}</setting>`);
+        expectNrfSettingAreCorrect(updatedSettings);
     });
 
     it('adds missing settings', () => {
@@ -70,16 +107,12 @@ xdescribe('update segger settings', () => {
 </settings>`;
         const updatedSettings = updateSettingsXml(xml, testPath);
 
-        expect(updatedSettings).toContain(`<setting name="Nordic/ToolchainDir">${toolchainDir}</setting>`);
-        expect(updatedSettings).toContain(`<setting name="Nordic/ZephyrBase">${zephyrBase}</setting>`);
+        expectNrfSettingAreCorrect(updatedSettings);
     });
 
     it('creates the xml', () => {
         const createdSettings = updateSettingsXml(null, testPath);
 
-        expect(createdSettings).toBe('<settings>'
-        + `<setting name="Nordic/ZephyrBase">${zephyrBase}</setting>`
-        + `<setting name="Nordic/ToolchainDir">${toolchainDir}</setting>`
-        + '</settings>');
+        expectNrfSettingAreCorrect(createdSettings);
     });
 });

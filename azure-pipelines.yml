@@ -11,4 +11,5 @@ steps:
     set -o errexit -o pipefail
     npm i
     npm run lint
+    npm run test
     npm run build
