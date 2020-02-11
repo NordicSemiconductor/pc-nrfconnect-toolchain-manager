@@ -142,12 +142,6 @@ export const checkLocalEnvironments = () => (dispatch, getState) => {
                 toolchainDir,
                 isWestPresent,
             }));
-            dispatch(toolchainUpdateAction(
-                envDirBasename,
-                {
-                    version: path.basename(path.dirname(toolchainDir)),
-                },
-            ));
         });
 };
 
@@ -242,8 +236,7 @@ export const unzip = (
     unzipper.on('error', err => {
         console.log('Caught an error', err);
     });
-    unzipper.on('extract', log => {
-        console.log('Finished extracting', log);
+    unzipper.on('extract', () => {
         const { environmentList } = getState().app.manager;
         const environment = environmentList.find(v => v.version === environmentVersion);
         dispatch(environmentUpdateAction({
