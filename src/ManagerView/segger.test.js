@@ -49,28 +49,34 @@ expect.extend({
         if (node == null) {
             return {
                 pass: false,
-                message: () => `Expected to find a node matching the selector '${nodeSelector}'
-but this XML does not contain such a node:
-${xmlString}`,
+                message: () => `
+                    Expected to find a node matching the selector '${nodeSelector}'
+                    but this XML does not contain such a node:
+                    ${xmlString}
+                `,
             };
         }
 
         if (node.textContent !== nodeContent) {
             return {
                 pass: false,
-                message: () => `Expected that the node matching the selector '${nodeSelector}'
-contains '${nodeContent}'
-but it did contain '${node.textContent}' in this XML:
-${xmlString}`,
+                message: () => `
+                    Expected that the node matching the selector '${nodeSelector}'
+                    contains '${nodeContent}'
+                    but it did contain '${node.textContent}' in this XML:
+                    ${xmlString}
+                `,
             };
         }
 
         return {
             pass: true,
-            message: () => `Found a node matching the selector '${nodeSelector}'
-containing '${nodeContent}'
-while it should be absent from this XML:
-${xmlString}`,
+            message: () => `
+                Found a node matching the selector '${nodeSelector}'
+                containing '${nodeContent}'
+                while it should be absent from this XML:
+                ${xmlString}
+            `,
         };
     },
 });
@@ -86,25 +92,29 @@ const expectNrfSettingAreCorrect = xml => {
 
 describe('update segger settings', () => {
     it('updates existing settings', () => {
-        const xml = `<!DOCTYPE CrossWorks_Settings_File>
-<settings>
-    <setting name="Environment/Active Studio Theme">Light</setting>
-    <setting name="Nordic/ToolchainDir">C:\\Users\\masc\\ncs\\v1.1.0\\toolchain\\opt</setting>
-    <setting name="Nordic/ZephyrBase">C:\\Users\\masc\\ncs\\v1.1.0\\zephyr</setting>
-    <setting name="Text Editor/Font">Consolas,10,-1,5,50,0,0,0,0,0</setting>
-</settings>`;
+        const xml = `
+            <!DOCTYPE CrossWorks_Settings_File>
+            <settings>
+                <setting name="Environment/Active Studio Theme">Light</setting>
+                <setting name="Nordic/ToolchainDir">C:\\Users\\masc\\ncs\\v1.1.0\\toolchain\\opt</setting>
+                <setting name="Nordic/ZephyrBase">C:\\Users\\masc\\ncs\\v1.1.0\\zephyr</setting>
+                <setting name="Text Editor/Font">Consolas,10,-1,5,50,0,0,0,0,0</setting>
+            </settings>
+        `;
         const updatedSettings = updateSettingsXml(xml, testPath);
 
         expectNrfSettingAreCorrect(updatedSettings);
     });
 
     it('adds missing settings', () => {
-        const xml = `<!DOCTYPE CrossWorks_Settings_File>
-<settings>
-    <setting name="Environment/Active Studio Theme">Light</setting>
-    <setting name="Nordic/ZephyrBase">C:\\Users\\masc\\ncs\\v1.1.0\\zephyr</setting>
-    <setting name="Text Editor/Font">Consolas,10,-1,5,50,0,0,0,0,0</setting>
-</settings>`;
+        const xml = `
+            <!DOCTYPE CrossWorks_Settings_File>
+            <settings>
+                <setting name="Environment/Active Studio Theme">Light</setting>
+                <setting name="Nordic/ZephyrBase">C:\\Users\\masc\\ncs\\v1.1.0\\zephyr</setting>
+                <setting name="Text Editor/Font">Consolas,10,-1,5,50,0,0,0,0,0</setting>
+            </settings>
+        `;
         const updatedSettings = updateSettingsXml(xml, testPath);
 
         expectNrfSettingAreCorrect(updatedSettings);
