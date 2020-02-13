@@ -36,7 +36,7 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import CommonDialogView from '../CommonDialogView/CommonDialogView';
+import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { selectInstallDir, hideInstallDirDialog } from './settingsActions';
 
 export default () => {
@@ -44,11 +44,11 @@ export default () => {
     const isVisible = useSelector(state => state.app.settings.isInstallDirDialogVisible);
 
     return (
-        <CommonDialogView
+        <ConfirmationDialog
             isVisible={isVisible}
             title="Change install directory"
-            onYes={() => dispatch(selectInstallDir())}
-            onNo={() => dispatch(hideInstallDirDialog())}
+            onConfirm={() => dispatch(selectInstallDir())}
+            onCancel={() => dispatch(hideInstallDirDialog())}
         >
             <p>
                 When you change the installation directory, SDK environments installed in the old
@@ -56,6 +56,6 @@ export default () => {
                 back to the old directory will show them again.
             </p>
             <p>Are you sure you want to change?</p>
-        </CommonDialogView>
+        </ConfirmationDialog>
     );
 };
