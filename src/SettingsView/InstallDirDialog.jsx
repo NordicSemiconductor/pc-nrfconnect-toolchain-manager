@@ -52,10 +52,10 @@ export default () => {
         >
             <p>
                 When you change the installation directory, SDK environments installed in the old
-                directory will not be shown in the list anymore. They will not deleted, so changing
-                back to the old directory will show them again.
+                directory will not be shown in the list anymore. They will not be deleted, so
+                you can still find them on the disc and changing back to the old directory will
+                show them in the manager again.
             </p>
-            <p>Are you sure you want to change?</p>
         </ConfirmationDialog>
     );
 };
