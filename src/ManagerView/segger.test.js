@@ -40,7 +40,7 @@ import { updateSettingsXml, userSettings } from './segger';
 const testPath = '/test/path';
 const toolchainDir = path.resolve(testPath, 'opt');
 const zephyrBase = path.resolve(testPath, '..', 'zephyr');
-const settings = userSettings(testPath);
+const settings = userSettings(zephyrBase);
 const modifiedUserSettings = 'Modified user settings';
 
 expect.extend({
