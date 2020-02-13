@@ -46,14 +46,16 @@ const ConfirmationDialog = ({
     onConfirm,
     onCancel,
 }) => (
-    <Modal show={isVisible} onHide={onCancel} backdrop>
+    <Modal show={isVisible} onHide={onCancel || onConfirm} backdrop>
         <Modal.Header closeButton={false}>
             <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>{children}</Modal.Body>
         <Modal.Footer>
             <Button variant="primary" onClick={onConfirm}>OK</Button>
-            <Button variant="outline-primary" onClick={onCancel}>Cancel</Button>
+            {onCancel
+               && <Button variant="outline-primary" onClick={onCancel}>Cancel</Button>
+            }
         </Modal.Footer>
     </Modal>
 );
@@ -63,7 +65,7 @@ ConfirmationDialog.propTypes = {
     children: PropTypes.node.isRequired,
     isVisible: PropTypes.bool.isRequired,
     onConfirm: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
+    onCancel: PropTypes.func, // eslint-disable-line react/require-default-props
 };
 
 export default ConfirmationDialog;
