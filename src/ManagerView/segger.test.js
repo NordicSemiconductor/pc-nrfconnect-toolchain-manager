@@ -90,6 +90,11 @@ const expectNrfSettingAreCorrect = xml => {
     expect(xml).toContainNode('settings setting[name="Nordic/PythonExecutable"]', '');
 };
 
+const expectFirstTimeSettingAreCorrect = xml => {
+    expectNrfSettingAreCorrect(xml);
+    // expect(xml).toContainNode('settings setting[name="Environment/User Settings"]', '');
+};
+
 describe('update segger settings', () => {
     it('updates existing settings', () => {
         const xml = `
@@ -123,6 +128,21 @@ describe('update segger settings', () => {
     it('creates the xml', () => {
         const createdSettings = updateSettingsXml(null, testPath);
 
-        expectNrfSettingAreCorrect(createdSettings);
+        expectFirstTimeSettingAreCorrect(createdSettings);
     });
+
+    // it('updates existing settings', () => {
+    //     const xml = `
+    //         <!DOCTYPE CrossWorks_Settings_File>
+    //         <settings>
+    //             <setting name="Environment/Active Studio Theme">Light</setting>
+    //             <setting name="Nordic/ToolchainDir">C:\\Users\\masc\\ncs\\v1.1.0\\toolchain\\opt</setting>
+    //             <setting name="Nordic/ZephyrBase">C:\\Users\\masc\\ncs\\v1.1.0\\zephyr</setting>
+    //             <setting name="Text Editor/Font">Consolas,10,-1,5,50,0,0,0,0,0</setting>
+    //         </settings>
+    //     `;
+    //     const updatedSettings = updateSettingsXml(xml, testPath);
+
+    //     expectNrfSettingAreCorrect(updatedSettings);
+    // });
 });

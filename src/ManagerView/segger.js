@@ -60,38 +60,24 @@ const createSettingNode = (xml, settingName) => {
     return settingNode;
 };
 
-const setSetting = (xml, settingName, settingValue) => {
+const setSetting = (xml, settingName, settingValue, setOnlyIfNotExist = false) => {
     let node = xml.querySelector(`setting[name='${settingName}']`);
-    if (node == null) {
+    // console.log(node);
+    // console.log(node.textContent);
+    // console.log(settingValue);
+    // console.log(setOnlyIfNotExist);
+    // if ((setOnlyIfNotExist && (node == null || node.textContent == null))
+    //     || !setOnlyIfNotExist) {
+    //     node = createSettingNode(xml, settingName);
+    //     node.textContent = settingValue;
+    // }
+    if (node == null || node.textContent == null) {
         node = createSettingNode(xml, settingName);
     }
-
     node.textContent = settingValue;
 };
 
-const setSettingOnlyIfNotExist = (xml, settingName, settingValue) => {
-    let node = xml.querySelector(`setting[name='${settingName}']`);
-    if (node == null || node.textContent == null) {
-        node = createSettingNode(xml, settingName);
-        node.textContent = settingValue;
-    }
-};
-
-export const updateSettingsXml = (xmlString, toolchainDir) => {
-    let xml = new DOMParser().parseFromString(xmlString, 'application/xml');
-
-    const couldNotParseSettings = xml.querySelector('parsererror') != null;
-    if (couldNotParseSettings) {
-        xml = new Document();
-    }
-
-    setSetting(xml, 'Nordic/ZephyrBase', path.resolve(toolchainDir, '../zephyr'));
-    setSetting(xml, 'Nordic/ToolchainDir', path.resolve(toolchainDir, 'opt'));
-    setSetting(xml, 'Nordic/CMakeExecutable', '');
-    setSetting(xml, 'Nordic/DTCExecutable', '');
-    setSetting(xml, 'Nordic/NinjaExecutable', '');
-    setSetting(xml, 'Nordic/PythonExecutable', '');
-
+const userSettings = toolchainDir => {
     const cmakeLists = `ARM/Zephyr/CMakeLists=${path.resolve(
         toolchainDir,
         '../zephyr/samples/basic/blinky/CMakeLists.txt',
@@ -104,8 +90,24 @@ export const updateSettingsXml = (xmlString, toolchainDir) => {
         toolchainDir,
         '../zephyr/boards/arm/nrf9160_pca10090',
     )};`;
-    const userSettings = `${cmakeLists}${buildDir}${boardDir}`.replace(/\\/g, '/');
-    setSettingOnlyIfNotExist(xml, 'Environment/User Settings', userSettings);
+    return `${cmakeLists}${buildDir}${boardDir}`.replace(/\\/g, '/');
+};
+
+export const updateSettingsXml = (xmlString, toolchainDir) => {
+    let xml = new DOMParser().parseFromString(xmlString, 'application/xml');
+
+    const couldNotParseSettings = xml.querySelector('parsererror') != null;
+    if (couldNotParseSettings) {
+        xml = new Document();
+    }
+
+    setSetting(xml, 'Nordic/ZephyrBase', path.resolve(toolchainDir, '..', 'zephyr'));
+    setSetting(xml, 'Nordic/ToolchainDir', path.resolve(toolchainDir, 'opt'));
+    setSetting(xml, 'Nordic/CMakeExecutable', '');
+    setSetting(xml, 'Nordic/DTCExecutable', '');
+    setSetting(xml, 'Nordic/NinjaExecutable', '');
+    setSetting(xml, 'Nordic/PythonExecutable', '');
+    // setSetting(xml, 'Environment/User Settings', userSettings(toolchainDir), true);
 
     return new XMLSerializer().serializeToString(xml);
 };
