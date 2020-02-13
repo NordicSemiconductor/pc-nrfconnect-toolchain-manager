@@ -35,11 +35,13 @@
  */
 
 import path from 'path';
-import { updateSettingsXml } from './segger';
+import { updateSettingsXml, userSettings } from './segger';
 
 const testPath = '/test/path';
 const toolchainDir = path.resolve(testPath, 'opt');
 const zephyrBase = path.resolve(testPath, '..', 'zephyr');
+const settings = userSettings(testPath);
+const modifiedUserSettings = 'Modified user settings';
 
 expect.extend({
     toContainNode(xmlString, nodeSelector, nodeContent) {
@@ -92,7 +94,12 @@ const expectNrfSettingAreCorrect = xml => {
 
 const expectFirstTimeSettingAreCorrect = xml => {
     expectNrfSettingAreCorrect(xml);
-    // expect(xml).toContainNode('settings setting[name="Environment/User Settings"]', '');
+    expect(xml).toContainNode('settings setting[name="Environment/User Settings"]', settings);
+};
+
+const expectModifiedUserSettingAreCorrect = xml => {
+    expectNrfSettingAreCorrect(xml);
+    expect(xml).toContainNode('settings setting[name="Environment/User Settings"]', modifiedUserSettings);
 };
 
 describe('update segger settings', () => {
@@ -131,18 +138,35 @@ describe('update segger settings', () => {
         expectFirstTimeSettingAreCorrect(createdSettings);
     });
 
-    // it('updates existing settings', () => {
-    //     const xml = `
-    //         <!DOCTYPE CrossWorks_Settings_File>
-    //         <settings>
-    //             <setting name="Environment/Active Studio Theme">Light</setting>
-    //             <setting name="Nordic/ToolchainDir">C:\\Users\\masc\\ncs\\v1.1.0\\toolchain\\opt</setting>
-    //             <setting name="Nordic/ZephyrBase">C:\\Users\\masc\\ncs\\v1.1.0\\zephyr</setting>
-    //             <setting name="Text Editor/Font">Consolas,10,-1,5,50,0,0,0,0,0</setting>
-    //         </settings>
-    //     `;
-    //     const updatedSettings = updateSettingsXml(xml, testPath);
+    it('updates existing user settings', () => {
+        const xml = `
+            <!DOCTYPE CrossWorks_Settings_File>
+            <settings>
+                <setting name="Environment/Active Studio Theme">Light</setting>
+                <setting name="Nordic/ToolchainDir">C:\\Users\\masc\\ncs\\v1.1.0\\toolchain\\opt</setting>
+                <setting name="Nordic/ZephyrBase">C:\\Users\\masc\\ncs\\v1.1.0\\zephyr</setting>
+                <setting name="Nordic/User Settings"></setting>
+                <setting name="Text Editor/Font">Consolas,10,-1,5,50,0,0,0,0,0</setting>
+            </settings>
+        `;
+        const updatedSettings = updateSettingsXml(xml, testPath);
 
-    //     expectNrfSettingAreCorrect(updatedSettings);
-    // });
+        expectFirstTimeSettingAreCorrect(updatedSettings);
+    });
+
+    it('updates existing user settings without change', () => {
+        const xml = `
+            <!DOCTYPE CrossWorks_Settings_File>
+            <settings>
+                <setting name="Environment/Active Studio Theme">Light</setting>
+                <setting name="Nordic/ToolchainDir">C:\\Users\\masc\\ncs\\v1.1.0\\toolchain\\opt</setting>
+                <setting name="Nordic/ZephyrBase">C:\\Users\\masc\\ncs\\v1.1.0\\zephyr</setting>
+                <setting name="Nordic/User Settings">${modifiedUserSettings}</setting>
+                <setting name="Text Editor/Font">Consolas,10,-1,5,50,0,0,0,0,0</setting>
+            </settings>
+        `;
+        const updatedSettings = updateSettingsXml(xml, testPath);
+
+        expectModifiedUserSettingAreCorrect(updatedSettings);
+    });
 });

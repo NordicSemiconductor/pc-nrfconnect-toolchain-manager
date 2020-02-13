@@ -60,24 +60,18 @@ const createSettingNode = (xml, settingName) => {
     return settingNode;
 };
 
-const setSetting = (xml, settingName, settingValue, setOnlyIfNotExist = false) => {
+const setSetting = (xml, settingName, settingValue, overwriteExistingSetting = true) => {
     let node = xml.querySelector(`setting[name='${settingName}']`);
-    // console.log(node);
-    // console.log(node.textContent);
-    // console.log(settingValue);
-    // console.log(setOnlyIfNotExist);
-    // if ((setOnlyIfNotExist && (node == null || node.textContent == null))
-    //     || !setOnlyIfNotExist) {
-    //     node = createSettingNode(xml, settingName);
-    //     node.textContent = settingValue;
-    // }
+    if (!overwriteExistingSetting && node != null && node.textContent != null) {
+        return;
+    }
     if (node == null || node.textContent == null) {
         node = createSettingNode(xml, settingName);
     }
     node.textContent = settingValue;
 };
 
-const userSettings = toolchainDir => {
+export const userSettings = toolchainDir => {
     const cmakeLists = `ARM/Zephyr/CMakeLists=${path.resolve(
         toolchainDir,
         '../zephyr/samples/basic/blinky/CMakeLists.txt',
@@ -107,7 +101,7 @@ export const updateSettingsXml = (xmlString, toolchainDir) => {
     setSetting(xml, 'Nordic/DTCExecutable', '');
     setSetting(xml, 'Nordic/NinjaExecutable', '');
     setSetting(xml, 'Nordic/PythonExecutable', '');
-    // setSetting(xml, 'Environment/User Settings', userSettings(toolchainDir), true);
+    setSetting(xml, 'Environment/User Settings', userSettings(toolchainDir), false);
 
     return new XMLSerializer().serializeToString(xml);
 };
