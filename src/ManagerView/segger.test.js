@@ -145,7 +145,6 @@ describe('update segger settings', () => {
                 <setting name="Environment/Active Studio Theme">Light</setting>
                 <setting name="Nordic/ToolchainDir">C:\\Users\\masc\\ncs\\v1.1.0\\toolchain\\opt</setting>
                 <setting name="Nordic/ZephyrBase">C:\\Users\\masc\\ncs\\v1.1.0\\zephyr</setting>
-                <setting name="Nordic/User Settings"></setting>
                 <setting name="Text Editor/Font">Consolas,10,-1,5,50,0,0,0,0,0</setting>
             </settings>
         `;
@@ -161,7 +160,7 @@ describe('update segger settings', () => {
                 <setting name="Environment/Active Studio Theme">Light</setting>
                 <setting name="Nordic/ToolchainDir">C:\\Users\\masc\\ncs\\v1.1.0\\toolchain\\opt</setting>
                 <setting name="Nordic/ZephyrBase">C:\\Users\\masc\\ncs\\v1.1.0\\zephyr</setting>
-                <setting name="Nordic/User Settings">${modifiedUserSettings}</setting>
+                <setting name="Environment/User Settings">${modifiedUserSettings}</setting>
                 <setting name="Text Editor/Font">Consolas,10,-1,5,50,0,0,0,0,0</setting>
             </settings>
         `;
