@@ -40,8 +40,8 @@ import { updateSettingsXml, userSettings } from './segger';
 const testPath = '/test/path';
 const toolchainDir = path.resolve(testPath, 'opt');
 const zephyrBase = path.resolve(testPath, '..', 'zephyr');
-const settings = userSettings(zephyrBase);
-const modifiedUserSettings = 'Modified user settings';
+const firstTimeUserSettings = userSettings(zephyrBase);
+const existingUserSettings = 'User settings set by a user';
 
 expect.extend({
     toContainNode(xmlString, nodeSelector, nodeContent) {
@@ -94,12 +94,12 @@ const expectNrfSettingAreCorrect = xml => {
 
 const expectFirstTimeSettingAreCorrect = xml => {
     expectNrfSettingAreCorrect(xml);
-    expect(xml).toContainNode('settings setting[name="Environment/User Settings"]', settings);
+    expect(xml).toContainNode('settings setting[name="Environment/User Settings"]', firstTimeUserSettings);
 };
 
-const expectModifiedUserSettingAreCorrect = xml => {
+const expectExistingUserSettingsAreRetained = xml => {
     expectNrfSettingAreCorrect(xml);
-    expect(xml).toContainNode('settings setting[name="Environment/User Settings"]', modifiedUserSettings);
+    expect(xml).toContainNode('settings setting[name="Environment/User Settings"]', existingUserSettings);
 };
 
 describe('update segger settings', () => {
@@ -138,7 +138,7 @@ describe('update segger settings', () => {
         expectFirstTimeSettingAreCorrect(createdSettings);
     });
 
-    it('updates existing user settings', () => {
+    it('creates user settings if missing', () => {
         const xml = `
             <!DOCTYPE CrossWorks_Settings_File>
             <settings>
@@ -153,19 +153,19 @@ describe('update segger settings', () => {
         expectFirstTimeSettingAreCorrect(updatedSettings);
     });
 
-    it('updates existing user settings without change', () => {
+    it('retains existing user settings', () => {
         const xml = `
             <!DOCTYPE CrossWorks_Settings_File>
             <settings>
                 <setting name="Environment/Active Studio Theme">Light</setting>
                 <setting name="Nordic/ToolchainDir">C:\\Users\\masc\\ncs\\v1.1.0\\toolchain\\opt</setting>
                 <setting name="Nordic/ZephyrBase">C:\\Users\\masc\\ncs\\v1.1.0\\zephyr</setting>
-                <setting name="Environment/User Settings">${modifiedUserSettings}</setting>
+                <setting name="Environment/User Settings">${existingUserSettings}</setting>
                 <setting name="Text Editor/Font">Consolas,10,-1,5,50,0,0,0,0,0</setting>
             </settings>
         `;
         const updatedSettings = updateSettingsXml(xml, testPath);
 
-        expectModifiedUserSettingAreCorrect(updatedSettings);
+        expectExistingUserSettingsAreRetained(updatedSettings);
     });
 });
