@@ -60,13 +60,28 @@ const createSettingNode = (xml, settingName) => {
     return settingNode;
 };
 
-const setSetting = (xml, settingName, settingValue) => {
+const setSetting = (xml, settingName, settingValue, overwriteExistingSetting = true) => {
     let node = xml.querySelector(`setting[name='${settingName}']`);
+    if (!overwriteExistingSetting && node != null) {
+        return;
+    }
     if (node == null) {
         node = createSettingNode(xml, settingName);
     }
-
     node.textContent = settingValue;
+};
+
+export const userSettings = zephyrDir => {
+    const cmakeLists = `ARM/Zephyr/CMakeLists=${path.resolve(
+        zephyrDir, 'samples', 'basic', 'blinky', 'CMakeLists.txt',
+    )};`;
+    const buildDir = `ARM/Zephyr/BuildDir=${path.resolve(
+        zephyrDir, 'samples', 'basic', 'blinky', 'build_nrf9160_pca10090',
+    )};`;
+    const boardDir = `ARM/Zephyr/BoardDir=${path.resolve(
+        zephyrDir, 'boards', 'arm', 'nrf9160_pca10090',
+    )};`;
+    return `${cmakeLists}${buildDir}${boardDir}`.replace(/\\/g, '/');
 };
 
 export const updateSettingsXml = (xmlString, toolchainDir) => {
@@ -77,12 +92,14 @@ export const updateSettingsXml = (xmlString, toolchainDir) => {
         xml = new Document();
     }
 
-    setSetting(xml, 'Nordic/ZephyrBase', path.resolve(toolchainDir, '..', 'zephyr'));
+    const zephyrDir = path.resolve(toolchainDir, '..', 'zephyr');
+    setSetting(xml, 'Nordic/ZephyrBase', zephyrDir);
     setSetting(xml, 'Nordic/ToolchainDir', path.resolve(toolchainDir, 'opt'));
     setSetting(xml, 'Nordic/CMakeExecutable', '');
     setSetting(xml, 'Nordic/DTCExecutable', '');
     setSetting(xml, 'Nordic/NinjaExecutable', '');
     setSetting(xml, 'Nordic/PythonExecutable', '');
+    setSetting(xml, 'Environment/User Settings', userSettings(zephyrDir), false);
 
     return new XMLSerializer().serializeToString(xml);
 };
