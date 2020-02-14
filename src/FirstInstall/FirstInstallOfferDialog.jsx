@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,43 +34,39 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { showFirstInstallInstructionsDialog } from '../../FirstInstall/firstInstallReducer';
+import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import {
-    cloneNcs,
-    installLatestToolchain,
-    openBash,
-    openFolder,
-    openToolchainFolder,
-    removeEnvironment,
-    removeToolchain,
-} from '../managerActions';
-import { openSegger } from '../segger';
-import EnvironmentItem from '../EnvironmentItem/EnvironmentItem';
+    hideFirstInstallDialogs,
+    showFirstInstallInstructionsDialog,
+    isOfferDialogVisible,
+} from './firstInstallReducer';
 
 export default () => {
     const dispatch = useDispatch();
-    const environmentList = useSelector(state => state.app.manager.environmentList);
-    const isInProcess = useSelector(state => state.app.manager.isInProcess);
+    const isVisible = useSelector(isOfferDialogVisible);
 
-    return environmentList.map(environment => (
-        <EnvironmentItem
-            key={environment.version}
-            environment={environment}
-            isInProcess={isInProcess}
-            cloneNcs={() => dispatch(cloneNcs(environment.version))}
-            install={() => dispatch(installLatestToolchain(environment.version))}
-            open={() => dispatch(openSegger(environment.version))}
-            openBash={() => dispatch(openBash(environment.version))}
-            openFolder={() => dispatch(openFolder(environment.version))}
-            openToolchainFolder={() => dispatch(openToolchainFolder(environment.version))}
-            removeEnvironment={() => dispatch(removeEnvironment(environment.version))}
-            removeToolchain={() => dispatch(removeToolchain(environment.version))}
-            showFirstInstallInstructionsDialog={
-                toolchainDir => dispatch(showFirstInstallInstructionsDialog(toolchainDir))}
-        />
-    ));
+    return (
+        <ConfirmationDialog
+            isVisible={isVisible}
+            title="First steps with nRF Connect SDK"
+            onConfirm={() => dispatch(showFirstInstallInstructionsDialog())}
+            onCancel={() => dispatch(hideFirstInstallDialogs())}
+        >
+            <p>
+                Currently tools as well as the nRF Connect SDK (NCS) are
+                installed. This takes some time, depending on your net and
+                computer speed, a duration between a few minutes and up to half
+                an hour are common.
+            </p>
+            <p>
+                If you have never programmed a Nordic device before, we suggest
+                that you start out with one of the samples from the nRF Connect
+                SDK. While you wait for the installation you can now read how
+                this is done.
+            </p>
+        </ConfirmationDialog>
+    );
 };

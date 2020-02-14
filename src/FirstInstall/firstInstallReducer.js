@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,35 +34,57 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { homedir } from 'os';
-import { resolve } from 'path';
+const SHOW_FIRST_INSTALL_OFFER_DIALOG = 'SHOW_FIRST_INSTALL_OFFER_DIALOG';
+export const showFirstInstallOfferDialog = toolchainDir => ({
+    type: SHOW_FIRST_INSTALL_OFFER_DIALOG,
+    toolchainDir,
+});
 
-import { UPDATE_INSTALL_DIR, SHOW_INSTALL_DIR_DIALOG, HIDE_INSTALL_DIR_DIALOG } from './settingsActions';
+const SHOW_FIRST_INSTALL_INSTRUCTIONS_DIALOG = 'SHOW_FIRST_INSTALL_INSTRUCTIONS_DIALOG';
+export const showFirstInstallInstructionsDialog = toolchainDir => ({
+    type: SHOW_FIRST_INSTALL_INSTRUCTIONS_DIALOG,
+    toolchainDir,
+});
 
-import store from '../util/persistentStore';
-
-export const defaultInstallDir = resolve(homedir(), 'ncs');
+const HIDE_FIRST_INSTALL_DIALOGS = 'HIDE_FIRST_INSTALL_DIALOGS';
+export const hideFirstInstallDialogs = () => ({
+    type: HIDE_FIRST_INSTALL_DIALOGS,
+});
 
 const initialState = {
-    isInstallDirDialogVisible: false,
-    installDir: store.get('installDir', defaultInstallDir),
-    toolchainIndexUrl: store.get('toolchainIndexUrl',
-        'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json'),
+    toolchainDir: null,
+    isOfferDialogVisible: false,
+    isInstructionsDialogVisible: false,
 };
 
-const reducer = (state = initialState, action) => {
+export default (state = initialState, action) => {
     switch (action.type) {
-        case UPDATE_INSTALL_DIR:
-            store.set('installDir', action.installDir);
+        case SHOW_FIRST_INSTALL_OFFER_DIALOG:
             return {
                 ...state,
-                installDir: action.installDir,
+                isOfferDialogVisible: true,
+                isInstructionsDialogVisible: false,
+                toolchainDir: action.toolchainDir,
             };
-        case SHOW_INSTALL_DIR_DIALOG: return { ...state, isInstallDirDialogVisible: true };
-        case HIDE_INSTALL_DIR_DIALOG: return { ...state, isInstallDirDialogVisible: false };
+        case SHOW_FIRST_INSTALL_INSTRUCTIONS_DIALOG:
+            return {
+                ...state,
+                isOfferDialogVisible: false,
+                isInstructionsDialogVisible: true,
+                toolchainDir: action.toolchainDir || state.toolchainDir,
+            };
+        case HIDE_FIRST_INSTALL_DIALOGS:
+            return {
+                ...state,
+                isOfferDialogVisible: false,
+                isInstructionsDialogVisible: false,
+            };
         default:
             return state;
     }
 };
 
-export default reducer;
+export const isOfferDialogVisible = state => state.app.firstInstall.isOfferDialogVisible;
+export const toolchainDir = state => state.app.firstInstall.toolchainDir;
+export const isInstructionsDialogVisible = state => (
+    state.app.firstInstall.isInstructionsDialogVisible);

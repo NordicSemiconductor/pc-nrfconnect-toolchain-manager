@@ -37,6 +37,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
+import FirstInstallOfferDialog from '../FirstInstall/FirstInstallOfferDialog';
+import FirstInstallInstructionsDialog from '../FirstInstall/FirstInstallInstructionsDialog';
+
 import EnvironmentList from './EnvironmentList/EnvironmentList';
 import OtherPlatformInstructions from './OtherPlatformInstructions';
 import { initAction } from './managerActions';
@@ -47,7 +50,13 @@ export default () => {
 
     const isSupportedPlatform = process.platform === 'win32';
     if (isSupportedPlatform) {
-        return <EnvironmentList />;
+        return (
+            <>
+                <EnvironmentList />
+                <FirstInstallOfferDialog />
+                <FirstInstallInstructionsDialog />
+            </>
+        );
     }
 
     return <OtherPlatformInstructions />;

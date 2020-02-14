@@ -37,6 +37,9 @@
 
 import Store from 'electron-store';
 
-const persistentStore = new Store({ name: 'pc-nrfconnect-toolchain-manager' });
+const store = new Store({ name: 'pc-nrfconnect-toolchain-manager' });
 
-export default persistentStore;
+export const isFirstInstall = () => store.get('isFirstInstall', true);
+export const setHasInstalledAnNcs = () => store.set('isFirstInstall', false);
+
+export default store;

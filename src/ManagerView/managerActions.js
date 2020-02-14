@@ -43,6 +43,8 @@ import DecompressZip from 'decompress-zip';
 import { remote, shell } from 'electron';
 import fse from 'fs-extra';
 import semver from 'semver';
+import { isFirstInstall, setHasInstalledAnNcs } from '../util/persistentStore';
+import { showFirstInstallOfferDialog } from '../FirstInstall/firstInstallReducer';
 
 const { net } = remote;
 
@@ -297,11 +299,17 @@ export const install = (environmentVersion, toolchainVersion) => async (dispatch
     const toolchainDir = 'toolchain';
     const unzipDest = path.resolve(installDir, environmentVersion, toolchainDir);
 
+    if (isFirstInstall()) {
+        dispatch(showFirstInstallOfferDialog(unzipDest));
+    }
+
     dispatch(environmentInProcessAction(true));
     fse.mkdirpSync(unzipDest);
     const zipLocation = await dispatch(downloadZip(environmentVersion, toolchainVersion));
     await dispatch(unzip(environmentVersion, zipLocation, unzipDest));
     await dispatch(cloneNcs(environmentVersion));
+
+    setHasInstalledAnNcs();
     dispatch(updateAction());
     dispatch(environmentInProcessAction(false));
 };

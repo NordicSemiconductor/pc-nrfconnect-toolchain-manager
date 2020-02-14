@@ -74,6 +74,7 @@ const EnvironmentItem = ({
     openToolchainFolder,
     removeEnvironment,
     removeToolchain,
+    showFirstInstallInstructionsDialog,
 }) => {
     const isInstalled = !!toolchainDir;
     const progressPct = isInstalled ? 100 : (progress || 0);
@@ -168,6 +169,13 @@ const EnvironmentItem = ({
                                     </Dropdown.Item>
                                     <Dropdown.Divider />
                                     <Dropdown.Item
+                                        onClick={
+                                            () => showFirstInstallInstructionsDialog(toolchainDir)}
+                                    >
+                                        Show how to compile a sample project
+                                    </Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item
                                         title="Update SDK"
                                         onClick={cloneNcs}
                                     >
@@ -220,5 +228,6 @@ EnvironmentItem.propTypes = {
     openToolchainFolder: PropTypes.func.isRequired,
     removeEnvironment: PropTypes.func.isRequired,
     removeToolchain: PropTypes.func.isRequired,
+    showFirstInstallInstructionsDialog: PropTypes.func.isRequired,
 };
 export default EnvironmentItem;
