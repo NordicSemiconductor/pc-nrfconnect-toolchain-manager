@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -36,25 +36,36 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
-import { selectInstallDir, hideInstallDirDialog } from './settingsActions';
+import {
+    hideFirstInstallDialogs,
+    showFirstInstallInstructionsDialog,
+    isOfferDialogVisible,
+} from './firstInstallReducer';
 
 export default () => {
     const dispatch = useDispatch();
-    const isVisible = useSelector(state => state.app.settings.isInstallDirDialogVisible);
+    const isVisible = useSelector(isOfferDialogVisible);
 
     return (
         <ConfirmationDialog
             isVisible={isVisible}
-            title="Change install directory"
-            onConfirm={() => dispatch(selectInstallDir())}
-            onCancel={() => dispatch(hideInstallDirDialog())}
+            title="First steps with nRF Connect SDK"
+            onConfirm={() => dispatch(showFirstInstallInstructionsDialog())}
+            onCancel={() => dispatch(hideFirstInstallDialogs())}
         >
             <p>
-                When you change the installation directory, SDK environments installed in the old
-                directory will not be shown in the list anymore. They will not be deleted, so
-                you can still find them on the disc and changing back to the old directory will
-                show them in the manager again.
+                Currently tools as well as the nRF Connect SDK (NCS) are
+                installed. This takes some time, depending on your net and
+                computer speed, a duration between a few minutes and up to half
+                an hour are common.
+            </p>
+            <p>
+                If you have never programmed a Nordic device before, we suggest
+                that you start out with one of the samples from the nRF Connect
+                SDK. While you wait for the installation you can now read how
+                this is done.
             </p>
         </ConfirmationDialog>
     );

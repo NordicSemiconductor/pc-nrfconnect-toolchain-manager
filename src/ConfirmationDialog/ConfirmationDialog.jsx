@@ -39,39 +39,33 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-const CommonDialogView = ({
+const ConfirmationDialog = ({
     title,
     children,
     isVisible,
-    onYes,
-    onNo,
+    onConfirm,
+    onCancel,
 }) => (
-    <Modal show={isVisible} onHide={onNo} backdrop>
+    <Modal show={isVisible} onHide={onCancel || onConfirm} backdrop>
         <Modal.Header closeButton={false}>
             <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>{children}</Modal.Body>
         <Modal.Footer>
-            <Button
-                onClick={onYes}
-            >
-                Yes
-            </Button>
-            <Button
-                onClick={onNo}
-            >
-                No
-            </Button>
+            <Button variant="primary" onClick={onConfirm}>OK</Button>
+            {onCancel
+               && <Button variant="outline-primary" onClick={onCancel}>Cancel</Button>
+            }
         </Modal.Footer>
     </Modal>
 );
 
-CommonDialogView.propTypes = {
+ConfirmationDialog.propTypes = {
     title: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
     isVisible: PropTypes.bool.isRequired,
-    onYes: PropTypes.func.isRequired,
-    onNo: PropTypes.func.isRequired,
+    onConfirm: PropTypes.func.isRequired,
+    onCancel: PropTypes.func, // eslint-disable-line react/require-default-props
 };
 
-export default CommonDialogView;
+export default ConfirmationDialog;

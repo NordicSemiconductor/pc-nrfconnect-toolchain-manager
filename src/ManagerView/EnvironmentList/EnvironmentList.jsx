@@ -38,6 +38,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { showFirstInstallInstructionsDialog } from '../../FirstInstall/firstInstallReducer';
 import {
     cloneNcs,
     installLatestToolchain,
@@ -68,6 +69,8 @@ export default () => {
             openToolchainFolder={() => dispatch(openToolchainFolder(environment.version))}
             removeEnvironment={() => dispatch(removeEnvironment(environment.version))}
             removeToolchain={() => dispatch(removeToolchain(environment.version))}
+            showFirstInstallInstructionsDialog={
+                toolchainDir => dispatch(showFirstInstallInstructionsDialog(toolchainDir))}
         />
     ));
 };
