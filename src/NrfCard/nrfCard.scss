@@ -37,5 +37,9 @@
 .nrf-card {
     max-width: 800px;
     margin: auto;
+    height: 8em;
+}
+
+.nrf-card:not(:first-child) {
     margin-top: 2em;
 }

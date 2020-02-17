@@ -34,36 +34,43 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.toolchain-item-info {
-    height: 2em;
+.toolchain-item-info.h4 {
+    line-height: 2rem;
 }
 
 .toolchain-item-button {
     min-width: 8em;
 }
 
-.toolchain-item-progress.col {
-    padding: 0px 14px;
+.nrf-card {
     .progress {
-        font-size: 0.8em;
-        width: 20em;
-        height: 2.4em;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 0.5em;
         border-radius: 0;
+        background-color: none;
+    }
+
+    .progress.available {
+        display: none;
+    }
+
+    .progress.installed {
+        display: none;
+    }
+
+    .progress.installing {
+        .progress-bar {
+            background-color: #0080B7 !important;
+        }
+    }
+
+    .progress.removing {
+        .progress-bar {
+            background-color: #E91E63 !important;
+        }
     }
 }
 
-.toolchain-available {
-    background-color: #333F48 !important;
-}
-
-.toolchain-installed {
-    background-color: #4CAF50 !important;
-}
-
-.toolchain-installing {
-    background-color: #0080B7 !important;
-}
-
-.toolchain-removing {
-    background-color: #E91E63 !important;
-}
