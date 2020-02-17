@@ -52,10 +52,14 @@ export const ENVIRONMENT_LIST_UPDATE = 'ENVIRONMENT_LIST_UPDATE';
 export const ENVIRONMENT_IN_PROCESS = 'ENVIRONMENT_IN_PROCESS';
 
 const compareBy = prop => (a, b) => {
-    switch (true) {
-        case (a[prop] < b[prop]): return 1;
-        case (a[prop] > b[prop]): return -1;
-        default: return 0;
+    try {
+        return -semver.compare(a[prop], b[prop]);
+    } catch (_) {
+        switch (true) {
+            case (a[prop] < b[prop]): return -1;
+            case (a[prop] > b[prop]): return 1;
+            default: return 0;
+        }
     }
 };
 
