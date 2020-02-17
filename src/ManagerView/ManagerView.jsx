@@ -42,22 +42,26 @@ import FirstInstallInstructionsDialog from '../FirstInstall/FirstInstallInstruct
 
 import EnvironmentList from './EnvironmentList/EnvironmentList';
 import OtherPlatformInstructions from './OtherPlatformInstructions';
-import { initAction } from './managerActions';
+import { init } from './managerActions';
 
-export default () => {
+export default props => {
     const dispatch = useDispatch();
-    useEffect(() => dispatch(initAction()), []);
+    useEffect(() => dispatch(init()), []);
 
     const isSupportedPlatform = process.platform === 'win32';
     if (isSupportedPlatform) {
         return (
-            <>
+            <div {...props}>
                 <EnvironmentList />
                 <FirstInstallOfferDialog />
                 <FirstInstallInstructionsDialog />
-            </>
+            </div>
         );
     }
 
-    return <OtherPlatformInstructions />;
+    return (
+        <div {...props}>
+            <OtherPlatformInstructions />
+        </div>
+    );
 };
