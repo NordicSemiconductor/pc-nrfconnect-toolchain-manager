@@ -50,6 +50,9 @@ const { net } = remote;
 
 export const ENVIRONMENT_LIST_UPDATE = 'ENVIRONMENT_LIST_UPDATE';
 export const ENVIRONMENT_IN_PROCESS = 'ENVIRONMENT_IN_PROCESS';
+export const ENVIRONMENT_LIST_CLEAR = 'ENVIRONMENT_LIST_CLEAR';
+export const TOOLCHAIN_UPDATE = 'TOOLCHAIN_UPDATE';
+export const ENVIRONMENT_REMOVE = 'ENVIRONMENT_REMOVE';
 
 const compareBy = prop => (a, b) => {
     try {
@@ -68,14 +71,20 @@ export const environmentListUpdateAction = environmentList => ({
     environmentList: [...environmentList.sort(compareBy('version'))],
 });
 
-export const environmentInProcessAction = isInProcess => ({
+export const environmentInProcessAction = (version, isInProcess) => ({
     type: ENVIRONMENT_IN_PROCESS,
+    version,
     isInProcess,
 });
 
-export const clearEnvironmentList = dispatch => {
-    dispatch(environmentListUpdateAction([]));
-};
+const removeEnvironmentAction = version => ({
+    type: ENVIRONMENT_REMOVE,
+    version,
+});
+
+export const clearEnvironmentListAction = () => ({
+    type: ENVIRONMENT_LIST_CLEAR,
+});
 
 export const environmentUpdate = environment => (dispatch, getState) => {
     if (!environment) {
@@ -95,37 +104,14 @@ export const environmentUpdate = environment => (dispatch, getState) => {
     dispatch(environmentListUpdateAction(environmentList));
 };
 
-const toolchainUpdate = (
+const toolchainUpdateAction = (
     environmentVersion,
     toolchain,
-) => (dispatch, getState) => {
-    if (!toolchain) {
-        throw new Error('No toolchain state provided');
-    }
-
-    const { environmentList } = getState().app.manager;
-    const envIndex = environmentList.findIndex(v => v.version === environmentVersion);
-    if (envIndex < 0) {
-        throw new Error(`No environment version found for ${environmentVersion}`);
-    }
-
-    const toolchainList = environmentList[envIndex].toolchainList || [];
-    const toolchainIndex = toolchainList.findIndex(v => (v.version === toolchain.version));
-    if (toolchainIndex < 0) {
-        toolchainList.push(toolchain);
-    } else {
-        toolchainList[toolchainIndex] = {
-            ...toolchainList[toolchainIndex],
-            ...toolchain,
-        };
-    }
-
-    environmentList[envIndex] = {
-        ...environmentList[envIndex],
-        toolchainList,
-    };
-    dispatch(environmentListUpdateAction(environmentList));
-};
+) => ({
+    type: TOOLCHAIN_UPDATE,
+    environmentVersion,
+    toolchain,
+});
 
 const getEnvironment = (version, getState) => {
     const { environmentList } = getState().app.manager;
@@ -182,7 +168,7 @@ export const downloadIndex = () => async (dispatch, getState) => {
         dispatch(environmentUpdate(updatedEnvironment));
         toolchains.sort(compareBy('name'))
             .forEach(toolchain => {
-                dispatch(toolchainUpdate(version, toolchain));
+                dispatch(toolchainUpdateAction(version, toolchain));
             });
     });
 };
@@ -306,7 +292,7 @@ export const install = (environmentVersion, toolchainVersion) => async (dispatch
         dispatch(showFirstInstallOfferDialog(unzipDest));
     }
 
-    dispatch(environmentInProcessAction(true));
+    dispatch(environmentInProcessAction(environmentVersion, true));
     fse.mkdirpSync(unzipDest);
     const zipLocation = await dispatch(downloadZip(environmentVersion, toolchainVersion));
     await dispatch(unzip(environmentVersion, zipLocation, unzipDest));
@@ -315,7 +301,7 @@ export const install = (environmentVersion, toolchainVersion) => async (dispatch
     setHasInstalledAnNcs();
     dispatch(checkLocalEnvironments());
     await dispatch(downloadIndex());
-    dispatch(environmentInProcessAction(false));
+    dispatch(environmentInProcessAction(environmentVersion, false));
 };
 
 export const installLatestToolchain = version => (dispatch, getState) => {
@@ -343,7 +329,7 @@ export const removeToolchain = (version, withParent = false) => async (dispatch,
     const environment = getEnvironment(version, getState);
     const { toolchainDir } = environment;
     const toBeDeletedDir = path.resolve(toolchainDir, '..', '..', 'toBeDeleted');
-    dispatch(environmentInProcessAction(true));
+    dispatch(environmentInProcessAction(version, true));
     dispatch(environmentUpdate({
         ...environment,
         isRemoving: true,
@@ -369,12 +355,16 @@ export const removeToolchain = (version, withParent = false) => async (dispatch,
         console.log(`Failed to remove files with error: ${error}`);
         updatedToolchainDir = toolchainDir;
     } finally {
-        dispatch(environmentUpdate({
-            ...environment,
-            toolchainDir: updatedToolchainDir,
-            isRemoving: false,
-        }));
-        dispatch(environmentInProcessAction(false));
+        if (environment.toolchainList) {
+            dispatch(environmentUpdate({
+                ...environment,
+                toolchainDir: updatedToolchainDir,
+                isRemoving: false,
+            }));
+            dispatch(environmentInProcessAction(version, false));
+        } else {
+            dispatch(removeEnvironmentAction(version));
+        }
     }
 };
 

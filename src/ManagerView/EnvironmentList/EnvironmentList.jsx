@@ -54,13 +54,11 @@ import EnvironmentItem from '../EnvironmentItem/EnvironmentItem';
 export default () => {
     const dispatch = useDispatch();
     const environmentList = useSelector(state => state.app.manager.environmentList);
-    const isInProcess = useSelector(state => state.app.manager.isInProcess);
 
     return environmentList.map(environment => (
         <EnvironmentItem
             key={environment.version}
             environment={environment}
-            isInProcess={isInProcess}
             cloneNcs={() => dispatch(cloneNcs(environment.version))}
             install={() => dispatch(installLatestToolchain(environment.version))}
             open={() => dispatch(openSegger(environment.version))}
