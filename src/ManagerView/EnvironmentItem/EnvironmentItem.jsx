@@ -73,7 +73,6 @@ const EnvironmentItem = ({
     openFolder,
     openToolchainFolder,
     removeEnvironment,
-    removeToolchain,
     showFirstInstallInstructionsDialog,
 }) => {
     const isInstalled = !!toolchainDir;
@@ -189,16 +188,10 @@ const EnvironmentItem = ({
                                     </Dropdown.Item>
                                     <Dropdown.Divider />
                                     <Dropdown.Item
-                                        title="Remove toolchain"
-                                        onClick={removeToolchain}
-                                    >
-                                        Remove toolchain
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                        title="Remove all"
+                                        title="Remove"
                                         onClick={removeEnvironment}
                                     >
-                                        Remove toochain & SDK
+                                        Remove
                                     </Dropdown.Item>
                                 </>
                             )}
@@ -227,7 +220,6 @@ EnvironmentItem.propTypes = {
     openFolder: PropTypes.func.isRequired,
     openToolchainFolder: PropTypes.func.isRequired,
     removeEnvironment: PropTypes.func.isRequired,
-    removeToolchain: PropTypes.func.isRequired,
     showFirstInstallInstructionsDialog: PropTypes.func.isRequired,
 };
 export default EnvironmentItem;
