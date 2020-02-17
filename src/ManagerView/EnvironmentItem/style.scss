@@ -53,10 +53,7 @@
         background-color: none;
     }
 
-    .progress.available {
-        display: none;
-    }
-
+    .progress.available,
     .progress.installed {
         display: none;
     }
