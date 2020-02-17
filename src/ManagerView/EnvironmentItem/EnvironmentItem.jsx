@@ -73,7 +73,6 @@ const EnvironmentItem = ({
     openFolder,
     openToolchainFolder,
     removeEnvironment,
-    removeToolchain,
     showFirstInstallInstructionsDialog,
 }) => {
     const isInstalled = !!toolchainDir;
@@ -221,7 +220,6 @@ EnvironmentItem.propTypes = {
     openFolder: PropTypes.func.isRequired,
     openToolchainFolder: PropTypes.func.isRequired,
     removeEnvironment: PropTypes.func.isRequired,
-    removeToolchain: PropTypes.func.isRequired,
     showFirstInstallInstructionsDialog: PropTypes.func.isRequired,
 };
 export default EnvironmentItem;
