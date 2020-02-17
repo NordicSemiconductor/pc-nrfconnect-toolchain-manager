@@ -189,16 +189,10 @@ const EnvironmentItem = ({
                                     </Dropdown.Item>
                                     <Dropdown.Divider />
                                     <Dropdown.Item
-                                        title="Remove toolchain"
-                                        onClick={removeToolchain}
-                                    >
-                                        Remove toolchain
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                        title="Remove all"
+                                        title="Remove"
                                         onClick={removeEnvironment}
                                     >
-                                        Remove toochain & SDK
+                                        Remove
                                     </Dropdown.Item>
                                 </>
                             )}
