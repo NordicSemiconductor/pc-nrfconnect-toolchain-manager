@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,43 +34,32 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import FirstInstallOfferDialog from '../FirstInstall/FirstInstallOfferDialog';
-import FirstInstallInstructionsDialog from '../FirstInstall/FirstInstallInstructionsDialog';
+import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import {
+    hideFirstInstallDialogs,
+    showFirstInstallInstructionsDialog,
+    isOfferDialogVisible,
+} from './firstInstallReducer';
 
-import EnvironmentList from './EnvironmentList/EnvironmentList';
-import OtherPlatformInstructions from './OtherPlatformInstructions';
-import { init } from './managerActions';
-import InstallDirDialog from '../SettingsView/InstallDirDialog';
-
-export default props => {
+export default () => {
     const dispatch = useDispatch();
-    useEffect(() => dispatch(init()), []);
-    const isInstallDirDialogVisible = useSelector(state => state.app.manager.isInstallDirDialogVisible);
-
-    const isSupportedPlatform = process.platform === 'win32';
-    if (isSupportedPlatform) {
-        return (
-            <div {...props}>
-                <EnvironmentList />
-                <FirstInstallOfferDialog />
-                <FirstInstallInstructionsDialog />
-                <InstallDirDialog
-                    isVisible={isInstallDirDialogVisible}
-                    title="Confirm installation directory"
-                    onOptional={() => { console.log('foo'); }}
-                    optionalLabel="Change directory"
-                    confirmLabel="Continue installation"
-                />
-            </div>
-        );
-    }
+    const isVisible = useSelector(isOfferDialogVisible);
 
     return (
-        <div {...props}>
-            <OtherPlatformInstructions />
-        </div>
+        <ConfirmationDialog
+            isVisible={isVisible}
+            title="Installation base directory"
+            onConfirm={() => dispatch(showFirstInstallInstructionsDialog())}
+            onCancel={() => dispatch(hideFirstInstallDialogs())}
+            onOptional={() => {}}
+            optionalLabel="Change directory"
+        >
+            <p>
+                Your current installation base directory is <code>${}</code>.
+            </p>
+        </ConfirmationDialog>
     );
 };
