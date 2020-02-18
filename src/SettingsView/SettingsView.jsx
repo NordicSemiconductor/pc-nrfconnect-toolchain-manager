@@ -48,8 +48,10 @@ import { showInstallDirDialog } from './settingsActions';
 
 export default props => {
     const dispatch = useDispatch();
-    const installDir = useSelector(state => state.app.settings.installDir);
-    const isInstallDirDialogVisible = useSelector(state => state.app.settings.isInstallDirDialogVisible);
+    const {
+        installDir,
+        isInstallDirDialogVisible,
+    } = useSelector(state => state.app.settings);
 
     return (
         <div {...props}>

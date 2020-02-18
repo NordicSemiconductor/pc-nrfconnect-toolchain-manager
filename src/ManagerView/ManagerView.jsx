@@ -37,18 +37,21 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import FirstInstallOfferDialog from '../FirstInstall/FirstInstallOfferDialog';
 import FirstInstallInstructionsDialog from '../FirstInstall/FirstInstallInstructionsDialog';
-
-import EnvironmentList from './EnvironmentList/EnvironmentList';
-import OtherPlatformInstructions from './OtherPlatformInstructions';
-import { init } from './managerActions';
+import FirstInstallOfferDialog from '../FirstInstall/FirstInstallOfferDialog';
 import InstallDirDialog from '../SettingsView/InstallDirDialog';
+import { selectInstallDir } from '../SettingsView/settingsActions';
+import EnvironmentList from './EnvironmentList/EnvironmentList';
+import { hideConfirmInstallDialog, init, installLatestToolchain } from './managerActions';
+import OtherPlatformInstructions from './OtherPlatformInstructions';
 
 export default props => {
     const dispatch = useDispatch();
     useEffect(() => dispatch(init()), []);
-    const isInstallDirDialogVisible = useSelector(state => state.app.manager.isInstallDirDialogVisible);
+    const {
+        isInstallDirDialogVisible,
+        environmentVersion,
+    } = useSelector(state => state.app.manager);
 
     const isSupportedPlatform = process.platform === 'win32';
     if (isSupportedPlatform) {
@@ -60,9 +63,11 @@ export default props => {
                 <InstallDirDialog
                     isVisible={isInstallDirDialogVisible}
                     title="Confirm installation directory"
-                    onOptional={() => { console.log('foo'); }}
+                    onOptional={() => dispatch(selectInstallDir())}
                     optionalLabel="Change directory"
                     confirmLabel="Continue installation"
+                    onCancel={() => dispatch(hideConfirmInstallDialog())}
+                    onConfirm={() => dispatch(installLatestToolchain(environmentVersion))}
                 />
             </div>
         );

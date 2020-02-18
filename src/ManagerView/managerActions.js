@@ -88,11 +88,12 @@ export const clearEnvironmentListAction = () => ({
     type: ENVIRONMENT_LIST_CLEAR,
 });
 
-const showConfirmInstallDialog = () => ({
+const showConfirmInstallDialog = version => ({
     type: CONFIRM_INSTALL_DIALOG_SHOW,
+    version,
 });
 
-const hideConfirmInstallDialog = () => ({
+export const hideConfirmInstallDialog = () => ({
     type: CONFIRM_INSTALL_DIALOG_HIDE,
 });
 
@@ -293,12 +294,8 @@ export const init = () => (dispatch, getState) => {
     dispatch(downloadIndex());
 };
 
-const confirmInstall = (
-    environmentVersion,
-    toolchainVersion,
-) => async (dispatch, getState) => {
-    dispatch(showConfirmInstallDialog());
-    // dispatch(install(environmentVersion, toolchainVersion));
+export const confirmInstall = version => dispatch => {
+    dispatch(showConfirmInstallDialog(version));
 };
 
 const install = (environmentVersion, toolchainVersion) => async (dispatch, getState) => {
@@ -325,7 +322,8 @@ const install = (environmentVersion, toolchainVersion) => async (dispatch, getSt
 export const installLatestToolchain = version => (dispatch, getState) => {
     const toolchain = getEnvironment(version, getState)
         .toolchainList.sort(compareBy('version'))[0];
-    dispatch(confirmInstall(version, toolchain.version));
+    dispatch(hideConfirmInstallDialog());
+    dispatch(install(version, toolchain.version));
 };
 
 export const openFolder = version => (dispatch, getState) => {

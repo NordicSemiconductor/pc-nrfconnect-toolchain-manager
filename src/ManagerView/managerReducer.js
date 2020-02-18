@@ -48,6 +48,7 @@ const InitialState = {
     environmentList: [],
     isInProcess: false,
     isInstallDirDialogVisible: false,
+    environmentVersionToInstall: null,
 };
 
 const reducer = (state = InitialState, action) => {
@@ -129,13 +130,15 @@ const reducer = (state = InitialState, action) => {
             return {
                 ...state,
                 isInstallDirDialogVisible: true,
-            }
+                environmentVersionToInstall: action.version,
+            };
         }
         case CONFIRM_INSTALL_DIALOG_HIDE: {
             return {
                 ...state,
                 isInstallDirDialogVisible: false,
-            }
+                environmentVersionToInstall: null,
+            };
         }
         default:
             return state;
