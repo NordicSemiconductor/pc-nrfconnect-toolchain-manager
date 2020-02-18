@@ -38,6 +38,7 @@ import './style.scss';
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Col from 'react-bootstrap/Col';
@@ -67,60 +68,37 @@ const EnvironmentItem = ({
     },
     cloneNcs,
     install,
-    isInProcess,
     open,
     openBash,
     openFolder,
     openToolchainFolder,
     removeEnvironment,
-    removeToolchain,
     showFirstInstallInstructionsDialog,
 }) => {
+    const isInProcess = useSelector(({ app }) => (
+        app.manager.environmentList.find(v => v.version === version).isInProcess
+    ));
+
     const isInstalled = !!toolchainDir;
-    const progressPct = isInstalled ? 100 : (progress || 0);
-    let progressLabel = progress ? `${progress}%` : '';
-    progressLabel = isInstalled ? 'Installed' : progressLabel;
-    progressLabel = isCloning ? 'Cloning SDK' : progressLabel;
-    progressLabel = isRemoving ? 'Removing' : progressLabel;
-    let progressClassName = isInstalled ? 'toolchain-installed' : 'toolchain-installing';
-    progressClassName = isCloning ? 'toolchain-installing' : progressClassName;
-    progressClassName = isRemoving ? 'toolchain-removing' : progressClassName;
+    let progressPct = isRemoving ? 0 : progress;
+    progressPct = isInstalled ? 100 : (progressPct || 0);
+    let progressLabel = progress ? `Installing ${progress}%` : '';
+    progressLabel = isInstalled ? '' : progressLabel;
+    progressLabel = isCloning ? 'Cloning SDK...' : progressLabel;
+    progressLabel = isRemoving ? 'Removing...' : progressLabel;
+    let progressClassName = progressPct === 0 ? 'available' : 'installing';
+    progressClassName = isInstalled ? 'installed' : progressClassName;
+    progressClassName = isCloning ? 'installing' : progressClassName;
+    progressClassName = isRemoving ? 'removing' : progressClassName;
     return (
         <NrfCard>
-            <Row noGutters className="py-1">
-                <Col xs="auto my-2 mr-3" className="d-flex align-items-start">
-                    {/* <AppIcon toolchain={toolchain} /> */}
-                </Col>
+            <Row noGutters>
                 <Col>
-                    <Row className="toolchain-item-info">
-                        <Col className="h4">
-                            nRF Connect SDK {version}
-                        </Col>
+                    <Row noGutters className="toolchain-item-info h4 mb-0 pt-3">
+                        nRF Connect SDK {version}
                     </Row>
-                    <Row className="toolchain-item-info">
-                        <Col className="text-muted">
-                            {toolchainDir}
-                        </Col>
-                    </Row>
-                    <Row className="toolchain-item-info">
-                        <Col className="toolchain-item-progress">
-                            <ProgressBar>
-                                <ProgressBar
-                                    now={progressPct}
-                                    label={progressLabel}
-                                    striped={!isInstalled || isRemoving || isCloning}
-                                    animated={!isInstalled || isRemoving || isCloning}
-                                    className={progressClassName}
-                                />
-                                {(progressPct === 0) && (
-                                    <ProgressBar
-                                        now={100}
-                                        label="Available"
-                                        className="toolchain-available"
-                                    />
-                                )}
-                            </ProgressBar>
-                        </Col>
+                    <Row noGutters className="toolchain-item-info text-muted small font-italic">
+                        {progressLabel}
                     </Row>
                 </Col>
                 <Col xs="auto ml-auto" className="d-flex align-items-center my-3 pl-3">
@@ -130,6 +108,7 @@ const EnvironmentItem = ({
                                 onClick={install}
                                 label="Install"
                                 disabled={isInProcess}
+                                variant="outline-primary"
                             />
                         )}
                         { isInstalled && isWestPresent && (
@@ -189,16 +168,10 @@ const EnvironmentItem = ({
                                     </Dropdown.Item>
                                     <Dropdown.Divider />
                                     <Dropdown.Item
-                                        title="Remove toolchain"
-                                        onClick={removeToolchain}
-                                    >
-                                        Remove toolchain
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                        title="Remove all"
+                                        title="Remove"
                                         onClick={removeEnvironment}
                                     >
-                                        Remove toochain & SDK
+                                        Remove
                                     </Dropdown.Item>
                                 </>
                             )}
@@ -206,6 +179,12 @@ const EnvironmentItem = ({
                     </ButtonToolbar>
                 </Col>
             </Row>
+            <ProgressBar
+                now={progressPct}
+                striped={!isInstalled || isRemoving || isCloning}
+                animated={!isInstalled || isRemoving || isCloning}
+                className={progressClassName}
+            />
         </NrfCard>
     );
 };
@@ -221,13 +200,11 @@ EnvironmentItem.propTypes = {
     }).isRequired,
     cloneNcs: PropTypes.func.isRequired,
     install: PropTypes.func.isRequired,
-    isInProcess: PropTypes.bool.isRequired,
     open: PropTypes.func.isRequired,
     openBash: PropTypes.func.isRequired,
     openFolder: PropTypes.func.isRequired,
     openToolchainFolder: PropTypes.func.isRequired,
     removeEnvironment: PropTypes.func.isRequired,
-    removeToolchain: PropTypes.func.isRequired,
     showFirstInstallInstructionsDialog: PropTypes.func.isRequired,
 };
 export default EnvironmentItem;
