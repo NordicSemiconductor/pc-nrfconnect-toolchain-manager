@@ -44,6 +44,8 @@ import appReducer from './reducers';
 import ManagerView from './ManagerView/ManagerView';
 import SettingsView from './SettingsView/SettingsView';
 
+const showIf = visible => (visible ? 'd-block' : 'd-none');
+
 export default {
     mapMainViewState: ({ core }, props) => ({
         ...props,
@@ -51,8 +53,8 @@ export default {
     }),
     decorateMainView: MainView => ({ viewId }) => (
         <MainView cssClass="main-view">
-            {viewId === 0 && <ManagerView />}
-            {viewId === 1 && <SettingsView />}
+            <ManagerView className={showIf(viewId === 0)} />
+            <SettingsView className={showIf(viewId === 1)} />
         </MainView>
     ),
     decorateSidePanel: () => () => null,

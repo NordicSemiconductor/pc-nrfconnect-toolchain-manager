@@ -34,7 +34,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { ENVIRONMENT_LIST_UPDATE, ENVIRONMENT_IN_PROCESS } from './managerActions';
+import {
+    ENVIRONMENT_LIST_UPDATE,
+    ENVIRONMENT_IN_PROCESS,
+    ENVIRONMENT_LIST_CLEAR,
+    TOOLCHAIN_UPDATE,
+    ENVIRONMENT_REMOVE,
+} from './managerActions';
 
 const InitialState = {
     environmentList: [],
@@ -48,11 +54,74 @@ const reducer = (state = InitialState, action) => {
                 ...state,
                 environmentList: action.environmentList,
             };
-        case ENVIRONMENT_IN_PROCESS:
-            return {
-                ...state,
+        case ENVIRONMENT_IN_PROCESS: {
+            const { version } = action;
+            const { environmentList } = state;
+            const envIndex = environmentList.findIndex(v => v.version === version);
+            if (envIndex < 0) {
+                throw new Error(`No environment version found for ${version}`);
+            }
+            environmentList[envIndex] = {
+                ...environmentList[envIndex],
                 isInProcess: action.isInProcess,
             };
+            return {
+                ...state,
+                environmentList: [...environmentList],
+                isInProcess: action.isInProcess,
+            };
+        }
+        case ENVIRONMENT_LIST_CLEAR:
+            return {
+                ...state,
+                environmentList: [],
+            };
+        case TOOLCHAIN_UPDATE: {
+            const { toolchain, environmentVersion } = action;
+            if (!toolchain) {
+                throw new Error('No toolchain state provided');
+            }
+
+            const { environmentList } = state;
+            const envIndex = environmentList.findIndex(v => v.version === environmentVersion);
+            if (envIndex < 0) {
+                throw new Error(`No environment version found for ${environmentVersion}`);
+            }
+
+            const toolchainList = environmentList[envIndex].toolchainList || [];
+            const toolchainIndex = toolchainList.findIndex(v => (v.version === toolchain.version));
+            if (toolchainIndex < 0) {
+                toolchainList.push(toolchain);
+            } else {
+                toolchainList[toolchainIndex] = {
+                    ...toolchainList[toolchainIndex],
+                    ...toolchain,
+                };
+            }
+
+            environmentList[envIndex] = {
+                ...environmentList[envIndex],
+                toolchainList,
+            };
+
+            return {
+                ...state,
+                environmentList: [...environmentList],
+            };
+        }
+        case ENVIRONMENT_REMOVE: {
+            const { version } = action;
+            const { environmentList } = state;
+            const envIndex = environmentList.findIndex(v => v.version === version);
+            if (envIndex < 0) {
+                throw new Error(`No environment version found for ${version}`);
+            }
+            environmentList.splice(envIndex, 1);
+            return {
+                ...state,
+                environmentList: [...environmentList],
+            };
+        }
         default:
             return state;
     }

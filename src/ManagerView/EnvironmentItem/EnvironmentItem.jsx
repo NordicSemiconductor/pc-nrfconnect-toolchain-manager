@@ -38,6 +38,7 @@ import './style.scss';
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Col from 'react-bootstrap/Col';
@@ -67,7 +68,6 @@ const EnvironmentItem = ({
     },
     cloneNcs,
     install,
-    isInProcess,
     open,
     openBash,
     openFolder,
@@ -75,6 +75,10 @@ const EnvironmentItem = ({
     removeEnvironment,
     showFirstInstallInstructionsDialog,
 }) => {
+    const isInProcess = useSelector(({ app }) => (
+        app.manager.environmentList.find(v => v.version === version).isInProcess
+    ));
+
     const isInstalled = !!toolchainDir;
     let progressPct = isRemoving ? 0 : progress;
     progressPct = isInstalled ? 100 : (progressPct || 0);
@@ -196,7 +200,6 @@ EnvironmentItem.propTypes = {
     }).isRequired,
     cloneNcs: PropTypes.func.isRequired,
     install: PropTypes.func.isRequired,
-    isInProcess: PropTypes.bool.isRequired,
     open: PropTypes.func.isRequired,
     openBash: PropTypes.func.isRequired,
     openFolder: PropTypes.func.isRequired,

@@ -46,12 +46,12 @@ import NrfCard from '../NrfCard/NrfCard';
 import InstallDirDialog from './InstallDirDialog';
 import { showInstallDirDialog } from './settingsActions';
 
-export default () => {
+export default props => {
     const dispatch = useDispatch();
     const installDir = useSelector(state => state.app.settings.installDir);
 
     return (
-        <>
+        <div {...props}>
             <NrfCard>
                 <Row className="settings-info">
                     <Col className="h4">
@@ -75,6 +75,6 @@ export default () => {
             </NrfCard>
 
             <InstallDirDialog />
-        </>
+        </div>
     );
 };
