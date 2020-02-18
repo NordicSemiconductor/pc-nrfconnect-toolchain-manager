@@ -53,6 +53,8 @@ export const ENVIRONMENT_IN_PROCESS = 'ENVIRONMENT_IN_PROCESS';
 export const ENVIRONMENT_LIST_CLEAR = 'ENVIRONMENT_LIST_CLEAR';
 export const TOOLCHAIN_UPDATE = 'TOOLCHAIN_UPDATE';
 export const ENVIRONMENT_REMOVE = 'ENVIRONMENT_REMOVE';
+export const CONFIRM_INSTALL_DIALOG_SHOW = 'CONFIRM_INSTALL_DIALOG_SHOW';
+export const CONFIRM_INSTALL_DIALOG_HIDE = 'CONFIRM_INSTALL_DIALOG_HIDE';
 
 const compareBy = prop => (a, b) => {
     try {
@@ -84,6 +86,15 @@ const removeEnvironmentAction = version => ({
 
 export const clearEnvironmentListAction = () => ({
     type: ENVIRONMENT_LIST_CLEAR,
+});
+
+const showConfirmInstallDialog = version => ({
+    type: CONFIRM_INSTALL_DIALOG_SHOW,
+    version,
+});
+
+export const hideConfirmInstallDialog = () => ({
+    type: CONFIRM_INSTALL_DIALOG_HIDE,
 });
 
 export const environmentUpdate = environment => (dispatch, getState) => {
@@ -283,7 +294,11 @@ export const init = () => (dispatch, getState) => {
     dispatch(downloadIndex());
 };
 
-export const install = (environmentVersion, toolchainVersion) => async (dispatch, getState) => {
+export const confirmInstall = version => dispatch => {
+    dispatch(showConfirmInstallDialog(version));
+};
+
+const install = (environmentVersion, toolchainVersion) => async (dispatch, getState) => {
     const { installDir } = getState().app.settings;
     const toolchainDir = 'toolchain';
     const unzipDest = path.resolve(installDir, environmentVersion, toolchainDir);
@@ -307,6 +322,7 @@ export const install = (environmentVersion, toolchainVersion) => async (dispatch
 export const installLatestToolchain = version => (dispatch, getState) => {
     const toolchain = getEnvironment(version, getState)
         .toolchainList.sort(compareBy('version'))[0];
+    dispatch(hideConfirmInstallDialog());
     dispatch(install(version, toolchain.version));
 };
 

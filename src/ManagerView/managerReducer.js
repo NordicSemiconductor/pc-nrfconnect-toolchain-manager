@@ -40,11 +40,15 @@ import {
     ENVIRONMENT_LIST_CLEAR,
     TOOLCHAIN_UPDATE,
     ENVIRONMENT_REMOVE,
+    CONFIRM_INSTALL_DIALOG_SHOW,
+    CONFIRM_INSTALL_DIALOG_HIDE,
 } from './managerActions';
 
 const InitialState = {
     environmentList: [],
     isInProcess: false,
+    isInstallDirDialogVisible: false,
+    environmentVersionToInstall: null,
 };
 
 const reducer = (state = InitialState, action) => {
@@ -120,6 +124,20 @@ const reducer = (state = InitialState, action) => {
             return {
                 ...state,
                 environmentList: [...environmentList],
+            };
+        }
+        case CONFIRM_INSTALL_DIALOG_SHOW: {
+            return {
+                ...state,
+                isInstallDirDialogVisible: true,
+                environmentVersionToInstall: action.version,
+            };
+        }
+        case CONFIRM_INSTALL_DIALOG_HIDE: {
+            return {
+                ...state,
+                isInstallDirDialogVisible: false,
+                environmentVersionToInstall: null,
             };
         }
         default:

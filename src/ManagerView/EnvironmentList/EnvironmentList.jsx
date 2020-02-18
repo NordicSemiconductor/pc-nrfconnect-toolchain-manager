@@ -41,7 +41,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { showFirstInstallInstructionsDialog } from '../../FirstInstall/firstInstallReducer';
 import {
     cloneNcs,
-    installLatestToolchain,
+    confirmInstall,
     openBash,
     openFolder,
     openToolchainFolder,
@@ -60,7 +60,7 @@ export default () => {
             key={environment.version}
             environment={environment}
             cloneNcs={() => dispatch(cloneNcs(environment.version))}
-            install={() => dispatch(installLatestToolchain(environment.version))}
+            install={() => dispatch(confirmInstall(environment.version))}
             open={() => dispatch(openSegger(environment.version))}
             openBash={() => dispatch(openBash(environment.version))}
             openFolder={() => dispatch(openFolder(environment.version))}

@@ -39,17 +39,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { selectInstallDir, hideInstallDirDialog } from './settingsActions';
 
-export default () => {
+export default props => {
     const dispatch = useDispatch();
-    const isVisible = useSelector(state => state.app.settings.isInstallDirDialogVisible);
+    const installDir = useSelector(state => state.app.settings.installDir);
 
     return (
         <ConfirmationDialog
-            isVisible={isVisible}
             title="Change install directory"
             onConfirm={() => dispatch(selectInstallDir())}
             onCancel={() => dispatch(hideInstallDirDialog())}
+            {...props}
         >
+            <p>
+                <code>{installDir}</code> is your current installation base directory.
+                Any new installation will be a subdirectory here.
+            </p>
             <p>
                 When you change the installation directory, SDK environments installed in the old
                 directory will not be shown in the list anymore. They will not be deleted, so

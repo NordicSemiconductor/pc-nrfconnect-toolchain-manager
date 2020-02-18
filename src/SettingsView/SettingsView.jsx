@@ -48,7 +48,10 @@ import { showInstallDirDialog } from './settingsActions';
 
 export default props => {
     const dispatch = useDispatch();
-    const installDir = useSelector(state => state.app.settings.installDir);
+    const {
+        installDir,
+        isInstallDirDialogVisible,
+    } = useSelector(state => state.app.settings);
 
     return (
         <div {...props}>
@@ -74,7 +77,7 @@ export default props => {
                 </Row>
             </NrfCard>
 
-            <InstallDirDialog />
+            <InstallDirDialog isVisible={isInstallDirDialogVisible} />
         </div>
     );
 };

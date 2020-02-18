@@ -43,8 +43,12 @@ const ConfirmationDialog = ({
     title,
     children,
     isVisible,
-    onConfirm,
     onCancel,
+    onConfirm,
+    onOptional,
+    confirmLabel,
+    cancelLabel,
+    optionalLabel,
 }) => (
     <Modal show={isVisible} onHide={onCancel || onConfirm} backdrop>
         <Modal.Header closeButton={false}>
@@ -52,9 +56,12 @@ const ConfirmationDialog = ({
         </Modal.Header>
         <Modal.Body>{children}</Modal.Body>
         <Modal.Footer>
-            <Button variant="primary" onClick={onConfirm}>OK</Button>
+            {onOptional
+               && <Button variant="outline-primary" onClick={onOptional}>{optionalLabel}</Button>
+            }
+            <Button variant="primary" onClick={onConfirm}>{confirmLabel}</Button>
             {onCancel
-               && <Button variant="outline-primary" onClick={onCancel}>Cancel</Button>
+               && <Button variant="outline-primary" onClick={onCancel}>{cancelLabel}</Button>
             }
         </Modal.Footer>
     </Modal>
@@ -65,7 +72,19 @@ ConfirmationDialog.propTypes = {
     children: PropTypes.node.isRequired,
     isVisible: PropTypes.bool.isRequired,
     onConfirm: PropTypes.func.isRequired,
-    onCancel: PropTypes.func, // eslint-disable-line react/require-default-props
+    onCancel: PropTypes.func,
+    onOptional: PropTypes.func,
+    confirmLabel: PropTypes.string,
+    cancelLabel: PropTypes.string,
+    optionalLabel: PropTypes.string,
+};
+
+ConfirmationDialog.defaultProps = {
+    cancelLabel: 'Cancel',
+    confirmLabel: 'OK',
+    onCancel: null,
+    onOptional: null,
+    optionalLabel: null,
 };
 
 export default ConfirmationDialog;
