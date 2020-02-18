@@ -50,7 +50,7 @@ export default props => {
     useEffect(() => dispatch(init()), []);
     const {
         isInstallDirDialogVisible,
-        environmentVersion,
+        environmentVersionToInstall,
     } = useSelector(state => state.app.manager);
 
     const isSupportedPlatform = process.platform === 'win32';
@@ -63,11 +63,11 @@ export default props => {
                 <InstallDirDialog
                     isVisible={isInstallDirDialogVisible}
                     title="Confirm installation directory"
-                    onOptional={() => dispatch(selectInstallDir())}
-                    optionalLabel="Change directory"
                     confirmLabel="Continue installation"
+                    optionalLabel="Change directory"
+                    onConfirm={() => dispatch(installLatestToolchain(environmentVersionToInstall))}
                     onCancel={() => dispatch(hideConfirmInstallDialog())}
-                    onConfirm={() => dispatch(installLatestToolchain(environmentVersion))}
+                    onOptional={() => dispatch(selectInstallDir())}
                 />
             </div>
         );
