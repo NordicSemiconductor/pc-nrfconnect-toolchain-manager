@@ -343,6 +343,11 @@ export const openBash = version => (dispatch, getState) => {
     exec(`"${path.resolve(toolchainDir, 'git-bash.exe')}"`);
 };
 
+export const openCmd = version => (dispatch, getState) => {
+    const { toolchainDir } = getEnvironment(version, getState);
+    exec(`start cmd @cmd /k "${path.resolve(toolchainDir, 'git-cmd.cmd')}"`);
+};
+
 export const removeToolchain = (version, withParent = false) => async (dispatch, getState) => {
     const environment = getEnvironment(version, getState);
     const { toolchainDir } = environment;

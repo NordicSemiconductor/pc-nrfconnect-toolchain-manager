@@ -42,6 +42,7 @@ import {
     cloneNcs,
     confirmInstall,
     openBash,
+    openCmd,
     openFolder,
     openToolchainFolder,
     removeEnvironment,
@@ -63,6 +64,7 @@ export default () => {
             install={() => dispatch(confirmInstall(environment.version))}
             open={() => dispatch(openSegger(environment.version))}
             openBash={() => dispatch(openBash(environment.version))}
+            openCmd={() => dispatch(openCmd(environment.version))}
             openFolder={() => dispatch(openFolder(environment.version))}
             openToolchainFolder={() => dispatch(openToolchainFolder(environment.version))}
             removeEnvironment={() => dispatch(removeEnvironment(environment.version))}
