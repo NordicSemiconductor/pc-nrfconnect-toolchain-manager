@@ -39,20 +39,20 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import {
-    hideFirstInstallDialogs,
-    isOfferDialogVisible,
+    hideFirstInstallDialog,
+    isDialogVisible,
 } from './firstInstallReducer';
 
 export default () => {
     const dispatch = useDispatch();
-    const isVisible = useSelector(isOfferDialogVisible);
+    const isVisible = useSelector(isDialogVisible);
 
     return (
         <ConfirmationDialog
             isVisible={isVisible}
             title="First steps with nRF Connect SDK"
             confirmLabel="Close"
-            onConfirm={() => dispatch(hideFirstInstallDialogs())}
+            onConfirm={() => dispatch(hideFirstInstallDialog())}
         >
             <p>
                 Currently tools as well as the nRF Connect SDK (NCS) are
