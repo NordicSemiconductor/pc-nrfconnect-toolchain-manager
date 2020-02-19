@@ -72,6 +72,7 @@ const EnvironmentItem = ({
     install,
     open,
     openBash,
+    openCmd,
     openFolder,
     openToolchainFolder,
     removeEnvironment,
@@ -153,6 +154,12 @@ const EnvironmentItem = ({
                                 >
                                     Open bash
                                 </Dropdown.Item>
+                                <Dropdown.Item
+                                    title="Open command prompt"
+                                    onClick={openCmd}
+                                >
+                                    Open command prompt
+                                </Dropdown.Item>
                                 <Dropdown.Divider />
                                 <Dropdown.Item
                                     title="Open SDK folder"
@@ -214,6 +221,7 @@ EnvironmentItem.propTypes = {
     install: PropTypes.func.isRequired,
     open: PropTypes.func.isRequired,
     openBash: PropTypes.func.isRequired,
+    openCmd: PropTypes.func.isRequired,
     openFolder: PropTypes.func.isRequired,
     openToolchainFolder: PropTypes.func.isRequired,
     removeEnvironment: PropTypes.func.isRequired,
