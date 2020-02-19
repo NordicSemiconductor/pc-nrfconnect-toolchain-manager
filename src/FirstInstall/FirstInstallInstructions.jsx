@@ -35,36 +35,29 @@
  */
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import path from 'path';
+import { string } from 'prop-types';
+import { useSelector } from 'react-redux';
+import { resolve, sep } from 'path';
 import os from 'os';
 
-import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
-import { defaultInstallDir } from '../SettingsView/settingsReducer';
-import {
-    hideFirstInstallDialogs,
-    isInstructionsDialogVisible,
-    toolchainDir as toolchainDirSelector,
-} from './firstInstallReducer';
+import NrfCard from '../NrfCard/NrfCard';
 
-export default () => {
-    const dispatch = useDispatch();
-    const isVisible = useSelector(isInstructionsDialogVisible);
-    const toolchainDir = useSelector(toolchainDirSelector) || defaultInstallDir;
-
-    const zephyrDir = path.resolve(toolchainDir, '..', 'zephyr');
-    const sampleDir = path.resolve(zephyrDir, 'samples', 'basic');
+const FirstInstallInstructions = ({ className, ...props }) => {
+    const { installDir, selectedVersion } = useSelector(({ app }) => app.settings);
+    const version = selectedVersion || '<version>';
+    const zephyrDir = `${installDir}${sep}${version}${sep}zephyr`;
+    const sampleDir = `${zephyrDir}${sep}samples${sep}basic`;
 
     const homeDir = os.homedir();
 
     const suggestedExample = 'blinky';
-    const suggestExampleCmakelists = path.resolve(
+    const suggestExampleCmakelists = resolve(
         homeDir,
         suggestedExample,
         'CMakeLists.txt',
     );
 
-    const exampleBoardDir = path.resolve(
+    const exampleBoardDir = resolve(
         zephyrDir,
         'boards',
         'arm',
@@ -72,11 +65,7 @@ export default () => {
     );
 
     return (
-        <ConfirmationDialog
-            isVisible={isVisible}
-            title="How to compile a sample project"
-            onConfirm={() => dispatch(hideFirstInstallDialogs())}
-        >
+        <NrfCard className={`${className} selectable`} {...props}>
             <p>
                 Steps to compile a first sample project with nRF Connect SDK
                 (NCS), once the installation of the tools and the NCS is
@@ -188,6 +177,12 @@ export default () => {
                 </a>{' '}
                 for more in-depth looks into several aspects.
             </p>
-        </ConfirmationDialog>
+        </NrfCard>
     );
 };
+
+FirstInstallInstructions.propTypes = {
+    className: string.isRequired,
+};
+
+export default FirstInstallInstructions;
