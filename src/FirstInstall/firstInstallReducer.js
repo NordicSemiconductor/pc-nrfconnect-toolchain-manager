@@ -34,57 +34,39 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-const SHOW_FIRST_INSTALL_OFFER_DIALOG = 'SHOW_FIRST_INSTALL_OFFER_DIALOG';
-export const showFirstInstallOfferDialog = toolchainDir => ({
-    type: SHOW_FIRST_INSTALL_OFFER_DIALOG,
+const SHOW_FIRST_INSTALL_DIALOG = 'SHOW_FIRST_INSTALL_DIALOG';
+export const showFirstInstallDialog = toolchainDir => ({
+    type: SHOW_FIRST_INSTALL_DIALOG,
     toolchainDir,
 });
 
-const SHOW_FIRST_INSTALL_INSTRUCTIONS_DIALOG = 'SHOW_FIRST_INSTALL_INSTRUCTIONS_DIALOG';
-export const showFirstInstallInstructionsDialog = toolchainDir => ({
-    type: SHOW_FIRST_INSTALL_INSTRUCTIONS_DIALOG,
-    toolchainDir,
-});
-
-const HIDE_FIRST_INSTALL_DIALOGS = 'HIDE_FIRST_INSTALL_DIALOGS';
-export const hideFirstInstallDialogs = () => ({
-    type: HIDE_FIRST_INSTALL_DIALOGS,
+const HIDE_FIRST_INSTALL_DIALOG = 'HIDE_FIRST_INSTALL_DIALOG';
+export const hideFirstInstallDialog = () => ({
+    type: HIDE_FIRST_INSTALL_DIALOG,
 });
 
 const initialState = {
     toolchainDir: null,
-    isOfferDialogVisible: false,
-    isInstructionsDialogVisible: false,
+    isDialogVisible: false,
 };
 
 export default (state = initialState, action) => {
     switch (action.type) {
-        case SHOW_FIRST_INSTALL_OFFER_DIALOG:
+        case SHOW_FIRST_INSTALL_DIALOG:
             return {
                 ...state,
-                isOfferDialogVisible: true,
-                isInstructionsDialogVisible: false,
+                isDialogVisible: true,
                 toolchainDir: action.toolchainDir,
             };
-        case SHOW_FIRST_INSTALL_INSTRUCTIONS_DIALOG:
+        case HIDE_FIRST_INSTALL_DIALOG:
             return {
                 ...state,
-                isOfferDialogVisible: false,
-                isInstructionsDialogVisible: true,
-                toolchainDir: action.toolchainDir || state.toolchainDir,
-            };
-        case HIDE_FIRST_INSTALL_DIALOGS:
-            return {
-                ...state,
-                isOfferDialogVisible: false,
-                isInstructionsDialogVisible: false,
+                isDialogVisible: false,
             };
         default:
             return state;
     }
 };
 
-export const isOfferDialogVisible = state => state.app.firstInstall.isOfferDialogVisible;
+export const isDialogVisible = state => state.app.firstInstall.isDialogVisible;
 export const toolchainDir = state => state.app.firstInstall.toolchainDir;
-export const isInstructionsDialogVisible = state => (
-    state.app.firstInstall.isInstructionsDialogVisible);

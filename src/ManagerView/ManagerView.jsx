@@ -37,7 +37,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import FirstInstallOfferDialog from '../FirstInstall/FirstInstallOfferDialog';
+import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 import InstallDirDialog from '../SettingsView/InstallDirDialog';
 import { selectInstallDir } from '../SettingsView/settingsActions';
 import EnvironmentList from './EnvironmentList/EnvironmentList';
@@ -57,7 +57,7 @@ export default props => {
         return (
             <div {...props}>
                 <EnvironmentList />
-                <FirstInstallOfferDialog />
+                <FirstInstallDialog />
                 <InstallDirDialog
                     isVisible={isInstallDirDialogVisible}
                     title="Confirm installation directory"
