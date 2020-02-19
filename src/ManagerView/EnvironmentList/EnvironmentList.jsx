@@ -38,7 +38,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { showFirstInstallInstructionsDialog } from '../../FirstInstall/firstInstallReducer';
 import {
     cloneNcs,
     confirmInstall,
@@ -48,6 +47,7 @@ import {
     removeEnvironment,
     removeToolchain,
 } from '../managerActions';
+import { selectEnvironmentAction } from '../../SettingsView/settingsActions';
 import { openSegger } from '../segger';
 import EnvironmentItem from '../EnvironmentItem/EnvironmentItem';
 
@@ -67,8 +67,13 @@ export default () => {
             openToolchainFolder={() => dispatch(openToolchainFolder(environment.version))}
             removeEnvironment={() => dispatch(removeEnvironment(environment.version))}
             removeToolchain={() => dispatch(removeToolchain(environment.version))}
-            showFirstInstallInstructionsDialog={
-                toolchainDir => dispatch(showFirstInstallInstructionsDialog(toolchainDir))}
+            gotoGuide={() => {
+                dispatch(selectEnvironmentAction(environment.version));
+                dispatch({
+                    type: 'NAV_MENU_ITEM_SELECTED',
+                    id: 2,
+                });
+            }}
         />
     ));
 };

@@ -36,19 +36,19 @@
 
 
 import React from 'react';
-import { node } from 'prop-types';
+import { arrayOf, node } from 'prop-types';
 import Card from 'react-bootstrap/Card';
 
 import './nrfCard.scss';
 
-const NrfCard = ({ children }) => (
-    <Card body className="nrf-card">
+const NrfCard = ({ children, ...props }) => (
+    <Card body className="nrf-card" {...props}>
         {children}
     </Card>
 );
 
 NrfCard.propTypes = {
-    children: node.isRequired,
+    children: arrayOf(node).isRequired,
 };
 
 export default NrfCard;

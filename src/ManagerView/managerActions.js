@@ -273,6 +273,8 @@ export const cloneNcs = version => (dispatch, getState) => new Promise((resolve,
     const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
     const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
 
+    fse.removeSync(path.resolve(path.dirname(toolchainDir), '.west'));
+
     dispatch(environmentUpdate({
         ...environment,
         isCloning: true,
@@ -353,18 +355,8 @@ export const removeToolchain = (version, withParent = false) => async (dispatch,
 
     let updatedToolchainDir;
     try {
-        let srcDir;
-        if (!withParent) {
-            srcDir = toolchainDir;
-        } else {
-            srcDir = path.dirname(toolchainDir);
-        }
-        await new Promise((resolve, reject) => {
-            fse.move(srcDir, toBeDeletedDir, { overwrite: true }, error => {
-                if (error) return reject(error);
-                return resolve();
-            });
-        });
+        const srcDir = withParent ? path.dirname(toolchainDir) : toolchainDir;
+        await fse.move(srcDir, toBeDeletedDir, { overwrite: true });
         await fse.remove(toBeDeletedDir);
         updatedToolchainDir = null;
     } catch (error) {

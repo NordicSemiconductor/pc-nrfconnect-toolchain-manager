@@ -43,6 +43,7 @@ import React from 'react';
 import appReducer from './reducers';
 import ManagerView from './ManagerView/ManagerView';
 import SettingsView from './SettingsView/SettingsView';
+import FirstInstallInstructions from './FirstInstall/FirstInstallInstructions';
 
 const showIf = visible => (visible ? 'd-block' : 'd-none');
 
@@ -55,6 +56,7 @@ export default {
         <MainView cssClass="main-view">
             <ManagerView className={showIf(viewId === 0)} />
             <SettingsView className={showIf(viewId === 1)} />
+            <FirstInstallInstructions className={showIf(viewId === 2)} />
         </MainView>
     ),
     decorateSidePanel: () => () => null,
@@ -67,6 +69,7 @@ export default {
             menuItems={[
                 { id: 0, text: 'SDK environments', iconClass: 'mdi mdi-folder' },
                 { id: 1, text: 'Settings', iconClass: 'mdi mdi-settings' },
+                { id: 2, text: 'Guide', iconClass: 'mdi mdi-file-document' },
             ]}
         />
     ),

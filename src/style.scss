@@ -89,3 +89,15 @@
 .form-label {
     font-weight: bold;
 }
+
+.core-nav-section > button:nth-child(3) {
+    display: none;
+}
+
+.selectable {
+    user-select: text;
+    cursor: text;
+}
+code {
+    white-space: nowrap;
+}
