@@ -48,14 +48,16 @@ import ProgressBar from 'react-bootstrap/ProgressBar';
 import Row from 'react-bootstrap/Row';
 import NrfCard from '../../NrfCard/NrfCard';
 
-const PrimaryButton = ({ label, ...props }) => (
-    <Button className="toolchain-item-button" variant="primary" {...props}>
+const PrimaryButton = ({ label, className, ...props }) => (
+    <Button className={`${className} toolchain-item-button ml-2`} variant="primary" {...props}>
         {label}
     </Button>
 );
 PrimaryButton.propTypes = {
     label: PropTypes.string.isRequired,
+    className: PropTypes.string,
 };
+PrimaryButton.defaultProps = { className: '' };
 
 const EnvironmentItem = ({
     environment: {
@@ -73,23 +75,29 @@ const EnvironmentItem = ({
     openFolder,
     openToolchainFolder,
     removeEnvironment,
-    showFirstInstallInstructionsDialog,
+    gotoGuide,
 }) => {
     const isInProcess = useSelector(({ app }) => (
         app.manager.environmentList.find(v => v.version === version).isInProcess
     ));
 
     const isInstalled = !!toolchainDir;
+
     let progressPct = isRemoving ? 0 : progress;
     progressPct = isInstalled ? 100 : (progressPct || 0);
+
     let progressLabel = progress ? `Installing ${progress}%` : '';
     progressLabel = isInstalled ? '' : progressLabel;
-    progressLabel = isCloning ? 'Cloning SDK...' : progressLabel;
+    progressLabel = isCloning
+        ? 'Cloning SDK... please wait until the terminal window is closed!'
+        : progressLabel;
     progressLabel = isRemoving ? 'Removing...' : progressLabel;
+
     let progressClassName = progressPct === 0 ? 'available' : 'installing';
     progressClassName = isInstalled ? 'installed' : progressClassName;
     progressClassName = isCloning ? 'installing' : progressClassName;
     progressClassName = isRemoving ? 'removing' : progressClassName;
+
     return (
         <NrfCard>
             <Row noGutters>
@@ -101,82 +109,86 @@ const EnvironmentItem = ({
                         {progressLabel}
                     </Row>
                 </Col>
-                <Col xs="auto ml-auto" className="d-flex align-items-center my-3 pl-3">
-                    <ButtonToolbar className="wide-btns">
-                        { !isInstalled && (
-                            <PrimaryButton
-                                onClick={install}
-                                label="Install"
-                                disabled={isInProcess}
-                                variant="outline-primary"
-                            />
-                        )}
-                        { isInstalled && isWestPresent && (
-                            <PrimaryButton
-                                onClick={open}
-                                label="Open IDE"
-                                disabled={isInProcess}
-                            />
-                        )}
-                        <DropdownButton
-                            className="ml-2"
+                <Col
+                    as={ButtonToolbar}
+                    xs="auto ml-auto"
+                    className="d-flex align-items-center my-3 pl-3 wide-btns"
+                >
+                    { (isInstalled || (isInProcess && !isRemoving)) && (
+                        <PrimaryButton
+                            onClick={gotoGuide}
+                            label="Guide"
+                            title="Show how to compile a sample project"
                             variant="outline-primary"
-                            title=""
-                            alignRight
-                            disabled={isInProcess || !isInstalled}
-                        >
-                            {isInstalled && (
-                                <>
-                                    <Dropdown.Item
-                                        title="Open bash terminal"
-                                        onClick={openBash}
-                                    >
-                                        Open bash
-                                    </Dropdown.Item>
-                                    <Dropdown.Divider />
-                                    <Dropdown.Item
-                                        title="Open SDK folder"
-                                        onClick={openFolder}
-                                    >
-                                        Open SDK folder
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                        title="Open toolchain folder"
-                                        onClick={openToolchainFolder}
-                                    >
-                                        Open toolchain folder
-                                    </Dropdown.Item>
-                                    <Dropdown.Divider />
-                                    <Dropdown.Item
-                                        onClick={
-                                            () => showFirstInstallInstructionsDialog(toolchainDir)}
-                                    >
-                                        Show how to compile a sample project
-                                    </Dropdown.Item>
-                                    <Dropdown.Divider />
-                                    <Dropdown.Item
-                                        title="Update SDK"
-                                        onClick={cloneNcs}
-                                    >
-                                        Update SDK
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                        title="Install again :)"
-                                        onClick={install}
-                                    >
-                                        Update toolchain
-                                    </Dropdown.Item>
-                                    <Dropdown.Divider />
-                                    <Dropdown.Item
-                                        title="Remove"
-                                        onClick={removeEnvironment}
-                                    >
-                                        Remove
-                                    </Dropdown.Item>
-                                </>
-                            )}
-                        </DropdownButton>
-                    </ButtonToolbar>
+                        />
+                    )}
+                    { !isInstalled && (
+                        <PrimaryButton
+                            onClick={install}
+                            label="Install"
+                            disabled={isInProcess}
+                            variant="outline-primary"
+                        />
+                    )}
+                    { (isInstalled && (isWestPresent && !isRemoving)) && (
+                        <PrimaryButton
+                            onClick={open}
+                            label="Open IDE"
+                            title="Open SEGGER Embedded Studio"
+                            disabled={isInProcess}
+                        />
+                    )}
+                    <DropdownButton
+                        className="ml-2"
+                        variant="outline-primary"
+                        title=""
+                        alignRight
+                        disabled={isInProcess || !isInstalled}
+                    >
+                        {isInstalled && (
+                            <>
+                                <Dropdown.Item
+                                    title="Open bash terminal"
+                                    onClick={openBash}
+                                >
+                                    Open bash
+                                </Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item
+                                    title="Open SDK folder"
+                                    onClick={openFolder}
+                                >
+                                    Open SDK folder
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    title="Open toolchain folder"
+                                    onClick={openToolchainFolder}
+                                >
+                                    Open toolchain folder
+                                </Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item
+                                    title="Update SDK"
+                                    onClick={cloneNcs}
+                                >
+                                    Update SDK
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    title="Install the latest available toolchain for this environment"
+                                    onClick={install}
+                                >
+                                    Update toolchain
+                                </Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item
+                                    title="Remove"
+                                    onClick={removeEnvironment}
+                                >
+                                    Remove
+                                </Dropdown.Item>
+                            </>
+                        )}
+                    </DropdownButton>
                 </Col>
             </Row>
             <ProgressBar
@@ -205,6 +217,6 @@ EnvironmentItem.propTypes = {
     openFolder: PropTypes.func.isRequired,
     openToolchainFolder: PropTypes.func.isRequired,
     removeEnvironment: PropTypes.func.isRequired,
-    showFirstInstallInstructionsDialog: PropTypes.func.isRequired,
+    gotoGuide: PropTypes.func.isRequired,
 };
 export default EnvironmentItem;
