@@ -42,6 +42,7 @@ import {
     ENVIRONMENT_REMOVE,
     CONFIRM_INSTALL_DIALOG_SHOW,
     CONFIRM_INSTALL_DIALOG_HIDE,
+    SELECT_ENVIRONMENT,
 } from './managerActions';
 
 const InitialState = {
@@ -49,6 +50,7 @@ const InitialState = {
     isInProcess: false,
     isInstallDirDialogVisible: false,
     environmentVersionToInstall: null,
+    selectedVersion: null,
 };
 
 const reducer = (state = InitialState, action) => {
@@ -138,6 +140,12 @@ const reducer = (state = InitialState, action) => {
                 ...state,
                 isInstallDirDialogVisible: false,
                 environmentVersionToInstall: null,
+            };
+        }
+        case SELECT_ENVIRONMENT: {
+            return {
+                ...state,
+                selectedVersion: action.selectedVersion,
             };
         }
         default:

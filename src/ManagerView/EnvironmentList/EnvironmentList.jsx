@@ -47,9 +47,9 @@ import {
     openToolchainFolder,
     removeEnvironment,
     removeToolchain,
+    selectEnvironmentAction,
     gotoPage,
 } from '../managerActions';
-import { selectEnvironmentAction } from '../../SettingsView/settingsActions';
 import { openSegger } from '../segger';
 import EnvironmentItem from '../EnvironmentItem/EnvironmentItem';
 

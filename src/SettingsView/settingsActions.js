@@ -46,7 +46,6 @@ export const SHOW_INSTALL_DIR_DIALOG = 'SHOW_INSTALL_DIR_DIALOG';
 export const HIDE_INSTALL_DIR_DIALOG = 'HIDE_INSTALL_DIR_DIALOG';
 export const SHOW_INSTALL_CONFIRM_DIALOG = 'SHOW_INSTALL_CONFIRM_DIALOG';
 export const HIDE_INSTALL_CONFIRM_DIALOG = 'HIDE_INSTALL_CONFIRM_DIALOG';
-export const SELECT_ENVIRONMENT = 'SELECT_ENVIRONMENT';
 
 const updateInstallDirAction = installDir => ({
     type: UPDATE_INSTALL_DIR,
@@ -55,11 +54,6 @@ const updateInstallDirAction = installDir => ({
 
 export const showInstallDirDialog = () => ({ type: 'SHOW_INSTALL_DIR_DIALOG' });
 export const hideInstallDirDialog = () => ({ type: 'HIDE_INSTALL_DIR_DIALOG' });
-
-export const selectEnvironmentAction = selectedVersion => ({
-    type: SELECT_ENVIRONMENT,
-    selectedVersion,
-});
 
 export const selectInstallDir = () => async (dispatch, getState) => {
     const selection = remote.dialog.showOpenDialog({

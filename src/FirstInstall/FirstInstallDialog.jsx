@@ -56,7 +56,10 @@ export default () => {
             confirmLabel="Close"
             onConfirm={() => dispatch(hideFirstInstallDialog())}
             optionalLabel="First steps to build a sample project"
-            onOptional={() => dispatch(gotoPage(2))}
+            onOptional={() => {
+                dispatch(hideFirstInstallDialog());
+                dispatch(gotoPage(2));
+            }}
         >
             <p>
                 If you have never programmed a Nordic device before, we suggest

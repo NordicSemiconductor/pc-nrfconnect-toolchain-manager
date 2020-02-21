@@ -50,7 +50,8 @@ const Ie = () => (<>{' '}<i>i.e.</i>{' '}</>);
 
 const FirstInstallInstructions = props => {
     const dispatch = useDispatch();
-    const { installDir, selectedVersion } = useSelector(({ app }) => app.settings);
+    const { installDir } = useSelector(({ app }) => app.settings);
+    const { selectedVersion } = useSelector(({ app }) => app.manager);
     const version = selectedVersion || '<version>';
     const zephyrDir = [installDir, version, 'zephyr'].join(sep);
     const sampleDir = [zephyrDir, 'samples', 'basic'].join(sep);

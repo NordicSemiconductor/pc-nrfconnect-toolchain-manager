@@ -41,7 +41,6 @@ import {
     UPDATE_INSTALL_DIR,
     SHOW_INSTALL_DIR_DIALOG,
     HIDE_INSTALL_DIR_DIALOG,
-    SELECT_ENVIRONMENT,
 } from './settingsActions';
 
 import store from '../util/persistentStore';
@@ -57,10 +56,9 @@ const initialState = {
     installDir: store.get('installDir', defaultInstallDir),
     toolchainIndexUrl: store.get('toolchainIndexUrl',
         'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json'),
-    selectedVersion: null,
 };
 
-const reducer = (state = initialState, { type, installDir, selectedVersion }) => {
+const reducer = (state = initialState, { type, installDir }) => {
     switch (type) {
         case UPDATE_INSTALL_DIR:
             store.set('installDir', installDir);
@@ -75,10 +73,6 @@ const reducer = (state = initialState, { type, installDir, selectedVersion }) =>
         case HIDE_INSTALL_DIR_DIALOG: return {
             ...state,
             isInstallDirDialogVisible: false,
-        };
-        case SELECT_ENVIRONMENT: return {
-            ...state,
-            selectedVersion,
         };
         default:
             return state;
