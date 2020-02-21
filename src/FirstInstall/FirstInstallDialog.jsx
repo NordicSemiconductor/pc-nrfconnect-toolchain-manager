@@ -43,6 +43,8 @@ import {
     isDialogVisible,
 } from './firstInstallReducer';
 
+import { gotoPage } from '../ManagerView/managerActions';
+
 export default () => {
     const dispatch = useDispatch();
     const isVisible = useSelector(isDialogVisible);
@@ -53,13 +55,12 @@ export default () => {
             title="First steps with nRF Connect SDK"
             confirmLabel="Close"
             onConfirm={() => dispatch(hideFirstInstallDialog())}
+            optionalLabel="First steps to build a sample project"
+            onOptional={() => {
+                dispatch(hideFirstInstallDialog());
+                dispatch(gotoPage(2));
+            }}
         >
-            <p>
-                Currently tools as well as the nRF Connect SDK (NCS) are
-                installed. This takes some time, depending on your net and
-                computer speed, a duration between a few minutes and up to half
-                an hour are common.
-            </p>
             <p>
                 If you have never programmed a Nordic device before, we suggest
                 that you start out with one of the samples from the nRF Connect

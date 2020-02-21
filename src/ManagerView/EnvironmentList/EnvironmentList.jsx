@@ -47,8 +47,9 @@ import {
     openToolchainFolder,
     removeEnvironment,
     removeToolchain,
+    selectEnvironmentAction,
+    gotoPage,
 } from '../managerActions';
-import { selectEnvironmentAction } from '../../SettingsView/settingsActions';
 import { openSegger } from '../segger';
 import EnvironmentItem from '../EnvironmentItem/EnvironmentItem';
 
@@ -71,10 +72,7 @@ export default () => {
             removeToolchain={() => dispatch(removeToolchain(environment.version))}
             gotoGuide={() => {
                 dispatch(selectEnvironmentAction(environment.version));
-                dispatch({
-                    type: 'NAV_MENU_ITEM_SELECTED',
-                    id: 2,
-                });
+                dispatch(gotoPage(2));
             }}
         />
     ));

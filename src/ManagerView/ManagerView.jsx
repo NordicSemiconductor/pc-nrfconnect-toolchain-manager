@@ -36,6 +36,8 @@
 
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import Button from 'react-bootstrap/Button';
 
 import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 import InstallDirDialog from '../SettingsView/InstallDirDialog';
@@ -56,7 +58,14 @@ export default props => {
     if (isSupportedPlatform) {
         return (
             <div {...props}>
-                <EnvironmentList />
+                <ButtonToolbar hidden>
+                    <Button className="mdi mdi-briefcase-plus-outline">
+                        Install package
+                    </Button>
+                </ButtonToolbar>
+                <div>
+                    <EnvironmentList />
+                </div>
                 <FirstInstallDialog />
                 <InstallDirDialog
                     isVisible={isInstallDirDialogVisible}

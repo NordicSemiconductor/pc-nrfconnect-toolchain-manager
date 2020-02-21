@@ -40,6 +40,10 @@
     height: 8em;
 }
 
-.nrf-card:not(:first-child) {
-    margin-top: 2em;
+.nrf-card:not(:first-of-type) {
+    margin-top: 1em;
+}
+
+.first-install.nrf-card {
+    height: initial;
 }

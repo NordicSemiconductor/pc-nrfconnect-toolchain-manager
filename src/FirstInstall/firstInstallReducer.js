@@ -35,9 +35,8 @@
  */
 
 const SHOW_FIRST_INSTALL_DIALOG = 'SHOW_FIRST_INSTALL_DIALOG';
-export const showFirstInstallDialog = toolchainDir => ({
+export const showFirstInstallDialog = () => ({
     type: SHOW_FIRST_INSTALL_DIALOG,
-    toolchainDir,
 });
 
 const HIDE_FIRST_INSTALL_DIALOG = 'HIDE_FIRST_INSTALL_DIALOG';
@@ -46,7 +45,6 @@ export const hideFirstInstallDialog = () => ({
 });
 
 const initialState = {
-    toolchainDir: null,
     isDialogVisible: false,
 };
 
@@ -56,7 +54,6 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 isDialogVisible: true,
-                toolchainDir: action.toolchainDir,
             };
         case HIDE_FIRST_INSTALL_DIALOG:
             return {
@@ -69,4 +66,3 @@ export default (state = initialState, action) => {
 };
 
 export const isDialogVisible = state => state.app.firstInstall.isDialogVisible;
-export const toolchainDir = state => state.app.firstInstall.toolchainDir;

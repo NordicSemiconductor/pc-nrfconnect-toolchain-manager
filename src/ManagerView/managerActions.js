@@ -55,6 +55,7 @@ export const TOOLCHAIN_UPDATE = 'TOOLCHAIN_UPDATE';
 export const ENVIRONMENT_REMOVE = 'ENVIRONMENT_REMOVE';
 export const CONFIRM_INSTALL_DIALOG_SHOW = 'CONFIRM_INSTALL_DIALOG_SHOW';
 export const CONFIRM_INSTALL_DIALOG_HIDE = 'CONFIRM_INSTALL_DIALOG_HIDE';
+export const SELECT_ENVIRONMENT = 'SELECT_ENVIRONMENT';
 
 const compareBy = prop => (a, b) => {
     try {
@@ -67,6 +68,17 @@ const compareBy = prop => (a, b) => {
         }
     }
 };
+
+// shortcut to core specific action
+export const gotoPage = id => dispatch => dispatch({
+    type: 'NAV_MENU_ITEM_SELECTED',
+    id,
+});
+
+export const selectEnvironmentAction = selectedVersion => ({
+    type: SELECT_ENVIRONMENT,
+    selectedVersion,
+});
 
 export const environmentListUpdateAction = environmentList => ({
     type: ENVIRONMENT_LIST_UPDATE,
@@ -305,8 +317,9 @@ const install = (environmentVersion, toolchainVersion) => async (dispatch, getSt
     const toolchainDir = 'toolchain';
     const unzipDest = path.resolve(installDir, environmentVersion, toolchainDir);
 
+    dispatch(selectEnvironmentAction(environmentVersion));
     if (isFirstInstall()) {
-        dispatch(showFirstInstallDialog(unzipDest));
+        dispatch(showFirstInstallDialog());
     }
 
     dispatch(environmentInProcessAction(environmentVersion, true));
