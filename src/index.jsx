@@ -54,9 +54,11 @@ export default {
     }),
     decorateMainView: MainView => ({ viewId }) => (
         <MainView cssClass="main-view">
-            <ManagerView className={showIf(viewId === 0)} />
-            <SettingsView className={showIf(viewId === 1)} />
-            <FirstInstallInstructions className={showIf(viewId === 2)} />
+            <div className="main-view-scroll">
+                <ManagerView className={showIf(viewId === 0)} />
+                <SettingsView className={showIf(viewId === 1)} />
+                <FirstInstallInstructions className={showIf(viewId === 2)} />
+            </div>
         </MainView>
     ),
     decorateSidePanel: () => () => null,

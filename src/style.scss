@@ -34,12 +34,41 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.core-main-layout > div:nth-child(1) {
-    padding-right: initial;
+.core-main-layout {
+    position: absolute;
+    height: initial;
+    top: 55px;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
-.core-main-layout > div:nth-child(1) > div:nth-child(1).core-main-view {
+.core-main-area {
+    overflow: hidden;
+    position: relative;
+}
+
+.core-main-layout > div:nth-child(1) {
+    padding-right: initial;
+    .mdi:before {
+        margin-right: 5px;
+    }
+}
+
+.main-view {
     height: 100%;
+    .main-view-scroll {
+        height: 100%;
+        overflow: hidden auto;
+        padding: 2em;
+        > .d-block {
+            max-width: 800px;
+            margin: auto;
+            > .btn-toolbar:first-child {
+                margin-bottom: 1em;
+            }
+        }
+    }
 }
 
 .core-nav-bar {
@@ -55,10 +84,6 @@
 
 .core-main-layout > div > .core-splitter {
     display: none;
-}
-
-.main-view, .side-panel {
-    padding: 2em;
 }
 
 .core-main-area {
@@ -98,6 +123,19 @@
     user-select: text;
     cursor: text;
 }
+
 code {
     white-space: nowrap;
+}
+
+p, li {
+    margin-bottom: 0.5rem;
+}
+
+.alert {
+    border-radius: 0;
+}
+
+h4 {
+    margin-bottom: 1rem;
 }
