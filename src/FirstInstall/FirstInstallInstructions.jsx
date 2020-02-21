@@ -35,154 +35,165 @@
  */
 
 import React from 'react';
-import { string } from 'prop-types';
-import { useSelector } from 'react-redux';
-import { resolve, sep } from 'path';
+import { useDispatch, useSelector } from 'react-redux';
+import { sep } from 'path';
 import os from 'os';
 
-import NrfCard from '../NrfCard/NrfCard';
+import Alert from 'react-bootstrap/Alert';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
 
-const FirstInstallInstructions = ({ className, ...props }) => {
+import { gotoPage } from '../ManagerView/managerActions';
+
+const Ie = () => (<>{' '}<i>i.e.</i>{' '}</>);
+
+const FirstInstallInstructions = props => {
+    const dispatch = useDispatch();
     const { installDir, selectedVersion } = useSelector(({ app }) => app.settings);
     const version = selectedVersion || '<version>';
-    const zephyrDir = `${installDir}${sep}${version}${sep}zephyr`;
-    const sampleDir = `${zephyrDir}${sep}samples${sep}basic`;
-
+    const zephyrDir = [installDir, version, 'zephyr'].join(sep);
+    const sampleDir = [zephyrDir, 'samples', 'basic'].join(sep);
     const homeDir = os.homedir();
-
     const suggestedExample = 'blinky';
-    const suggestExampleCmakelists = resolve(
-        homeDir,
-        suggestedExample,
-        'CMakeLists.txt',
-    );
-
-    const exampleBoardDir = resolve(
-        zephyrDir,
-        'boards',
-        'arm',
-        'nrf9160_pca10090',
-    );
+    const suggestExampleCmakelists = [sampleDir, suggestedExample, 'CMakeLists.txt'].join(sep);
+    const boardName = 'nrf9160_pca10090';
+    const suggestExampleBuildDir = [sampleDir, suggestedExample, `build_${boardName}`].join(sep);
+    const exampleBoardDir = [zephyrDir, 'boards', 'arm', boardName].join(sep);
 
     return (
-        <NrfCard className={`${className} selectable`} {...props}>
-            <p>
-                Steps to compile a first sample project with nRF Connect SDK
-                (NCS), once the installation of the tools and the NCS is
-                finished:
-            </p>
-            <ol>
-                <li>
-                    Go to <code>{sampleDir}</code> and copy one of the folders
-                    (we suggest the classic <code>{suggestedExample}</code>) to
-                    a folder of your liking, e.g. <code>{homeDir}</code>.
-                </li>
-                <li>
-                    Launch SEGGER Embedded Studio (SES) by clicking on{' '}
-                    <q>Open IDE</q> here in the list of SDK environments.
-                </li>
-                <li>
-                    SES is a big IDE and can be intimidating for a first time
-                    user. But do not worry, we will guide you through compiling
-                    a first sample project with NCS:
+        <div {...props}>
+            <ButtonToolbar>
+                <Button
+                    className="mdi mdi-arrow-left"
+                    onClick={() => dispatch(gotoPage(0))}
+                >
+                    Go back
+                </Button>
+            </ButtonToolbar>
+            <div>
+                <Card body className="selectable first-install nrf-card">
+                    <h4>Building with SEGGER Embedded Studio</h4>
+                    <p>
+                        Once the installation of the tools and the NCS is finished,
+                        complete the following steps to build nRF Connect SDK projects with SES.
+                    </p>
                     <ol>
+                        <li hidden>
+                            Go to <code>{sampleDir}</code> and copy one of the folders
+                            (we suggest the classic <code>{suggestedExample}</code>) to
+                            a folder of your liking, e.g. <code>{homeDir}</code>.
+                        </li>
+                        <li>Start SEGGER Embedded Studio by clicking <b>Open IDE</b></li>
+                        <li>Select <code>File → Open nRF Connect SDK Project…</code></li>
                         <li>
-                            Select{' '}
-                            <code>File→Open nRF Connect SDK Project…</code>
+                            To import a project into SES, you must specify the following
+                            information:
+                            <ul>
+                                <li>
+                                    <b>CMakeLists.txt</b> - the location of
+                                    the <code>CMakeLists.txt</code> project file of the sample
+                                    that you want to work with<br />
+                                    <Ie /><code>{suggestExampleCmakelists}</code>
+                                </li>
+                                <li>
+                                    <b>Board Directory</b> - the location of the board description
+                                    of the board for which to build the project<br />
+                                    <Ie /><code>{exampleBoardDir}</code>
+                                </li>
+                                <li>
+                                    <b>Board Name</b> - the board name (select from the list that
+                                    is populated based on the board directory)<br />
+                                    <Ie /><code>{boardName}</code>
+                                </li>
+                                <li>
+                                    <b>Build Directory</b> - the folder in which to run the build
+                                    (automatically filled based on the board name, but you can
+                                    specify a different directory)<br />
+                                    <Ie /><code>{suggestExampleBuildDir}</code>
+                                </li>
+                                <li>
+                                    <b>Clean Build Directory</b> - select this option to ensure
+                                    that you are not building with an outdated build cache
+                                </li>
+                            </ul>
                         </li>
                         <li>
-                            Select two things:
-                            <ol>
+                            Click <b>OK</b> to import the project into SES. You can now work with
+                            the project in the IDE.
+                        </li>
+                        <li>
+                            <p>Build and program your project.</p>
+                            <p>
+                                The required steps differ depending on if you build a single
+                                application or a multi-image project (such as the nRF9160 samples,
+                                which include{' '}
+                                <a
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/samples/nrf9160/spm/README.html#secure-partition-manager"
+                                >
+                                    SPM
+                                </a>).
+                            </p>
+                            <Alert variant="success">
+                                <p>
+                                    If you are working with an nRF9160 DK, make sure to select the
+                                    correct controller before you program the application to
+                                    your board.
+                                </p>
+                                <p>
+                                    Put the <b>SW5</b> switch (marked debug/prog) in
+                                    the <b>NRF91</b> position to program the main controller,
+                                    or in the <b>NRF52</b> position to program the board controller.
+                                    See the{' '}
+                                    <a
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        href="https://infocenter.nordicsemi.com/topic/ug_nrf91_dk/UG/nrf91_DK/mcu_device_programming.html"
+                                    >
+                                        Device programming section in the nRF9160 DK User Guide
+                                    </a> for more information.
+                                </p>
+                            </Alert>
+                            <p>To build and program an application:</p>
+                            <ol type="a">
+                                <li>Select your project in the Project Explorer.</li>
+                                <li>From the menu, select <code>Build → Build Solution.</code></li>
                                 <li>
-                                    As <code>CMakeLists.txt</code>, select the
-                                    one from the sample project you just copied,
-                                    e.g <code>{suggestExampleCmakelists}</code>
-                                </li>
-                                <li>
-                                    For <code>Board Directory</code> select one
-                                    matching your hardware from the NSC folder
-                                    that was just cloned, e.g. if you have a
-                                    nRF9160-DK (PCA10090), then select{' '}
-                                    <code>{exampleBoardDir}</code>
-                                </li>
-                                <li>
-                                    For the other settings (
-                                    <code>Board Name</code>,{' '}
-                                    <code>Build Directory</code>,{' '}
-                                    <code>Clean Build Directory</code>) you can
-                                    usually go with the defaults on the first
-                                    project.
-                                </li>
-                                <li>
-                                    After clicking on OK, you have to wait a few
-                                    seconds without a visual feedback. SES is
-                                    just working in the background for a moment.
+                                    When the build completes, you can program the sample to a
+                                    connected board:
+                                    <ol>
+                                        <li>
+                                            For a single-image application,
+                                            select <code>Target → Download zephyr/zephyr.elf</code>.
+                                        </li>
+                                        <li>
+                                            For a multi-image application,
+                                            select <code>Target → Download zephyr/merged.hex</code>.
+                                        </li>
+                                    </ol>
                                 </li>
                             </ol>
+                            <Alert variant="primary">
+                                Alternatively, choose the <code>Build and Debug</code> option.
+                                {' '}<code>Build and Debug</code> will build the application and
+                                program it when the build completes.
+                            </Alert>
                         </li>
                         <li>
-                            You now have the project set up. Compile it with
-                            Build→Build solution (Shift-F7).
-                        </li>
-                        <li>
-                            Attach your device and program it with
-                            Target→Download zephyr/zephyr.elf.
-                        </li>
-                        <li>
-                            Now your device should be programmed and you should
-                            see the LED blink happily on it.{' '}
-                            <span role="img" aria-label="Party!">
-                                🎉
-                            </span>
-                        </li>
-                        <li>
-                            If you are looking for the <code>main.c</code> to
-                            modify it to your likings: You find it on the left
-                            in the <code>Project Explorer</code> in{' '}
-                            <code>
-                                Solution &#39;build&#39;→Project
-                                &#39;app/libapp.a&#39;→C_COMPILER__app
-                            </code>
-                            .
+                            To inspect the details of the code that was programmed and the memory
+                            usage, click <code>Debug → Go</code>.
+                            <Alert variant="primary">
+                                In a multi-image build, this allows you to debug the source code of
+                                your application only.
+                            </Alert>
                         </li>
                     </ol>
-                </li>
-            </ol>
-            <p>
-                You can see these instruction again later, by selecting{' '}
-                <q>First steps with NCS</q> from the drop down next to you
-                installed NCS in the SDK environments.
-            </p>
-            <p>
-                There are more elaborate{' '}
-                <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_programming.html"
-                >
-                    online instructions how to build a sample application with
-                    nRF Connect SDK and SEGGER Embedded Studio
-                </a>{' '}
-                that might be especially helpful if you are running into
-                trouble.
-            </p>
-            <p>
-                You may also like to read the{' '}
-                <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/user_guides.html"
-                >
-                    online user guides in the NCS documentation
-                </a>{' '}
-                for more in-depth looks into several aspects.
-            </p>
-        </NrfCard>
+                </Card>
+            </div>
+        </div>
     );
-};
-
-FirstInstallInstructions.propTypes = {
-    className: string.isRequired,
 };
 
 export default FirstInstallInstructions;

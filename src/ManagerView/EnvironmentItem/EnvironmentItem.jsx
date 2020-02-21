@@ -117,14 +117,16 @@ const EnvironmentItem = ({
                 >
                     { (isInstalled || (isInProcess && !isRemoving)) && (
                         <PrimaryButton
+                            className="mdi x-mdi-dog-service"
                             onClick={gotoGuide}
-                            label="Guide"
-                            title="Show how to compile a sample project"
+                            label="First steps to build"
+                            title="Show how to build a sample project"
                             variant="outline-primary"
                         />
                     )}
                     { !isInstalled && (
                         <PrimaryButton
+                            className="mdi x-mdi-briefcase-download-outline"
                             onClick={install}
                             label="Install"
                             disabled={isInProcess}
@@ -133,6 +135,7 @@ const EnvironmentItem = ({
                     )}
                     { (isInstalled && (isWestPresent && !isRemoving)) && (
                         <PrimaryButton
+                            className="mdi x-mdi-rocket"
                             onClick={open}
                             label="Open IDE"
                             title="Open SEGGER Embedded Studio"

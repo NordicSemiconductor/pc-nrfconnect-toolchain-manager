@@ -68,6 +68,12 @@ const compareBy = prop => (a, b) => {
     }
 };
 
+// shortcut to core specific action
+export const gotoPage = id => dispatch => dispatch({
+    type: 'NAV_MENU_ITEM_SELECTED',
+    id,
+});
+
 export const environmentListUpdateAction = environmentList => ({
     type: ENVIRONMENT_LIST_UPDATE,
     environmentList: [...environmentList.sort(compareBy('version'))],
