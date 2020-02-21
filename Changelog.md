@@ -1,2 +1,2 @@
-## Version 1.0.0
-- Initial public release
+## Version 0.2.0-beta.1
+- Initial public beta release
