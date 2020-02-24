@@ -42,6 +42,8 @@ import {
     ENVIRONMENT_REMOVE,
     CONFIRM_INSTALL_DIALOG_SHOW,
     CONFIRM_INSTALL_DIALOG_HIDE,
+    CONFIRM_REMOVE_DIALOG_SHOW,
+    CONFIRM_REMOVE_DIALOG_HIDE,
     SELECT_ENVIRONMENT,
 } from './managerActions';
 
@@ -49,7 +51,9 @@ const InitialState = {
     environmentList: [],
     isInProcess: false,
     isInstallDirDialogVisible: false,
+    isRemoveDirDialogVisible: false,
     environmentVersionToInstall: null,
+    environmentVersionToRemove: null,
     selectedVersion: null,
 };
 
@@ -140,6 +144,20 @@ const reducer = (state = InitialState, action) => {
                 ...state,
                 isInstallDirDialogVisible: false,
                 environmentVersionToInstall: null,
+            };
+        }
+        case CONFIRM_REMOVE_DIALOG_SHOW: {
+            return {
+                ...state,
+                isRemoveDirDialogVisible: true,
+                environmentVersionToRemove: action.version,
+            };
+        }
+        case CONFIRM_REMOVE_DIALOG_HIDE: {
+            return {
+                ...state,
+                isRemoveDirDialogVisible: false,
+                environmentVersionToRemove: null,
             };
         }
         case SELECT_ENVIRONMENT: {

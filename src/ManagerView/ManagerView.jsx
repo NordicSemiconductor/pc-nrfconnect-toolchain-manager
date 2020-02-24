@@ -39,11 +39,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Button from 'react-bootstrap/Button';
 
+import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 import InstallDirDialog from '../SettingsView/InstallDirDialog';
 import { selectInstallDir } from '../SettingsView/settingsActions';
 import EnvironmentList from './EnvironmentList/EnvironmentList';
-import { hideConfirmInstallDialog, init, installLatestToolchain } from './managerActions';
+import {
+    hideConfirmInstallDialog,
+    hideConfirmRemoveDialog,
+    init,
+    installLatestToolchain,
+    removeEnvironment,
+} from './managerActions';
 import OtherPlatformInstructions from './OtherPlatformInstructions';
 
 export default props => {
@@ -51,7 +58,9 @@ export default props => {
     useEffect(() => dispatch(init()), []);
     const {
         isInstallDirDialogVisible,
+        isRemoveDirDialogVisible,
         environmentVersionToInstall,
+        environmentVersionToRemove,
     } = useSelector(state => state.app.manager);
 
     const isSupportedPlatform = process.platform === 'win32';
@@ -76,6 +85,17 @@ export default props => {
                     onCancel={() => dispatch(hideConfirmInstallDialog())}
                     onOptional={() => dispatch(selectInstallDir())}
                 />
+                <ConfirmationDialog
+                    title="Remove environment"
+                    onCancel={() => dispatch(hideConfirmRemoveDialog())}
+                    onConfirm={() => {
+                        dispatch(hideConfirmRemoveDialog());
+                        dispatch(removeEnvironment(environmentVersionToRemove));
+                    }}
+                    isVisible={isRemoveDirDialogVisible}
+                >
+                    Are you sure to remove <code>{environmentVersionToRemove}</code> environment?
+                </ConfirmationDialog>
             </div>
         );
     }

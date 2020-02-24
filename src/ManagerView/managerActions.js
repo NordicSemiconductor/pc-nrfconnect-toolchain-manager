@@ -55,6 +55,8 @@ export const TOOLCHAIN_UPDATE = 'TOOLCHAIN_UPDATE';
 export const ENVIRONMENT_REMOVE = 'ENVIRONMENT_REMOVE';
 export const CONFIRM_INSTALL_DIALOG_SHOW = 'CONFIRM_INSTALL_DIALOG_SHOW';
 export const CONFIRM_INSTALL_DIALOG_HIDE = 'CONFIRM_INSTALL_DIALOG_HIDE';
+export const CONFIRM_REMOVE_DIALOG_SHOW = 'CONFIRM_REMOVE_DIALOG_SHOW';
+export const CONFIRM_REMOVE_DIALOG_HIDE = 'CONFIRM_REMOVE_DIALOG_HIDE';
 export const SELECT_ENVIRONMENT = 'SELECT_ENVIRONMENT';
 
 const compareBy = prop => (a, b) => {
@@ -107,6 +109,15 @@ const showConfirmInstallDialog = version => ({
 
 export const hideConfirmInstallDialog = () => ({
     type: CONFIRM_INSTALL_DIALOG_HIDE,
+});
+
+const showConfirmRemoveDialog = version => ({
+    type: CONFIRM_REMOVE_DIALOG_SHOW,
+    version,
+});
+
+export const hideConfirmRemoveDialog = () => ({
+    type: CONFIRM_REMOVE_DIALOG_HIDE,
 });
 
 export const environmentUpdate = environment => (dispatch, getState) => {
@@ -312,6 +323,10 @@ export const confirmInstall = version => dispatch => {
     dispatch(showConfirmInstallDialog(version));
 };
 
+export const confirmRemove = version => dispatch => {
+    dispatch(showConfirmRemoveDialog(version));
+};
+
 const install = (environmentVersion, toolchainVersion) => async (dispatch, getState) => {
     const { installDir } = getState().app.settings;
     const toolchainDir = 'toolchain';
@@ -361,7 +376,7 @@ export const openCmd = version => (dispatch, getState) => {
     exec(`start cmd @cmd /k "${path.resolve(toolchainDir, 'git-cmd.cmd')}"`);
 };
 
-export const removeToolchain = (version, withParent = false) => async (dispatch, getState) => {
+const removeToolchain = (version, withParent = false) => async (dispatch, getState) => {
     const environment = getEnvironment(version, getState);
     const { toolchainDir } = environment;
     const toBeDeletedDir = path.resolve(toolchainDir, '..', '..', 'toBeDeleted');
