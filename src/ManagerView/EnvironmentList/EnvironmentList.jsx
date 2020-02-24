@@ -45,8 +45,7 @@ import {
     openCmd,
     openFolder,
     openToolchainFolder,
-    removeEnvironment,
-    removeToolchain,
+    confirmRemove,
     selectEnvironmentAction,
     gotoPage,
 } from '../managerActions';
@@ -68,8 +67,7 @@ export default () => {
             openCmd={() => dispatch(openCmd(environment.version))}
             openFolder={() => dispatch(openFolder(environment.version))}
             openToolchainFolder={() => dispatch(openToolchainFolder(environment.version))}
-            removeEnvironment={() => dispatch(removeEnvironment(environment.version))}
-            removeToolchain={() => dispatch(removeToolchain(environment.version))}
+            removeEnvironment={() => dispatch(confirmRemove(environment.version))}
             gotoGuide={() => {
                 dispatch(selectEnvironmentAction(environment.version));
                 dispatch(gotoPage(2));
