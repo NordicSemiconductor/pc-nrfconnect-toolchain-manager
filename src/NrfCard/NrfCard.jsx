@@ -41,8 +41,8 @@ import Card from 'react-bootstrap/Card';
 
 import './nrfCard.scss';
 
-const NrfCard = ({ children, ...props }) => (
-    <Card body className="nrf-card" {...props}>
+const NrfCard = ({ children }) => (
+    <Card body className="nrf-card">
         {children}
     </Card>
 );
