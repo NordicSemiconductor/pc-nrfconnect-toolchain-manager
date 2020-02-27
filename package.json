@@ -15,9 +15,7 @@
   "main": "dist/bundle.js",
   "files": [
     "dist/",
-    "firmware/*.hex",
     "resources/icon.*",
-    "icon.png",
     "LICENSE"
   ],
   "scripts": {
@@ -48,10 +46,5 @@
     "electron-store",
     "fs-extra",
     "semver"
-  ],
-  "jest": {
-    "moduleNameMapper": {
-      "nrfconnect/core": "<rootDir>/mocks/coreMock.js"
-    }
-  }
+  ]
 }
