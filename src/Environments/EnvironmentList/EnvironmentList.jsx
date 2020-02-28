@@ -50,7 +50,7 @@ import {
     gotoPage,
 } from '../environmentsActions';
 import { openSegger } from '../segger';
-import EnvironmentItem from '../EnvironmentItem/EnvironmentItem';
+import EnvironmentItem from './EnvironmentItem';
 
 export default () => {
     const dispatch = useDispatch();
