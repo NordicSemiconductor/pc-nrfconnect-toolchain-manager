@@ -45,15 +45,15 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 
 import { gotoPage } from '../ManagerView/managerActions';
+import { installDir } from '../persistentStore';
 
 const Ie = () => (<>{' '}<i>i.e.</i>{' '}</>);
 
 const FirstInstallInstructions = props => {
     const dispatch = useDispatch();
-    const { installDir } = useSelector(({ app }) => app.settings);
     const { selectedVersion } = useSelector(({ app }) => app.manager);
     const version = selectedVersion || '<version>';
-    const zephyrDir = [installDir, version, 'zephyr'].join(sep);
+    const zephyrDir = [installDir(), version, 'zephyr'].join(sep);
     const sampleDir = [zephyrDir, 'samples', 'basic'].join(sep);
     const homeDir = os.homedir();
     const suggestedExample = 'blinky';

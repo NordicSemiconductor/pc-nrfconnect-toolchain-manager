@@ -34,38 +34,17 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { homedir } from 'os';
-import { resolve } from 'path';
-
 import {
-    UPDATE_INSTALL_DIR,
     SHOW_INSTALL_DIR_DIALOG,
     HIDE_INSTALL_DIR_DIALOG,
 } from './settingsActions';
 
-import store from '../util/persistentStore';
-
-export const defaultInstallDir = resolve(homedir(), 'ncs');
-
-if (!store.get('installDir')) {
-    store.set('installDir', defaultInstallDir);
-}
-
 const initialState = {
     isInstallDirDialogVisible: false,
-    installDir: store.get('installDir', defaultInstallDir),
-    toolchainIndexUrl: store.get('toolchainIndexUrl',
-        'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json'),
 };
 
-const reducer = (state = initialState, { type, installDir }) => {
-    switch (type) {
-        case UPDATE_INSTALL_DIR:
-            store.set('installDir', installDir);
-            return {
-                ...state,
-                installDir,
-            };
+const reducer = (state = initialState, action) => {
+    switch (action.type) {
         case SHOW_INSTALL_DIR_DIALOG: return {
             ...state,
             isInstallDirDialogVisible: true,

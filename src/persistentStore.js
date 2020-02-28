@@ -36,10 +36,17 @@
 
 
 import Store from 'electron-store';
+import path from 'path';
+import os from 'os';
 
 const store = new Store({ name: 'pc-nrfconnect-toolchain-manager' });
 
 export const isFirstInstall = () => store.get('isFirstInstall', true);
 export const setHasInstalledAnNcs = () => store.set('isFirstInstall', false);
 
-export default store;
+const defaultInstallDir = path.resolve(os.homedir(), 'ncs');
+export const installDir = () => store.get('installDir', defaultInstallDir);
+export const setInstallDir = dir => store.set('installDir', dir);
+
+export const toolchainIndexUrl = () => store.get('toolchainIndexUrl', 'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json');
+export const toolchainUrl = name => `${path.dirname(toolchainIndexUrl())}/${name}`;

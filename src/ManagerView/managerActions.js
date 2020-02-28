@@ -43,7 +43,9 @@ import DecompressZip from 'decompress-zip';
 import { remote, shell } from 'electron';
 import fse from 'fs-extra';
 import semver from 'semver';
-import { isFirstInstall, setHasInstalledAnNcs } from '../util/persistentStore';
+import {
+    isFirstInstall, setHasInstalledAnNcs, toolchainIndexUrl, toolchainUrl, installDir,
+} from '../persistentStore';
 import { showFirstInstallDialog } from '../FirstInstall/firstInstallReducer';
 
 const { net } = remote;
@@ -152,14 +154,13 @@ const getEnvironment = (version, getState) => {
     return environmentList.find(v => v.version === version);
 };
 
-export const checkLocalEnvironments = () => (dispatch, getState) => {
-    const { installDir } = getState().app.settings;
-    const subDirs = fs.readdirSync(installDir, { withFileTypes: true })
+export const checkLocalEnvironments = () => dispatch => {
+    const subDirs = fs.readdirSync(installDir(), { withFileTypes: true })
         .filter(dirEnt => dirEnt.isDirectory())
-        .map(({ name }) => path.resolve(installDir, name));
-    subDirs.map(subDir => fs.readdirSync(path.resolve(installDir, subDir))
+        .map(({ name }) => path.resolve(installDir(), name));
+    subDirs.map(subDir => fs.readdirSync(path.resolve(installDir(), subDir))
         .filter(d => !d.endsWith('.zip'))
-        .map(dir => path.resolve(installDir, subDir, dir, 'ncsmgr/manifest.env'))
+        .map(dir => path.resolve(installDir(), subDir, dir, 'ncsmgr/manifest.env'))
         .filter(fs.existsSync))
         .flat()
         .forEach(toolchain => {
@@ -174,10 +175,9 @@ export const checkLocalEnvironments = () => (dispatch, getState) => {
         });
 };
 
-export const downloadIndex = () => async (dispatch, getState) => {
-    const { toolchainIndexUrl } = getState().app.settings;
+export const downloadIndex = () => async dispatch => {
     const { status, data } = await new Promise(resolve => {
-        const request = net.request({ url: toolchainIndexUrl });
+        const request = net.request({ url: toolchainIndexUrl() });
         request.setHeader('pragma', 'no-cache');
         request.on('response', response => {
             let result = '';
@@ -191,7 +191,7 @@ export const downloadIndex = () => async (dispatch, getState) => {
     });
 
     if (status !== 200) {
-        throw new Error(`Unable to download ${toolchainIndexUrl}. Got status code ${status}`);
+        throw new Error(`Unable to download ${toolchainIndexUrl()}. Got status code ${status}`);
     }
 
     data.sort((a, b) => -semver.compare(a.version, b.version));
@@ -211,18 +211,17 @@ export const downloadZip = (
     environmentVersion,
     toolchainVersion,
 ) => (dispatch, getState) => new Promise((resolve, reject) => {
-    const { installDir, toolchainIndexUrl } = getState().app.settings;
     const { toolchainList } = getEnvironment(environmentVersion, getState);
     const { name, sha512 } = toolchainList.find(v => v.version === toolchainVersion);
 
     const hash = createHash('sha512');
 
-    const downloadDir = path.resolve(installDir, 'downloads');
+    const downloadDir = path.resolve(installDir(), 'downloads');
     const zipLocation = path.resolve(downloadDir, name);
     fse.mkdirpSync(downloadDir);
     const writeStream = fs.createWriteStream(zipLocation);
 
-    const url = `${path.dirname(toolchainIndexUrl)}/${name}`;
+    const url = toolchainUrl(name);
 
     net.request({ url }).on('response', response => {
         const totalLength = response.headers['content-length'][0];
@@ -312,9 +311,8 @@ export const cloneNcs = version => (dispatch, getState) => new Promise((resolve,
     });
 });
 
-export const init = () => (dispatch, getState) => {
-    const { installDir } = getState().app.settings;
-    fse.mkdirpSync(installDir);
+export const init = () => dispatch => {
+    fse.mkdirpSync(installDir());
     dispatch(checkLocalEnvironments());
     dispatch(downloadIndex());
 };
@@ -327,10 +325,9 @@ export const confirmRemove = version => dispatch => {
     dispatch(showConfirmRemoveDialog(version));
 };
 
-const install = (environmentVersion, toolchainVersion) => async (dispatch, getState) => {
-    const { installDir } = getState().app.settings;
+const install = (environmentVersion, toolchainVersion) => async dispatch => {
     const toolchainDir = 'toolchain';
-    const unzipDest = path.resolve(installDir, environmentVersion, toolchainDir);
+    const unzipDest = path.resolve(installDir(), environmentVersion, toolchainDir);
 
     dispatch(selectEnvironmentAction(environmentVersion));
     if (isFirstInstall()) {

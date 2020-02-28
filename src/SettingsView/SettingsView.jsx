@@ -43,15 +43,15 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
 import NrfCard from '../NrfCard/NrfCard';
+import { installDir } from '../persistentStore';
 import InstallDirDialog from './InstallDirDialog';
 import { showInstallDirDialog } from './settingsActions';
 
 export default props => {
     const dispatch = useDispatch();
-    const {
-        installDir,
-        isInstallDirDialogVisible,
-    } = useSelector(state => state.app.settings);
+    const isInstallDirDialogVisible = useSelector(
+        state => state.app.settings.isInstallDirDialogVisible,
+    );
 
     return (
         <div {...props}>
@@ -72,7 +72,7 @@ export default props => {
 
                 <Row className="settings-info">
                     <Col className="text-muted">
-                        {installDir}
+                        {installDir()}
                     </Col>
                 </Row>
             </NrfCard>

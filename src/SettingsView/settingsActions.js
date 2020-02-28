@@ -40,29 +40,24 @@ import {
     clearEnvironmentListAction,
     downloadIndex,
 } from '../ManagerView/managerActions';
+import { setInstallDir, installDir } from '../persistentStore';
 
-export const UPDATE_INSTALL_DIR = 'UPDATE_INSTALL_DIR';
 export const SHOW_INSTALL_DIR_DIALOG = 'SHOW_INSTALL_DIR_DIALOG';
 export const HIDE_INSTALL_DIR_DIALOG = 'HIDE_INSTALL_DIR_DIALOG';
 export const SHOW_INSTALL_CONFIRM_DIALOG = 'SHOW_INSTALL_CONFIRM_DIALOG';
 export const HIDE_INSTALL_CONFIRM_DIALOG = 'HIDE_INSTALL_CONFIRM_DIALOG';
 
-const updateInstallDirAction = installDir => ({
-    type: UPDATE_INSTALL_DIR,
-    installDir,
-});
-
 export const showInstallDirDialog = () => ({ type: 'SHOW_INSTALL_DIR_DIALOG' });
 export const hideInstallDirDialog = () => ({ type: 'HIDE_INSTALL_DIR_DIALOG' });
 
-export const selectInstallDir = () => async (dispatch, getState) => {
+export const selectInstallDir = () => async dispatch => {
     const selection = remote.dialog.showOpenDialog({
         title: 'Select installation directory',
-        defaultPath: getState().app.installDir,
+        defaultPath: installDir(),
         properties: ['openDirectory', 'createDirectory'],
     });
     if (selection) {
-        dispatch(updateInstallDirAction(selection[0]));
+        setInstallDir(selection[0]);
         dispatch(clearEnvironmentListAction([]));
         dispatch(checkLocalEnvironments());
         await dispatch(downloadIndex());

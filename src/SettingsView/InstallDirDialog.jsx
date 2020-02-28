@@ -35,13 +35,13 @@
  */
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import { installDir } from '../persistentStore';
 import { selectInstallDir, hideInstallDirDialog } from './settingsActions';
 
 export default props => {
     const dispatch = useDispatch();
-    const installDir = useSelector(state => state.app.settings.installDir);
 
     return (
         <ConfirmationDialog
@@ -51,7 +51,7 @@ export default props => {
             {...props}
         >
             <p>
-                <code>{installDir}</code> is your current installation base directory.
+                <code>{installDir()}</code> is your current installation base directory.
                 Any new installation will be a subdirectory here.
             </p>
             <p>
