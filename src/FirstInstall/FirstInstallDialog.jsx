@@ -43,7 +43,7 @@ import {
     isDialogVisible,
 } from './firstInstallReducer';
 
-import { gotoPage } from '../ManagerView/managerActions';
+import { gotoPage } from '../Manager/managerActions';
 
 export default () => {
     const dispatch = useDispatch();

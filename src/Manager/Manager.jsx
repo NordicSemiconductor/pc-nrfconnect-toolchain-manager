@@ -41,8 +41,8 @@ import Button from 'react-bootstrap/Button';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
-import InstallDirDialog from '../SettingsView/InstallDirDialog';
-import { selectInstallDir } from '../SettingsView/settingsActions';
+import InstallDirDialog from '../Settings/InstallDirDialog';
+import { selectInstallDir } from '../Settings/settingsActions';
 import EnvironmentList from './EnvironmentList/EnvironmentList';
 import {
     hideConfirmInstallDialog,

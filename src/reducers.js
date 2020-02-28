@@ -36,8 +36,8 @@
 
 import { combineReducers } from 'redux';
 import firstInstall from './FirstInstall/firstInstallReducer';
-import manager from './ManagerView/managerReducer';
-import settings from './SettingsView/settingsReducer';
+import manager from './Manager/managerReducer';
+import settings from './Settings/settingsReducer';
 
 const rootReducer = combineReducers({
     firstInstall,
