@@ -43,6 +43,7 @@ import DecompressZip from 'decompress-zip';
 import { remote, shell } from 'electron';
 import fse from 'fs-extra';
 import semver from 'semver';
+import { ErrorDialogActions } from 'pc-nrfconnect-shared';
 import { isFirstInstall, setHasInstalledAnNcs } from '../util/persistentStore';
 import { showFirstInstallDialog } from '../FirstInstall/firstInstallReducer';
 
@@ -387,25 +388,30 @@ const removeToolchain = (version, withParent = false) => async (dispatch, getSta
     }));
 
     let updatedToolchainDir;
+    const srcDir = withParent ? path.dirname(toolchainDir) : toolchainDir;
     try {
-        const srcDir = withParent ? path.dirname(toolchainDir) : toolchainDir;
         await fse.move(srcDir, toBeDeletedDir, { overwrite: true });
         await fse.remove(toBeDeletedDir);
         updatedToolchainDir = null;
     } catch (error) {
-        console.log(`Failed to remove files with error: ${error}`);
+        const [,, message] = `${error}`.split(/[:,] /);
+        dispatch(ErrorDialogActions.showDialog(
+            `Failed to remove ${srcDir}, ${message}. `
+            + 'Please close any application or window that might keep this '
+            + 'environment locked, then try to remove it again.',
+        ));
         updatedToolchainDir = toolchainDir;
-    } finally {
-        if (environment.toolchainList) {
-            dispatch(environmentUpdate({
-                ...environment,
-                toolchainDir: updatedToolchainDir,
-                isRemoving: false,
-            }));
-            dispatch(environmentInProcessAction(version, false));
-        } else {
-            dispatch(removeEnvironmentAction(version));
-        }
+    }
+
+    if (environment.toolchainList || updatedToolchainDir) {
+        dispatch(environmentUpdate({
+            ...environment,
+            toolchainDir: updatedToolchainDir,
+            isRemoving: false,
+        }));
+        dispatch(environmentInProcessAction(version, false));
+    } else {
+        dispatch(removeEnvironmentAction(version));
     }
 };
 
