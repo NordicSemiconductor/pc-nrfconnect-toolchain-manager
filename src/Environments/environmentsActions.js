@@ -127,7 +127,7 @@ export const environmentUpdate = environment => (dispatch, getState) => {
         throw new Error('No environment state provided');
     }
 
-    const { environmentList } = getState().app.manager;
+    const { environmentList } = getState().app.environments;
     const envIndex = environmentList.findIndex(v => v.version === environment.version);
     if (envIndex < 0) {
         environmentList.push(environment);
@@ -150,7 +150,7 @@ const toolchainUpdateAction = (
 });
 
 const getEnvironment = (version, getState) => {
-    const { environmentList } = getState().app.manager;
+    const { environmentList } = getState().app.environments;
     return environmentList.find(v => v.version === version);
 };
 
@@ -265,7 +265,7 @@ export const unzip = (
         console.log('Caught an error', err);
     });
     unzipper.on('extract', () => {
-        const { environmentList } = getState().app.manager;
+        const { environmentList } = getState().app.environments;
         const environment = environmentList.find(v => v.version === environmentVersion);
         dispatch(environmentUpdate({
             ...environment,
@@ -275,7 +275,7 @@ export const unzip = (
         resolve();
     });
     unzipper.on('progress', (fileIndex, fileCount) => {
-        const { environmentList } = getState().app.manager;
+        const { environmentList } = getState().app.environments;
         const environment = environmentList.find(v => v.version === environmentVersion);
         const progress = Math.round((fileIndex) / fileCount * 50) + 49;
 

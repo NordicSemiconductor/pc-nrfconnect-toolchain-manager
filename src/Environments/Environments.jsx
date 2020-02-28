@@ -50,7 +50,7 @@ import {
     init,
     installLatestToolchain,
     removeEnvironment,
-} from './managerActions';
+} from './environmentsActions';
 import OtherPlatformInstructions from './OtherPlatformInstructions';
 
 export default props => {
@@ -61,7 +61,7 @@ export default props => {
         isRemoveDirDialogVisible,
         environmentVersionToInstall,
         environmentVersionToRemove,
-    } = useSelector(state => state.app.manager);
+    } = useSelector(state => state.app.environments);
 
     const isSupportedPlatform = process.platform === 'win32';
     if (isSupportedPlatform) {

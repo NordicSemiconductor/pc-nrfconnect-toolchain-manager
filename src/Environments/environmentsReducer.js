@@ -45,7 +45,7 @@ import {
     CONFIRM_REMOVE_DIALOG_SHOW,
     CONFIRM_REMOVE_DIALOG_HIDE,
     SELECT_ENVIRONMENT,
-} from './managerActions';
+} from './environmentsActions';
 
 const InitialState = {
     environmentList: [],

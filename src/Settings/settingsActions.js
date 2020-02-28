@@ -39,7 +39,7 @@ import {
     checkLocalEnvironments,
     clearEnvironmentListAction,
     downloadIndex,
-} from '../Manager/managerActions';
+} from '../Environments/environmentsActions';
 import { setInstallDir, installDir } from '../persistentStore';
 
 export const SHOW_INSTALL_DIR_DIALOG = 'SHOW_INSTALL_DIR_DIALOG';

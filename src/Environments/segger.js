@@ -124,7 +124,7 @@ const updateSettingsFile = async (settingsFileName, toolchainDir) => {
 };
 
 const getEnvironment = (version, getState) => {
-    const { environmentList } = getState().app.manager;
+    const { environmentList } = getState().app.environments;
     return environmentList.find(v => v.version === version);
 };
 

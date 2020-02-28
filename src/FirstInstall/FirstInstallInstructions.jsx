@@ -44,14 +44,14 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 
-import { gotoPage } from '../Manager/managerActions';
+import { gotoPage } from '../Environments/environmentsActions';
 import { installDir } from '../persistentStore';
 
 const Ie = () => (<>{' '}<i>i.e.</i>{' '}</>);
 
 const FirstInstallInstructions = props => {
     const dispatch = useDispatch();
-    const { selectedVersion } = useSelector(({ app }) => app.manager);
+    const { selectedVersion } = useSelector(({ app }) => app.environments);
     const version = selectedVersion || '<version>';
     const zephyrDir = [installDir(), version, 'zephyr'].join(sep);
     const sampleDir = [zephyrDir, 'samples', 'basic'].join(sep);

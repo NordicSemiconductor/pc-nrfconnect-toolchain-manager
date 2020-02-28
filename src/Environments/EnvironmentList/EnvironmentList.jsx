@@ -48,13 +48,13 @@ import {
     confirmRemove,
     selectEnvironmentAction,
     gotoPage,
-} from '../managerActions';
+} from '../environmentsActions';
 import { openSegger } from '../segger';
 import EnvironmentItem from '../EnvironmentItem/EnvironmentItem';
 
 export default () => {
     const dispatch = useDispatch();
-    const environmentList = useSelector(state => state.app.manager.environmentList);
+    const environmentList = useSelector(state => state.app.environments.environmentList);
 
     return environmentList.map(environment => (
         <EnvironmentItem
