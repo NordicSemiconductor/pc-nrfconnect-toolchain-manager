@@ -34,45 +34,33 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Button from 'react-bootstrap/Button';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
-import InstallDirDialog from '../InstallDir/InstallDirDialog';
+import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import {
+    hideConfirmRemoveDialog,
+    removeEnvironment,
+} from './environmentsActions';
 
-import EnvironmentList from './EnvironmentList/EnvironmentList';
-import { init } from './environmentsActions';
-import OtherPlatformInstructions from './OtherPlatformInstructions';
-import RemoveEnvironmentDialog from './RemoveEnvironmentDialog';
-
-export default props => {
+export default () => {
     const dispatch = useDispatch();
-    useEffect(() => dispatch(init()), []);
-
-    const isSupportedPlatform = process.platform === 'win32';
-    if (isSupportedPlatform) {
-        return (
-            <div {...props}>
-                <ButtonToolbar hidden>
-                    <Button className="mdi mdi-briefcase-plus-outline">
-                        Install package
-                    </Button>
-                </ButtonToolbar>
-                <div>
-                    <EnvironmentList />
-                </div>
-                <FirstInstallDialog />
-                <InstallDirDialog justConfirm />
-                <RemoveEnvironmentDialog />
-            </div>
-        );
-    }
+    const {
+        isRemoveDirDialogVisible,
+        environmentVersionToRemove,
+    } = useSelector(state => state.app.environments);
 
     return (
-        <div {...props}>
-            <OtherPlatformInstructions />
-        </div>
+        <ConfirmationDialog
+            title="Remove environment"
+            onCancel={() => dispatch(hideConfirmRemoveDialog())}
+            onConfirm={() => {
+                dispatch(hideConfirmRemoveDialog());
+                dispatch(removeEnvironment(environmentVersionToRemove));
+            }}
+            isVisible={isRemoveDirDialogVisible}
+        >
+        Are you sure to remove <code>{environmentVersionToRemove}</code> environment?
+        </ConfirmationDialog>
     );
 };
