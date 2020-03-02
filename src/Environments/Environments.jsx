@@ -42,7 +42,7 @@ import Button from 'react-bootstrap/Button';
 import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
 
-import EnvironmentItem from './EnvironmentList/EnvironmentItem';
+import Environment from './Environment/Environment';
 import { init } from './environmentsActions';
 import OtherPlatformInstructions from './OtherPlatformInstructions';
 import RemoveEnvironmentDialog from './RemoveEnvironmentDialog';
@@ -53,7 +53,7 @@ const EnvironmentList = () => {
     return (
         <div>
             {environments.map(environment => (
-                <EnvironmentItem key={environment.version} environment={environment} />
+                <Environment key={environment.version} environment={environment} />
             ))}
         </div>
     );

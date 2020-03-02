@@ -71,7 +71,7 @@ PrimaryButton.propTypes = {
 };
 PrimaryButton.defaultProps = { className: '' };
 
-const EnvironmentItem = ({
+const Environment = ({
     environment: {
         toolchainDir,
         version,
@@ -219,7 +219,7 @@ const EnvironmentItem = ({
     );
 };
 
-EnvironmentItem.propTypes = {
+Environment.propTypes = {
     environment: PropTypes.shape({
         toolchainDir: PropTypes.string,
         version: PropTypes.string.isRequired,
@@ -229,4 +229,4 @@ EnvironmentItem.propTypes = {
         isWestPresent: PropTypes.bool,
     }).isRequired,
 };
-export default EnvironmentItem;
+export default Environment;
