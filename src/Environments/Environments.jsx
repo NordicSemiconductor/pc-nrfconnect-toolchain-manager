@@ -35,17 +35,29 @@
  */
 
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Button from 'react-bootstrap/Button';
 
 import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
 
-import EnvironmentList from './EnvironmentList/EnvironmentList';
+import EnvironmentItem from './EnvironmentList/EnvironmentItem';
 import { init } from './environmentsActions';
 import OtherPlatformInstructions from './OtherPlatformInstructions';
 import RemoveEnvironmentDialog from './RemoveEnvironmentDialog';
+
+const EnvironmentList = () => {
+    const environments = useSelector(state => state.app.environments.environmentList);
+
+    return (
+        <div>
+            {environments.map(environment => (
+                <EnvironmentItem key={environment.version} environment={environment} />
+            ))}
+        </div>
+    );
+};
 
 export default props => {
     const dispatch = useDispatch();
@@ -60,9 +72,7 @@ export default props => {
                         Install package
                     </Button>
                 </ButtonToolbar>
-                <div>
-                    <EnvironmentList />
-                </div>
+                <EnvironmentList />
                 <FirstInstallDialog />
                 <InstallDirDialog justConfirm />
                 <RemoveEnvironmentDialog />
