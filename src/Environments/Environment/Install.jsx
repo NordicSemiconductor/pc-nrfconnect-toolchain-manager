@@ -34,47 +34,30 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
-
 import React from 'react';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import NrfCard from '../../NrfCard/NrfCard';
+import { useDispatch } from 'react-redux';
 
-import Name from './Name';
-import ProgressLabel from './ProgressLabel';
-import ProgressBar from './ProgressBar';
-import ShowFirstSteps from './ShowFirstSteps';
-import Install from './Install';
-import OpenIde from './OpenIde';
-import EnvironmentMenu from './EnvironmentMenu';
-
+import { confirmInstall } from '../environmentsActions';
+import Button from './Button';
 import environmentPropType from './environmentPropType';
 
-const Environment = ({ environment }) => (
-    <NrfCard>
-        <Row noGutters>
-            <Col>
-                <Name environment={environment} />
-                <ProgressLabel environment={environment} />
-            </Col>
-            <Col
-                as={ButtonToolbar}
-                xs="auto ml-auto"
-                className="d-flex align-items-center my-3 pl-3 wide-btns"
-            >
-                <ShowFirstSteps environment={environment} />
-                <Install environment={environment} />
-                <OpenIde environment={environment} />
+const Install = ({ environment }) => {
+    const dispatch = useDispatch();
 
-                <EnvironmentMenu environment={environment} />
-            </Col>
-        </Row>
-        <ProgressBar environment={environment} />
-    </NrfCard>
-);
+    const isInstalled = !!environment.toolchainDir;
+    if (isInstalled) return null;
 
-Environment.propTypes = { environment: environmentPropType.isRequired };
+    return (
+        <Button
+            icon="x-mdi-briefcase-download-outline"
+            onClick={confirmInstall(dispatch, environment)}
+            label="Install"
+            disabled={environment.isInProcess}
+            variant="outline-primary"
+        />
+    );
+};
 
-export default Environment;
+Install.propTypes = { environment: environmentPropType.isRequired };
+
+export default Install;

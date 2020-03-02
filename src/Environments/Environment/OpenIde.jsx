@@ -34,47 +34,39 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
-
 import React from 'react';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import NrfCard from '../../NrfCard/NrfCard';
-
-import Name from './Name';
-import ProgressLabel from './ProgressLabel';
-import ProgressBar from './ProgressBar';
-import ShowFirstSteps from './ShowFirstSteps';
-import Install from './Install';
-import OpenIde from './OpenIde';
-import EnvironmentMenu from './EnvironmentMenu';
+import { useDispatch } from 'react-redux';
+import { openSegger } from '../segger';
+import Button from './Button';
 
 import environmentPropType from './environmentPropType';
 
-const Environment = ({ environment }) => (
-    <NrfCard>
-        <Row noGutters>
-            <Col>
-                <Name environment={environment} />
-                <ProgressLabel environment={environment} />
-            </Col>
-            <Col
-                as={ButtonToolbar}
-                xs="auto ml-auto"
-                className="d-flex align-items-center my-3 pl-3 wide-btns"
-            >
-                <ShowFirstSteps environment={environment} />
-                <Install environment={environment} />
-                <OpenIde environment={environment} />
+const OpenIde = ({
+    environment: {
+        toolchainDir,
+        version,
+        isRemoving,
+        isWestPresent,
+        isInProcess,
+    },
+}) => {
+    const dispatch = useDispatch();
 
-                <EnvironmentMenu environment={environment} />
-            </Col>
-        </Row>
-        <ProgressBar environment={environment} />
-    </NrfCard>
-);
+    const isInstalled = !!toolchainDir;
+    if (!isInstalled || !isWestPresent || isRemoving) return null;
 
-Environment.propTypes = { environment: environmentPropType.isRequired };
+    return (
+        <Button
+            icon="x-mdi-rocket"
+            onClick={() => dispatch(openSegger(version))}
+            label="Open IDE"
+            title="Open SEGGER Embedded Studio"
+            disabled={isInProcess}
+            variant="primary"
+        />
+    );
+};
 
-export default Environment;
+OpenIde.propTypes = { environment: environmentPropType.isRequired };
+
+export default OpenIde;

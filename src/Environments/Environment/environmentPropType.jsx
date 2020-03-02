@@ -34,47 +34,16 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
+import {
+    bool, number, shape, string,
+} from 'prop-types';
 
-import React from 'react';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import NrfCard from '../../NrfCard/NrfCard';
-
-import Name from './Name';
-import ProgressLabel from './ProgressLabel';
-import ProgressBar from './ProgressBar';
-import ShowFirstSteps from './ShowFirstSteps';
-import Install from './Install';
-import OpenIde from './OpenIde';
-import EnvironmentMenu from './EnvironmentMenu';
-
-import environmentPropType from './environmentPropType';
-
-const Environment = ({ environment }) => (
-    <NrfCard>
-        <Row noGutters>
-            <Col>
-                <Name environment={environment} />
-                <ProgressLabel environment={environment} />
-            </Col>
-            <Col
-                as={ButtonToolbar}
-                xs="auto ml-auto"
-                className="d-flex align-items-center my-3 pl-3 wide-btns"
-            >
-                <ShowFirstSteps environment={environment} />
-                <Install environment={environment} />
-                <OpenIde environment={environment} />
-
-                <EnvironmentMenu environment={environment} />
-            </Col>
-        </Row>
-        <ProgressBar environment={environment} />
-    </NrfCard>
-);
-
-Environment.propTypes = { environment: environmentPropType.isRequired };
-
-export default Environment;
+export default shape({
+    toolchainDir: string,
+    version: string.isRequired,
+    progress: number,
+    isCloning: bool,
+    isRemoving: bool,
+    isWestPresent: bool,
+    isInProcess: bool,
+});

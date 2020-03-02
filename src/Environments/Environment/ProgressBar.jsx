@@ -36,45 +36,52 @@
 
 import './style.scss';
 
+import PropTypes from 'prop-types';
 import React from 'react';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import NrfCard from '../../NrfCard/NrfCard';
-
-import Name from './Name';
-import ProgressLabel from './ProgressLabel';
-import ProgressBar from './ProgressBar';
-import ShowFirstSteps from './ShowFirstSteps';
-import Install from './Install';
-import OpenIde from './OpenIde';
-import EnvironmentMenu from './EnvironmentMenu';
+import Button from 'react-bootstrap/Button';
+import BootstrapProgressBar from 'react-bootstrap/ProgressBar';
 
 import environmentPropType from './environmentPropType';
 
-const Environment = ({ environment }) => (
-    <NrfCard>
-        <Row noGutters>
-            <Col>
-                <Name environment={environment} />
-                <ProgressLabel environment={environment} />
-            </Col>
-            <Col
-                as={ButtonToolbar}
-                xs="auto ml-auto"
-                className="d-flex align-items-center my-3 pl-3 wide-btns"
-            >
-                <ShowFirstSteps environment={environment} />
-                <Install environment={environment} />
-                <OpenIde environment={environment} />
-
-                <EnvironmentMenu environment={environment} />
-            </Col>
-        </Row>
-        <ProgressBar environment={environment} />
-    </NrfCard>
+const PrimaryButton = ({ label, className, ...props }) => (
+    <Button className={`${className} toolchain-item-button ml-2`} variant="primary" {...props}>
+        {label}
+    </Button>
 );
+PrimaryButton.propTypes = {
+    label: PropTypes.string.isRequired,
+    className: PropTypes.string,
+};
+PrimaryButton.defaultProps = { className: '' };
 
-Environment.propTypes = { environment: environmentPropType.isRequired };
+const ProgressBar = ({
+    environment: {
+        toolchainDir,
+        progress,
+        isRemoving,
+        isCloning,
+    },
+}) => {
+    const isInstalled = !!toolchainDir;
 
-export default Environment;
+    let progressPct = isRemoving ? 0 : progress;
+    progressPct = isInstalled ? 100 : (progressPct || 0);
+
+    let progressClassName = progressPct === 0 ? 'available' : 'installing';
+    progressClassName = isInstalled ? 'installed' : progressClassName;
+    progressClassName = isCloning ? 'installing' : progressClassName;
+    progressClassName = isRemoving ? 'removing' : progressClassName;
+
+    return (
+        <BootstrapProgressBar
+            now={progressPct}
+            striped={!isInstalled || isRemoving || isCloning}
+            animated={!isInstalled || isRemoving || isCloning}
+            className={progressClassName}
+        />
+    );
+};
+
+ProgressBar.propTypes = { environment: environmentPropType.isRequired };
+
+export default ProgressBar;

@@ -286,8 +286,7 @@ export const unzip = (
     unzipper.extract({ path: dest });
 });
 
-export const cloneNcs = version => (dispatch, getState) => new Promise((resolve, reject) => {
-    const environment = getEnvironment(version, getState);
+export const cloneNcs = (dispatch, environment) => () => new Promise((resolve, reject) => {
     const { toolchainDir } = environment;
     const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
     const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
@@ -314,12 +313,12 @@ export const init = () => dispatch => {
     dispatch(downloadIndex());
 };
 
-export const confirmInstall = version => dispatch => {
+export const confirmInstall = (dispatch, { version }) => () => {
     dispatch(setEnvironmentVersionToInstall(version));
     dispatch(showInstallDirDialog());
 };
 
-export const confirmRemove = version => dispatch => {
+export const confirmRemove = (dispatch, { version }) => () => {
     dispatch(showConfirmRemoveDialog(version));
 };
 
@@ -336,7 +335,7 @@ const install = (environmentVersion, toolchainVersion) => async dispatch => {
     fse.mkdirpSync(unzipDest);
     const zipLocation = await dispatch(downloadZip(environmentVersion, toolchainVersion));
     await dispatch(unzip(environmentVersion, zipLocation, unzipDest));
-    await dispatch(cloneNcs(environmentVersion));
+    await cloneNcs(dispatch, environmentVersion)();
 
     setHasInstalledAnNcs();
     dispatch(checkLocalEnvironments());
@@ -350,24 +349,20 @@ export const installLatestToolchain = version => (dispatch, getState) => {
     dispatch(install(version, toolchain.version));
 };
 
-export const openFolder = version => (dispatch, getState) => {
-    const { toolchainDir } = getEnvironment(version, getState);
-    shell.openItem(path.dirname(toolchainDir));
-};
-
-export const openToolchainFolder = version => (dispatch, getState) => {
-    const { toolchainDir } = getEnvironment(version, getState);
-    shell.openItem(toolchainDir);
-};
-
-export const openBash = version => (dispatch, getState) => {
-    const { toolchainDir } = getEnvironment(version, getState);
+export const openBash = ({ toolchainDir }) => () => {
     exec(`"${path.resolve(toolchainDir, 'git-bash.exe')}"`);
 };
 
-export const openCmd = version => (dispatch, getState) => {
-    const { toolchainDir } = getEnvironment(version, getState);
+export const openCmd = ({ toolchainDir }) => () => {
     exec(`start cmd /k "${path.resolve(toolchainDir, 'git-cmd.cmd')}"`);
+};
+
+export const openFolder = ({ toolchainDir }) => () => {
+    shell.openItem(path.dirname(toolchainDir));
+};
+
+export const openToolchainFolder = ({ toolchainDir }) => () => {
+    shell.openItem(toolchainDir);
 };
 
 const showErrorDialog = message => ({ type: 'ERROR_DIALOG_SHOW', message });

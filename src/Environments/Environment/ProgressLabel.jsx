@@ -34,47 +34,32 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
-
 import React from 'react';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import NrfCard from '../../NrfCard/NrfCard';
-
-import Name from './Name';
-import ProgressLabel from './ProgressLabel';
-import ProgressBar from './ProgressBar';
-import ShowFirstSteps from './ShowFirstSteps';
-import Install from './Install';
-import OpenIde from './OpenIde';
-import EnvironmentMenu from './EnvironmentMenu';
-
 import environmentPropType from './environmentPropType';
 
-const Environment = ({ environment }) => (
-    <NrfCard>
-        <Row noGutters>
-            <Col>
-                <Name environment={environment} />
-                <ProgressLabel environment={environment} />
-            </Col>
-            <Col
-                as={ButtonToolbar}
-                xs="auto ml-auto"
-                className="d-flex align-items-center my-3 pl-3 wide-btns"
-            >
-                <ShowFirstSteps environment={environment} />
-                <Install environment={environment} />
-                <OpenIde environment={environment} />
+const label = ({
+    toolchainDir,
+    progress,
+    isRemoving,
+    isCloning,
+}) => {
+    const isInstalled = !!toolchainDir;
 
-                <EnvironmentMenu environment={environment} />
-            </Col>
-        </Row>
-        <ProgressBar environment={environment} />
-    </NrfCard>
+    switch (true) {
+        case isRemoving: return 'Removing...';
+        case isCloning: return 'Cloning SDK... please wait until the terminal window is closed!';
+        case progress && !isInstalled: return `Installing ${progress}%`;
+        default: return '';
+    }
+};
+
+const ProgressLabel = ({ environment }) => (
+    <Row noGutters className="text-muted small font-italic">
+        {label(environment)}
+    </Row>
 );
 
-Environment.propTypes = { environment: environmentPropType.isRequired };
+ProgressLabel.propTypes = { environment: environmentPropType.isRequired };
 
-export default Environment;
+export default ProgressLabel;

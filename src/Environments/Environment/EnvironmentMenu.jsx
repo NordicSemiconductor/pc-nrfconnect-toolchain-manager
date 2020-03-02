@@ -37,44 +37,48 @@
 import './style.scss';
 
 import React from 'react';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import NrfCard from '../../NrfCard/NrfCard';
-
-import Name from './Name';
-import ProgressLabel from './ProgressLabel';
-import ProgressBar from './ProgressBar';
-import ShowFirstSteps from './ShowFirstSteps';
-import Install from './Install';
-import OpenIde from './OpenIde';
-import EnvironmentMenu from './EnvironmentMenu';
+import { useDispatch } from 'react-redux';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import {
+    cloneNcs,
+    confirmInstall,
+    openBash,
+    openCmd,
+    openFolder,
+    openToolchainFolder,
+    confirmRemove,
+} from '../environmentsActions';
 
 import environmentPropType from './environmentPropType';
 
-const Environment = ({ environment }) => (
-    <NrfCard>
-        <Row noGutters>
-            <Col>
-                <Name environment={environment} />
-                <ProgressLabel environment={environment} />
-            </Col>
-            <Col
-                as={ButtonToolbar}
-                xs="auto ml-auto"
-                className="d-flex align-items-center my-3 pl-3 wide-btns"
-            >
-                <ShowFirstSteps environment={environment} />
-                <Install environment={environment} />
-                <OpenIde environment={environment} />
+const EnvironmentMenu = ({ environment }) => {
+    const dispatch = useDispatch();
+    const isInstalled = !!environment.toolchainDir;
 
-                <EnvironmentMenu environment={environment} />
-            </Col>
-        </Row>
-        <ProgressBar environment={environment} />
-    </NrfCard>
-);
+    return (
+        <DropdownButton
+            className="ml-2"
+            variant="outline-primary"
+            title=""
+            alignRight
+            disabled={environment.isInProcess || !isInstalled}
+        >
+            {/* eslint-disable max-len */}
+            <Dropdown.Item onClick={openBash(environment)}>Open bash</Dropdown.Item>
+            <Dropdown.Item onClick={openCmd(environment)}>Open command prompt</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={openFolder(environment)}>Open SDK folder</Dropdown.Item>
+            <Dropdown.Item onClick={openToolchainFolder(environment)}>Open toolchain folder</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={cloneNcs(dispatch, environment)}>Update SDK</Dropdown.Item>
+            <Dropdown.Item onClick={confirmInstall(dispatch, environment)}>Update toolchain</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={confirmRemove(dispatch, environment)}>Remove</Dropdown.Item>
+            {/* eslint-enable max-len */}
+        </DropdownButton>
+    );
+};
+EnvironmentMenu.propTypes = { environment: environmentPropType.isRequired };
 
-Environment.propTypes = { environment: environmentPropType.isRequired };
-
-export default Environment;
+export default EnvironmentMenu;
