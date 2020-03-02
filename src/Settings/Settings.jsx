@@ -37,21 +37,18 @@
 import './style.scss';
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
 import NrfCard from '../NrfCard/NrfCard';
 import { installDir } from '../persistentStore';
-import InstallDirDialog from './InstallDirDialog';
-import { showInstallDirDialog } from './settingsActions';
+import InstallDirDialog from '../InstallDir/InstallDirDialog';
+import { showInstallDirDialog } from '../InstallDir/installDirReducer';
 
 export default props => {
     const dispatch = useDispatch();
-    const isInstallDirDialogVisible = useSelector(
-        state => state.app.settings.isInstallDirDialogVisible,
-    );
 
     return (
         <div {...props}>
@@ -77,7 +74,7 @@ export default props => {
                 </Row>
             </NrfCard>
 
-            <InstallDirDialog isVisible={isInstallDirDialogVisible} />
+            <InstallDirDialog />
         </div>
     );
 };

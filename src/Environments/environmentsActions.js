@@ -47,6 +47,7 @@ import {
     isFirstInstall, setHasInstalledAnNcs, toolchainIndexUrl, toolchainUrl, installDir,
 } from '../persistentStore';
 import { showFirstInstallDialog } from '../FirstInstall/firstInstallReducer';
+import { showInstallDirDialog } from '../InstallDir/installDirReducer';
 
 const { net } = remote;
 
@@ -55,8 +56,7 @@ export const ENVIRONMENT_IN_PROCESS = 'ENVIRONMENT_IN_PROCESS';
 export const ENVIRONMENT_LIST_CLEAR = 'ENVIRONMENT_LIST_CLEAR';
 export const TOOLCHAIN_UPDATE = 'TOOLCHAIN_UPDATE';
 export const ENVIRONMENT_REMOVE = 'ENVIRONMENT_REMOVE';
-export const CONFIRM_INSTALL_DIALOG_SHOW = 'CONFIRM_INSTALL_DIALOG_SHOW';
-export const CONFIRM_INSTALL_DIALOG_HIDE = 'CONFIRM_INSTALL_DIALOG_HIDE';
+export const SET_ENVIRONMENT_VERSION_TO_INSTALL = 'SET_ENVIRONMENT_VERSION_TO_INSTALL';
 export const CONFIRM_REMOVE_DIALOG_SHOW = 'CONFIRM_REMOVE_DIALOG_SHOW';
 export const CONFIRM_REMOVE_DIALOG_HIDE = 'CONFIRM_REMOVE_DIALOG_HIDE';
 export const SELECT_ENVIRONMENT = 'SELECT_ENVIRONMENT';
@@ -104,14 +104,11 @@ export const clearEnvironmentListAction = () => ({
     type: ENVIRONMENT_LIST_CLEAR,
 });
 
-const showConfirmInstallDialog = version => ({
-    type: CONFIRM_INSTALL_DIALOG_SHOW,
+const setEnvironmentVersionToInstall = version => ({
+    type: SET_ENVIRONMENT_VERSION_TO_INSTALL,
     version,
 });
 
-export const hideConfirmInstallDialog = () => ({
-    type: CONFIRM_INSTALL_DIALOG_HIDE,
-});
 
 const showConfirmRemoveDialog = version => ({
     type: CONFIRM_REMOVE_DIALOG_SHOW,
@@ -318,7 +315,8 @@ export const init = () => dispatch => {
 };
 
 export const confirmInstall = version => dispatch => {
-    dispatch(showConfirmInstallDialog(version));
+    dispatch(setEnvironmentVersionToInstall(version));
+    dispatch(showInstallDirDialog());
 };
 
 export const confirmRemove = version => dispatch => {
@@ -349,7 +347,6 @@ const install = (environmentVersion, toolchainVersion) => async dispatch => {
 export const installLatestToolchain = version => (dispatch, getState) => {
     const toolchain = getEnvironment(version, getState)
         .toolchainList.sort(compareBy('version')).reverse()[0];
-    dispatch(hideConfirmInstallDialog());
     dispatch(install(version, toolchain.version));
 };
 

@@ -40,8 +40,7 @@ import {
     ENVIRONMENT_LIST_CLEAR,
     TOOLCHAIN_UPDATE,
     ENVIRONMENT_REMOVE,
-    CONFIRM_INSTALL_DIALOG_SHOW,
-    CONFIRM_INSTALL_DIALOG_HIDE,
+    SET_ENVIRONMENT_VERSION_TO_INSTALL,
     CONFIRM_REMOVE_DIALOG_SHOW,
     CONFIRM_REMOVE_DIALOG_HIDE,
     SELECT_ENVIRONMENT,
@@ -50,7 +49,6 @@ import {
 const InitialState = {
     environmentList: [],
     isInProcess: false,
-    isInstallDirDialogVisible: false,
     isRemoveDirDialogVisible: false,
     environmentVersionToInstall: null,
     environmentVersionToRemove: null,
@@ -143,18 +141,10 @@ const reducer = (state = InitialState, action) => {
                 environmentList: newEnvironmentList,
             };
         }
-        case CONFIRM_INSTALL_DIALOG_SHOW: {
+        case SET_ENVIRONMENT_VERSION_TO_INSTALL: {
             return {
                 ...state,
-                isInstallDirDialogVisible: true,
                 environmentVersionToInstall: action.version,
-            };
-        }
-        case CONFIRM_INSTALL_DIALOG_HIDE: {
-            return {
-                ...state,
-                isInstallDirDialogVisible: false,
-                environmentVersionToInstall: null,
             };
         }
         case CONFIRM_REMOVE_DIALOG_SHOW: {

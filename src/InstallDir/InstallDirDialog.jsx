@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,23 +34,23 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import React from 'react';
+import { bool } from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import { remote } from 'electron';
+
+import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import { installDir, setInstallDir } from '../persistentStore';
 import {
     checkLocalEnvironments,
     clearEnvironmentListAction,
     downloadIndex,
+    installLatestToolchain,
 } from '../Environments/environmentsActions';
-import { setInstallDir, installDir } from '../persistentStore';
+import { hideInstallDirDialog, isDialogVisible } from './installDirReducer';
 
-export const SHOW_INSTALL_DIR_DIALOG = 'SHOW_INSTALL_DIR_DIALOG';
-export const HIDE_INSTALL_DIR_DIALOG = 'HIDE_INSTALL_DIR_DIALOG';
-export const SHOW_INSTALL_CONFIRM_DIALOG = 'SHOW_INSTALL_CONFIRM_DIALOG';
-export const HIDE_INSTALL_CONFIRM_DIALOG = 'HIDE_INSTALL_CONFIRM_DIALOG';
 
-export const showInstallDirDialog = () => ({ type: 'SHOW_INSTALL_DIR_DIALOG' });
-export const hideInstallDirDialog = () => ({ type: 'HIDE_INSTALL_DIR_DIALOG' });
-
-export const selectInstallDir = () => async dispatch => {
+const selectInstallDir = async dispatch => {
     const selection = remote.dialog.showOpenDialog({
         title: 'Select installation directory',
         defaultPath: installDir(),
@@ -64,3 +64,50 @@ export const selectInstallDir = () => async dispatch => {
         dispatch(hideInstallDirDialog());
     }
 };
+
+const InstallDirDialog = ({ justConfirm }) => {
+    const dispatch = useDispatch();
+    const isVisible = useSelector(isDialogVisible);
+    const { environmentVersionToInstall } = useSelector(state => state.app.environments);
+
+    const confirmDirDialogProps = {
+        title: 'Confirm installation directory',
+        onConfirm: () => selectInstallDir(dispatch),
+        onCancel: () => dispatch(hideInstallDirDialog()),
+    };
+    const changeDirDialogProps = {
+        title: 'Change install directory',
+        confirmLabel: 'Continue installation',
+        optionalLabel: 'Change directory',
+        onConfirm: () => dispatch(installLatestToolchain(environmentVersionToInstall)),
+        onCancel: () => dispatch(hideInstallDirDialog()),
+        onOptional: () => dispatch(selectInstallDir()),
+    };
+    const dialogProps = justConfirm ? confirmDirDialogProps : changeDirDialogProps;
+
+    return (
+        <ConfirmationDialog
+            isVisible={isVisible}
+            {...dialogProps}
+        >
+            <p>
+                <code>{installDir()}</code> is your current installation base directory.
+            Any new installation will be a subdirectory here.
+            </p>
+            <p>
+            When you change the installation directory, SDK environments installed in the old
+            directory will not be shown in the list anymore. They will not be deleted, so
+            you can still find them on the disc and changing back to the old directory will
+            show them in the manager again.
+            </p>
+        </ConfirmationDialog>
+    );
+};
+InstallDirDialog.propTypes = {
+    justConfirm: bool,
+};
+InstallDirDialog.defaultProps = {
+    justConfirm: false,
+};
+
+export default InstallDirDialog;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,28 +34,35 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {
-    SHOW_INSTALL_DIR_DIALOG,
-    HIDE_INSTALL_DIR_DIALOG,
-} from './settingsActions';
+const SHOW_INSTALL_DIR_DIALOG = 'SHOW_INSTALL_DIR_DIALOG';
+export const showInstallDirDialog = () => ({
+    type: SHOW_INSTALL_DIR_DIALOG,
+});
+
+const HIDE_INSTALL_DIR_DIALOG = 'HIDE_INSTALL_DIR_DIALOG';
+export const hideInstallDirDialog = () => ({
+    type: HIDE_INSTALL_DIR_DIALOG,
+});
 
 const initialState = {
-    isInstallDirDialogVisible: false,
+    isDialogVisible: false,
 };
 
-const reducer = (state = initialState, action) => {
+export default (state = initialState, action) => {
     switch (action.type) {
-        case SHOW_INSTALL_DIR_DIALOG: return {
-            ...state,
-            isInstallDirDialogVisible: true,
-        };
-        case HIDE_INSTALL_DIR_DIALOG: return {
-            ...state,
-            isInstallDirDialogVisible: false,
-        };
+        case SHOW_INSTALL_DIR_DIALOG:
+            return {
+                ...state,
+                isDialogVisible: true,
+            };
+        case HIDE_INSTALL_DIR_DIALOG:
+            return {
+                ...state,
+                isDialogVisible: false,
+            };
         default:
             return state;
     }
 };
 
-export default reducer;
+export const isDialogVisible = state => state.app.installDir.isDialogVisible;

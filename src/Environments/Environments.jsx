@@ -41,14 +41,12 @@ import Button from 'react-bootstrap/Button';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
-import InstallDirDialog from '../Settings/InstallDirDialog';
-import { selectInstallDir } from '../Settings/settingsActions';
+import InstallDirDialog from '../InstallDir/InstallDirDialog';
+
 import EnvironmentList from './EnvironmentList/EnvironmentList';
 import {
-    hideConfirmInstallDialog,
     hideConfirmRemoveDialog,
     init,
-    installLatestToolchain,
     removeEnvironment,
 } from './environmentsActions';
 import OtherPlatformInstructions from './OtherPlatformInstructions';
@@ -57,9 +55,7 @@ export default props => {
     const dispatch = useDispatch();
     useEffect(() => dispatch(init()), []);
     const {
-        isInstallDirDialogVisible,
         isRemoveDirDialogVisible,
-        environmentVersionToInstall,
         environmentVersionToRemove,
     } = useSelector(state => state.app.environments);
 
@@ -76,15 +72,7 @@ export default props => {
                     <EnvironmentList />
                 </div>
                 <FirstInstallDialog />
-                <InstallDirDialog
-                    isVisible={isInstallDirDialogVisible}
-                    title="Confirm installation directory"
-                    confirmLabel="Continue installation"
-                    optionalLabel="Change directory"
-                    onConfirm={() => dispatch(installLatestToolchain(environmentVersionToInstall))}
-                    onCancel={() => dispatch(hideConfirmInstallDialog())}
-                    onOptional={() => dispatch(selectInstallDir())}
-                />
+                <InstallDirDialog justConfirm />
                 <ConfirmationDialog
                     title="Remove environment"
                     onCancel={() => dispatch(hideConfirmRemoveDialog())}
