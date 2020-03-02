@@ -38,7 +38,7 @@ import './style.scss';
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Col from 'react-bootstrap/Col';
@@ -47,6 +47,18 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Row from 'react-bootstrap/Row';
 import NrfCard from '../../NrfCard/NrfCard';
+import {
+    cloneNcs,
+    confirmInstall,
+    openBash,
+    openCmd,
+    openFolder,
+    openToolchainFolder,
+    confirmRemove,
+    selectEnvironmentAction,
+    gotoPage,
+} from '../environmentsActions';
+import { openSegger } from '../segger';
 
 const PrimaryButton = ({ label, className, ...props }) => (
     <Button className={`${className} toolchain-item-button ml-2`} variant="primary" {...props}>
@@ -68,16 +80,9 @@ const EnvironmentItem = ({
         isCloning,
         isWestPresent,
     },
-    cloneNcs,
-    install,
-    open,
-    openBash,
-    openCmd,
-    openFolder,
-    openToolchainFolder,
-    removeEnvironment,
-    gotoGuide,
 }) => {
+    const dispatch = useDispatch();
+
     const isInProcess = useSelector(({ app }) => (
         app.manager.environmentList.find(v => v.version === version).isInProcess
     ));
@@ -118,7 +123,10 @@ const EnvironmentItem = ({
                     { (isInstalled || (isInProcess && !isRemoving)) && (
                         <PrimaryButton
                             className="mdi x-mdi-dog-service"
-                            onClick={gotoGuide}
+                            onClick={() => {
+                                dispatch(selectEnvironmentAction(version));
+                                dispatch(gotoPage(2));
+                            }}
                             label="First steps to build"
                             title="Show how to build a sample project"
                             variant="outline-primary"
@@ -127,7 +135,7 @@ const EnvironmentItem = ({
                     { !isInstalled && (
                         <PrimaryButton
                             className="mdi x-mdi-briefcase-download-outline"
-                            onClick={install}
+                            onClick={() => dispatch(confirmInstall(version))}
                             label="Install"
                             disabled={isInProcess}
                             variant="outline-primary"
@@ -136,7 +144,7 @@ const EnvironmentItem = ({
                     { (isInstalled && (isWestPresent && !isRemoving)) && (
                         <PrimaryButton
                             className="mdi x-mdi-rocket"
-                            onClick={open}
+                            onClick={() => dispatch(openSegger(version))}
                             label="Open IDE"
                             title="Open SEGGER Embedded Studio"
                             disabled={isInProcess}
@@ -153,46 +161,46 @@ const EnvironmentItem = ({
                             <>
                                 <Dropdown.Item
                                     title="Open bash terminal"
-                                    onClick={openBash}
+                                    onClick={() => dispatch(openBash(version))}
                                 >
                                     Open bash
                                 </Dropdown.Item>
                                 <Dropdown.Item
                                     title="Open command prompt"
-                                    onClick={openCmd}
+                                    onClick={() => dispatch(openCmd(version))}
                                 >
                                     Open command prompt
                                 </Dropdown.Item>
                                 <Dropdown.Divider />
                                 <Dropdown.Item
                                     title="Open SDK folder"
-                                    onClick={openFolder}
+                                    onClick={() => dispatch(openFolder(version))}
                                 >
                                     Open SDK folder
                                 </Dropdown.Item>
                                 <Dropdown.Item
                                     title="Open toolchain folder"
-                                    onClick={openToolchainFolder}
+                                    onClick={() => dispatch(openToolchainFolder(version))}
                                 >
                                     Open toolchain folder
                                 </Dropdown.Item>
                                 <Dropdown.Divider />
                                 <Dropdown.Item
                                     title="Update SDK"
-                                    onClick={cloneNcs}
+                                    onClick={() => dispatch(cloneNcs(version))}
                                 >
                                     Update SDK
                                 </Dropdown.Item>
                                 <Dropdown.Item
                                     title="Install the latest available toolchain for this environment"
-                                    onClick={install}
+                                    onClick={() => dispatch(confirmInstall(version))}
                                 >
                                     Update toolchain
                                 </Dropdown.Item>
                                 <Dropdown.Divider />
                                 <Dropdown.Item
                                     title="Remove"
-                                    onClick={removeEnvironment}
+                                    onClick={() => dispatch(confirmRemove(version))}
                                 >
                                     Remove
                                 </Dropdown.Item>
@@ -220,14 +228,5 @@ EnvironmentItem.propTypes = {
         isRemoving: PropTypes.bool,
         isWestPresent: PropTypes.bool,
     }).isRequired,
-    cloneNcs: PropTypes.func.isRequired,
-    install: PropTypes.func.isRequired,
-    open: PropTypes.func.isRequired,
-    openBash: PropTypes.func.isRequired,
-    openCmd: PropTypes.func.isRequired,
-    openFolder: PropTypes.func.isRequired,
-    openToolchainFolder: PropTypes.func.isRequired,
-    removeEnvironment: PropTypes.func.isRequired,
-    gotoGuide: PropTypes.func.isRequired,
 };
 export default EnvironmentItem;

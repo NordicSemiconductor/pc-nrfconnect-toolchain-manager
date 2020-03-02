@@ -36,42 +36,16 @@
 
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import {
-    cloneNcs,
-    confirmInstall,
-    openBash,
-    openCmd,
-    openFolder,
-    openToolchainFolder,
-    confirmRemove,
-    selectEnvironmentAction,
-    gotoPage,
-} from '../environmentsActions';
-import { openSegger } from '../segger';
+import { useSelector } from 'react-redux';
 import EnvironmentItem from './EnvironmentItem';
 
 export default () => {
-    const dispatch = useDispatch();
     const environmentList = useSelector(state => state.app.environments.environmentList);
 
     return environmentList.map(environment => (
         <EnvironmentItem
             key={environment.version}
             environment={environment}
-            cloneNcs={() => dispatch(cloneNcs(environment.version))}
-            install={() => dispatch(confirmInstall(environment.version))}
-            open={() => dispatch(openSegger(environment.version))}
-            openBash={() => dispatch(openBash(environment.version))}
-            openCmd={() => dispatch(openCmd(environment.version))}
-            openFolder={() => dispatch(openFolder(environment.version))}
-            openToolchainFolder={() => dispatch(openToolchainFolder(environment.version))}
-            removeEnvironment={() => dispatch(confirmRemove(environment.version))}
-            gotoGuide={() => {
-                dispatch(selectEnvironmentAction(environment.version));
-                dispatch(gotoPage(2));
-            }}
         />
     ));
 };
