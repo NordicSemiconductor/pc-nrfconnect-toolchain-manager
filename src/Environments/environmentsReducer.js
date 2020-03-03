@@ -38,7 +38,6 @@ import {
     ENVIRONMENT_LIST_UPDATE,
     ENVIRONMENT_IN_PROCESS,
     ENVIRONMENT_LIST_CLEAR,
-    TOOLCHAIN_UPDATE,
     ENVIRONMENT_REMOVE,
     SET_VERSION_TO_INSTALL,
     CONFIRM_REMOVE_DIALOG_SHOW,
@@ -82,39 +81,6 @@ const reducer = (state = InitialState, action) => {
                 ...state,
                 environmentList: [],
             };
-        case TOOLCHAIN_UPDATE: {
-            const { toolchain, version } = action;
-            if (!toolchain) {
-                throw new Error('No toolchain state provided');
-            }
-
-            const { environmentList } = state;
-            const envIndex = environmentList.findIndex(v => v.version === version);
-            if (envIndex < 0) {
-                throw new Error(`No environment version found for ${version}`);
-            }
-
-            const toolchainList = environmentList[envIndex].toolchainList || [];
-            const toolchainIndex = toolchainList.findIndex(v => (v.version === toolchain.version));
-            if (toolchainIndex < 0) {
-                toolchainList.push(toolchain);
-            } else {
-                toolchainList[toolchainIndex] = {
-                    ...toolchainList[toolchainIndex],
-                    ...toolchain,
-                };
-            }
-
-            environmentList[envIndex] = {
-                ...environmentList[envIndex],
-                toolchainList,
-            };
-
-            return {
-                ...state,
-                environmentList: [...environmentList],
-            };
-        }
         case ENVIRONMENT_REMOVE: {
             const { version } = action;
             const { environmentList } = state;
@@ -124,7 +90,7 @@ const reducer = (state = InitialState, action) => {
             }
 
             const newEnvironmentList = [...environmentList];
-            const environementIsOnlyLocal = !environmentList[envIndex].toolchainList;
+            const environementIsOnlyLocal = !environmentList[envIndex].toolchains;
             if (environementIsOnlyLocal) {
                 newEnvironmentList.splice(envIndex, 1);
             } else {

@@ -54,7 +54,6 @@ const { net } = remote;
 export const ENVIRONMENT_LIST_UPDATE = 'ENVIRONMENT_LIST_UPDATE';
 export const ENVIRONMENT_IN_PROCESS = 'ENVIRONMENT_IN_PROCESS';
 export const ENVIRONMENT_LIST_CLEAR = 'ENVIRONMENT_LIST_CLEAR';
-export const TOOLCHAIN_UPDATE = 'TOOLCHAIN_UPDATE';
 export const ENVIRONMENT_REMOVE = 'ENVIRONMENT_REMOVE';
 export const SET_VERSION_TO_INSTALL = 'SET_VERSION_TO_INSTALL';
 export const CONFIRM_REMOVE_DIALOG_SHOW = 'CONFIRM_REMOVE_DIALOG_SHOW';
@@ -136,15 +135,6 @@ const environmentUpdate = environment => (dispatch, getState) => {
     dispatch(environmentListUpdateAction(environmentList));
 };
 
-const toolchainUpdateAction = (
-    version,
-    toolchain,
-) => ({
-    type: TOOLCHAIN_UPDATE,
-    version,
-    toolchain,
-});
-
 const getEnvironment = (version, getState) => {
     const { environmentList } = getState().app.environments;
     return environmentList.find(v => v.version === version);
@@ -172,13 +162,13 @@ export const checkLocalEnvironments = () => dispatch => {
 };
 
 export const downloadIndex = () => async dispatch => {
-    const { status, data } = await new Promise(resolve => {
+    const { status, environments } = await new Promise(resolve => {
         const request = net.request({ url: toolchainIndexUrl() });
         request.setHeader('pragma', 'no-cache');
         request.on('response', response => {
             let result = '';
             response.on('end', () => {
-                resolve({ data: JSON.parse(result), status: response.statusCode });
+                resolve({ environments: JSON.parse(result), status: response.statusCode });
             });
             response.on('data', buf => {
                 result += `${buf}`;
@@ -190,22 +180,12 @@ export const downloadIndex = () => async dispatch => {
         throw new Error(`Unable to download ${toolchainIndexUrl()}. Got status code ${status}`);
     }
 
-    data.sort((a, b) => -semver.compare(a.version, b.version));
-    data.forEach(environment => {
-        const updatedEnvironment = environment;
-        const { version, toolchains } = updatedEnvironment;
-        delete updatedEnvironment.toolchains;
-        dispatch(environmentUpdate(updatedEnvironment));
-        toolchains.sort(compareBy('name'))
-            .forEach(toolchain => {
-                dispatch(toolchainUpdateAction(version, toolchain));
-            });
-    });
+    environments.forEach(environment => dispatch(environmentUpdate({ ...environment })));
 };
 
 const downloadZip = version => (dispatch, getState) => new Promise((resolve, reject) => {
-    const { toolchainList } = getEnvironment(version, getState);
-    const latestToolchain = toolchainList.sort(compareBy('version')).reverse()[0];
+    const { toolchains } = getEnvironment(version, getState);
+    const latestToolchain = toolchains.sort(compareBy('version')).reverse()[0];
     const { name, sha512 } = latestToolchain;
 
     const hash = createHash('sha512');
