@@ -38,19 +38,30 @@ import './style.scss';
 
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { exec } from 'child_process';
+import path from 'path';
+import { shell } from 'electron';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import {
     cloneNcs,
     confirmInstall,
-    openBash,
-    openCmd,
-    openFolder,
-    openToolchainFolder,
     confirmRemove,
 } from '../environmentsActions';
 
 import environmentPropType from './environmentPropType';
+
+const openBash = toolchainDir => {
+    exec(`"${path.resolve(toolchainDir, 'git-bash.exe')}"`);
+};
+
+const openCmd = toolchainDir => {
+    exec(`start cmd /k "${path.resolve(toolchainDir, 'git-cmd.cmd')}"`);
+};
+
+const openFolder = folder => {
+    shell.openItem(folder);
+};
 
 const EnvironmentMenu = ({ environment }) => {
     const dispatch = useDispatch();
@@ -65,16 +76,16 @@ const EnvironmentMenu = ({ environment }) => {
             disabled={environment.isInProcess || !isInstalled}
         >
             {/* eslint-disable max-len */}
-            <Dropdown.Item onClick={openBash(environment)}>Open bash</Dropdown.Item>
-            <Dropdown.Item onClick={openCmd(environment)}>Open command prompt</Dropdown.Item>
+            <Dropdown.Item onClick={() => openBash(environment.toolchainDir)}>Open bash</Dropdown.Item>
+            <Dropdown.Item onClick={() => openCmd(environment.toolchainDir)}>Open command prompt</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={openFolder(environment)}>Open SDK folder</Dropdown.Item>
-            <Dropdown.Item onClick={openToolchainFolder(environment)}>Open toolchain folder</Dropdown.Item>
+            <Dropdown.Item onClick={() => openFolder(path.dirname(environment.toolchainDir))}>Open SDK folder</Dropdown.Item>
+            <Dropdown.Item onClick={() => openFolder(environment.toolchainDir)}>Open toolchain folder</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={cloneNcs(dispatch, environment)}>Update SDK</Dropdown.Item>
-            <Dropdown.Item onClick={confirmInstall(dispatch, environment)}>Update toolchain</Dropdown.Item>
+            <Dropdown.Item onClick={() => cloneNcs(dispatch, environment)}>Update SDK</Dropdown.Item>
+            <Dropdown.Item onClick={() => confirmInstall(dispatch, environment)}>Update toolchain</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={confirmRemove(dispatch, environment)}>Remove</Dropdown.Item>
+            <Dropdown.Item onClick={() => confirmRemove(dispatch, environment)}>Remove</Dropdown.Item>
             {/* eslint-enable max-len */}
         </DropdownButton>
     );

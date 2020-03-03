@@ -40,7 +40,7 @@ import fs from 'fs';
 import path from 'path';
 
 import DecompressZip from 'decompress-zip';
-import { remote, shell } from 'electron';
+import { remote } from 'electron';
 import fse from 'fs-extra';
 import semver from 'semver';
 import {
@@ -84,12 +84,12 @@ export const selectEnvironmentAction = selectedVersion => ({
     selectedVersion,
 });
 
-export const environmentListUpdateAction = environmentList => ({
+const environmentListUpdateAction = environmentList => ({
     type: ENVIRONMENT_LIST_UPDATE,
     environmentList: [...environmentList.sort(compareBy('version'))],
 });
 
-export const environmentInProcessAction = (version, isInProcess) => ({
+const environmentInProcessAction = (version, isInProcess) => ({
     type: ENVIRONMENT_IN_PROCESS,
     version,
     isInProcess,
@@ -109,7 +109,6 @@ const setVersionToInstall = version => ({
     version,
 });
 
-
 const showConfirmRemoveDialog = version => ({
     type: CONFIRM_REMOVE_DIALOG_SHOW,
     version,
@@ -119,7 +118,7 @@ export const hideConfirmRemoveDialog = () => ({
     type: CONFIRM_REMOVE_DIALOG_HIDE,
 });
 
-export const environmentUpdate = environment => (dispatch, getState) => {
+const environmentUpdate = environment => (dispatch, getState) => {
     if (!environment) {
         throw new Error('No environment state provided');
     }
@@ -204,12 +203,10 @@ export const downloadIndex = () => async dispatch => {
     });
 };
 
-export const downloadZip = (
-    version,
-    toolchainVersion,
-) => (dispatch, getState) => new Promise((resolve, reject) => {
+const downloadZip = version => (dispatch, getState) => new Promise((resolve, reject) => {
     const { toolchainList } = getEnvironment(version, getState);
-    const { name, sha512 } = toolchainList.find(v => v.version === toolchainVersion);
+    const latestToolchain = toolchainList.sort(compareBy('version')).reverse()[0];
+    const { name, sha512 } = latestToolchain;
 
     const hash = createHash('sha512');
 
@@ -286,7 +283,7 @@ export const unzip = (
     unzipper.extract({ path: dest });
 });
 
-export const cloneNcs = (dispatch, environment) => () => new Promise((resolve, reject) => {
+export const cloneNcs = (dispatch, environment) => new Promise((resolve, reject) => {
     const { toolchainDir } = environment;
     const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
     const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
@@ -313,16 +310,16 @@ export const init = () => dispatch => {
     dispatch(downloadIndex());
 };
 
-export const confirmInstall = (dispatch, { version }) => () => {
+export const confirmInstall = (dispatch, { version }) => {
     dispatch(setVersionToInstall(version));
     dispatch(showInstallDirDialog());
 };
 
-export const confirmRemove = (dispatch, { version }) => () => {
+export const confirmRemove = (dispatch, { version }) => {
     dispatch(showConfirmRemoveDialog(version));
 };
 
-const install = (version, toolchainVersion) => async dispatch => {
+export const install = version => async dispatch => {
     const toolchainDir = 'toolchain';
     const unzipDest = path.resolve(installDir(), version, toolchainDir);
 
@@ -333,41 +330,18 @@ const install = (version, toolchainVersion) => async dispatch => {
 
     dispatch(environmentInProcessAction(version, true));
     fse.mkdirpSync(unzipDest);
-    const zipLocation = await dispatch(downloadZip(version, toolchainVersion));
+    const zipLocation = await dispatch(downloadZip(version));
     await dispatch(unzip(version, zipLocation, unzipDest));
-    await cloneNcs(dispatch, version)();
+    await cloneNcs(dispatch, version);
 
     setHasInstalledAnNcs();
     dispatch(checkLocalEnvironments());
-    await dispatch(downloadIndex());
     dispatch(environmentInProcessAction(version, false));
-};
-
-export const installLatestToolchain = version => (dispatch, getState) => {
-    const toolchain = getEnvironment(version, getState)
-        .toolchainList.sort(compareBy('version')).reverse()[0];
-    dispatch(install(version, toolchain.version));
-};
-
-export const openBash = ({ toolchainDir }) => () => {
-    exec(`"${path.resolve(toolchainDir, 'git-bash.exe')}"`);
-};
-
-export const openCmd = ({ toolchainDir }) => () => {
-    exec(`start cmd /k "${path.resolve(toolchainDir, 'git-cmd.cmd')}"`);
-};
-
-export const openFolder = ({ toolchainDir }) => () => {
-    shell.openItem(path.dirname(toolchainDir));
-};
-
-export const openToolchainFolder = ({ toolchainDir }) => () => {
-    shell.openItem(toolchainDir);
 };
 
 const showErrorDialog = message => ({ type: 'ERROR_DIALOG_SHOW', message });
 
-const removeToolchain = (version, withParent = false) => async (dispatch, getState) => {
+export const removeEnvironment = version => async (dispatch, getState) => {
     const environment = getEnvironment(version, getState);
     const { toolchainDir } = environment;
     const toBeDeletedDir = path.resolve(toolchainDir, '..', '..', 'toBeDeleted');
@@ -377,7 +351,7 @@ const removeToolchain = (version, withParent = false) => async (dispatch, getSta
         isRemoving: true,
     }));
 
-    const srcDir = withParent ? path.dirname(toolchainDir) : toolchainDir;
+    const srcDir = path.dirname(toolchainDir);
     let renameOfDirSuccessful = false;
     try {
         await fse.move(srcDir, toBeDeletedDir, { overwrite: true });
@@ -397,8 +371,4 @@ const removeToolchain = (version, withParent = false) => async (dispatch, getSta
     if (renameOfDirSuccessful) {
         dispatch(removeEnvironmentAction(version));
     }
-};
-
-export const removeEnvironment = version => async dispatch => {
-    await dispatch(removeToolchain(version, true));
 };

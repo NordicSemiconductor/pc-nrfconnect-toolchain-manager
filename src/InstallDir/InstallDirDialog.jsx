@@ -45,7 +45,7 @@ import {
     checkLocalEnvironments,
     clearEnvironmentListAction,
     downloadIndex,
-    installLatestToolchain,
+    install,
 } from '../Environments/environmentsActions';
 import { hideInstallDirDialog, isDialogVisible } from './installDirReducer';
 
@@ -58,7 +58,7 @@ const selectInstallDir = async dispatch => {
     });
     if (selection) {
         setInstallDir(selection[0]);
-        dispatch(clearEnvironmentListAction([]));
+        dispatch(clearEnvironmentListAction());
         dispatch(checkLocalEnvironments());
         await dispatch(downloadIndex());
         dispatch(hideInstallDirDialog());
@@ -79,7 +79,7 @@ const InstallDirDialog = ({ justConfirm }) => {
         title: 'Change install directory',
         confirmLabel: 'Continue installation',
         optionalLabel: 'Change directory',
-        onConfirm: () => dispatch(installLatestToolchain(versionToInstall)),
+        onConfirm: () => dispatch(install(versionToInstall)),
         onCancel: () => dispatch(hideInstallDirDialog()),
         onOptional: () => dispatch(selectInstallDir()),
     };

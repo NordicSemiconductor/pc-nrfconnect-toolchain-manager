@@ -50,7 +50,7 @@ const Install = ({ environment }) => {
     return (
         <Button
             icon="x-mdi-briefcase-download-outline"
-            onClick={confirmInstall(dispatch, environment)}
+            onClick={() => confirmInstall(dispatch, environment)}
             label="Install"
             disabled={environment.isInProcess}
             variant="outline-primary"
