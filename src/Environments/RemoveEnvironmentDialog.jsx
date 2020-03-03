@@ -47,7 +47,7 @@ export default () => {
     const dispatch = useDispatch();
     const {
         isRemoveDirDialogVisible,
-        environmentVersionToRemove,
+        versionToRemove,
     } = useSelector(state => state.app.environments);
 
     return (
@@ -56,11 +56,11 @@ export default () => {
             onCancel={() => dispatch(hideConfirmRemoveDialog())}
             onConfirm={() => {
                 dispatch(hideConfirmRemoveDialog());
-                dispatch(removeEnvironment(environmentVersionToRemove));
+                dispatch(removeEnvironment(versionToRemove));
             }}
             isVisible={isRemoveDirDialogVisible}
         >
-        Are you sure to remove <code>{environmentVersionToRemove}</code> environment?
+        Are you sure to remove <code>{versionToRemove}</code> environment?
         </ConfirmationDialog>
     );
 };

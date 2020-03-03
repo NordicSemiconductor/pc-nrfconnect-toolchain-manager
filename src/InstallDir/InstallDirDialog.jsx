@@ -68,7 +68,7 @@ const selectInstallDir = async dispatch => {
 const InstallDirDialog = ({ justConfirm }) => {
     const dispatch = useDispatch();
     const isVisible = useSelector(isDialogVisible);
-    const { environmentVersionToInstall } = useSelector(state => state.app.environments);
+    const { versionToInstall } = useSelector(state => state.app.environments);
 
     const confirmDirDialogProps = {
         title: 'Confirm installation directory',
@@ -79,7 +79,7 @@ const InstallDirDialog = ({ justConfirm }) => {
         title: 'Change install directory',
         confirmLabel: 'Continue installation',
         optionalLabel: 'Change directory',
-        onConfirm: () => dispatch(installLatestToolchain(environmentVersionToInstall)),
+        onConfirm: () => dispatch(installLatestToolchain(versionToInstall)),
         onCancel: () => dispatch(hideInstallDirDialog()),
         onOptional: () => dispatch(selectInstallDir()),
     };

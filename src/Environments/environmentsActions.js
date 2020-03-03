@@ -56,7 +56,7 @@ export const ENVIRONMENT_IN_PROCESS = 'ENVIRONMENT_IN_PROCESS';
 export const ENVIRONMENT_LIST_CLEAR = 'ENVIRONMENT_LIST_CLEAR';
 export const TOOLCHAIN_UPDATE = 'TOOLCHAIN_UPDATE';
 export const ENVIRONMENT_REMOVE = 'ENVIRONMENT_REMOVE';
-export const SET_ENVIRONMENT_VERSION_TO_INSTALL = 'SET_ENVIRONMENT_VERSION_TO_INSTALL';
+export const SET_VERSION_TO_INSTALL = 'SET_VERSION_TO_INSTALL';
 export const CONFIRM_REMOVE_DIALOG_SHOW = 'CONFIRM_REMOVE_DIALOG_SHOW';
 export const CONFIRM_REMOVE_DIALOG_HIDE = 'CONFIRM_REMOVE_DIALOG_HIDE';
 export const SELECT_ENVIRONMENT = 'SELECT_ENVIRONMENT';
@@ -104,8 +104,8 @@ export const clearEnvironmentListAction = () => ({
     type: ENVIRONMENT_LIST_CLEAR,
 });
 
-const setEnvironmentVersionToInstall = version => ({
-    type: SET_ENVIRONMENT_VERSION_TO_INSTALL,
+const setVersionToInstall = version => ({
+    type: SET_VERSION_TO_INSTALL,
     version,
 });
 
@@ -138,11 +138,11 @@ export const environmentUpdate = environment => (dispatch, getState) => {
 };
 
 const toolchainUpdateAction = (
-    environmentVersion,
+    version,
     toolchain,
 ) => ({
     type: TOOLCHAIN_UPDATE,
-    environmentVersion,
+    version,
     toolchain,
 });
 
@@ -205,10 +205,10 @@ export const downloadIndex = () => async dispatch => {
 };
 
 export const downloadZip = (
-    environmentVersion,
+    version,
     toolchainVersion,
 ) => (dispatch, getState) => new Promise((resolve, reject) => {
-    const { toolchainList } = getEnvironment(environmentVersion, getState);
+    const { toolchainList } = getEnvironment(version, getState);
     const { name, sha512 } = toolchainList.find(v => v.version === toolchainVersion);
 
     const hash = createHash('sha512');
@@ -225,7 +225,7 @@ export const downloadZip = (
         let currentLength = 0;
         response.on('data', data => {
             hash.update(data);
-            const updatedEnvironment = getEnvironment(environmentVersion, getState);
+            const updatedEnvironment = getEnvironment(version, getState);
             currentLength += data.length;
             writeStream.write(data);
             const progress = Math.round(currentLength / totalLength * 49);
@@ -253,7 +253,7 @@ export const downloadZip = (
 });
 
 export const unzip = (
-    environmentVersion,
+    version,
     src,
     dest,
 ) => (dispatch, getState) => new Promise(resolve => {
@@ -263,7 +263,7 @@ export const unzip = (
     });
     unzipper.on('extract', () => {
         const { environmentList } = getState().app.environments;
-        const environment = environmentList.find(v => v.version === environmentVersion);
+        const environment = environmentList.find(v => v.version === version);
         dispatch(environmentUpdate({
             ...environment,
             toolchainDir: dest,
@@ -273,7 +273,7 @@ export const unzip = (
     });
     unzipper.on('progress', (fileIndex, fileCount) => {
         const { environmentList } = getState().app.environments;
-        const environment = environmentList.find(v => v.version === environmentVersion);
+        const environment = environmentList.find(v => v.version === version);
         const progress = Math.round((fileIndex) / fileCount * 50) + 49;
 
         if (progress !== environment.progress) {
@@ -314,7 +314,7 @@ export const init = () => dispatch => {
 };
 
 export const confirmInstall = (dispatch, { version }) => () => {
-    dispatch(setEnvironmentVersionToInstall(version));
+    dispatch(setVersionToInstall(version));
     dispatch(showInstallDirDialog());
 };
 
@@ -322,25 +322,25 @@ export const confirmRemove = (dispatch, { version }) => () => {
     dispatch(showConfirmRemoveDialog(version));
 };
 
-const install = (environmentVersion, toolchainVersion) => async dispatch => {
+const install = (version, toolchainVersion) => async dispatch => {
     const toolchainDir = 'toolchain';
-    const unzipDest = path.resolve(installDir(), environmentVersion, toolchainDir);
+    const unzipDest = path.resolve(installDir(), version, toolchainDir);
 
-    dispatch(selectEnvironmentAction(environmentVersion));
+    dispatch(selectEnvironmentAction(version));
     if (isFirstInstall()) {
         dispatch(showFirstInstallDialog());
     }
 
-    dispatch(environmentInProcessAction(environmentVersion, true));
+    dispatch(environmentInProcessAction(version, true));
     fse.mkdirpSync(unzipDest);
-    const zipLocation = await dispatch(downloadZip(environmentVersion, toolchainVersion));
-    await dispatch(unzip(environmentVersion, zipLocation, unzipDest));
-    await cloneNcs(dispatch, environmentVersion)();
+    const zipLocation = await dispatch(downloadZip(version, toolchainVersion));
+    await dispatch(unzip(version, zipLocation, unzipDest));
+    await cloneNcs(dispatch, version)();
 
     setHasInstalledAnNcs();
     dispatch(checkLocalEnvironments());
     await dispatch(downloadIndex());
-    dispatch(environmentInProcessAction(environmentVersion, false));
+    dispatch(environmentInProcessAction(version, false));
 };
 
 export const installLatestToolchain = version => (dispatch, getState) => {

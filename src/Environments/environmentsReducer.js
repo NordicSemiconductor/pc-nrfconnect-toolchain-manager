@@ -40,7 +40,7 @@ import {
     ENVIRONMENT_LIST_CLEAR,
     TOOLCHAIN_UPDATE,
     ENVIRONMENT_REMOVE,
-    SET_ENVIRONMENT_VERSION_TO_INSTALL,
+    SET_VERSION_TO_INSTALL,
     CONFIRM_REMOVE_DIALOG_SHOW,
     CONFIRM_REMOVE_DIALOG_HIDE,
     SELECT_ENVIRONMENT,
@@ -48,10 +48,9 @@ import {
 
 const InitialState = {
     environmentList: [],
-    isInProcess: false,
     isRemoveDirDialogVisible: false,
-    environmentVersionToInstall: null,
-    environmentVersionToRemove: null,
+    versionToInstall: null,
+    versionToRemove: null,
     selectedVersion: null,
 };
 
@@ -76,7 +75,6 @@ const reducer = (state = InitialState, action) => {
             return {
                 ...state,
                 environmentList: [...environmentList],
-                isInProcess: action.isInProcess,
             };
         }
         case ENVIRONMENT_LIST_CLEAR:
@@ -85,15 +83,15 @@ const reducer = (state = InitialState, action) => {
                 environmentList: [],
             };
         case TOOLCHAIN_UPDATE: {
-            const { toolchain, environmentVersion } = action;
+            const { toolchain, version } = action;
             if (!toolchain) {
                 throw new Error('No toolchain state provided');
             }
 
             const { environmentList } = state;
-            const envIndex = environmentList.findIndex(v => v.version === environmentVersion);
+            const envIndex = environmentList.findIndex(v => v.version === version);
             if (envIndex < 0) {
-                throw new Error(`No environment version found for ${environmentVersion}`);
+                throw new Error(`No environment version found for ${version}`);
             }
 
             const toolchainList = environmentList[envIndex].toolchainList || [];
@@ -141,24 +139,24 @@ const reducer = (state = InitialState, action) => {
                 environmentList: newEnvironmentList,
             };
         }
-        case SET_ENVIRONMENT_VERSION_TO_INSTALL: {
+        case SET_VERSION_TO_INSTALL: {
             return {
                 ...state,
-                environmentVersionToInstall: action.version,
+                versionToInstall: action.version,
             };
         }
         case CONFIRM_REMOVE_DIALOG_SHOW: {
             return {
                 ...state,
                 isRemoveDirDialogVisible: true,
-                environmentVersionToRemove: action.version,
+                versionToRemove: action.version,
             };
         }
         case CONFIRM_REMOVE_DIALOG_HIDE: {
             return {
                 ...state,
                 isRemoveDirDialogVisible: false,
-                environmentVersionToRemove: null,
+                versionToRemove: null,
             };
         }
         case SELECT_ENVIRONMENT: {
