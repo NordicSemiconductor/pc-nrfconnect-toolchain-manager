@@ -43,7 +43,6 @@ import DecompressZip from 'decompress-zip';
 import { remote, shell } from 'electron';
 import fse from 'fs-extra';
 import semver from 'semver';
-import { ErrorDialogActions } from 'pc-nrfconnect-shared';
 import { isFirstInstall, setHasInstalledAnNcs } from '../util/persistentStore';
 import { showFirstInstallDialog } from '../FirstInstall/firstInstallReducer';
 
@@ -377,6 +376,8 @@ export const openCmd = version => (dispatch, getState) => {
     exec(`start cmd @cmd /k "${path.resolve(toolchainDir, 'git-cmd.cmd')}"`);
 };
 
+const showErrorDialog = message => ({ type: 'ERROR_DIALOG_SHOW', message });
+
 const removeToolchain = (version, withParent = false) => async (dispatch, getState) => {
     const environment = getEnvironment(version, getState);
     const { toolchainDir } = environment;
@@ -395,7 +396,7 @@ const removeToolchain = (version, withParent = false) => async (dispatch, getSta
         updatedToolchainDir = null;
     } catch (error) {
         const [,, message] = `${error}`.split(/[:,] /);
-        dispatch(ErrorDialogActions.showDialog(
+        dispatch(showErrorDialog(
             `Failed to remove ${srcDir}, ${message}. `
             + 'Please close any application or window that might keep this '
             + 'environment locked, then try to remove it again.',
