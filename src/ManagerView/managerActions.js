@@ -388,12 +388,12 @@ const removeToolchain = (version, withParent = false) => async (dispatch, getSta
         isRemoving: true,
     }));
 
-    let updatedToolchainDir;
     const srcDir = withParent ? path.dirname(toolchainDir) : toolchainDir;
+    let renameOfDirSuccessful = false;
     try {
         await fse.move(srcDir, toBeDeletedDir, { overwrite: true });
+        renameOfDirSuccessful = true;
         await fse.remove(toBeDeletedDir);
-        updatedToolchainDir = null;
     } catch (error) {
         const [,, message] = `${error}`.split(/[:,] /);
         dispatch(showErrorDialog(
@@ -401,17 +401,11 @@ const removeToolchain = (version, withParent = false) => async (dispatch, getSta
             + 'Please close any application or window that might keep this '
             + 'environment locked, then try to remove it again.',
         ));
-        updatedToolchainDir = toolchainDir;
     }
 
-    if (environment.toolchainList || updatedToolchainDir) {
-        dispatch(environmentUpdate({
-            ...environment,
-            toolchainDir: updatedToolchainDir,
-            isRemoving: false,
-        }));
-        dispatch(environmentInProcessAction(version, false));
-    } else {
+    dispatch(environmentInProcessAction(version, false));
+    dispatch(environmentUpdate({ ...environment, isRemoving: false }));
+    if (renameOfDirSuccessful) {
         dispatch(removeEnvironmentAction(version));
     }
 };
