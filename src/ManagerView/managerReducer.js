@@ -126,10 +126,21 @@ const reducer = (state = InitialState, action) => {
             if (envIndex < 0) {
                 throw new Error(`No environment version found for ${version}`);
             }
-            environmentList.splice(envIndex, 1);
+
+            const newEnvironmentList = [...environmentList];
+            const environementIsOnlyLocal = !environmentList[envIndex].toolchainList;
+            if (environementIsOnlyLocal) {
+                newEnvironmentList.splice(envIndex, 1);
+            } else {
+                newEnvironmentList[envIndex] = {
+                    ...newEnvironmentList[envIndex],
+                    toolchainDir: null,
+                };
+            }
+
             return {
                 ...state,
-                environmentList: [...environmentList],
+                environmentList: newEnvironmentList,
             };
         }
         case CONFIRM_INSTALL_DIALOG_SHOW: {

@@ -376,6 +376,8 @@ export const openCmd = version => (dispatch, getState) => {
     exec(`start cmd @cmd /k "${path.resolve(toolchainDir, 'git-cmd.cmd')}"`);
 };
 
+const showErrorDialog = message => ({ type: 'ERROR_DIALOG_SHOW', message });
+
 const removeToolchain = (version, withParent = false) => async (dispatch, getState) => {
     const environment = getEnvironment(version, getState);
     const { toolchainDir } = environment;
@@ -386,26 +388,25 @@ const removeToolchain = (version, withParent = false) => async (dispatch, getSta
         isRemoving: true,
     }));
 
-    let updatedToolchainDir;
+    const srcDir = withParent ? path.dirname(toolchainDir) : toolchainDir;
+    let renameOfDirSuccessful = false;
     try {
-        const srcDir = withParent ? path.dirname(toolchainDir) : toolchainDir;
         await fse.move(srcDir, toBeDeletedDir, { overwrite: true });
+        renameOfDirSuccessful = true;
         await fse.remove(toBeDeletedDir);
-        updatedToolchainDir = null;
     } catch (error) {
-        console.log(`Failed to remove files with error: ${error}`);
-        updatedToolchainDir = toolchainDir;
-    } finally {
-        if (environment.toolchainList) {
-            dispatch(environmentUpdate({
-                ...environment,
-                toolchainDir: updatedToolchainDir,
-                isRemoving: false,
-            }));
-            dispatch(environmentInProcessAction(version, false));
-        } else {
-            dispatch(removeEnvironmentAction(version));
-        }
+        const [,, message] = `${error}`.split(/[:,] /);
+        dispatch(showErrorDialog(
+            `Failed to remove ${srcDir}, ${message}. `
+            + 'Please close any application or window that might keep this '
+            + 'environment locked, then try to remove it again.',
+        ));
+    }
+
+    dispatch(environmentInProcessAction(version, false));
+    dispatch(environmentUpdate({ ...environment, isRemoving: false }));
+    if (renameOfDirSuccessful) {
+        dispatch(removeEnvironmentAction(version));
     }
 };
 
