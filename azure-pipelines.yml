@@ -2,7 +2,7 @@ trigger:
 - master
 - release/*
 pool:
-  vmImage: 'Ubuntu-16.04'
+  vmImage: 'Ubuntu-18.04'
 steps:
 - task: NodeTool@0
   inputs:
@@ -13,3 +13,15 @@ steps:
     npm run lint
     npm run test
     npm run build
+    npm pack
+- task: CopyFiles@2
+  inputs:
+    contents: '*.tgz'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+  displayName: 'Copying artifact to artifact staging directory'
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(Build.ArtifactStagingDirectory)
+    publishLocation: 'pipeline'
+  condition: ne(variables['Build.Reason'], 'PullRequest')
+  displayName: 'Publishing artifacts to artifact storage'
