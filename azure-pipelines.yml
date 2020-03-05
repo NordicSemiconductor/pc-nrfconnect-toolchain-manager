@@ -16,7 +16,9 @@ steps:
     npm pack
 - task: CopyFiles@2
   inputs:
-    contents: '*.tgz'
+    contents: |
+      *.tgz
+      Changelog.md
     targetFolder: $(Build.ArtifactStagingDirectory)
   displayName: 'Copying artifact to artifact staging directory'
 - task: PublishPipelineArtifact@1
