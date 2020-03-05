@@ -351,7 +351,7 @@ const install = (environmentVersion, toolchainVersion) => async (dispatch, getSt
 
 export const installLatestToolchain = version => (dispatch, getState) => {
     const toolchain = getEnvironment(version, getState)
-        .toolchainList.sort(compareBy('version'))[0];
+        .toolchainList.sort(compareBy('version')).reverse()[0];
     dispatch(hideConfirmInstallDialog());
     dispatch(install(version, toolchain.version));
 };
@@ -373,7 +373,7 @@ export const openBash = version => (dispatch, getState) => {
 
 export const openCmd = version => (dispatch, getState) => {
     const { toolchainDir } = getEnvironment(version, getState);
-    exec(`start cmd @cmd /k "${path.resolve(toolchainDir, 'git-cmd.cmd')}"`);
+    exec(`start cmd /k "${path.resolve(toolchainDir, 'git-cmd.cmd')}"`);
 };
 
 const showErrorDialog = message => ({ type: 'ERROR_DIALOG_SHOW', message });
