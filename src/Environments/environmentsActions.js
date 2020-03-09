@@ -183,10 +183,11 @@ export const downloadIndex = () => async dispatch => {
     environments.forEach(environment => dispatch(environmentUpdate({ ...environment })));
 };
 
+export const getLatestToolchain = toolchains => [...toolchains].sort(compareBy('version')).pop();
+
 const downloadZip = version => (dispatch, getState) => new Promise((resolve, reject) => {
     const { toolchains } = getEnvironment(version, getState);
-    const latestToolchain = toolchains.sort(compareBy('version')).reverse()[0];
-    const { name, sha512 } = latestToolchain;
+    const { name, sha512 } = getLatestToolchain(toolchains);
 
     const hash = createHash('sha512');
 
