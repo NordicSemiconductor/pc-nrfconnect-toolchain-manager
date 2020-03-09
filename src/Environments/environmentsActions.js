@@ -57,6 +57,7 @@ import {
     setVersionToInstall,
     showConfirmRemoveDialog,
     getLatestToolchain,
+    setEnvironmentProgress,
 } from './environmentsReducer';
 
 const { net } = remote;
@@ -145,17 +146,11 @@ const downloadZip = version => (dispatch, getState) => new Promise((resolve, rej
         let currentLength = 0;
         response.on('data', data => {
             hash.update(data);
-            const updatedEnvironment = getEnvironment(version, getState);
-            currentLength += data.length;
             writeStream.write(data);
-            const progress = Math.round(currentLength / totalLength * 49);
 
-            if (progress !== updatedEnvironment.progress) {
-                dispatch(environmentUpdate({
-                    ...updatedEnvironment,
-                    progress,
-                }));
-            }
+            currentLength += data.length;
+            const progress = Math.round(currentLength / totalLength * 49);
+            dispatch(setEnvironmentProgress(version, progress));
         });
         response.on('end', () => {
             writeStream.end(() => {
@@ -187,21 +182,12 @@ export const unzip = (
         dispatch(environmentUpdate({
             ...environment,
             toolchainDir: dest,
-            progress: undefined,
         }));
         resolve();
     });
     unzipper.on('progress', (fileIndex, fileCount) => {
-        const { environmentList } = getState().app.environments;
-        const environment = environmentList.find(v => v.version === version);
         const progress = Math.round((fileIndex) / fileCount * 50) + 49;
-
-        if (progress !== environment.progress) {
-            dispatch(environmentUpdate({
-                ...environment,
-                progress,
-            }));
-        }
+        dispatch(setEnvironmentProgress(version, progress));
     });
     unzipper.extract({ path: dest });
 });

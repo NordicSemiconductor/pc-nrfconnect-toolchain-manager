@@ -67,6 +67,13 @@ export const setEnvironmentInProcess = (version, isInProcess) => ({
     isInProcess,
 });
 
+const SET_ENVIRONMENT_PROGRESS = 'SET_ENVIRONMENT_PROGRESS';
+export const setEnvironmentProgress = (version, progress) => ({
+    type: SET_ENVIRONMENT_PROGRESS,
+    version,
+    progress,
+});
+
 const REMOVE_ENVIRONMENT = 'REMOVE_ENVIRONMENT';
 export const removeEnvironment = version => ({
     type: REMOVE_ENVIRONMENT,
@@ -103,6 +110,22 @@ const InitialState = {
     selectedVersion: null,
 };
 
+const updateSingleEnvironment = (state, version, environmentChange) => {
+    const envIndex = state.environmentList.findIndex(v => v.version === version);
+    if (envIndex < 0) {
+        console.error(`No environment version found for ${version}`);
+        return state;
+    }
+
+    const environmentList = [...state.environmentList];
+    environmentList[envIndex] = {
+        ...environmentList[envIndex],
+        ...environmentChange,
+    };
+
+    return { ...state, environmentList };
+};
+
 const reducer = (state = InitialState, action) => {
     switch (action.type) {
         case UPDATE_ENVIRONMENT_LIST:
@@ -111,20 +134,18 @@ const reducer = (state = InitialState, action) => {
                 environmentList: action.environmentList,
             };
         case SET_ENVIRONMENT_IN_PROCESS: {
-            const { version } = action;
-            const { environmentList } = state;
-            const envIndex = environmentList.findIndex(v => v.version === version);
-            if (envIndex < 0) {
-                throw new Error(`No environment version found for ${version}`);
-            }
-            environmentList[envIndex] = {
-                ...environmentList[envIndex],
-                isInProcess: action.isInProcess,
-            };
-            return {
-                ...state,
-                environmentList: [...environmentList],
-            };
+            return updateSingleEnvironment(
+                state.environmentList,
+                action.version,
+                { isInProcess: action.isInProcess },
+            );
+        }
+        case SET_ENVIRONMENT_PROGRESS: {
+            return updateSingleEnvironment(
+                state.environmentList,
+                action.version,
+                { progress: action.progress },
+            );
         }
         case CLEAR_ENVIRONMENT_LIST:
             return {
