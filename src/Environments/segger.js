@@ -123,14 +123,7 @@ const updateSettingsFile = async (settingsFileName, toolchainDir) => {
     fs.writeFileSync(settingsPath, updatedXml);
 };
 
-const getEnvironment = (version, getState) => {
-    const { environmentList } = getState().app.environments;
-    return environmentList.find(v => v.version === version);
-};
-
-export const openSegger = version => async (dispatch, getState) => {
-    const { toolchainDir } = getEnvironment(version, getState);
-
+export const openSegger = async toolchainDir => {
     await Promise.all([
         updateSettingsFile('settings.xml', toolchainDir),
         updateSettingsFile('settings.xml.bak', toolchainDir),

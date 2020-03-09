@@ -80,11 +80,6 @@ const environmentUpdate = environment => (dispatch, getState) => {
     dispatch(updateEnvironmentList(environmentList));
 };
 
-const getEnvironment = (version, getState) => {
-    const { environmentList } = getState().app.environments;
-    return environmentList.find(v => v.version === version);
-};
-
 export const checkLocalEnvironments = () => dispatch => {
     const subDirs = fs.readdirSync(installDir(), { withFileTypes: true })
         .filter(dirEnt => dirEnt.isDirectory())
@@ -128,9 +123,8 @@ export const downloadIndex = () => async dispatch => {
     environments.forEach(environment => dispatch(environmentUpdate({ ...environment })));
 };
 
-const downloadZip = version => (dispatch, getState) => new Promise((resolve, reject) => {
-    const { toolchains } = getEnvironment(version, getState);
-    const { name, sha512 } = getLatestToolchain(toolchains);
+const downloadZip = environment => dispatch => new Promise((resolve, reject) => {
+    const { name, sha512 } = getLatestToolchain(environment.toolchains);
 
     const hash = createHash('sha512');
 
@@ -150,7 +144,7 @@ const downloadZip = version => (dispatch, getState) => new Promise((resolve, rej
 
             currentLength += data.length;
             const progress = Math.round(currentLength / totalLength * 49);
-            dispatch(setEnvironmentProgress(version, progress));
+            dispatch(setEnvironmentProgress(environment.version, progress));
         });
         response.on('end', () => {
             writeStream.end(() => {
@@ -228,7 +222,8 @@ export const confirmRemove = (dispatch, { version }) => {
     dispatch(showConfirmRemoveDialog(version));
 };
 
-export const install = version => async dispatch => {
+export const install = environment => async dispatch => {
+    const { version } = environment;
     const toolchainDir = 'toolchain';
     const unzipDest = path.resolve(installDir(), version, toolchainDir);
 
@@ -239,7 +234,7 @@ export const install = version => async dispatch => {
 
     dispatch(setEnvironmentInProcess(version, true));
     fse.mkdirpSync(unzipDest);
-    const zipLocation = await dispatch(downloadZip(version));
+    const zipLocation = await dispatch(downloadZip(environment));
     await dispatch(unzip(version, zipLocation, unzipDest));
     await cloneNcs(dispatch, version);
 
@@ -248,11 +243,10 @@ export const install = version => async dispatch => {
     dispatch(setEnvironmentInProcess(version, false));
 };
 
-export const remove = version => async (dispatch, getState) => {
-    const environment = getEnvironment(version, getState);
+export const remove = environment => async dispatch => {
     const { toolchainDir } = environment;
     const toBeDeletedDir = path.resolve(toolchainDir, '..', '..', 'toBeDeleted');
-    dispatch(setEnvironmentInProcess(version, true));
+    dispatch(setEnvironmentInProcess(environment.version, true));
     dispatch(environmentUpdate({
         ...environment,
         isRemoving: true,
@@ -273,9 +267,9 @@ export const remove = version => async (dispatch, getState) => {
         ));
     }
 
-    dispatch(setEnvironmentInProcess(version, false));
+    dispatch(setEnvironmentInProcess(environment.version, false));
     dispatch(environmentUpdate({ ...environment, isRemoving: false }));
     if (renameOfDirSuccessful) {
-        dispatch(removeEnvironment(version));
+        dispatch(removeEnvironment(environment.version));
     }
 };

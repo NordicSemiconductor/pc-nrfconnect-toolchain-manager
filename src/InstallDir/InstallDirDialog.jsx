@@ -46,7 +46,7 @@ import {
     downloadIndex,
     install,
 } from '../Environments/environmentsActions';
-import { clearEnvironmentList } from '../Environments/environmentsReducer';
+import { clearEnvironmentList, environmentToInstall } from '../Environments/environmentsReducer';
 import { hideInstallDirDialog, isDialogVisible } from './installDirReducer';
 
 
@@ -68,7 +68,7 @@ const selectInstallDir = async dispatch => {
 const InstallDirDialog = ({ justConfirm }) => {
     const dispatch = useDispatch();
     const isVisible = useSelector(isDialogVisible);
-    const { versionToInstall } = useSelector(state => state.app.environments);
+    const environment = useSelector(environmentToInstall);
 
     const confirmDirDialogProps = {
         title: 'Confirm installation directory',
@@ -79,7 +79,7 @@ const InstallDirDialog = ({ justConfirm }) => {
         title: 'Change install directory',
         confirmLabel: 'Continue installation',
         optionalLabel: 'Change directory',
-        onConfirm: () => dispatch(install(versionToInstall)),
+        onConfirm: () => dispatch(install(environment)),
         onCancel: () => dispatch(hideInstallDirDialog()),
         onOptional: () => dispatch(selectInstallDir()),
     };

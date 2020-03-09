@@ -35,7 +35,6 @@
  */
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { openSegger } from '../segger';
 import Button from './Button';
 
@@ -44,21 +43,18 @@ import environmentPropType from './environmentPropType';
 const OpenIde = ({
     environment: {
         toolchainDir,
-        version,
         isRemoving,
         isWestPresent,
         isInProcess,
     },
 }) => {
-    const dispatch = useDispatch();
-
     const isInstalled = !!toolchainDir;
     if (!isInstalled || !isWestPresent || isRemoving) return null;
 
     return (
         <Button
             icon="x-mdi-rocket"
-            onClick={() => dispatch(openSegger(version))}
+            onClick={() => openSegger(toolchainDir)}
             label="Open IDE"
             title="Open SEGGER Embedded Studio"
             disabled={isInProcess}

@@ -39,26 +39,24 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { remove } from './environmentsActions';
-import { hideConfirmRemoveDialog } from './environmentsReducer';
+import { hideConfirmRemoveDialog, environmentToRemove, isRemoveDirDialogVisible } from './environmentsReducer';
 
 export default () => {
     const dispatch = useDispatch();
-    const {
-        isRemoveDirDialogVisible,
-        versionToRemove,
-    } = useSelector(state => state.app.environments);
+    const isVisible = useSelector(isRemoveDirDialogVisible);
+    const environment = useSelector(environmentToRemove);
 
     return (
         <ConfirmationDialog
+            isVisible={isVisible}
             title="Remove environment"
             onCancel={() => dispatch(hideConfirmRemoveDialog())}
             onConfirm={() => {
                 dispatch(hideConfirmRemoveDialog());
-                dispatch(remove(versionToRemove));
+                dispatch(remove(environment));
             }}
-            isVisible={isRemoveDirDialogVisible}
         >
-        Are you sure to remove <code>{versionToRemove}</code> environment?
+            Are you sure to remove <code>{environment.version}</code> environment?
         </ConfirmationDialog>
     );
 };
