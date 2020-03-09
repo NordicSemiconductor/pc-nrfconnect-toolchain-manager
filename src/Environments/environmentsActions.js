@@ -42,80 +42,24 @@ import path from 'path';
 import DecompressZip from 'decompress-zip';
 import { remote } from 'electron';
 import fse from 'fs-extra';
-import semver from 'semver';
 import {
     isFirstInstall, setHasInstalledAnNcs, toolchainIndexUrl, toolchainUrl, installDir,
 } from '../persistentStore';
 import { showFirstInstallDialog } from '../FirstInstall/firstInstallReducer';
 import { showInstallDirDialog } from '../InstallDir/installDirReducer';
+import { showErrorDialog } from '../launcherActions';
+
+import {
+    selectEnvironment,
+    updateEnvironmentList,
+    setEnvironmentInProcess,
+    removeEnvironment,
+    setVersionToInstall,
+    showConfirmRemoveDialog,
+    getLatestToolchain,
+} from './environmentsReducer';
 
 const { net } = remote;
-
-export const ENVIRONMENT_LIST_UPDATE = 'ENVIRONMENT_LIST_UPDATE';
-export const ENVIRONMENT_IN_PROCESS = 'ENVIRONMENT_IN_PROCESS';
-export const ENVIRONMENT_LIST_CLEAR = 'ENVIRONMENT_LIST_CLEAR';
-export const ENVIRONMENT_REMOVE = 'ENVIRONMENT_REMOVE';
-export const SET_VERSION_TO_INSTALL = 'SET_VERSION_TO_INSTALL';
-export const CONFIRM_REMOVE_DIALOG_SHOW = 'CONFIRM_REMOVE_DIALOG_SHOW';
-export const CONFIRM_REMOVE_DIALOG_HIDE = 'CONFIRM_REMOVE_DIALOG_HIDE';
-export const SELECT_ENVIRONMENT = 'SELECT_ENVIRONMENT';
-
-const compareBy = prop => (a, b) => {
-    try {
-        return -semver.compare(a[prop], b[prop]);
-    } catch (_) {
-        switch (true) {
-            case (a[prop] < b[prop]): return -1;
-            case (a[prop] > b[prop]): return 1;
-            default: return 0;
-        }
-    }
-};
-
-// shortcut to core specific action
-export const gotoPage = id => dispatch => dispatch({
-    type: 'NAV_MENU_ITEM_SELECTED',
-    id,
-});
-
-export const selectEnvironmentAction = selectedVersion => ({
-    type: SELECT_ENVIRONMENT,
-    selectedVersion,
-});
-
-const environmentListUpdateAction = environmentList => ({
-    type: ENVIRONMENT_LIST_UPDATE,
-    environmentList: [...environmentList.sort(compareBy('version'))],
-});
-
-const environmentInProcessAction = (version, isInProcess) => ({
-    type: ENVIRONMENT_IN_PROCESS,
-    version,
-    isInProcess,
-});
-
-const removeEnvironmentAction = version => ({
-    type: ENVIRONMENT_REMOVE,
-    version,
-});
-
-export const clearEnvironmentListAction = () => ({
-    type: ENVIRONMENT_LIST_CLEAR,
-});
-
-const setVersionToInstall = version => ({
-    type: SET_VERSION_TO_INSTALL,
-    version,
-});
-
-const showConfirmRemoveDialog = version => ({
-    type: CONFIRM_REMOVE_DIALOG_SHOW,
-    version,
-});
-
-export const hideConfirmRemoveDialog = () => ({
-    type: CONFIRM_REMOVE_DIALOG_HIDE,
-});
 
 const environmentUpdate = environment => (dispatch, getState) => {
     if (!environment) {
@@ -132,7 +76,7 @@ const environmentUpdate = environment => (dispatch, getState) => {
             ...environment,
         };
     }
-    dispatch(environmentListUpdateAction(environmentList));
+    dispatch(updateEnvironmentList(environmentList));
 };
 
 const getEnvironment = (version, getState) => {
@@ -182,8 +126,6 @@ export const downloadIndex = () => async dispatch => {
 
     environments.forEach(environment => dispatch(environmentUpdate({ ...environment })));
 };
-
-export const getLatestToolchain = toolchains => [...toolchains].sort(compareBy('version')).pop();
 
 const downloadZip = version => (dispatch, getState) => new Promise((resolve, reject) => {
     const { toolchains } = getEnvironment(version, getState);
@@ -304,12 +246,12 @@ export const install = version => async dispatch => {
     const toolchainDir = 'toolchain';
     const unzipDest = path.resolve(installDir(), version, toolchainDir);
 
-    dispatch(selectEnvironmentAction(version));
+    dispatch(selectEnvironment(version));
     if (isFirstInstall()) {
         dispatch(showFirstInstallDialog());
     }
 
-    dispatch(environmentInProcessAction(version, true));
+    dispatch(setEnvironmentInProcess(version, true));
     fse.mkdirpSync(unzipDest);
     const zipLocation = await dispatch(downloadZip(version));
     await dispatch(unzip(version, zipLocation, unzipDest));
@@ -317,16 +259,14 @@ export const install = version => async dispatch => {
 
     setHasInstalledAnNcs();
     dispatch(checkLocalEnvironments());
-    dispatch(environmentInProcessAction(version, false));
+    dispatch(setEnvironmentInProcess(version, false));
 };
 
-const showErrorDialog = message => ({ type: 'ERROR_DIALOG_SHOW', message });
-
-export const removeEnvironment = version => async (dispatch, getState) => {
+export const remove = version => async (dispatch, getState) => {
     const environment = getEnvironment(version, getState);
     const { toolchainDir } = environment;
     const toBeDeletedDir = path.resolve(toolchainDir, '..', '..', 'toBeDeleted');
-    dispatch(environmentInProcessAction(version, true));
+    dispatch(setEnvironmentInProcess(version, true));
     dispatch(environmentUpdate({
         ...environment,
         isRemoving: true,
@@ -347,9 +287,9 @@ export const removeEnvironment = version => async (dispatch, getState) => {
         ));
     }
 
-    dispatch(environmentInProcessAction(version, false));
+    dispatch(setEnvironmentInProcess(version, false));
     dispatch(environmentUpdate({ ...environment, isRemoving: false }));
     if (renameOfDirSuccessful) {
-        dispatch(removeEnvironmentAction(version));
+        dispatch(removeEnvironment(version));
     }
 };

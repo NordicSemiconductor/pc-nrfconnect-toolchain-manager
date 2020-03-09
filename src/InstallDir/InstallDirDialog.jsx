@@ -43,10 +43,10 @@ import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { installDir, setInstallDir } from '../persistentStore';
 import {
     checkLocalEnvironments,
-    clearEnvironmentListAction,
     downloadIndex,
     install,
 } from '../Environments/environmentsActions';
+import { clearEnvironmentList } from '../Environments/environmentsReducer';
 import { hideInstallDirDialog, isDialogVisible } from './installDirReducer';
 
 
@@ -58,7 +58,7 @@ const selectInstallDir = async dispatch => {
     });
     if (selection) {
         setInstallDir(selection[0]);
-        dispatch(clearEnvironmentListAction());
+        dispatch(clearEnvironmentList());
         dispatch(checkLocalEnvironments());
         await dispatch(downloadIndex());
         dispatch(hideInstallDirDialog());

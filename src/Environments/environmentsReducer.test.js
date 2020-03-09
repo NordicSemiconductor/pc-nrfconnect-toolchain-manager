@@ -34,7 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { getLatestToolchain } from './environmentsActions';
+import { getLatestToolchain } from './environmentsReducer';
 
 const older = {
     version: '20200217',

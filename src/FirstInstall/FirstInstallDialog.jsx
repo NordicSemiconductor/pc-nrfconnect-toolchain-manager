@@ -38,12 +38,11 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import { gotoPage } from '../launcherActions';
 import {
     hideFirstInstallDialog,
     isDialogVisible,
 } from './firstInstallReducer';
-
-import { gotoPage } from '../Environments/environmentsActions';
 
 export default () => {
     const dispatch = useDispatch();

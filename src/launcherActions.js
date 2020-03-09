@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,31 +34,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+// The actions in this file are handled by the reducers in pc-nrfconnect-launcher or
+// pc-nrfconnect-shared, so we instead of defining them here, we really should import
+// them from there. But before we can correct this, we need to upgrade to a new version.
 
-import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
-import { remove } from './environmentsActions';
-import { hideConfirmRemoveDialog } from './environmentsReducer';
-
-export default () => {
-    const dispatch = useDispatch();
-    const {
-        isRemoveDirDialogVisible,
-        versionToRemove,
-    } = useSelector(state => state.app.environments);
-
-    return (
-        <ConfirmationDialog
-            title="Remove environment"
-            onCancel={() => dispatch(hideConfirmRemoveDialog())}
-            onConfirm={() => {
-                dispatch(hideConfirmRemoveDialog());
-                dispatch(remove(versionToRemove));
-            }}
-            isVisible={isRemoveDirDialogVisible}
-        >
-        Are you sure to remove <code>{versionToRemove}</code> environment?
-        </ConfirmationDialog>
-    );
-};
+export const gotoPage = id => ({ type: 'NAV_MENU_ITEM_SELECTED', id });
+export const showErrorDialog = message => ({ type: 'ERROR_DIALOG_SHOW', message });

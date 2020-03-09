@@ -37,7 +37,8 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { selectEnvironmentAction, gotoPage } from '../environmentsActions';
+import { gotoPage } from '../../launcherActions';
+import { selectEnvironment } from '../environmentsReducer';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 
@@ -58,7 +59,7 @@ const ShowFirstSteps = ({
         <Button
             icon="x-mdi-dog-service"
             onClick={() => {
-                dispatch(selectEnvironmentAction(version));
+                dispatch(selectEnvironment(version));
                 dispatch(gotoPage(2));
             }}
             label="First steps to build"

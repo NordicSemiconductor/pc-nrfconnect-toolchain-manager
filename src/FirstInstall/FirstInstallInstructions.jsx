@@ -44,8 +44,8 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 
-import { gotoPage } from '../Environments/environmentsActions';
 import { installDir } from '../persistentStore';
+import { gotoPage } from '../launcherActions';
 
 const Ie = () => (<>{' '}<i>i.e.</i>{' '}</>);
 
