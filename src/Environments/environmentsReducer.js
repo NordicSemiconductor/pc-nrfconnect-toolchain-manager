@@ -133,13 +133,12 @@ const reducer = (state = InitialState, action) => {
                 ...state,
                 environmentList: action.environmentList,
             };
-        case SET_ENVIRONMENT_IN_PROCESS: {
+        case SET_ENVIRONMENT_IN_PROCESS:
             return updateSingleEnvironment(
                 state.environmentList,
                 action.version,
                 { isInProcess: action.isInProcess },
             );
-        }
         case SET_ENVIRONMENT_PROGRESS: {
             return updateSingleEnvironment(
                 state.environmentList,
@@ -176,32 +175,28 @@ const reducer = (state = InitialState, action) => {
                 environmentList: newEnvironmentList,
             };
         }
-        case SET_VERSION_TO_INSTALL: {
+        case SET_VERSION_TO_INSTALL:
             return {
                 ...state,
                 versionToInstall: action.version,
             };
-        }
-        case SHOW_CONFIRM_REMOVE_DIALOG: {
+        case SHOW_CONFIRM_REMOVE_DIALOG:
             return {
                 ...state,
                 isRemoveDirDialogVisible: true,
                 versionToRemove: action.version,
             };
-        }
-        case HIDE_CONFIRM_REMOVE_DIALOG: {
+        case HIDE_CONFIRM_REMOVE_DIALOG:
             return {
                 ...state,
                 isRemoveDirDialogVisible: false,
                 versionToRemove: null,
             };
-        }
-        case SELECT_ENVIRONMENT: {
+        case SELECT_ENVIRONMENT:
             return {
                 ...state,
                 selectedVersion: action.selectedVersion,
             };
-        }
         default:
             return state;
     }
