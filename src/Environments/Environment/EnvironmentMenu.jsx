@@ -63,9 +63,9 @@ const openFolder = folder => {
     shell.openItem(folder);
 };
 
-const EnvironmentMenu = ({ environment }) => {
+const EnvironmentMenu = ({ environment: { isInProcess, toolchainDir, version } }) => {
     const dispatch = useDispatch();
-    const isInstalled = !!environment.toolchainDir;
+    const isInstalled = !!toolchainDir;
 
     return (
         <DropdownButton
@@ -73,19 +73,19 @@ const EnvironmentMenu = ({ environment }) => {
             variant="outline-primary"
             title=""
             alignRight
-            disabled={environment.isInProcess || !isInstalled}
+            disabled={isInProcess || !isInstalled}
         >
             {/* eslint-disable max-len */}
-            <Dropdown.Item onClick={() => openBash(environment.toolchainDir)}>Open bash</Dropdown.Item>
-            <Dropdown.Item onClick={() => openCmd(environment.toolchainDir)}>Open command prompt</Dropdown.Item>
+            <Dropdown.Item onClick={() => openBash(toolchainDir)}>Open bash</Dropdown.Item>
+            <Dropdown.Item onClick={() => openCmd(toolchainDir)}>Open command prompt</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => openFolder(path.dirname(environment.toolchainDir))}>Open SDK folder</Dropdown.Item>
-            <Dropdown.Item onClick={() => openFolder(environment.toolchainDir)}>Open toolchain folder</Dropdown.Item>
+            <Dropdown.Item onClick={() => openFolder(path.dirname(toolchainDir))}>Open SDK folder</Dropdown.Item>
+            <Dropdown.Item onClick={() => openFolder(toolchainDir)}>Open toolchain folder</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => cloneNcs(dispatch, environment)}>Update SDK</Dropdown.Item>
-            <Dropdown.Item onClick={() => confirmInstall(dispatch, environment)}>Update toolchain</Dropdown.Item>
+            <Dropdown.Item onClick={() => cloneNcs(dispatch, version, toolchainDir)}>Update SDK</Dropdown.Item>
+            <Dropdown.Item onClick={() => confirmInstall(dispatch, version)}>Update toolchain</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => confirmRemove(dispatch, environment)}>Remove</Dropdown.Item>
+            <Dropdown.Item onClick={() => confirmRemove(dispatch, version)}>Remove</Dropdown.Item>
             {/* eslint-enable max-len */}
         </DropdownButton>
     );

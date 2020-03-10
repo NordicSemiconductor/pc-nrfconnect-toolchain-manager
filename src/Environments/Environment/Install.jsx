@@ -41,18 +41,18 @@ import { confirmInstall } from '../environmentsActions';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 
-const Install = ({ environment }) => {
+const Install = ({ environment: { isInProcess, toolchainDir, version } }) => {
     const dispatch = useDispatch();
 
-    const isInstalled = !!environment.toolchainDir;
+    const isInstalled = !!toolchainDir;
     if (isInstalled) return null;
 
     return (
         <Button
             icon="x-mdi-briefcase-download-outline"
-            onClick={() => confirmInstall(dispatch, environment)}
+            onClick={() => confirmInstall(dispatch, version)}
             label="Install"
-            disabled={environment.isInProcess}
+            disabled={isInProcess}
             variant="outline-primary"
         />
     );

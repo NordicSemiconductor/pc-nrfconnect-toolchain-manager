@@ -60,11 +60,35 @@ export const addEnvironment = environment => ({
     environment,
 });
 
-const SET_ENVIRONMENT_IN_PROCESS = 'SET_ENVIRONMENT_IN_PROCESS';
-export const setEnvironmentInProcess = (version, isInProcess) => ({
-    type: SET_ENVIRONMENT_IN_PROCESS,
+const START_ENVIRONMENT_IN_PROCESS = 'START_ENVIRONMENT_IN_PROCESS';
+export const startEnvironmentInProcess = version => ({
+    type: START_ENVIRONMENT_IN_PROCESS,
     version,
-    isInProcess,
+});
+
+const FINISH_ENVIRONMENT_IN_PROCESS = 'FINISH_ENVIRONMENT_IN_PROCESS';
+export const finishEnvironmentInProcess = version => ({
+    type: FINISH_ENVIRONMENT_IN_PROCESS,
+    version,
+});
+
+const START_CLONING = 'START_CLONING';
+export const startCloning = version => ({ type: START_CLONING, version });
+
+const FINISH_CLONING = 'FINISH_CLONING';
+export const finishCloning = version => ({ type: FINISH_CLONING, version });
+
+const START_REMOVING = 'START_REMOVING';
+export const startRemoving = version => ({ type: START_REMOVING, version });
+
+const FINISH_REMOVING = 'FINISH_REMOVING';
+export const finishRemoving = version => ({ type: FINISH_REMOVING, version });
+
+const SET_TOOLCHAIN_DIR = 'SET_TOOLCHAIN_DIR';
+export const setToolchainDir = (version, toolchainDir) => ({
+    type: SET_TOOLCHAIN_DIR,
+    version,
+    toolchainDir,
 });
 
 const SET_ENVIRONMENT_PROGRESS = 'SET_ENVIRONMENT_PROGRESS';
@@ -149,13 +173,58 @@ const reducer = (state = InitialState, action) => {
                 ...state,
                 environmentList: addSingleEnvironment(state.environmentList, action.environment),
             };
-        case SET_ENVIRONMENT_IN_PROCESS:
+        case START_ENVIRONMENT_IN_PROCESS:
             return {
                 ...state,
                 environmentList: updateSingleEnvironment(
                     state.environmentList,
                     action.version,
-                    { isInProcess: action.isInProcess },
+                    { isInProcess: true },
+                ),
+            };
+        case FINISH_ENVIRONMENT_IN_PROCESS:
+            return {
+                ...state,
+                environmentList: updateSingleEnvironment(
+                    state.environmentList,
+                    action.version,
+                    { isInProcess: false },
+                ),
+            };
+        case START_CLONING:
+            return {
+                ...state,
+                environmentList: updateSingleEnvironment(
+                    state.environmentList,
+                    action.version,
+                    { isCloning: true },
+                ),
+            };
+        case FINISH_CLONING:
+            return {
+                ...state,
+                environmentList: updateSingleEnvironment(
+                    state.environmentList,
+                    action.version,
+                    { isCloning: false },
+                ),
+            };
+        case START_REMOVING:
+            return {
+                ...state,
+                environmentList: updateSingleEnvironment(
+                    state.environmentList,
+                    action.version,
+                    { isRemoving: true },
+                ),
+            };
+        case FINISH_REMOVING:
+            return {
+                ...state,
+                environmentList: updateSingleEnvironment(
+                    state.environmentList,
+                    action.version,
+                    { isRemoving: false },
                 ),
             };
         case SET_ENVIRONMENT_PROGRESS:
@@ -165,6 +234,15 @@ const reducer = (state = InitialState, action) => {
                     state.environmentList,
                     action.version,
                     { progress: action.progress },
+                ),
+            };
+        case SET_TOOLCHAIN_DIR:
+            return {
+                ...state,
+                environmentList: updateSingleEnvironment(
+                    state.environmentList,
+                    action.version,
+                    { toolchainDir: action.toolchainDir },
                 ),
             };
         case CLEAR_ENVIRONMENT_LIST:

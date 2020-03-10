@@ -51,13 +51,19 @@ import { showErrorDialog } from '../launcherActions';
 
 import {
     selectEnvironment,
-    setEnvironmentInProcess,
+    startEnvironmentInProcess,
+    finishEnvironmentInProcess,
     removeEnvironment,
     setVersionToInstall,
     showConfirmRemoveDialog,
     getLatestToolchain,
     setEnvironmentProgress,
     addEnvironment,
+    setToolchainDir,
+    startCloning,
+    finishCloning,
+    startRemoving,
+    finishRemoving,
 } from './environmentsReducer';
 
 const { net } = remote;
@@ -146,45 +152,36 @@ export const unzip = (
     version,
     src,
     dest,
-) => (dispatch, getState) => new Promise(resolve => {
-    const unzipper = new DecompressZip(src);
-    unzipper.on('error', err => {
-        console.log('Caught an error', err);
-    });
-    unzipper.on('extract', () => {
-        const { environmentList } = getState().app.environments;
-        const environment = environmentList.find(v => v.version === version);
-        dispatch(addEnvironment({ // FIXME: Introduce setToolChainDir
-            ...environment,
-            toolchainDir: dest,
-        }));
-        resolve();
-    });
-    unzipper.on('progress', (fileIndex, fileCount) => {
-        const progress = Math.round((fileIndex) / fileCount * 50) + 49;
-        dispatch(setEnvironmentProgress(version, progress));
-    });
-    unzipper.extract({ path: dest });
+) => dispatch => new Promise(resolve => {
+    new DecompressZip(src)
+        .on('error', err => {
+            console.error('Caught an error', err);
+        })
+        .on('extract', () => {
+            dispatch(setToolchainDir(version, dest));
+            resolve();
+        })
+        .on('progress', (fileIndex, fileCount) => {
+            const progress = Math.round((fileIndex) / fileCount * 50) + 49;
+            dispatch(setEnvironmentProgress(version, progress));
+        })
+        .extract({ path: dest });
 });
 
-export const cloneNcs = (dispatch, environment) => new Promise((resolve, reject) => {
-    const { toolchainDir } = environment;
+export const cloneNcs = (dispatch, version, toolchainDir) => new Promise((resolve, reject) => {
     const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
     const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
 
     fse.removeSync(path.resolve(path.dirname(toolchainDir), '.west'));
 
-    dispatch(addEnvironment({ // FIXME: Introduce startCloning
-        ...environment,
-        isCloning: true,
-    }));
+    dispatch(startCloning(version));
     exec(`"${gitBash}" -c "${initScript}"`, error => {
-        if (error) return reject(new Error(`Failed to clone NCS with error: ${error}`));
-        dispatch(addEnvironment({ // FIXME: Introduce finishCloning
-            ...environment,
-            isCloning: false,
-        }));
-        return resolve();
+        if (error) {
+            reject(new Error(`Failed to clone NCS with error: ${error}`));
+        } else {
+            dispatch(finishCloning(version));
+            resolve();
+        }
     });
 });
 
@@ -194,12 +191,12 @@ export const init = () => dispatch => {
     dispatch(downloadIndex());
 };
 
-export const confirmInstall = (dispatch, { version }) => {
+export const confirmInstall = (dispatch, version) => {
     dispatch(setVersionToInstall(version));
     dispatch(showInstallDirDialog());
 };
 
-export const confirmRemove = (dispatch, { version }) => {
+export const confirmRemove = (dispatch, version) => {
     dispatch(showConfirmRemoveDialog(version));
 };
 
@@ -213,25 +210,21 @@ export const install = environment => async dispatch => {
         dispatch(showFirstInstallDialog());
     }
 
-    dispatch(setEnvironmentInProcess(version, true));
+    dispatch(startEnvironmentInProcess(version));
     fse.mkdirpSync(unzipDest);
     const zipLocation = await dispatch(downloadZip(environment));
     await dispatch(unzip(version, zipLocation, unzipDest));
-    await cloneNcs(dispatch, version);
+    await cloneNcs(dispatch, version, unzipDest);
 
     setHasInstalledAnNcs();
     dispatch(checkLocalEnvironments());
-    dispatch(setEnvironmentInProcess(version, false));
+    dispatch(finishEnvironmentInProcess(version));
 };
 
-export const remove = environment => async dispatch => {
-    const { toolchainDir } = environment;
+export const remove = ({ toolchainDir, version }) => async dispatch => {
     const toBeDeletedDir = path.resolve(toolchainDir, '..', '..', 'toBeDeleted');
-    dispatch(setEnvironmentInProcess(environment.version, true));
-    dispatch(addEnvironment({ // FIXME: Introduce startRemoving
-        ...environment,
-        isRemoving: true,
-    }));
+    dispatch(startEnvironmentInProcess(version));
+    dispatch(startRemoving(version));
 
     const srcDir = path.dirname(toolchainDir);
     let renameOfDirSuccessful = false;
@@ -248,10 +241,9 @@ export const remove = environment => async dispatch => {
         ));
     }
 
-    dispatch(setEnvironmentInProcess(environment.version, false));
-    // FIXME: Introduce finishRemoving
-    dispatch(addEnvironment({ ...environment, isRemoving: false }));
+    dispatch(finishEnvironmentInProcess(version));
+    dispatch(finishRemoving(version));
     if (renameOfDirSuccessful) {
-        dispatch(removeEnvironment(environment.version));
+        dispatch(removeEnvironment(version));
     }
 };
