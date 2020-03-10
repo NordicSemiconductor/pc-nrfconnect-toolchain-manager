@@ -41,7 +41,7 @@ import './style.scss';
 import React from 'react';
 
 import appReducer from './reducers';
-import Environments from './Environments/Environments';
+import Manager from './Manager/Manager';
 import Settings from './Settings/Settings';
 import FirstInstallInstructions from './FirstInstall/FirstInstallInstructions';
 
@@ -55,7 +55,7 @@ export default {
     decorateMainView: MainView => ({ viewId }) => (
         <MainView cssClass="main-view">
             <div className="main-view-scroll">
-                <Environments className={showIf(viewId === 0)} />
+                <Manager className={showIf(viewId === 0)} />
                 <Settings className={showIf(viewId === 1)} />
                 <FirstInstallInstructions className={showIf(viewId === 2)} />
             </div>

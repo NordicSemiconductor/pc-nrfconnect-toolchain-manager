@@ -37,12 +37,12 @@
 import { combineReducers } from 'redux';
 import firstInstall from './FirstInstall/firstInstallReducer';
 import installDir from './InstallDir/installDirReducer';
-import environments from './Environments/environmentsReducer';
+import manager from './Manager/managerReducer';
 
 const rootReducer = combineReducers({
     firstInstall,
     installDir,
-    environments,
+    manager,
 });
 
 export default rootReducer;

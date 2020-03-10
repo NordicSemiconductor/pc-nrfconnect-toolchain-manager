@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,30 +34,54 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import { combineReducers } from 'redux';
+import appReducer from '../reducers';
+import { getLatestToolchain, environmentsByVersion, addEnvironment } from './managerReducer';
 
-import { confirmInstall } from '../environmentsActions';
-import Button from './Button';
-import environmentPropType from './environmentPropType';
-
-const Install = ({ environment: { isInProcess, toolchainDir, version } }) => {
-    const dispatch = useDispatch();
-
-    const isInstalled = !!toolchainDir;
-    if (isInstalled) return null;
-
-    return (
-        <Button
-            icon="x-mdi-briefcase-download-outline"
-            onClick={() => confirmInstall(dispatch, version)}
-            label="Install"
-            disabled={isInProcess}
-            variant="outline-primary"
-        />
-    );
+const older = {
+    version: '20200217',
+    name: 'ncs-toolchain-v1.2.0-20200217-a56f2eb.zip',
+};
+const younger = {
+    version: '20200218',
+    name: 'ncs-toolchain-v1.2.0-20200218-0ef73a3.zip',
 };
 
-Install.propTypes = { environment: environmentPropType.isRequired };
+describe('getLatestToolchain', () => {
+    it('gets the latest of several toolchains', () => {
+        expect(getLatestToolchain([younger, older])).toBe(younger);
+        expect(getLatestToolchain([older, younger])).toBe(younger);
+    });
 
-export default Install;
+    it('does not alter the supplied list of toolchains', () => {
+        const toolchains = [older, younger];
+        getLatestToolchain(toolchains);
+
+        expect(toolchains).toStrictEqual([older, younger]);
+    });
+});
+
+
+const reducer = combineReducers({ app: appReducer });
+describe('managerReducer', () => {
+    it('can add an environment', () => {
+        const anEnvironment = { version: 'v1.2.0' };
+
+        const withAnEnvironment = reducer(undefined, addEnvironment(anEnvironment));
+
+        expect(environmentsByVersion(withAnEnvironment)).toStrictEqual([anEnvironment]);
+    });
+
+    it('can update an environment', () => {
+        const anEnvironment = { version: 'v1.2.0' };
+        const anUpdatedEnvironment = { version: 'v1.2.0', aProp: 'a value' };
+
+        const withAnUpdatedEnvironment = [
+            addEnvironment(anEnvironment),
+            addEnvironment(anUpdatedEnvironment),
+        ].reduce(reducer, undefined);
+
+        expect(environmentsByVersion(withAnUpdatedEnvironment))
+            .toStrictEqual([anUpdatedEnvironment]);
+    });
+});

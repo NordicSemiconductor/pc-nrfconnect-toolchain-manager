@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,53 +34,56 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { combineReducers } from 'redux';
-import appReducer from '../reducers';
-import { getLatestToolchain, environmentsByVersion, addEnvironment } from './environmentsReducer';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import Button from 'react-bootstrap/Button';
 
-const older = {
-    version: '20200217',
-    name: 'ncs-toolchain-v1.2.0-20200217-a56f2eb.zip',
+import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
+import InstallDirDialog from '../InstallDir/InstallDirDialog';
+
+import Environment from './Environment/Environment';
+import { init } from './managerActions';
+import OtherPlatformInstructions from './OtherPlatformInstructions';
+import RemoveEnvironmentDialog from './RemoveEnvironmentDialog';
+import { environmentsByVersion } from './managerReducer';
+
+const Environments = () => {
+    const environments = useSelector(environmentsByVersion);
+
+    return (
+        <div>
+            {environments.map(environment => (
+                <Environment key={environment.version} environment={environment} />
+            ))}
+        </div>
+    );
 };
-const younger = {
-    version: '20200218',
-    name: 'ncs-toolchain-v1.2.0-20200218-0ef73a3.zip',
+
+export default props => {
+    const dispatch = useDispatch();
+    useEffect(() => dispatch(init()), []);
+
+    const isSupportedPlatform = process.platform === 'win32';
+    if (isSupportedPlatform) {
+        return (
+            <div {...props}>
+                <ButtonToolbar hidden>
+                    <Button className="mdi mdi-briefcase-plus-outline">
+                        Install package
+                    </Button>
+                </ButtonToolbar>
+                <Environments />
+                <FirstInstallDialog />
+                <InstallDirDialog justConfirm />
+                <RemoveEnvironmentDialog />
+            </div>
+        );
+    }
+
+    return (
+        <div {...props}>
+            <OtherPlatformInstructions />
+        </div>
+    );
 };
-
-describe('getLatestToolchain', () => {
-    it('gets the latest of several toolchains', () => {
-        expect(getLatestToolchain([younger, older])).toBe(younger);
-        expect(getLatestToolchain([older, younger])).toBe(younger);
-    });
-
-    it('does not alter the supplied list of toolchains', () => {
-        const toolchains = [older, younger];
-        getLatestToolchain(toolchains);
-
-        expect(toolchains).toStrictEqual([older, younger]);
-    });
-});
-
-
-const reducer = combineReducers({ app: appReducer });
-describe('environmentsReducer', () => {
-    it('can add an environment', () => {
-        const anEnvironment = { version: 'v1.2.0' };
-
-        const withAnEnvironment = reducer(undefined, addEnvironment(anEnvironment));
-
-        expect(environmentsByVersion(withAnEnvironment)).toStrictEqual([anEnvironment]);
-    });
-    it('can update an environment', () => {
-        const anEnvironment = { version: 'v1.2.0' };
-        const anUpdatedEnvironment = { version: 'v1.2.0', aProp: 'a value' };
-
-        const withAnUpdatedEnvironment = [
-            addEnvironment(anEnvironment),
-            addEnvironment(anUpdatedEnvironment),
-        ].reduce(reducer, undefined);
-
-        expect(environmentsByVersion(withAnUpdatedEnvironment))
-            .toStrictEqual([anUpdatedEnvironment]);
-    });
-});

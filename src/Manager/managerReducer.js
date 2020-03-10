@@ -305,17 +305,17 @@ export default reducer;
 
 export const getLatestToolchain = toolchains => [...toolchains].sort(compareBy('version')).pop();
 
-export const isRemoveDirDialogVisible = state => state.app.environments.isRemoveDirDialogVisible;
+export const isRemoveDirDialogVisible = state => state.app.manager.isRemoveDirDialogVisible;
 
-const getEnvironment = (state, version) => state.app.environments.environmentList.find(
+const getEnvironment = (state, version) => state.app.manager.environmentList.find(
     v => v.version === version,
 );
 
 export const environmentToRemove = state => (
-    getEnvironment(state, state.app.environments.versionToRemove));
+    getEnvironment(state, state.app.manager.versionToRemove));
 export const environmentToInstall = state => (
-    getEnvironment(state, state.app.environments.versionToInstall));
+    getEnvironment(state, state.app.manager.versionToInstall));
 
-export const selectedVersion = state => state.app.environments.selectedVersion;
+export const selectedVersion = state => state.app.manager.selectedVersion;
 
-export const environmentsByVersion = state => [...state.app.environments.environmentList.sort(compareBy('version'))];
+export const environmentsByVersion = state => [...state.app.manager.environmentList.sort(compareBy('version'))];

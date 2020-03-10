@@ -34,41 +34,62 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import './style.scss';
+
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { exec } from 'child_process';
+import path from 'path';
+import { shell } from 'electron';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import {
+    cloneNcs,
+    confirmInstall,
+    confirmRemove,
+} from '../managerActions';
 
-import { gotoPage } from '../../launcherActions';
-import { selectEnvironment } from '../environmentsReducer';
-import Button from './Button';
 import environmentPropType from './environmentPropType';
 
-const ShowFirstSteps = ({
-    environment: {
-        toolchainDir,
-        version,
-        isRemoving,
-        isInProcess,
-    },
-}) => {
-    const dispatch = useDispatch();
-
-    const isInstalled = !!toolchainDir;
-    if (!isInstalled && !(isInProcess && !isRemoving)) return null;
-
-    return (
-        <Button
-            icon="x-mdi-dog-service"
-            onClick={() => {
-                dispatch(selectEnvironment(version));
-                dispatch(gotoPage(2));
-            }}
-            label="First steps to build"
-            title="Show how to build a sample project"
-            variant="outline-primary"
-        />
-    );
+const openBash = toolchainDir => {
+    exec(`"${path.resolve(toolchainDir, 'git-bash.exe')}"`);
 };
 
-ShowFirstSteps.propTypes = { environment: environmentPropType.isRequired };
+const openCmd = toolchainDir => {
+    exec(`start cmd /k "${path.resolve(toolchainDir, 'git-cmd.cmd')}"`);
+};
 
-export default ShowFirstSteps;
+const openFolder = folder => {
+    shell.openItem(folder);
+};
+
+const EnvironmentMenu = ({ environment: { isInProcess, toolchainDir, version } }) => {
+    const dispatch = useDispatch();
+    const isInstalled = !!toolchainDir;
+
+    return (
+        <DropdownButton
+            className="ml-2"
+            variant="outline-primary"
+            title=""
+            alignRight
+            disabled={isInProcess || !isInstalled}
+        >
+            {/* eslint-disable max-len */}
+            <Dropdown.Item onClick={() => openBash(toolchainDir)}>Open bash</Dropdown.Item>
+            <Dropdown.Item onClick={() => openCmd(toolchainDir)}>Open command prompt</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={() => openFolder(path.dirname(toolchainDir))}>Open SDK folder</Dropdown.Item>
+            <Dropdown.Item onClick={() => openFolder(toolchainDir)}>Open toolchain folder</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={() => cloneNcs(dispatch, version, toolchainDir)}>Update SDK</Dropdown.Item>
+            <Dropdown.Item onClick={() => confirmInstall(dispatch, version)}>Update toolchain</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={() => confirmRemove(dispatch, version)}>Remove</Dropdown.Item>
+            {/* eslint-enable max-len */}
+        </DropdownButton>
+    );
+};
+EnvironmentMenu.propTypes = { environment: environmentPropType.isRequired };
+
+export default EnvironmentMenu;

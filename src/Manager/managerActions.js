@@ -64,7 +64,7 @@ import {
     finishCloning,
     startRemoving,
     finishRemoving,
-} from './environmentsReducer';
+} from './managerReducer';
 
 const { net } = remote;
 

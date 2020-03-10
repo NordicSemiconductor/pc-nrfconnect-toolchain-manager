@@ -34,56 +34,30 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Button from 'react-bootstrap/Button';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 
-import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
-import InstallDirDialog from '../InstallDir/InstallDirDialog';
+import { confirmInstall } from '../managerActions';
+import Button from './Button';
+import environmentPropType from './environmentPropType';
 
-import Environment from './Environment/Environment';
-import { init } from './environmentsActions';
-import OtherPlatformInstructions from './OtherPlatformInstructions';
-import RemoveEnvironmentDialog from './RemoveEnvironmentDialog';
-import { environmentsByVersion } from './environmentsReducer';
-
-const EnvironmentList = () => {
-    const environments = useSelector(environmentsByVersion);
-
-    return (
-        <div>
-            {environments.map(environment => (
-                <Environment key={environment.version} environment={environment} />
-            ))}
-        </div>
-    );
-};
-
-export default props => {
+const Install = ({ environment: { isInProcess, toolchainDir, version } }) => {
     const dispatch = useDispatch();
-    useEffect(() => dispatch(init()), []);
 
-    const isSupportedPlatform = process.platform === 'win32';
-    if (isSupportedPlatform) {
-        return (
-            <div {...props}>
-                <ButtonToolbar hidden>
-                    <Button className="mdi mdi-briefcase-plus-outline">
-                        Install package
-                    </Button>
-                </ButtonToolbar>
-                <EnvironmentList />
-                <FirstInstallDialog />
-                <InstallDirDialog justConfirm />
-                <RemoveEnvironmentDialog />
-            </div>
-        );
-    }
+    const isInstalled = !!toolchainDir;
+    if (isInstalled) return null;
 
     return (
-        <div {...props}>
-            <OtherPlatformInstructions />
-        </div>
+        <Button
+            icon="x-mdi-briefcase-download-outline"
+            onClick={() => confirmInstall(dispatch, version)}
+            label="Install"
+            disabled={isInProcess}
+            variant="outline-primary"
+        />
     );
 };
+
+Install.propTypes = { environment: environmentPropType.isRequired };
+
+export default Install;

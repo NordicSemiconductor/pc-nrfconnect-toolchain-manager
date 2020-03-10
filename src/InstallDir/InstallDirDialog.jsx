@@ -45,8 +45,8 @@ import {
     checkLocalEnvironments,
     downloadIndex,
     install,
-} from '../Environments/environmentsActions';
-import { clearEnvironmentList, environmentToInstall } from '../Environments/environmentsReducer';
+} from '../Manager/managerActions';
+import { clearEnvironmentList, environmentToInstall } from '../Manager/managerReducer';
 import { hideInstallDirDialog, isDialogVisible } from './installDirReducer';
 
 

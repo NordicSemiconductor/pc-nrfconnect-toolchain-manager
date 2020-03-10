@@ -46,7 +46,7 @@ import Card from 'react-bootstrap/Card';
 
 import { installDir } from '../persistentStore';
 import { gotoPage } from '../launcherActions';
-import { selectedVersion } from '../Environments/environmentsReducer';
+import { selectedVersion } from '../Manager/managerReducer';
 
 const Ie = () => (<>{' '}<i>i.e.</i>{' '}</>);
 

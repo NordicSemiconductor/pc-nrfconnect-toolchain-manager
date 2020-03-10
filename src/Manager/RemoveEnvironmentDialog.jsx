@@ -38,8 +38,8 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
-import { remove } from './environmentsActions';
-import { hideConfirmRemoveDialog, environmentToRemove, isRemoveDirDialogVisible } from './environmentsReducer';
+import { remove } from './managerActions';
+import { hideConfirmRemoveDialog, environmentToRemove, isRemoveDirDialogVisible } from './managerReducer';
 
 export default () => {
     const dispatch = useDispatch();
