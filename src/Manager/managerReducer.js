@@ -104,9 +104,9 @@ export const removeEnvironment = version => ({
     version,
 });
 
-const CLEAR_ENVIRONMENT_LIST = 'CLEAR_ENVIRONMENT_LIST';
-export const clearEnvironmentList = () => ({
-    type: CLEAR_ENVIRONMENT_LIST,
+const CLEAR_ENVIRONMENTS = 'CLEAR_ENVIRONMENTS';
+export const clearEnvironments = () => ({
+    type: CLEAR_ENVIRONMENTS,
 });
 
 const SET_VERSION_TO_INSTALL = 'SET_VERSION_TO_INSTALL';
@@ -127,43 +127,54 @@ export const hideConfirmRemoveDialog = () => ({
 });
 
 const InitialState = {
-    environmentList: [],
+    environments: {},
     isRemoveDirDialogVisible: false,
     versionToInstall: null,
     versionToRemove: null,
     selectedVersion: null,
 };
 
-const addSingleEnvironment = (environmentList, environment) => {
-    const newEnvironmentList = [...environmentList];
-    const envIndex = newEnvironmentList.findIndex(v => v.version === environment.version);
-    if (envIndex < 0) {
-        newEnvironmentList.push(environment);
-        newEnvironmentList.sort(compareBy('version'));
+const addSingleEnvironment = (environments, environment) => ({
+    ...environments,
+    [environment.version]: {
+        ...environments[environment.version] || {},
+        ...environment,
+    },
+});
+
+const updateSingleEnvironment = (environments, version, environmentChange) => {
+    if (environments[version] == null) {
+        console.error(`No environment version found for ${version}`);
+        return environments;
+    }
+
+    return {
+        ...environments,
+        [version]: {
+            ...environments[version],
+            ...environmentChange,
+        },
+    };
+};
+
+const removeSingleEnvironment = (environments, version) => {
+    if (environments[version] == null) {
+        console.error(`No environment version found for ${version}`);
+        return environments;
+    }
+
+    const newEnvironments = { ...environments };
+    const environmentIsOnlyLocal = !environments[version].toolchains;
+    if (environmentIsOnlyLocal) {
+        delete newEnvironments[version];
     } else {
-        newEnvironmentList[envIndex] = {
-            ...newEnvironmentList[envIndex],
-            ...environment,
+        newEnvironments[version] = {
+            ...newEnvironments[version],
+            toolchainDir: null,
         };
     }
 
-    return newEnvironmentList;
-};
-
-const updateSingleEnvironment = (environmentList, version, environmentChange) => {
-    const envIndex = environmentList.findIndex(v => v.version === version);
-    if (envIndex < 0) {
-        console.error(`No environment version found for ${version}`);
-        return environmentList;
-    }
-
-    const newEnvironmentList = [...environmentList];
-    newEnvironmentList[envIndex] = {
-        ...newEnvironmentList[envIndex],
-        ...environmentChange,
-    };
-
-    return newEnvironmentList;
+    return newEnvironments;
 };
 
 const reducer = (state = InitialState, action) => {
@@ -171,13 +182,13 @@ const reducer = (state = InitialState, action) => {
         case ADD_ENVIRONMENT:
             return {
                 ...state,
-                environmentList: addSingleEnvironment(state.environmentList, action.environment),
+                environments: addSingleEnvironment(state.environments, action.environment),
             };
         case START_ENVIRONMENT_IN_PROCESS:
             return {
                 ...state,
-                environmentList: updateSingleEnvironment(
-                    state.environmentList,
+                environments: updateSingleEnvironment(
+                    state.environments,
                     action.version,
                     { isInProcess: true },
                 ),
@@ -185,8 +196,8 @@ const reducer = (state = InitialState, action) => {
         case FINISH_ENVIRONMENT_IN_PROCESS:
             return {
                 ...state,
-                environmentList: updateSingleEnvironment(
-                    state.environmentList,
+                environments: updateSingleEnvironment(
+                    state.environments,
                     action.version,
                     { isInProcess: false },
                 ),
@@ -194,8 +205,8 @@ const reducer = (state = InitialState, action) => {
         case START_CLONING:
             return {
                 ...state,
-                environmentList: updateSingleEnvironment(
-                    state.environmentList,
+                environments: updateSingleEnvironment(
+                    state.environments,
                     action.version,
                     { isCloning: true },
                 ),
@@ -203,8 +214,8 @@ const reducer = (state = InitialState, action) => {
         case FINISH_CLONING:
             return {
                 ...state,
-                environmentList: updateSingleEnvironment(
-                    state.environmentList,
+                environments: updateSingleEnvironment(
+                    state.environments,
                     action.version,
                     { isCloning: false },
                 ),
@@ -212,8 +223,8 @@ const reducer = (state = InitialState, action) => {
         case START_REMOVING:
             return {
                 ...state,
-                environmentList: updateSingleEnvironment(
-                    state.environmentList,
+                environments: updateSingleEnvironment(
+                    state.environments,
                     action.version,
                     { isRemoving: true },
                 ),
@@ -221,8 +232,8 @@ const reducer = (state = InitialState, action) => {
         case FINISH_REMOVING:
             return {
                 ...state,
-                environmentList: updateSingleEnvironment(
-                    state.environmentList,
+                environments: updateSingleEnvironment(
+                    state.environments,
                     action.version,
                     { isRemoving: false },
                 ),
@@ -230,8 +241,8 @@ const reducer = (state = InitialState, action) => {
         case SET_ENVIRONMENT_PROGRESS:
             return {
                 ...state,
-                environmentList: updateSingleEnvironment(
-                    state.environmentList,
+                environments: updateSingleEnvironment(
+                    state.environments,
                     action.version,
                     { progress: action.progress },
                 ),
@@ -239,41 +250,22 @@ const reducer = (state = InitialState, action) => {
         case SET_TOOLCHAIN_DIR:
             return {
                 ...state,
-                environmentList: updateSingleEnvironment(
-                    state.environmentList,
+                environments: updateSingleEnvironment(
+                    state.environments,
                     action.version,
                     { toolchainDir: action.toolchainDir },
                 ),
             };
-        case CLEAR_ENVIRONMENT_LIST:
+        case CLEAR_ENVIRONMENTS:
             return {
                 ...state,
-                environmentList: [],
+                environments: {},
             };
-        case REMOVE_ENVIRONMENT: {
-            const { version } = action;
-            const { environmentList } = state;
-            const envIndex = environmentList.findIndex(v => v.version === version);
-            if (envIndex < 0) {
-                throw new Error(`No environment version found for ${version}`);
-            }
-
-            const newEnvironmentList = [...environmentList];
-            const environementIsOnlyLocal = !environmentList[envIndex].toolchains;
-            if (environementIsOnlyLocal) {
-                newEnvironmentList.splice(envIndex, 1);
-            } else {
-                newEnvironmentList[envIndex] = {
-                    ...newEnvironmentList[envIndex],
-                    toolchainDir: null,
-                };
-            }
-
+        case REMOVE_ENVIRONMENT:
             return {
                 ...state,
-                environmentList: newEnvironmentList,
+                environments: removeSingleEnvironment(state.environments, action.version),
             };
-        }
         case SET_VERSION_TO_INSTALL:
             return {
                 ...state,
@@ -307,15 +299,11 @@ export const getLatestToolchain = toolchains => [...toolchains].sort(compareBy('
 
 export const isRemoveDirDialogVisible = state => state.app.manager.isRemoveDirDialogVisible;
 
-const getEnvironment = (state, version) => state.app.manager.environmentList.find(
-    v => v.version === version,
-);
-
 export const environmentToRemove = state => (
-    getEnvironment(state, state.app.manager.versionToRemove));
+    state.app.manager.environments[state.app.manager.versionToRemove]);
 export const environmentToInstall = state => (
-    getEnvironment(state, state.app.manager.versionToInstall));
+    state.app.manager.environments[state.app.manager.versionToInstall]);
 
 export const selectedVersion = state => state.app.manager.selectedVersion;
 
-export const environmentsByVersion = state => [...state.app.manager.environmentList.sort(compareBy('version'))];
+export const environmentsByVersion = state => [...Object.values(state.app.manager.environments).sort(compareBy('version'))];

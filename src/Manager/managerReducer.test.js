@@ -64,7 +64,7 @@ describe('getLatestToolchain', () => {
 
 const reducer = combineReducers({ app: appReducer });
 describe('managerReducer', () => {
-    it('can add an environment', () => {
+    it('adds an environment', () => {
         const anEnvironment = { version: 'v1.2.0' };
 
         const withAnEnvironment = reducer(undefined, addEnvironment(anEnvironment));
@@ -72,7 +72,7 @@ describe('managerReducer', () => {
         expect(environmentsByVersion(withAnEnvironment)).toStrictEqual([anEnvironment]);
     });
 
-    it('can update an environment', () => {
+    it('updates an environment', () => {
         const anEnvironment = { version: 'v1.2.0' };
         const anUpdatedEnvironment = { version: 'v1.2.0', aProp: 'a value' };
 
@@ -83,5 +83,26 @@ describe('managerReducer', () => {
 
         expect(environmentsByVersion(withAnUpdatedEnvironment))
             .toStrictEqual([anUpdatedEnvironment]);
+    });
+
+    it('provides a list of all environments', () => {
+        const olderEnvironment = { version: 'v1.2.0' };
+        const youngerEnvironment = { version: 'v1.3.0' };
+        const listOfAllEnvironments = [youngerEnvironment, olderEnvironment];
+
+        const withAllEnvironments = [
+            addEnvironment(olderEnvironment),
+            addEnvironment(youngerEnvironment),
+        ].reduce(reducer, undefined);
+
+        const withAllEnvironmentsAddedInDifferentOrder = [
+            addEnvironment(youngerEnvironment),
+            addEnvironment(olderEnvironment),
+        ].reduce(reducer, undefined);
+
+        expect(environmentsByVersion(withAllEnvironments))
+            .toStrictEqual(listOfAllEnvironments);
+        expect(environmentsByVersion(withAllEnvironmentsAddedInDifferentOrder))
+            .toStrictEqual(listOfAllEnvironments);
     });
 });

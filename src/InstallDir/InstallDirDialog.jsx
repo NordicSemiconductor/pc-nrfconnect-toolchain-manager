@@ -46,7 +46,7 @@ import {
     downloadIndex,
     install,
 } from '../Manager/managerActions';
-import { clearEnvironmentList, environmentToInstall } from '../Manager/managerReducer';
+import { clearEnvironments, environmentToInstall } from '../Manager/managerReducer';
 import { hideInstallDirDialog, isDialogVisible } from './installDirReducer';
 
 
@@ -58,7 +58,7 @@ const selectInstallDir = async dispatch => {
     });
     if (selection) {
         setInstallDir(selection[0]);
-        dispatch(clearEnvironmentList());
+        dispatch(clearEnvironments());
         dispatch(checkLocalEnvironments());
         await dispatch(downloadIndex());
         dispatch(hideInstallDirDialog());
