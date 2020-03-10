@@ -43,9 +43,9 @@ import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
 
 import Environment from './Environment/Environment';
-import { init } from './managerActions';
+import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
+import { init } from './managerEffects';
 import OtherPlatformInstructions from './OtherPlatformInstructions';
-import RemoveEnvironmentDialog from './RemoveEnvironmentDialog';
 import { environmentsByVersion } from './managerReducer';
 
 const Environments = () => {

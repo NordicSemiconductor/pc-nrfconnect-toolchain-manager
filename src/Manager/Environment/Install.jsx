@@ -37,7 +37,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { confirmInstall } from '../managerActions';
+import { confirmInstall } from './environmentEffects';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 

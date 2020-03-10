@@ -41,11 +41,8 @@ import { remote } from 'electron';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { installDir, setInstallDir } from '../persistentStore';
-import {
-    checkLocalEnvironments,
-    downloadIndex,
-    install,
-} from '../Manager/managerActions';
+import { checkLocalEnvironments, downloadIndex } from '../Manager/managerEffects';
+import { install } from '../Manager/Environment/environmentEffects';
 import { clearEnvironments, environmentToInstall } from '../Manager/managerReducer';
 import { hideInstallDirDialog, isDialogVisible } from './installDirReducer';
 

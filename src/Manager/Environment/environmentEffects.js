@@ -43,12 +43,19 @@ import DecompressZip from 'decompress-zip';
 import { remote } from 'electron';
 import fse from 'fs-extra';
 import {
-    isFirstInstall, setHasInstalledAnNcs, toolchainIndexUrl, toolchainUrl, installDir,
-} from '../persistentStore';
-import { showFirstInstallDialog } from '../FirstInstall/firstInstallReducer';
-import { showInstallDirDialog } from '../InstallDir/installDirReducer';
-import { showErrorDialog } from '../launcherActions';
+    isFirstInstall, setHasInstalledAnNcs, toolchainUrl, installDir,
+} from '../../persistentStore';
+import { showFirstInstallDialog } from '../../FirstInstall/firstInstallReducer';
+import { showInstallDirDialog } from '../../InstallDir/installDirReducer';
+import { showErrorDialog } from '../../launcherActions';
 
+import {
+    selectEnvironment,
+    removeEnvironment,
+    setVersionToInstall,
+    showConfirmRemoveDialog,
+    getLatestToolchain,
+} from '../managerReducer';
 import {
     startEnvironmentInProcess,
     finishEnvironmentInProcess,
@@ -58,59 +65,8 @@ import {
     finishCloning,
     startRemoving,
     finishRemoving,
-} from './Environment/environmentReducer';
-import {
-    selectEnvironment,
-    removeEnvironment,
-    setVersionToInstall,
-    showConfirmRemoveDialog,
-    getLatestToolchain,
-    addEnvironment,
-} from './managerReducer';
-
-const { net } = remote;
-
-export const checkLocalEnvironments = () => dispatch => {
-    const subDirs = fs.readdirSync(installDir(), { withFileTypes: true })
-        .filter(dirEnt => dirEnt.isDirectory())
-        .map(({ name }) => path.resolve(installDir(), name));
-    subDirs.map(subDir => fs.readdirSync(path.resolve(installDir(), subDir))
-        .filter(d => !d.endsWith('.zip'))
-        .map(dir => path.resolve(installDir(), subDir, dir, 'ncsmgr/manifest.env'))
-        .filter(fs.existsSync))
-        .flat()
-        .forEach(toolchain => {
-            const toolchainDir = path.resolve(toolchain, '../..');
-            const version = path.basename(path.resolve(toolchainDir, '..'));
-            const isWestPresent = fs.existsSync(path.resolve(toolchainDir, '../.west/config'));
-            dispatch(addEnvironment({
-                version,
-                toolchainDir,
-                isWestPresent,
-            }));
-        });
-};
-
-export const downloadIndex = () => dispatch => new Promise((resolve, reject) => {
-    net.request({ url: toolchainIndexUrl() })
-        .setHeader('pragma', 'no-cache')
-        .on('response', response => {
-            let result = '';
-            response.on('end', () => {
-                if (response.statusCode !== 200) {
-                    reject(new Error(`Unable to download ${toolchainIndexUrl()}. Got status code ${response.statusCode}`));
-                }
-
-                JSON.parse(result)
-                    .forEach(environment => dispatch(addEnvironment(environment)));
-                resolve();
-            });
-            response.on('data', buf => {
-                result += `${buf}`;
-            });
-        })
-        .end();
-});
+} from './environmentReducer';
+import { checkLocalEnvironments } from '../managerEffects';
 
 const downloadZip = environment => dispatch => new Promise((resolve, reject) => {
     const { name, sha512 } = getLatestToolchain(environment.toolchains);
@@ -124,7 +80,7 @@ const downloadZip = environment => dispatch => new Promise((resolve, reject) => 
 
     const url = toolchainUrl(name);
 
-    net.request({ url }).on('response', response => {
+    remote.net.request({ url }).on('response', response => {
         const totalLength = response.headers['content-length'][0];
         let currentLength = 0;
         response.on('data', data => {
@@ -186,12 +142,6 @@ export const cloneNcs = (dispatch, version, toolchainDir) => new Promise((resolv
         }
     });
 });
-
-export const init = () => dispatch => {
-    fse.mkdirpSync(installDir());
-    dispatch(checkLocalEnvironments());
-    dispatch(downloadIndex());
-};
 
 export const confirmInstall = (dispatch, version) => {
     dispatch(setVersionToInstall(version));

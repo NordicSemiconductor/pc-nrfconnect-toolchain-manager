@@ -43,11 +43,7 @@ import path from 'path';
 import { shell } from 'electron';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import {
-    cloneNcs,
-    confirmInstall,
-    confirmRemove,
-} from '../managerActions';
+import { cloneNcs, confirmInstall, confirmRemove } from './environmentEffects';
 
 import environmentPropType from './environmentPropType';
 
