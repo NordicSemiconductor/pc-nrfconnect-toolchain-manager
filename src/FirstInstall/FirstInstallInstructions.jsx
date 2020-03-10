@@ -46,13 +46,13 @@ import Card from 'react-bootstrap/Card';
 
 import { installDir } from '../persistentStore';
 import { gotoPage } from '../launcherActions';
+import { selectedVersion } from '../Environments/environmentsReducer';
 
 const Ie = () => (<>{' '}<i>i.e.</i>{' '}</>);
 
 const FirstInstallInstructions = props => {
     const dispatch = useDispatch();
-    const { selectedVersion } = useSelector(({ app }) => app.environments);
-    const version = selectedVersion || '<version>';
+    const version = useSelector(selectedVersion) || '<version>';
     const zephyrDir = [installDir(), version, 'zephyr'].join(sep);
     const sampleDir = [zephyrDir, 'samples', 'basic'].join(sep);
     const homeDir = os.homedir();

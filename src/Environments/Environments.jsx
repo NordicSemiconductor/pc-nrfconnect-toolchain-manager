@@ -46,9 +46,10 @@ import Environment from './Environment/Environment';
 import { init } from './environmentsActions';
 import OtherPlatformInstructions from './OtherPlatformInstructions';
 import RemoveEnvironmentDialog from './RemoveEnvironmentDialog';
+import { environmentsByVersion } from './environmentsReducer';
 
 const EnvironmentList = () => {
-    const environments = useSelector(state => state.app.environments.environmentList);
+    const environments = useSelector(environmentsByVersion);
 
     return (
         <div>

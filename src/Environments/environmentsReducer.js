@@ -316,4 +316,6 @@ export const environmentToRemove = state => (
 export const environmentToInstall = state => (
     getEnvironment(state, state.app.environments.versionToInstall));
 
+export const selectedVersion = state => state.app.environments.selectedVersion;
+
 export const environmentsByVersion = state => [...state.app.environments.environmentList.sort(compareBy('version'))];
