@@ -37,17 +37,19 @@
 import semver from 'semver';
 import environmentReducer from './Environment/environmentReducer';
 
-const compareBy = prop => (a, b) => {
+const byVersion = (a, b) => {
     try {
-        return -semver.compare(a[prop], b[prop]);
+        return -semver.compare(a.version, b.version);
     } catch (_) {
         switch (true) {
-            case (a[prop] < b[prop]): return -1;
-            case (a[prop] > b[prop]): return 1;
+            case (a.version < b.version): return -1;
+            case (a.version > b.version): return 1;
             default: return 0;
         }
     }
 };
+
+const sortedByVersion = list => [...list].sort(byVersion);
 
 const SELECT_ENVIRONMENT = 'SELECT_ENVIRONMENT';
 export const selectEnvironment = selectedVersion => ({
@@ -165,7 +167,7 @@ export default (state = initialState, action) => {
     return managerReducer(stateAfterEnvironmentReducer, action);
 };
 
-export const getLatestToolchain = toolchains => [...toolchains].sort(compareBy('version')).pop();
+export const getLatestToolchain = toolchains => sortedByVersion(toolchains).pop();
 
 export const isRemoveDirDialogVisible = state => state.app.manager.isRemoveDirDialogVisible;
 
@@ -176,4 +178,5 @@ export const environmentToInstall = state => (
 
 export const selectedVersion = state => state.app.manager.selectedVersion;
 
-export const environmentsByVersion = state => [...Object.values(state.app.manager.environments).sort(compareBy('version'))];
+export const environmentsByVersion = state => (
+    sortedByVersion(Object.values(state.app.manager.environments)));
