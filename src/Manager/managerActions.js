@@ -50,20 +50,22 @@ import { showInstallDirDialog } from '../InstallDir/installDirReducer';
 import { showErrorDialog } from '../launcherActions';
 
 import {
-    selectEnvironment,
     startEnvironmentInProcess,
     finishEnvironmentInProcess,
-    removeEnvironment,
-    setVersionToInstall,
-    showConfirmRemoveDialog,
-    getLatestToolchain,
     setEnvironmentProgress,
-    addEnvironment,
     setToolchainDir,
     startCloning,
     finishCloning,
     startRemoving,
     finishRemoving,
+} from './Environment/environmentReducer';
+import {
+    selectEnvironment,
+    removeEnvironment,
+    setVersionToInstall,
+    showConfirmRemoveDialog,
+    getLatestToolchain,
+    addEnvironment,
 } from './managerReducer';
 
 const { net } = remote;

@@ -35,6 +35,7 @@
  */
 
 import semver from 'semver';
+import environmentReducer from './Environment/environmentReducer';
 
 const compareBy = prop => (a, b) => {
     try {
@@ -58,44 +59,6 @@ const ADD_ENVIRONMENT = 'ADD_ENVIRONMENT';
 export const addEnvironment = environment => ({
     type: ADD_ENVIRONMENT,
     environment,
-});
-
-const START_ENVIRONMENT_IN_PROCESS = 'START_ENVIRONMENT_IN_PROCESS';
-export const startEnvironmentInProcess = version => ({
-    type: START_ENVIRONMENT_IN_PROCESS,
-    version,
-});
-
-const FINISH_ENVIRONMENT_IN_PROCESS = 'FINISH_ENVIRONMENT_IN_PROCESS';
-export const finishEnvironmentInProcess = version => ({
-    type: FINISH_ENVIRONMENT_IN_PROCESS,
-    version,
-});
-
-const START_CLONING = 'START_CLONING';
-export const startCloning = version => ({ type: START_CLONING, version });
-
-const FINISH_CLONING = 'FINISH_CLONING';
-export const finishCloning = version => ({ type: FINISH_CLONING, version });
-
-const START_REMOVING = 'START_REMOVING';
-export const startRemoving = version => ({ type: START_REMOVING, version });
-
-const FINISH_REMOVING = 'FINISH_REMOVING';
-export const finishRemoving = version => ({ type: FINISH_REMOVING, version });
-
-const SET_TOOLCHAIN_DIR = 'SET_TOOLCHAIN_DIR';
-export const setToolchainDir = (version, toolchainDir) => ({
-    type: SET_TOOLCHAIN_DIR,
-    version,
-    toolchainDir,
-});
-
-const SET_ENVIRONMENT_PROGRESS = 'SET_ENVIRONMENT_PROGRESS';
-export const setEnvironmentProgress = (version, progress) => ({
-    type: SET_ENVIRONMENT_PROGRESS,
-    version,
-    progress,
 });
 
 const REMOVE_ENVIRONMENT = 'REMOVE_ENVIRONMENT';
@@ -126,15 +89,7 @@ export const hideConfirmRemoveDialog = () => ({
     type: HIDE_CONFIRM_REMOVE_DIALOG,
 });
 
-const InitialState = {
-    environments: {},
-    isRemoveDirDialogVisible: false,
-    versionToInstall: null,
-    versionToRemove: null,
-    selectedVersion: null,
-};
-
-const addSingleEnvironment = (environments, environment) => ({
+const append = (environments, environment) => ({
     ...environments,
     [environment.version]: {
         ...environments[environment.version] || {},
@@ -142,22 +97,7 @@ const addSingleEnvironment = (environments, environment) => ({
     },
 });
 
-const updateSingleEnvironment = (environments, version, environmentChange) => {
-    if (environments[version] == null) {
-        console.error(`No environment version found for ${version}`);
-        return environments;
-    }
-
-    return {
-        ...environments,
-        [version]: {
-            ...environments[version],
-            ...environmentChange,
-        },
-    };
-};
-
-const removeSingleEnvironment = (environments, version) => {
+const remove = (environments, version) => {
     if (environments[version] == null) {
         console.error(`No environment version found for ${version}`);
         return environments;
@@ -177,123 +117,53 @@ const removeSingleEnvironment = (environments, version) => {
     return newEnvironments;
 };
 
-const reducer = (state = InitialState, action) => {
+const managerReducer = (state, action) => {
     switch (action.type) {
         case ADD_ENVIRONMENT:
-            return {
-                ...state,
-                environments: addSingleEnvironment(state.environments, action.environment),
-            };
-        case START_ENVIRONMENT_IN_PROCESS:
-            return {
-                ...state,
-                environments: updateSingleEnvironment(
-                    state.environments,
-                    action.version,
-                    { isInProcess: true },
-                ),
-            };
-        case FINISH_ENVIRONMENT_IN_PROCESS:
-            return {
-                ...state,
-                environments: updateSingleEnvironment(
-                    state.environments,
-                    action.version,
-                    { isInProcess: false },
-                ),
-            };
-        case START_CLONING:
-            return {
-                ...state,
-                environments: updateSingleEnvironment(
-                    state.environments,
-                    action.version,
-                    { isCloning: true },
-                ),
-            };
-        case FINISH_CLONING:
-            return {
-                ...state,
-                environments: updateSingleEnvironment(
-                    state.environments,
-                    action.version,
-                    { isCloning: false },
-                ),
-            };
-        case START_REMOVING:
-            return {
-                ...state,
-                environments: updateSingleEnvironment(
-                    state.environments,
-                    action.version,
-                    { isRemoving: true },
-                ),
-            };
-        case FINISH_REMOVING:
-            return {
-                ...state,
-                environments: updateSingleEnvironment(
-                    state.environments,
-                    action.version,
-                    { isRemoving: false },
-                ),
-            };
-        case SET_ENVIRONMENT_PROGRESS:
-            return {
-                ...state,
-                environments: updateSingleEnvironment(
-                    state.environments,
-                    action.version,
-                    { progress: action.progress },
-                ),
-            };
-        case SET_TOOLCHAIN_DIR:
-            return {
-                ...state,
-                environments: updateSingleEnvironment(
-                    state.environments,
-                    action.version,
-                    { toolchainDir: action.toolchainDir },
-                ),
-            };
+            return { ...state, environments: append(state.environments, action.environment) };
         case CLEAR_ENVIRONMENTS:
-            return {
-                ...state,
-                environments: {},
-            };
+            return { ...state, environments: {} };
         case REMOVE_ENVIRONMENT:
-            return {
-                ...state,
-                environments: removeSingleEnvironment(state.environments, action.version),
-            };
+            return { ...state, environments: remove(state.environments, action.version) };
         case SET_VERSION_TO_INSTALL:
-            return {
-                ...state,
-                versionToInstall: action.version,
-            };
+            return { ...state, versionToInstall: action.version };
         case SHOW_CONFIRM_REMOVE_DIALOG:
-            return {
-                ...state,
-                isRemoveDirDialogVisible: true,
-                versionToRemove: action.version,
-            };
+            return { ...state, isRemoveDirDialogVisible: true, versionToRemove: action.version };
         case HIDE_CONFIRM_REMOVE_DIALOG:
-            return {
-                ...state,
-                isRemoveDirDialogVisible: false,
-                versionToRemove: null,
-            };
+            return { ...state, isRemoveDirDialogVisible: false, versionToRemove: null };
         case SELECT_ENVIRONMENT:
-            return {
-                ...state,
-                selectedVersion: action.selectedVersion,
-            };
+            return { ...state, selectedVersion: action.selectedVersion };
         default:
             return state;
     }
 };
 
-export default reducer;
+const maybeCallEnvironmentReducer = (state, action) => {
+    if (action.version == null || state.environments[action.version] == null) {
+        return state;
+    }
+
+    return {
+        ...state,
+        environments: {
+            ...state.environments,
+            [action.version]: environmentReducer(state.environments[action.version], action),
+        },
+    };
+};
+
+const initialState = {
+    environments: {},
+    isRemoveDirDialogVisible: false,
+    versionToInstall: null,
+    versionToRemove: null,
+    selectedVersion: null,
+};
+
+export default (state = initialState, action) => {
+    const stateAfterEnvironmentReducer = maybeCallEnvironmentReducer(state, action);
+    return managerReducer(stateAfterEnvironmentReducer, action);
+};
 
 export const getLatestToolchain = toolchains => [...toolchains].sort(compareBy('version')).pop();
 
