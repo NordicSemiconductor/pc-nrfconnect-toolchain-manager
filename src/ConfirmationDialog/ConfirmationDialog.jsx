@@ -34,7 +34,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import PropTypes from 'prop-types';
+import {
+    bool, func, node, string,
+} from 'prop-types';
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -68,15 +70,15 @@ const ConfirmationDialog = ({
 );
 
 ConfirmationDialog.propTypes = {
-    title: PropTypes.string.isRequired,
-    children: PropTypes.node.isRequired,
-    isVisible: PropTypes.bool.isRequired,
-    onConfirm: PropTypes.func.isRequired,
-    onCancel: PropTypes.func,
-    onOptional: PropTypes.func,
-    confirmLabel: PropTypes.string,
-    cancelLabel: PropTypes.string,
-    optionalLabel: PropTypes.string,
+    title: string.isRequired,
+    children: node.isRequired,
+    isVisible: bool.isRequired,
+    onConfirm: func.isRequired,
+    onCancel: func,
+    onOptional: func,
+    confirmLabel: string,
+    cancelLabel: string,
+    optionalLabel: string,
 };
 
 ConfirmationDialog.defaultProps = {

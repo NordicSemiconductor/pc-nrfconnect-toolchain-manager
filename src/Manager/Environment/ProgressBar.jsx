@@ -36,7 +36,7 @@
 
 import './style.scss';
 
-import PropTypes from 'prop-types';
+import { string } from 'prop-types';
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import BootstrapProgressBar from 'react-bootstrap/ProgressBar';
@@ -49,8 +49,8 @@ const PrimaryButton = ({ label, className, ...props }) => (
     </Button>
 );
 PrimaryButton.propTypes = {
-    label: PropTypes.string.isRequired,
-    className: PropTypes.string,
+    label: string.isRequired,
+    className: string,
 };
 PrimaryButton.defaultProps = { className: '' };
 
