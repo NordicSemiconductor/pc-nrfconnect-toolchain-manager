@@ -54,10 +54,10 @@ export const selectEnvironment = selectedVersion => ({
     selectedVersion,
 });
 
-const UPDATE_ENVIRONMENT_LIST = 'UPDATE_ENVIRONMENT_LIST';
-export const updateEnvironmentList = environmentList => ({
-    type: UPDATE_ENVIRONMENT_LIST,
-    environmentList: [...environmentList.sort(compareBy('version'))],
+const ADD_ENVIRONMENT = 'ADD_ENVIRONMENT';
+export const addEnvironment = environment => ({
+    type: ADD_ENVIRONMENT,
+    environment,
 });
 
 const SET_ENVIRONMENT_IN_PROCESS = 'SET_ENVIRONMENT_IN_PROCESS';
@@ -110,42 +110,63 @@ const InitialState = {
     selectedVersion: null,
 };
 
-const updateSingleEnvironment = (state, version, environmentChange) => {
-    const envIndex = state.environmentList.findIndex(v => v.version === version);
+const addSingleEnvironment = (environmentList, environment) => {
+    const newEnvironmentList = [...environmentList];
+    const envIndex = newEnvironmentList.findIndex(v => v.version === environment.version);
     if (envIndex < 0) {
-        console.error(`No environment version found for ${version}`);
-        return state;
+        newEnvironmentList.push(environment);
+        newEnvironmentList.sort(compareBy('version'));
+    } else {
+        newEnvironmentList[envIndex] = {
+            ...newEnvironmentList[envIndex],
+            ...environment,
+        };
     }
 
-    const environmentList = [...state.environmentList];
-    environmentList[envIndex] = {
-        ...environmentList[envIndex],
+    return newEnvironmentList;
+};
+
+const updateSingleEnvironment = (environmentList, version, environmentChange) => {
+    const envIndex = environmentList.findIndex(v => v.version === version);
+    if (envIndex < 0) {
+        console.error(`No environment version found for ${version}`);
+        return environmentList;
+    }
+
+    const newEnvironmentList = [...environmentList];
+    newEnvironmentList[envIndex] = {
+        ...newEnvironmentList[envIndex],
         ...environmentChange,
     };
 
-    return { ...state, environmentList };
+    return newEnvironmentList;
 };
 
 const reducer = (state = InitialState, action) => {
     switch (action.type) {
-        case UPDATE_ENVIRONMENT_LIST:
+        case ADD_ENVIRONMENT:
             return {
                 ...state,
-                environmentList: action.environmentList,
+                environmentList: addSingleEnvironment(state.environmentList, action.environment),
             };
         case SET_ENVIRONMENT_IN_PROCESS:
-            return updateSingleEnvironment(
-                state.environmentList,
-                action.version,
-                { isInProcess: action.isInProcess },
-            );
-        case SET_ENVIRONMENT_PROGRESS: {
-            return updateSingleEnvironment(
-                state.environmentList,
-                action.version,
-                { progress: action.progress },
-            );
-        }
+            return {
+                ...state,
+                environmentList: updateSingleEnvironment(
+                    state.environmentList,
+                    action.version,
+                    { isInProcess: action.isInProcess },
+                ),
+            };
+        case SET_ENVIRONMENT_PROGRESS:
+            return {
+                ...state,
+                environmentList: updateSingleEnvironment(
+                    state.environmentList,
+                    action.version,
+                    { progress: action.progress },
+                ),
+            };
         case CLEAR_ENVIRONMENT_LIST:
             return {
                 ...state,
@@ -216,3 +237,5 @@ export const environmentToRemove = state => (
     getEnvironment(state, state.app.environments.versionToRemove));
 export const environmentToInstall = state => (
     getEnvironment(state, state.app.environments.versionToInstall));
+
+export const environmentsByVersion = state => [...state.app.environments.environmentList.sort(compareBy('version'))];

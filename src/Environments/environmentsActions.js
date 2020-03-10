@@ -51,34 +51,16 @@ import { showErrorDialog } from '../launcherActions';
 
 import {
     selectEnvironment,
-    updateEnvironmentList,
     setEnvironmentInProcess,
     removeEnvironment,
     setVersionToInstall,
     showConfirmRemoveDialog,
     getLatestToolchain,
     setEnvironmentProgress,
+    addEnvironment,
 } from './environmentsReducer';
 
 const { net } = remote;
-
-const environmentUpdate = environment => (dispatch, getState) => {
-    if (!environment) {
-        throw new Error('No environment state provided');
-    }
-
-    const { environmentList } = getState().app.environments;
-    const envIndex = environmentList.findIndex(v => v.version === environment.version);
-    if (envIndex < 0) {
-        environmentList.push(environment);
-    } else {
-        environmentList[envIndex] = {
-            ...environmentList[envIndex],
-            ...environment,
-        };
-    }
-    dispatch(updateEnvironmentList(environmentList));
-};
 
 export const checkLocalEnvironments = () => dispatch => {
     const subDirs = fs.readdirSync(installDir(), { withFileTypes: true })
@@ -91,37 +73,36 @@ export const checkLocalEnvironments = () => dispatch => {
         .flat()
         .forEach(toolchain => {
             const toolchainDir = path.resolve(toolchain, '../..');
-            const envDirBasename = path.basename(path.resolve(toolchainDir, '..'));
+            const version = path.basename(path.resolve(toolchainDir, '..'));
             const isWestPresent = fs.existsSync(path.resolve(toolchainDir, '../.west/config'));
-            dispatch(environmentUpdate({
-                version: envDirBasename,
+            dispatch(addEnvironment({
+                version,
                 toolchainDir,
                 isWestPresent,
             }));
         });
 };
 
-export const downloadIndex = () => async dispatch => {
-    const { status, environments } = await new Promise(resolve => {
-        const request = net.request({ url: toolchainIndexUrl() });
-        request.setHeader('pragma', 'no-cache');
-        request.on('response', response => {
+export const downloadIndex = () => dispatch => new Promise((resolve, reject) => {
+    net.request({ url: toolchainIndexUrl() })
+        .setHeader('pragma', 'no-cache')
+        .on('response', response => {
             let result = '';
             response.on('end', () => {
-                resolve({ environments: JSON.parse(result), status: response.statusCode });
+                if (response.statusCode !== 200) {
+                    reject(new Error(`Unable to download ${toolchainIndexUrl()}. Got status code ${response.statusCode}`));
+                }
+
+                JSON.parse(result)
+                    .forEach(environment => dispatch(addEnvironment(environment)));
+                resolve();
             });
             response.on('data', buf => {
                 result += `${buf}`;
             });
-        }).end();
-    });
-
-    if (status !== 200) {
-        throw new Error(`Unable to download ${toolchainIndexUrl()}. Got status code ${status}`);
-    }
-
-    environments.forEach(environment => dispatch(environmentUpdate({ ...environment })));
-};
+        })
+        .end();
+});
 
 const downloadZip = environment => dispatch => new Promise((resolve, reject) => {
     const { name, sha512 } = getLatestToolchain(environment.toolchains);
@@ -173,7 +154,7 @@ export const unzip = (
     unzipper.on('extract', () => {
         const { environmentList } = getState().app.environments;
         const environment = environmentList.find(v => v.version === version);
-        dispatch(environmentUpdate({
+        dispatch(addEnvironment({ // FIXME: Introduce setToolChainDir
             ...environment,
             toolchainDir: dest,
         }));
@@ -193,13 +174,13 @@ export const cloneNcs = (dispatch, environment) => new Promise((resolve, reject)
 
     fse.removeSync(path.resolve(path.dirname(toolchainDir), '.west'));
 
-    dispatch(environmentUpdate({
+    dispatch(addEnvironment({ // FIXME: Introduce startCloning
         ...environment,
         isCloning: true,
     }));
     exec(`"${gitBash}" -c "${initScript}"`, error => {
         if (error) return reject(new Error(`Failed to clone NCS with error: ${error}`));
-        dispatch(environmentUpdate({
+        dispatch(addEnvironment({ // FIXME: Introduce finishCloning
             ...environment,
             isCloning: false,
         }));
@@ -247,7 +228,7 @@ export const remove = environment => async dispatch => {
     const { toolchainDir } = environment;
     const toBeDeletedDir = path.resolve(toolchainDir, '..', '..', 'toBeDeleted');
     dispatch(setEnvironmentInProcess(environment.version, true));
-    dispatch(environmentUpdate({
+    dispatch(addEnvironment({ // FIXME: Introduce startRemoving
         ...environment,
         isRemoving: true,
     }));
@@ -268,7 +249,8 @@ export const remove = environment => async dispatch => {
     }
 
     dispatch(setEnvironmentInProcess(environment.version, false));
-    dispatch(environmentUpdate({ ...environment, isRemoving: false }));
+    // FIXME: Introduce finishRemoving
+    dispatch(addEnvironment({ ...environment, isRemoving: false }));
     if (renameOfDirSuccessful) {
         dispatch(removeEnvironment(environment.version));
     }

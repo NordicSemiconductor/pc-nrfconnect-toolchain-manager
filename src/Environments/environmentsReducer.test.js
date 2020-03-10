@@ -34,7 +34,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { getLatestToolchain } from './environmentsReducer';
+import { combineReducers } from 'redux';
+import appReducer from '../reducers';
+import { getLatestToolchain, environmentsByVersion, addEnvironment } from './environmentsReducer';
 
 const older = {
     version: '20200217',
@@ -56,5 +58,29 @@ describe('getLatestToolchain', () => {
         getLatestToolchain(toolchains);
 
         expect(toolchains).toStrictEqual([older, younger]);
+    });
+});
+
+
+const reducer = combineReducers({ app: appReducer });
+describe('environmentsReducer', () => {
+    it('can add an environment', () => {
+        const anEnvironment = { version: 'v1.2.0' };
+
+        const withAnEnvironment = reducer(undefined, addEnvironment(anEnvironment));
+
+        expect(environmentsByVersion(withAnEnvironment)).toStrictEqual([anEnvironment]);
+    });
+    it('can update an environment', () => {
+        const anEnvironment = { version: 'v1.2.0' };
+        const anUpdatedEnvironment = { version: 'v1.2.0', aProp: 'a value' };
+
+        const withAnUpdatedEnvironment = [
+            addEnvironment(anEnvironment),
+            addEnvironment(anUpdatedEnvironment),
+        ].reduce(reducer, undefined);
+
+        expect(environmentsByVersion(withAnUpdatedEnvironment))
+            .toStrictEqual([anUpdatedEnvironment]);
     });
 });
