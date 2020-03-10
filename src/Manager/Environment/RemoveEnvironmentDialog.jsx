@@ -44,7 +44,7 @@ import { remove } from './environmentEffects';
 export default () => {
     const dispatch = useDispatch();
     const isVisible = useSelector(isRemoveDirDialogVisible);
-    const environment = useSelector(environmentToRemove);
+    const environment = useSelector(environmentToRemove) || {};
 
     return (
         <ConfirmationDialog
