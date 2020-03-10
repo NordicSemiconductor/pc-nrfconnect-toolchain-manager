@@ -64,24 +64,24 @@ export const checkLocalEnvironments = () => dispatch => {
 };
 
 export const downloadIndex = () => dispatch => new Promise((resolve, reject) => {
-    remote.net.request({ url: toolchainIndexUrl() })
-        .setHeader('pragma', 'no-cache')
-        .on('response', response => {
-            let result = '';
-            response.on('end', () => {
-                if (response.statusCode !== 200) {
-                    reject(new Error(`Unable to download ${toolchainIndexUrl()}. Got status code ${response.statusCode}`));
-                }
+    const request = remote.net.request({ url: toolchainIndexUrl() });
+    request.setHeader('pragma', 'no-cache');
+    request.on('response', response => {
+        let result = '';
+        response.on('end', () => {
+            if (response.statusCode !== 200) {
+                reject(new Error(`Unable to download ${toolchainIndexUrl()}. Got status code ${response.statusCode}`));
+            }
 
-                JSON.parse(result)
-                    .forEach(environment => dispatch(addEnvironment(environment)));
-                resolve();
-            });
-            response.on('data', buf => {
-                result += `${buf}`;
-            });
-        })
-        .end();
+            JSON.parse(result)
+                .forEach(environment => dispatch(addEnvironment(environment)));
+            resolve();
+        });
+        response.on('data', buf => {
+            result += `${buf}`;
+        });
+    });
+    request.end();
 });
 
 export const init = () => dispatch => {
