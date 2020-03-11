@@ -51,7 +51,6 @@ import { showErrorDialog } from '../../launcherActions';
 
 import {
     selectEnvironment,
-    removeEnvironment,
     setVersionToInstall,
     showConfirmRemoveDialog,
     getLatestToolchain,
@@ -65,6 +64,7 @@ import {
     finishCloning,
     startRemoving,
     finishRemoving,
+    removeEnvironment,
 } from './environmentReducer';
 import { checkLocalEnvironments } from '../managerEffects';
 
@@ -192,10 +192,10 @@ export const remove = ({ toolchainDir, version }) => async dispatch => {
             + 'environment locked, then try to remove it again.',
         ));
     }
-
-    dispatch(finishEnvironmentInProcess(version));
-    dispatch(finishRemoving(version));
     if (renameOfDirSuccessful) {
         dispatch(removeEnvironment(version));
     }
+
+    dispatch(finishEnvironmentInProcess(version));
+    dispatch(finishRemoving(version));
 };

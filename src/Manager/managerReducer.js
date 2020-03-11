@@ -35,7 +35,7 @@
  */
 
 import semver from 'semver';
-import environmentReducer from './Environment/environmentReducer';
+import environmentReducer, { REMOVE_ENVIRONMENT, isAvailableForDownload } from './Environment/environmentReducer';
 
 const byVersion = (a, b) => {
     try {
@@ -61,12 +61,6 @@ const ADD_ENVIRONMENT = 'ADD_ENVIRONMENT';
 export const addEnvironment = environment => ({
     type: ADD_ENVIRONMENT,
     environment,
-});
-
-const REMOVE_ENVIRONMENT = 'REMOVE_ENVIRONMENT';
-export const removeEnvironment = version => ({
-    type: REMOVE_ENVIRONMENT,
-    version,
 });
 
 const CLEAR_ENVIRONMENTS = 'CLEAR_ENVIRONMENTS';
@@ -105,17 +99,12 @@ const remove = (environments, version) => {
         return environments;
     }
 
-    const newEnvironments = { ...environments };
-    const environmentIsOnlyLocal = !environments[version].toolchains;
-    if (environmentIsOnlyLocal) {
-        delete newEnvironments[version];
-    } else {
-        newEnvironments[version] = {
-            ...newEnvironments[version],
-            toolchainDir: null,
-        };
+    if (isAvailableForDownload(environments[version])) {
+        return environments;
     }
 
+    const newEnvironments = { ...environments };
+    delete newEnvironments[version];
     return newEnvironments;
 };
 

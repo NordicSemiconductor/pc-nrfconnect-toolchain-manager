@@ -84,6 +84,12 @@ export const setEnvironmentProgress = (version, progress) => ({
     progress,
 });
 
+export const REMOVE_ENVIRONMENT = 'REMOVE_ENVIRONMENT';
+export const removeEnvironment = version => ({
+    type: REMOVE_ENVIRONMENT,
+    version,
+});
+
 export default (state, action) => {
     switch (action.type) {
         case START_ENVIRONMENT_IN_PROCESS: return { ...state, isInProcess: true };
@@ -94,6 +100,9 @@ export default (state, action) => {
         case FINISH_REMOVING: return { ...state, isRemoving: false };
         case SET_ENVIRONMENT_PROGRESS: return { ...state, progress: action.progress };
         case SET_TOOLCHAIN_DIR: return { ...state, toolchainDir: action.toolchainDir };
+        case REMOVE_ENVIRONMENT: return { ...state, toolchainDir: null };
         default: return state;
     }
 };
+
+export const isAvailableForDownload = environment => environment.toolchains != null;
