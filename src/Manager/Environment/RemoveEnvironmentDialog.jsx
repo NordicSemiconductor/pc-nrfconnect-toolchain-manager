@@ -40,6 +40,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ConfirmationDialog from '../../ConfirmationDialog/ConfirmationDialog';
 import { hideConfirmRemoveDialog, environmentToRemove, isRemoveDirDialogVisible } from '../managerReducer';
 import { remove } from './environmentEffects';
+import { version } from './environmentReducer';
 
 export default () => {
     const dispatch = useDispatch();
@@ -56,7 +57,7 @@ export default () => {
                 dispatch(remove(environment));
             }}
         >
-            Are you sure to remove <code>{environment.version}</code> environment?
+            Are you sure to remove <code>{version(environment)}</code> environment?
         </ConfirmationDialog>
     );
 };

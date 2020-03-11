@@ -35,15 +35,21 @@
  */
 
 import {
-    bool, number, shape, string,
+    arrayOf, bool, number, shape, string,
 } from 'prop-types';
 
 export default shape({
-    toolchainDir: string,
     version: string.isRequired,
+    toolchainDir: string,
+    toolchains: arrayOf(shape({
+        version: string.isRequired,
+        name: string.isRequired,
+        sha512: string.isRequired,
+    }).isRequired),
     progress: number,
-    isCloning: bool,
-    isRemoving: bool,
+    isInstallingToolchain: bool,
+    isCloningSdk: bool,
     isWestPresent: bool,
-    isInProcess: bool,
+    isInstalled: bool,
+    isRemoving: bool,
 });

@@ -40,19 +40,18 @@ import { useDispatch } from 'react-redux';
 import { confirmInstall } from './environmentEffects';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
+import { isOnlyAvailable, version } from './environmentReducer';
 
-const Install = ({ environment: { isInProcess, toolchainDir, version } }) => {
+const Install = ({ environment }) => {
     const dispatch = useDispatch();
 
-    const isInstalled = !!toolchainDir;
-    if (isInstalled) return null;
+    if (!isOnlyAvailable(environment)) return null;
 
     return (
         <Button
             icon="x-mdi-briefcase-download-outline"
-            onClick={() => confirmInstall(dispatch, version)}
+            onClick={() => confirmInstall(dispatch, version(environment))}
             label="Install"
-            disabled={isInProcess}
             variant="outline-primary"
         />
     );

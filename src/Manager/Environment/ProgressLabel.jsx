@@ -37,26 +37,11 @@
 import React from 'react';
 import Row from 'react-bootstrap/Row';
 import environmentPropType from './environmentPropType';
-
-const label = ({
-    toolchainDir,
-    progress,
-    isRemoving,
-    isCloning,
-}) => {
-    const isInstalled = !!toolchainDir;
-
-    switch (true) {
-        case isRemoving: return 'Removing...';
-        case isCloning: return 'Cloning SDK... please wait until the terminal window is closed!';
-        case progress && !isInstalled: return `Installing ${progress}%`;
-        default: return '';
-    }
-};
+import { progressLabel } from './environmentReducer';
 
 const ProgressLabel = ({ environment }) => (
     <Row noGutters className="text-muted small font-italic">
-        {label(environment)}
+        {progressLabel(environment)}
     </Row>
 );
 

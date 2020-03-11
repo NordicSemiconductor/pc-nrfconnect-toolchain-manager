@@ -41,25 +41,17 @@ import { gotoPage } from '../../launcherActions';
 import { selectEnvironment } from '../managerReducer';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
+import { isOnlyAvailable, version } from './environmentReducer';
 
-const ShowFirstSteps = ({
-    environment: {
-        toolchainDir,
-        version,
-        isRemoving,
-        isInProcess,
-    },
-}) => {
+const ShowFirstSteps = ({ environment }) => {
     const dispatch = useDispatch();
-
-    const isInstalled = !!toolchainDir;
-    if (!isInstalled && !(isInProcess && !isRemoving)) return null;
+    if (isOnlyAvailable(environment)) return null;
 
     return (
         <Button
             icon="x-mdi-dog-service"
             onClick={() => {
-                dispatch(selectEnvironment(version));
+                dispatch(selectEnvironment(version(environment)));
                 dispatch(gotoPage(2));
             }}
             label="First steps to build"

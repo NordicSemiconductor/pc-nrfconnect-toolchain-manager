@@ -42,6 +42,9 @@ import Button from 'react-bootstrap/Button';
 import BootstrapProgressBar from 'react-bootstrap/ProgressBar';
 
 import environmentPropType from './environmentPropType';
+import {
+    progress, isRemoving, isInstalled, isInstallingToolchain, isInProgress, isCloningSdk,
+} from './environmentReducer';
 
 const PrimaryButton = ({ label, className, ...props }) => (
     <Button className={`${className} toolchain-item-button ml-2`} variant="primary" {...props}>
@@ -54,33 +57,24 @@ PrimaryButton.propTypes = {
 };
 PrimaryButton.defaultProps = { className: '' };
 
-const ProgressBar = ({
-    environment: {
-        toolchainDir,
-        progress,
-        isRemoving,
-        isCloning,
-    },
-}) => {
-    const isInstalled = !!toolchainDir;
-
-    let progressPct = isRemoving ? 0 : progress;
-    progressPct = isInstalled ? 100 : (progressPct || 0);
-
-    let progressClassName = progressPct === 0 ? 'available' : 'installing';
-    progressClassName = isInstalled ? 'installed' : progressClassName;
-    progressClassName = isCloning ? 'installing' : progressClassName;
-    progressClassName = isRemoving ? 'removing' : progressClassName;
-
-    return (
-        <BootstrapProgressBar
-            now={progressPct}
-            striped={!isInstalled || isRemoving || isCloning}
-            animated={!isInstalled || isRemoving || isCloning}
-            className={progressClassName}
-        />
-    );
+const className = env => {
+    switch (true) {
+        case isRemoving(env): return 'removing';
+        case isInstallingToolchain(env): return 'installing';
+        case isCloningSdk(env): return 'installing';
+        case isInstalled(env): return 'installed';
+        default: return 'available';
+    }
 };
+
+const ProgressBar = ({ environment }) => (
+    <BootstrapProgressBar
+        now={progress(environment)}
+        striped={isInProgress(environment)}
+        animated={isInProgress(environment)}
+        className={className(environment)}
+    />
+);
 
 ProgressBar.propTypes = { environment: environmentPropType.isRequired };
 

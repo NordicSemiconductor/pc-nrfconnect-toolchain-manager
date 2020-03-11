@@ -39,25 +39,18 @@ import { openSegger } from './segger';
 import Button from './Button';
 
 import environmentPropType from './environmentPropType';
+import { canBeOpenedInSegger, isInProgress, toolchainDir } from './environmentReducer';
 
-const OpenIde = ({
-    environment: {
-        toolchainDir,
-        isRemoving,
-        isWestPresent,
-        isInProcess,
-    },
-}) => {
-    const isInstalled = !!toolchainDir;
-    if (!isInstalled || !isWestPresent || isRemoving) return null;
+const OpenIde = ({ environment }) => {
+    if (!canBeOpenedInSegger(environment)) return null;
 
     return (
         <Button
             icon="x-mdi-rocket"
-            onClick={() => openSegger(toolchainDir)}
+            onClick={() => openSegger(toolchainDir(environment))}
             label="Open IDE"
             title="Open SEGGER Embedded Studio"
-            disabled={isInProcess}
+            disabled={isInProgress(environment)}
             variant="primary"
         />
     );

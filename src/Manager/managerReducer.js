@@ -35,7 +35,7 @@
  */
 
 import semver from 'semver';
-import environmentReducer, { REMOVE_ENVIRONMENT, isAvailableForDownload } from './Environment/environmentReducer';
+import environmentReducer, { REMOVE_ENVIRONMENT, canBeDownloaded } from './Environment/environmentReducer';
 
 const byVersion = (a, b) => {
     try {
@@ -99,7 +99,8 @@ const remove = (environments, version) => {
         return environments;
     }
 
-    if (isAvailableForDownload(environments[version])) {
+    // If it still can be downloaded, we want to keep it in the list
+    if (canBeDownloaded(environments[version])) {
         return environments;
     }
 
