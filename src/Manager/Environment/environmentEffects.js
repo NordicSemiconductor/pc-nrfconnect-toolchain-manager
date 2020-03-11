@@ -161,6 +161,7 @@ export const install = environment => async dispatch => {
     if (isFirstInstall()) {
         dispatch(showFirstInstallDialog());
     }
+    setHasInstalledAnNcs();
 
     dispatch(startEnvironmentInProcess(version));
     fse.mkdirpSync(unzipDest);
@@ -168,7 +169,6 @@ export const install = environment => async dispatch => {
     await dispatch(unzip(version, zipLocation, unzipDest));
     await cloneNcs(dispatch, version, unzipDest);
 
-    setHasInstalledAnNcs();
     dispatch(checkLocalEnvironments());
     dispatch(finishEnvironmentInProcess(version));
 };
