@@ -44,8 +44,8 @@ export const isFirstInstall = () => store.get('isFirstInstall', true);
 export const setHasInstalledAnNcs = () => store.set('isFirstInstall', false);
 
 const defaultInstallDir = path.resolve(os.homedir(), 'ncs');
-export const installDir = () => store.get('installDir', defaultInstallDir);
-export const setInstallDir = dir => store.set('installDir', dir);
+export const persistedInstallDir = () => store.get('installDir', defaultInstallDir);
+export const setPersistedInstallDir = dir => store.set('installDir', dir);
 
 export const toolchainIndexUrl = () => store.get('toolchainIndexUrl', 'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json');
 export const toolchainUrl = name => `${path.dirname(toolchainIndexUrl())}/${name}`;

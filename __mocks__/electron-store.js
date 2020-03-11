@@ -1,1 +1,4 @@
-export default jest.fn();
+export default jest.fn(() => ({
+    get: () => undefined,
+    set: () => undefined,
+}));

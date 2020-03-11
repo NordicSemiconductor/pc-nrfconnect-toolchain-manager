@@ -40,7 +40,6 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Button from 'react-bootstrap/Button';
 
 import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
-import InstallDirDialog from '../InstallDir/InstallDirDialog';
 
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
@@ -75,7 +74,6 @@ export default props => {
                 </ButtonToolbar>
                 <Environments />
                 <FirstInstallDialog />
-                <InstallDirDialog justConfirm />
                 <RemoveEnvironmentDialog />
             </div>
         );

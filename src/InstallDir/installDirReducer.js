@@ -34,9 +34,25 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-const SHOW_INSTALL_DIR_DIALOG = 'SHOW_INSTALL_DIR_DIALOG';
-export const showInstallDirDialog = () => ({
-    type: SHOW_INSTALL_DIR_DIALOG,
+import { persistedInstallDir, setPersistedInstallDir } from '../persistentStore';
+
+const CONFIRM_DIR = Symbol('Confirm the install directory');
+const SET_DIR = Symbol('Set the install directory');
+
+const SET_INSTALL_DIR = 'SET_INSTALL_DIR';
+export const setInstallDir = dir => ({
+    type: SET_INSTALL_DIR,
+    dir,
+});
+
+const SHOW_CONFIRM_INSTALL_DIR_DIALOG = 'SHOW_CONFIRM_INSTALL_DIR_DIALOG';
+export const showConfirmInstallDirDialog = () => ({
+    type: SHOW_CONFIRM_INSTALL_DIR_DIALOG,
+});
+
+const SHOW_SET_INSTALL_DIR_DIALOG = 'SHOW_SET_INSTALL_DIR_DIALOG';
+export const showSetInstallDirDialog = () => ({
+    type: SHOW_SET_INSTALL_DIR_DIALOG,
 });
 
 const HIDE_INSTALL_DIR_DIALOG = 'HIDE_INSTALL_DIR_DIALOG';
@@ -45,15 +61,30 @@ export const hideInstallDirDialog = () => ({
 });
 
 const initialState = {
+    currentDir: persistedInstallDir(),
     isDialogVisible: false,
+    dialogFlavour: null,
 };
 
 export default (state = initialState, action) => {
     switch (action.type) {
-        case SHOW_INSTALL_DIR_DIALOG:
+        case SET_INSTALL_DIR:
+            setPersistedInstallDir(action.dir);
+            return {
+                ...state,
+                currentDir: action.dir,
+            };
+        case SHOW_CONFIRM_INSTALL_DIR_DIALOG:
             return {
                 ...state,
                 isDialogVisible: true,
+                dialogFlavour: CONFIRM_DIR,
+            };
+        case SHOW_SET_INSTALL_DIR_DIALOG:
+            return {
+                ...state,
+                isDialogVisible: true,
+                dialogFlavour: SET_DIR,
             };
         case HIDE_INSTALL_DIR_DIALOG:
             return {
@@ -65,4 +96,6 @@ export default (state = initialState, action) => {
     }
 };
 
+export const currentInstallDir = state => state.app.installDir.currentDir;
 export const isDialogVisible = state => state.app.installDir.isDialogVisible;
+export const isConfirmDirFlavour = state => state.app.installDir.dialogFlavour === CONFIRM_DIR;

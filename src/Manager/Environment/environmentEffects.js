@@ -43,10 +43,10 @@ import DecompressZip from 'decompress-zip';
 import { remote } from 'electron';
 import fse from 'fs-extra';
 import {
-    isFirstInstall, setHasInstalledAnNcs, toolchainUrl, installDir,
+    isFirstInstall, setHasInstalledAnNcs, toolchainUrl, persistedInstallDir,
 } from '../../persistentStore';
 import { showFirstInstallDialog } from '../../FirstInstall/firstInstallReducer';
-import { showInstallDirDialog } from '../../InstallDir/installDirReducer';
+import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
 import { showErrorDialog } from '../../launcherActions';
 
 import {
@@ -73,7 +73,7 @@ const downloadZip = environment => dispatch => new Promise((resolve, reject) => 
 
     const hash = createHash('sha512');
 
-    const downloadDir = path.resolve(installDir(), 'downloads');
+    const downloadDir = path.resolve(persistedInstallDir(), 'downloads');
     const zipLocation = path.resolve(downloadDir, name);
     fse.mkdirpSync(downloadDir);
     const writeStream = fs.createWriteStream(zipLocation);
@@ -145,7 +145,7 @@ export const cloneNcs = (dispatch, version, toolchainDir) => new Promise((resolv
 
 export const confirmInstall = (dispatch, version) => {
     dispatch(setVersionToInstall(version));
-    dispatch(showInstallDirDialog());
+    dispatch(showConfirmInstallDirDialog());
 };
 
 export const confirmRemove = (dispatch, version) => {
@@ -155,7 +155,7 @@ export const confirmRemove = (dispatch, version) => {
 export const install = environment => async dispatch => {
     const { version } = environment;
     const toolchainDir = 'toolchain';
-    const unzipDest = path.resolve(installDir(), version, toolchainDir);
+    const unzipDest = path.resolve(persistedInstallDir(), version, toolchainDir);
 
     dispatch(selectEnvironment(version));
     if (isFirstInstall()) {

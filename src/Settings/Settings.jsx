@@ -37,18 +37,17 @@
 import './style.scss';
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
 import NrfCard from '../NrfCard/NrfCard';
-import { installDir } from '../persistentStore';
-import InstallDirDialog from '../InstallDir/InstallDirDialog';
-import { showInstallDirDialog } from '../InstallDir/installDirReducer';
+import { showSetInstallDirDialog, currentInstallDir } from '../InstallDir/installDirReducer';
 
 export default props => {
     const dispatch = useDispatch();
+    const installDir = useSelector(currentInstallDir);
 
     return (
         <div {...props}>
@@ -60,7 +59,7 @@ export default props => {
                     <Col xs="auto">
                         <Button
                             variant="outline-primary"
-                            onClick={() => dispatch(showInstallDirDialog())}
+                            onClick={() => dispatch(showSetInstallDirDialog())}
                         >
                             Select directory
                         </Button>
@@ -69,12 +68,10 @@ export default props => {
 
                 <Row className="settings-info">
                     <Col className="text-muted">
-                        {installDir()}
+                        {installDir}
                     </Col>
                 </Row>
             </NrfCard>
-
-            <InstallDirDialog />
         </div>
     );
 };

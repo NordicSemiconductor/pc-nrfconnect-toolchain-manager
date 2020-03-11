@@ -35,52 +35,57 @@
  */
 
 import React from 'react';
-import { bool } from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { remote } from 'electron';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
-import { installDir, setInstallDir } from '../persistentStore';
 import { checkLocalEnvironments, downloadIndex } from '../Manager/managerEffects';
 import { install } from '../Manager/Environment/environmentEffects';
 import { clearEnvironments, environmentToInstall } from '../Manager/managerReducer';
-import { hideInstallDirDialog, isDialogVisible } from './installDirReducer';
+import {
+    hideInstallDirDialog, isDialogVisible, isConfirmDirFlavour, setInstallDir, currentInstallDir,
+} from './installDirReducer';
 
 
-const selectInstallDir = async dispatch => {
+const selectInstallDir = (dispatch, installDir, hideDialog) => {
     const selection = remote.dialog.showOpenDialog({
         title: 'Select installation directory',
-        defaultPath: installDir(),
+        defaultPath: installDir,
         properties: ['openDirectory', 'createDirectory'],
     });
     if (selection) {
-        setInstallDir(selection[0]);
+        dispatch(setInstallDir(selection[0]));
         dispatch(clearEnvironments());
         dispatch(checkLocalEnvironments());
-        await dispatch(downloadIndex());
-        dispatch(hideInstallDirDialog());
+        dispatch(downloadIndex());
+        if (hideDialog) { dispatch(hideInstallDirDialog()); }
     }
 };
 
-const InstallDirDialog = ({ justConfirm }) => {
+export default () => {
     const dispatch = useDispatch();
     const isVisible = useSelector(isDialogVisible);
     const environment = useSelector(environmentToInstall);
+    const isConfirmFlavour = useSelector(isConfirmDirFlavour);
+    const installDir = useSelector(currentInstallDir);
 
     const confirmDirDialogProps = {
         title: 'Confirm installation directory',
-        onConfirm: () => selectInstallDir(dispatch),
+        confirmLabel: 'Continue installation',
+        onConfirm: () => {
+            dispatch(install(environment));
+            dispatch(hideInstallDirDialog());
+        },
         onCancel: () => dispatch(hideInstallDirDialog()),
+        optionalLabel: 'Change directory',
+        onOptional: () => selectInstallDir(dispatch, installDir, false),
     };
     const changeDirDialogProps = {
         title: 'Change install directory',
-        confirmLabel: 'Continue installation',
-        optionalLabel: 'Change directory',
-        onConfirm: () => dispatch(install(environment)),
+        onConfirm: () => selectInstallDir(dispatch, installDir, true),
         onCancel: () => dispatch(hideInstallDirDialog()),
-        onOptional: () => dispatch(selectInstallDir()),
     };
-    const dialogProps = justConfirm ? confirmDirDialogProps : changeDirDialogProps;
+    const dialogProps = isConfirmFlavour ? confirmDirDialogProps : changeDirDialogProps;
 
     return (
         <ConfirmationDialog
@@ -88,7 +93,7 @@ const InstallDirDialog = ({ justConfirm }) => {
             {...dialogProps}
         >
             <p>
-                <code>{installDir()}</code> is your current installation base directory.
+                <code>{installDir}</code> is your current installation base directory.
             Any new installation will be a subdirectory here.
             </p>
             <p>
@@ -100,11 +105,3 @@ const InstallDirDialog = ({ justConfirm }) => {
         </ConfirmationDialog>
     );
 };
-InstallDirDialog.propTypes = {
-    justConfirm: bool,
-};
-InstallDirDialog.defaultProps = {
-    justConfirm: false,
-};
-
-export default InstallDirDialog;

@@ -44,6 +44,7 @@ import appReducer from './reducers';
 import Manager from './Manager/Manager';
 import Settings from './Settings/Settings';
 import FirstInstallInstructions from './FirstInstall/FirstInstallInstructions';
+import InstallDirDialog from './InstallDir/InstallDirDialog';
 
 const showIf = visible => (visible ? 'd-block' : 'd-none');
 
@@ -59,6 +60,8 @@ export default {
                 <Settings className={showIf(viewId === 1)} />
                 <FirstInstallInstructions className={showIf(viewId === 2)} />
             </div>
+
+            <InstallDirDialog />
         </MainView>
     ),
     decorateSidePanel: () => () => null,

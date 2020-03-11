@@ -39,16 +39,16 @@ import path from 'path';
 
 import { remote } from 'electron';
 import fse from 'fs-extra';
-import { toolchainIndexUrl, installDir } from '../persistentStore';
+import { toolchainIndexUrl, persistedInstallDir } from '../persistentStore';
 import { addEnvironment } from './managerReducer';
 
 export const checkLocalEnvironments = () => dispatch => {
-    const subDirs = fs.readdirSync(installDir(), { withFileTypes: true })
+    const subDirs = fs.readdirSync(persistedInstallDir(), { withFileTypes: true })
         .filter(dirEnt => dirEnt.isDirectory())
-        .map(({ name }) => path.resolve(installDir(), name));
-    subDirs.map(subDir => fs.readdirSync(path.resolve(installDir(), subDir))
+        .map(({ name }) => path.resolve(persistedInstallDir(), name));
+    subDirs.map(subDir => fs.readdirSync(path.resolve(persistedInstallDir(), subDir))
         .filter(d => !d.endsWith('.zip'))
-        .map(dir => path.resolve(installDir(), subDir, dir, 'ncsmgr/manifest.env'))
+        .map(dir => path.resolve(persistedInstallDir(), subDir, dir, 'ncsmgr/manifest.env'))
         .filter(fs.existsSync))
         .flat()
         .forEach(toolchain => {
@@ -63,29 +63,29 @@ export const checkLocalEnvironments = () => dispatch => {
         });
 };
 
-export const downloadIndex = () => dispatch => new Promise((resolve, reject) => {
+export const downloadIndex = () => dispatch => {
     const request = remote.net.request({ url: toolchainIndexUrl() });
     request.setHeader('pragma', 'no-cache');
     request.on('response', response => {
         let result = '';
         response.on('end', () => {
             if (response.statusCode !== 200) {
-                reject(new Error(`Unable to download ${toolchainIndexUrl()}. Got status code ${response.statusCode}`));
+                console.error(`Unable to download ${toolchainIndexUrl()}. Got status code ${response.statusCode}`);
+                return;
             }
 
             JSON.parse(result)
                 .forEach(environment => dispatch(addEnvironment(environment)));
-            resolve();
         });
         response.on('data', buf => {
             result += `${buf}`;
         });
     });
     request.end();
-});
+};
 
 export const init = () => dispatch => {
-    fse.mkdirpSync(installDir());
+    fse.mkdirpSync(persistedInstallDir());
     dispatch(checkLocalEnvironments());
     dispatch(downloadIndex());
 };
