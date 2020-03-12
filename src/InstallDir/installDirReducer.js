@@ -35,6 +35,7 @@
  */
 
 import { persistedInstallDir, setPersistedInstallDir } from '../persistentStore';
+import { getEnvironment } from '../Manager/managerReducer';
 
 const CONFIRM_DIR = Symbol('Confirm the install directory');
 const SET_DIR = Symbol('Set the install directory');
@@ -46,8 +47,9 @@ export const setInstallDir = dir => ({
 });
 
 const SHOW_CONFIRM_INSTALL_DIR_DIALOG = 'SHOW_CONFIRM_INSTALL_DIR_DIALOG';
-export const showConfirmInstallDirDialog = () => ({
+export const showConfirmInstallDirDialog = versionToInstall => ({
     type: SHOW_CONFIRM_INSTALL_DIR_DIALOG,
+    versionToInstall,
 });
 
 const SHOW_SET_INSTALL_DIR_DIALOG = 'SHOW_SET_INSTALL_DIR_DIALOG';
@@ -64,6 +66,7 @@ const initialState = {
     currentDir: persistedInstallDir(),
     isDialogVisible: false,
     dialogFlavour: null,
+    versionToInstall: null,
 };
 
 export default (state = initialState, action) => {
@@ -79,6 +82,7 @@ export default (state = initialState, action) => {
                 ...state,
                 isDialogVisible: true,
                 dialogFlavour: CONFIRM_DIR,
+                versionToInstall: action.versionToInstall,
             };
         case SHOW_SET_INSTALL_DIR_DIALOG:
             return {
@@ -99,3 +103,5 @@ export default (state = initialState, action) => {
 export const currentInstallDir = state => state.app.installDir.currentDir;
 export const isDialogVisible = state => state.app.installDir.isDialogVisible;
 export const isConfirmDirFlavour = state => state.app.installDir.dialogFlavour === CONFIRM_DIR;
+export const environmentToInstall = state => (
+    getEnvironment(state, state.app.installDir.versionToInstall));

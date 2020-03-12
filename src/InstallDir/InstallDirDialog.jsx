@@ -39,13 +39,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { remote } from 'electron';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
-import { checkLocalEnvironments, downloadIndex } from '../Manager/managerEffects';
+import { init } from '../Manager/managerEffects';
 import { install } from '../Manager/Environment/environmentEffects';
-import { clearEnvironments, environmentToInstall } from '../Manager/managerReducer';
+import { clearEnvironments } from '../Manager/managerReducer';
 import {
-    hideInstallDirDialog, isDialogVisible, isConfirmDirFlavour, setInstallDir, currentInstallDir,
+    hideInstallDirDialog,
+    isDialogVisible,
+    isConfirmDirFlavour,
+    setInstallDir,
+    currentInstallDir,
+    environmentToInstall,
 } from './installDirReducer';
-
 
 const selectInstallDir = (dispatch, installDir, hideDialog) => {
     const selection = remote.dialog.showOpenDialog({
@@ -56,8 +60,7 @@ const selectInstallDir = (dispatch, installDir, hideDialog) => {
     if (selection) {
         dispatch(setInstallDir(selection[0]));
         dispatch(clearEnvironments());
-        dispatch(checkLocalEnvironments());
-        dispatch(downloadIndex());
+        init(dispatch);
         if (hideDialog) { dispatch(hideInstallDirDialog()); }
     }
 };
@@ -73,8 +76,8 @@ export default () => {
         title: 'Confirm installation directory',
         confirmLabel: 'Continue installation',
         onConfirm: () => {
-            dispatch(install(environment));
             dispatch(hideInstallDirDialog());
+            install(dispatch, environment);
         },
         onCancel: () => dispatch(hideInstallDirDialog()),
         optionalLabel: 'Change directory',

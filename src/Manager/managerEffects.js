@@ -39,31 +39,27 @@ import path from 'path';
 
 import { remote } from 'electron';
 import fse from 'fs-extra';
-import { toolchainIndexUrl, persistedInstallDir } from '../persistentStore';
+import { toolchainIndexUrl, persistedInstallDir as installDir } from '../persistentStore';
 import { addEnvironment } from './managerReducer';
 
-export const checkLocalEnvironments = () => dispatch => {
-    const subDirs = fs.readdirSync(persistedInstallDir(), { withFileTypes: true })
+export const detectLocallyExistingEnvironments = dispatch => {
+    fs.readdirSync(installDir(), { withFileTypes: true })
         .filter(dirEnt => dirEnt.isDirectory())
-        .map(({ name }) => path.resolve(persistedInstallDir(), name));
-    subDirs.map(subDir => fs.readdirSync(path.resolve(persistedInstallDir(), subDir))
-        .filter(d => !d.endsWith('.zip'))
-        .map(dir => path.resolve(persistedInstallDir(), subDir, dir, 'ncsmgr/manifest.env'))
-        .filter(fs.existsSync))
-        .flat()
-        .forEach(toolchain => {
-            const toolchainDir = path.resolve(toolchain, '../..');
-            const version = path.basename(path.resolve(toolchainDir, '..'));
-            const isWestPresent = fs.existsSync(path.resolve(toolchainDir, '../.west/config'));
+        .map(({ name }) => ({
+            version: name,
+            toolchainDir: path.resolve(installDir(), name, 'toolchain'),
+        }))
+        .filter(({ toolchainDir }) => fs.existsSync(path.resolve(toolchainDir, 'ncsmgr/manifest.env')))
+        .forEach(({ version, toolchainDir }) => {
             dispatch(addEnvironment({
                 version,
                 toolchainDir,
-                isWestPresent,
+                isWestPresent: fs.existsSync(path.resolve(toolchainDir, '../.west/config')),
             }));
         });
 };
 
-export const downloadIndex = () => dispatch => {
+const downloadIndex = dispatch => {
     const request = remote.net.request({ url: toolchainIndexUrl() });
     request.setHeader('pragma', 'no-cache');
     request.on('response', response => {
@@ -84,8 +80,8 @@ export const downloadIndex = () => dispatch => {
     request.end();
 };
 
-export const init = () => dispatch => {
-    fse.mkdirpSync(persistedInstallDir());
-    dispatch(checkLocalEnvironments());
-    dispatch(downloadIndex());
+export const init = dispatch => {
+    fse.mkdirpSync(installDir());
+    detectLocallyExistingEnvironments(dispatch);
+    downloadIndex(dispatch);
 };

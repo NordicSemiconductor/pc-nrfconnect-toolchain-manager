@@ -61,7 +61,7 @@ const Environments = () => {
 
 export default props => {
     const dispatch = useDispatch();
-    useEffect(() => dispatch(init()), []);
+    useEffect(() => init(dispatch), [dispatch]);
 
     const isSupportedPlatform = process.platform === 'win32';
     if (isSupportedPlatform) {

@@ -34,7 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { exec } from 'child_process';
+import { execSync } from 'child_process';
 import { createHash } from 'crypto';
 import fs from 'fs';
 import path from 'path';
@@ -43,16 +43,13 @@ import DecompressZip from 'decompress-zip';
 import { remote } from 'electron';
 import fse from 'fs-extra';
 import {
-    isFirstInstall, setHasInstalledAnNcs, toolchainUrl, persistedInstallDir,
+    isFirstInstall, setHasInstalledAnNcs, toolchainUrl, persistedInstallDir as installDir,
 } from '../../persistentStore';
 import { showFirstInstallDialog } from '../../FirstInstall/firstInstallReducer';
-import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
 import { showErrorDialog } from '../../launcherActions';
 
 import {
     selectEnvironment,
-    setVersionToInstall,
-    showConfirmRemoveDialog,
     getLatestToolchain,
 } from '../managerReducer';
 import {
@@ -65,14 +62,14 @@ import {
     finishRemoving,
     removeEnvironment,
 } from './environmentReducer';
-import { checkLocalEnvironments } from '../managerEffects';
+import { detectLocallyExistingEnvironments } from '../managerEffects';
 
-const downloadZip = (version, toolchain) => dispatch => new Promise((resolve, reject) => {
+const downloadZip = (toolchain, reportProgress) => new Promise((resolve, reject) => {
     const { name, sha512 } = toolchain;
 
     const hash = createHash('sha512');
 
-    const downloadDir = path.resolve(persistedInstallDir(), 'downloads');
+    const downloadDir = path.resolve(installDir(), 'downloads');
     const zipLocation = path.resolve(downloadDir, name);
     fse.mkdirpSync(downloadDir);
     const writeStream = fs.createWriteStream(zipLocation);
@@ -87,8 +84,7 @@ const downloadZip = (version, toolchain) => dispatch => new Promise((resolve, re
             writeStream.write(data);
 
             currentLength += data.length;
-            const progress = Math.round(currentLength / totalLength * 49);
-            dispatch(setProgress(version, progress));
+            reportProgress(currentLength, totalLength, 1);
         });
         response.on('end', () => {
             writeStream.end(() => {
@@ -105,64 +101,44 @@ const downloadZip = (version, toolchain) => dispatch => new Promise((resolve, re
         .end();
 });
 
-const unzip = (
-    version,
-    src,
-    dest,
-) => dispatch => new Promise(resolve => {
+const unzip = (src, dest, reportProgress) => new Promise(resolve => {
     new DecompressZip(src)
-        .on('error', err => {
-            console.error('Caught an error', err);
-        })
-        .on('extract', () => {
-            resolve();
-        })
-        .on('progress', (fileIndex, fileCount) => {
-            const progress = Math.round((fileIndex) / fileCount * 50) + 49;
-            dispatch(setProgress(version, progress));
-        })
+        .on('error', err => console.error('Caught an error', err))
+        .on('extract', () => resolve())
+        .on('progress', (fileIndex, fileCount) => reportProgress(fileIndex, fileCount, 2))
         .extract({ path: dest });
 });
 
-export const cloneNcs = (dispatch, version, toolchainDir) => new Promise((resolve, reject) => {
-    const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
-    const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
+const installToolchain = async (dispatch, version, toolchain, toolchainDir) => {
+    const reportProgress = (...args) => dispatch(setProgress(version, ...args));
 
-    fse.removeSync(path.resolve(path.dirname(toolchainDir), '.west'));
-
-    dispatch(startCloningSdk(version));
-    exec(`"${gitBash}" -c "${initScript}"`, error => {
-        if (error) {
-            reject(new Error(`Failed to clone NCS with error: ${error}`));
-        } else {
-            dispatch(finishCloningSdk(version));
-            resolve();
-        }
-    });
-});
-
-export const confirmInstall = (dispatch, version) => {
-    dispatch(setVersionToInstall(version));
-    dispatch(showConfirmInstallDirDialog());
-};
-
-export const confirmRemove = (dispatch, version) => {
-    dispatch(showConfirmRemoveDialog(version));
-};
-
-export const installToolchain = (version, toolchain, toolchainDir) => async dispatch => {
     dispatch(startInstallToolchain(version));
 
     fse.mkdirpSync(toolchainDir);
-    const zipLocation = await dispatch(downloadZip(version, toolchain));
-    await dispatch(unzip(version, zipLocation, toolchainDir));
+    const zipLocation = await downloadZip(toolchain, reportProgress);
+    await unzip(zipLocation, toolchainDir, reportProgress);
 
     dispatch(finishInstallToolchain(version, toolchainDir));
 };
 
-export const install = ({ version, toolchains }) => async dispatch => {
+export const cloneNcs = (dispatch, version, toolchainDir) => {
+    dispatch(startCloningSdk(version));
+
+    fse.removeSync(path.resolve(path.dirname(toolchainDir), '.west'));
+    try {
+        const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
+        const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
+        execSync(`"${gitBash}" -c "${initScript}"`);
+    } catch (error) {
+        console.error(`Failed to clone NCS with error: ${error}`);
+    }
+
+    dispatch(finishCloningSdk(version));
+};
+
+export const install = async (dispatch, { version, toolchains }) => {
     const toolchain = getLatestToolchain(toolchains);
-    const toolchainDir = path.resolve(persistedInstallDir(), version, 'toolchain');
+    const toolchainDir = path.resolve(installDir(), version, 'toolchain');
 
     dispatch(selectEnvironment(version));
     if (isFirstInstall()) {
@@ -170,23 +146,21 @@ export const install = ({ version, toolchains }) => async dispatch => {
     }
     setHasInstalledAnNcs();
 
-    await dispatch(installToolchain(version, toolchain, toolchainDir));
-
-    await cloneNcs(dispatch, version, toolchainDir);
-
-    dispatch(checkLocalEnvironments());
+    await installToolchain(dispatch, version, toolchain, toolchainDir);
+    cloneNcs(dispatch, version, toolchainDir);
+    detectLocallyExistingEnvironments(dispatch);
 };
 
-export const remove = ({ toolchainDir, version }) => async dispatch => {
+export const remove = (dispatch, { toolchainDir, version }) => {
     const toBeDeletedDir = path.resolve(toolchainDir, '..', '..', 'toBeDeleted');
     dispatch(startRemoving(version));
 
     const srcDir = path.dirname(toolchainDir);
     let renameOfDirSuccessful = false;
     try {
-        await fse.move(srcDir, toBeDeletedDir, { overwrite: true });
+        fse.moveSync(srcDir, toBeDeletedDir, { overwrite: true });
         renameOfDirSuccessful = true;
-        await fse.remove(toBeDeletedDir);
+        fse.removeSync(toBeDeletedDir);
     } catch (error) {
         const [,, message] = `${error}`.split(/[:,] /);
         dispatch(showErrorDialog(

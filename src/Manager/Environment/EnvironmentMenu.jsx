@@ -43,8 +43,10 @@ import path from 'path';
 import { shell } from 'electron';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import { cloneNcs, confirmInstall, confirmRemove } from './environmentEffects';
+import { cloneNcs } from './environmentEffects';
 import { isInstalled, toolchainDir, version } from './environmentReducer';
+import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
+import { showConfirmRemoveDialog } from '../managerReducer';
 
 import environmentPropType from './environmentPropType';
 
@@ -78,9 +80,9 @@ const EnvironmentMenu = ({ environment }) => {
             <Dropdown.Item onClick={() => openFolder(toolchainDir(environment))}>Open toolchain folder</Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={() => cloneNcs(dispatch, version(environment), toolchainDir(environment))}>Update SDK</Dropdown.Item>
-            <Dropdown.Item onClick={() => confirmInstall(dispatch, version(environment))}>Update toolchain</Dropdown.Item>
+            <Dropdown.Item onClick={() => dispatch(showConfirmInstallDirDialog(version(environment)))}>Update toolchain</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => confirmRemove(dispatch, version(environment))}>Remove</Dropdown.Item>
+            <Dropdown.Item onClick={() => dispatch(showConfirmRemoveDialog(version(environment)))}>Remove</Dropdown.Item>
             {/* eslint-enable max-len */}
         </DropdownButton>
     );

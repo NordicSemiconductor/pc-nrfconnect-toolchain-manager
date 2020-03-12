@@ -37,7 +37,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { confirmInstall } from './environmentEffects';
+import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { isOnlyAvailable, version } from './environmentReducer';
@@ -50,7 +50,7 @@ const Install = ({ environment }) => {
     return (
         <Button
             icon="x-mdi-briefcase-download-outline"
-            onClick={() => confirmInstall(dispatch, version(environment))}
+            onClick={() => dispatch(showConfirmInstallDirDialog(version(environment)))}
             label="Install"
             variant="outline-primary"
         />

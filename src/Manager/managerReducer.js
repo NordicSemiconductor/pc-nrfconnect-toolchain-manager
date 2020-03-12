@@ -68,12 +68,6 @@ export const clearEnvironments = () => ({
     type: CLEAR_ENVIRONMENTS,
 });
 
-const SET_VERSION_TO_INSTALL = 'SET_VERSION_TO_INSTALL';
-export const setVersionToInstall = version => ({
-    type: SET_VERSION_TO_INSTALL,
-    version,
-});
-
 const SHOW_CONFIRM_REMOVE_DIALOG = 'SHOW_CONFIRM_REMOVE_DIALOG';
 export const showConfirmRemoveDialog = version => ({
     type: SHOW_CONFIRM_REMOVE_DIALOG,
@@ -117,8 +111,6 @@ const managerReducer = (state, action) => {
             return { ...state, environments: {} };
         case REMOVE_ENVIRONMENT:
             return { ...state, environments: remove(state.environments, action.version) };
-        case SET_VERSION_TO_INSTALL:
-            return { ...state, versionToInstall: action.version };
         case SHOW_CONFIRM_REMOVE_DIALOG:
             return { ...state, isRemoveDirDialogVisible: true, versionToRemove: action.version };
         case HIDE_CONFIRM_REMOVE_DIALOG:
@@ -147,7 +139,6 @@ const maybeCallEnvironmentReducer = (state, action) => {
 const initialState = {
     environments: {},
     isRemoveDirDialogVisible: false,
-    versionToInstall: null,
     versionToRemove: null,
     selectedVersion: null,
 };
@@ -161,10 +152,10 @@ export const getLatestToolchain = toolchains => sortedByVersion(toolchains).pop(
 
 export const isRemoveDirDialogVisible = state => state.app.manager.isRemoveDirDialogVisible;
 
+export const getEnvironment = (state, version) => state.app.manager.environments[version];
+
 export const environmentToRemove = state => (
-    state.app.manager.environments[state.app.manager.versionToRemove]);
-export const environmentToInstall = state => (
-    state.app.manager.environments[state.app.manager.versionToInstall]);
+    getEnvironment(state, state.app.manager.versionToRemove));
 
 export const selectedVersion = state => state.app.manager.selectedVersion;
 
