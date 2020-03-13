@@ -40,7 +40,8 @@ import path from 'path';
 import { remote } from 'electron';
 import fse from 'fs-extra';
 import { toolchainIndexUrl, persistedInstallDir as installDir } from '../persistentStore';
-import { addEnvironment } from './managerReducer';
+import { isWestPresent } from './Environment/environmentEffects';
+import { addEnvironment, addLocallyExistingEnvironment } from './managerReducer';
 
 const detectLocallyExistingEnvironments = dispatch => {
     fs.readdirSync(installDir(), { withFileTypes: true })
@@ -51,11 +52,11 @@ const detectLocallyExistingEnvironments = dispatch => {
         }))
         .filter(({ toolchainDir }) => fs.existsSync(path.resolve(toolchainDir, 'ncsmgr/manifest.env')))
         .forEach(({ version, toolchainDir }) => {
-            dispatch(addEnvironment({
+            dispatch(addLocallyExistingEnvironment(
                 version,
                 toolchainDir,
-                isWestPresent: fs.existsSync(path.resolve(toolchainDir, '../.west/config')),
-            }));
+                isWestPresent(toolchainDir),
+            ));
         });
 };
 

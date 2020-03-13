@@ -62,6 +62,15 @@ export const addEnvironment = environment => ({
     type: ADD_ENVIRONMENT,
     environment,
 });
+export const addLocallyExistingEnvironment = (version, toolchainDir, isWestPresent) => ({
+    type: ADD_ENVIRONMENT,
+    environment: {
+        version,
+        toolchainDir,
+        isWestPresent,
+        isInstalled: true,
+    },
+});
 
 const CLEAR_ENVIRONMENTS = 'CLEAR_ENVIRONMENTS';
 export const clearEnvironments = () => ({
