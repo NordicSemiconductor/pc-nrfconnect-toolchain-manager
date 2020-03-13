@@ -64,24 +64,24 @@ export default props => {
     useEffect(() => init(dispatch), [dispatch]);
 
     const isSupportedPlatform = process.platform === 'win32';
-    if (isSupportedPlatform) {
+    if (!isSupportedPlatform) {
         return (
             <div {...props}>
-                <ButtonToolbar hidden>
-                    <Button className="mdi mdi-briefcase-plus-outline">
-                        Install package
-                    </Button>
-                </ButtonToolbar>
-                <Environments />
-                <FirstInstallDialog />
-                <RemoveEnvironmentDialog />
+                <OtherPlatformInstructions />
             </div>
         );
     }
 
     return (
         <div {...props}>
-            <OtherPlatformInstructions />
+            <ButtonToolbar hidden>
+                <Button className="mdi mdi-briefcase-plus-outline">
+                        Install package
+                </Button>
+            </ButtonToolbar>
+            <Environments />
+            <FirstInstallDialog />
+            <RemoveEnvironmentDialog />
         </div>
     );
 };
