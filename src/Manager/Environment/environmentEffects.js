@@ -62,7 +62,6 @@ import {
     finishRemoving,
     removeEnvironment,
 } from './environmentReducer';
-import { detectLocallyExistingEnvironments } from '../managerEffects';
 
 const downloadZip = (toolchain, reportProgress) => new Promise((resolve, reject) => {
     const { name, sha512 } = toolchain;
@@ -121,6 +120,8 @@ const installToolchain = async (dispatch, version, toolchain, toolchainDir) => {
     dispatch(finishInstallToolchain(version, toolchainDir));
 };
 
+export const isWestPresent = toolchainDir => fs.existsSync(path.resolve(toolchainDir, '../.west/config'));
+
 export const cloneNcs = (dispatch, version, toolchainDir) => {
     dispatch(startCloningSdk(version));
 
@@ -133,7 +134,7 @@ export const cloneNcs = (dispatch, version, toolchainDir) => {
         console.error(`Failed to clone NCS with error: ${error}`);
     }
 
-    dispatch(finishCloningSdk(version));
+    dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
 };
 
 export const install = async (dispatch, { version, toolchains }) => {
@@ -148,7 +149,6 @@ export const install = async (dispatch, { version, toolchains }) => {
 
     await installToolchain(dispatch, version, toolchain, toolchainDir);
     cloneNcs(dispatch, version, toolchainDir);
-    detectLocallyExistingEnvironments(dispatch);
 };
 
 export const remove = (dispatch, { toolchainDir, version }) => {

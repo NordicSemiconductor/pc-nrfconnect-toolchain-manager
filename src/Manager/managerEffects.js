@@ -42,7 +42,7 @@ import fse from 'fs-extra';
 import { toolchainIndexUrl, persistedInstallDir as installDir } from '../persistentStore';
 import { addEnvironment } from './managerReducer';
 
-export const detectLocallyExistingEnvironments = dispatch => {
+const detectLocallyExistingEnvironments = dispatch => {
     fs.readdirSync(installDir(), { withFileTypes: true })
         .filter(dirEnt => dirEnt.isDirectory())
         .map(({ name }) => ({

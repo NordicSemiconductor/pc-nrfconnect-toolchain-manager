@@ -54,9 +54,10 @@ export const startCloningSdk = version => ({
 });
 
 const FINISH_CLONING_SDK = 'FINISH_CLONING_SDK';
-export const finishCloningSdk = version => ({
+export const finishCloningSdk = (version, isWestPresent) => ({
     type: FINISH_CLONING_SDK,
     version,
+    isWestPresent,
 });
 
 const START_REMOVING = 'START_REMOVING';
@@ -94,7 +95,8 @@ export default (state, action) => {
             isInstalled: true,
         };
         case START_CLONING_SDK: return { ...state, isCloningSdk: true };
-        case FINISH_CLONING_SDK: return { ...state, isCloningSdk: false };
+        case FINISH_CLONING_SDK: return (
+            { ...state, isCloningSdk: false, isWestPresent: action.isWestPresent });
         case START_REMOVING: return { ...state, isRemoving: true };
         case FINISH_REMOVING: return { ...state, isRemoving: false };
         case SET_PROGRESS: return { ...state, progress: action.progress };
