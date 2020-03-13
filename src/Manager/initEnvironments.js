@@ -81,7 +81,7 @@ const downloadIndex = dispatch => {
     request.end();
 };
 
-export const init = dispatch => {
+export default dispatch => {
     fse.mkdirpSync(installDir());
     detectLocallyExistingEnvironments(dispatch);
     downloadIndex(dispatch);

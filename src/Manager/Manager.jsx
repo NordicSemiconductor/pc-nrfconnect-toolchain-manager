@@ -43,7 +43,7 @@ import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
-import { init } from './managerEffects';
+import initEnvironments from './initEnvironments';
 import OtherPlatformInstructions from './OtherPlatformInstructions';
 import { environmentsByVersion } from './managerReducer';
 
@@ -61,7 +61,7 @@ const Environments = () => {
 
 export default props => {
     const dispatch = useDispatch();
-    useEffect(() => init(dispatch), [dispatch]);
+    useEffect(() => initEnvironments(dispatch), [dispatch]);
 
     const isSupportedPlatform = process.platform === 'win32';
     if (!isSupportedPlatform) {
