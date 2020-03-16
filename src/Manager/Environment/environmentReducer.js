@@ -73,10 +73,10 @@ export const finishRemoving = version => ({
 });
 
 const SET_PROGRESS = 'SET_PROGRESS';
-export const setProgress = (version, currentValue, maxValue, half) => ({
+export const setProgress = (version, progress) => ({
     type: SET_PROGRESS,
     version,
-    progress: Math.round(currentValue / maxValue * 50) + (half === 2 ? 50 : 0),
+    progress,
 });
 
 export const REMOVE_ENVIRONMENT = 'REMOVE_ENVIRONMENT';

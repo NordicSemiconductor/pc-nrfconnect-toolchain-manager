@@ -51,6 +51,7 @@ import { showErrorDialog } from '../../launcherActions';
 import {
     selectEnvironment,
     getLatestToolchain,
+    getEnvironment,
 } from '../managerReducer';
 import {
     startInstallToolchain,
@@ -61,6 +62,7 @@ import {
     startRemoving,
     finishRemoving,
     removeEnvironment,
+    progress,
 } from './environmentReducer';
 
 const downloadZip = (toolchain, reportProgress) => new Promise((resolve, reject) => {
@@ -108,8 +110,18 @@ const unzip = (src, dest, reportProgress) => new Promise(resolve => {
         .extract({ path: dest });
 });
 
+const setProgressIfChanged = (version, currentValue, maxValue, half) => (dispatch, getState) => {
+    const prevProgress = progress(getEnvironment(getState(), version));
+    const newProgress = Math.round(currentValue / maxValue * 50) + (half === 2 ? 50 : 0);
+
+    if (newProgress !== prevProgress) {
+        dispatch(setProgress(version, newProgress));
+    }
+};
+
 const installToolchain = async (dispatch, version, toolchain, toolchainDir) => {
-    const reportProgress = (...args) => dispatch(setProgress(version, ...args));
+    const reportProgress = (currentValue, maxValue, half) => (
+        dispatch(setProgressIfChanged(version, currentValue, maxValue, half)));
 
     dispatch(startInstallToolchain(version));
 
