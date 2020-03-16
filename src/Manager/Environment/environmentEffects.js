@@ -163,16 +163,16 @@ export const install = async (dispatch, { version, toolchains }) => {
     cloneNcs(dispatch, version, toolchainDir);
 };
 
-export const remove = (dispatch, { toolchainDir, version }) => {
+export const remove = async (dispatch, { toolchainDir, version }) => {
     const toBeDeletedDir = path.resolve(toolchainDir, '..', '..', 'toBeDeleted');
     dispatch(startRemoving(version));
 
     const srcDir = path.dirname(toolchainDir);
     let renameOfDirSuccessful = false;
     try {
-        fse.moveSync(srcDir, toBeDeletedDir, { overwrite: true });
+        await fse.move(srcDir, toBeDeletedDir, { overwrite: true });
         renameOfDirSuccessful = true;
-        fse.removeSync(toBeDeletedDir);
+        await fse.remove(toBeDeletedDir);
     } catch (error) {
         const [,, message] = `${error}`.split(/[:,] /);
         dispatch(showErrorDialog(

@@ -122,7 +122,7 @@ export const canBeOpenedInSegger = env => env.isWestPresent;
 
 export const progress = env => {
     switch (true) {
-        case isRemoving(env): return 0;
+        case isRemoving(env): return 100;
         case isCloningSdk(env): return 100;
         case isInstalled(env): return 100;
         default: return env.progress || 0;
