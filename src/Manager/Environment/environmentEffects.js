@@ -34,7 +34,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { execSync } from 'child_process';
+import { promisify } from 'util';
+import { exec } from 'child_process';
 import { createHash } from 'crypto';
 import fs from 'fs';
 import path from 'path';
@@ -134,14 +135,14 @@ const installToolchain = async (dispatch, version, toolchain, toolchainDir) => {
 
 export const isWestPresent = toolchainDir => fs.existsSync(path.resolve(toolchainDir, '../.west/config'));
 
-export const cloneNcs = (dispatch, version, toolchainDir) => {
+export const cloneNcs = async (dispatch, version, toolchainDir) => {
     dispatch(startCloningSdk(version));
 
-    fse.removeSync(path.resolve(path.dirname(toolchainDir), '.west'));
+    await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
     try {
         const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
         const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
-        execSync(`"${gitBash}" -c "${initScript}"`);
+        await promisify(exec)(`"${gitBash}" -c "${initScript}"`);
     } catch (error) {
         console.error(`Failed to clone NCS with error: ${error}`);
     }
@@ -160,7 +161,7 @@ export const install = async (dispatch, { version, toolchains }) => {
     setHasInstalledAnNcs();
 
     await installToolchain(dispatch, version, toolchain, toolchainDir);
-    cloneNcs(dispatch, version, toolchainDir);
+    await cloneNcs(dispatch, version, toolchainDir);
 };
 
 export const remove = async (dispatch, { toolchainDir, version }) => {
