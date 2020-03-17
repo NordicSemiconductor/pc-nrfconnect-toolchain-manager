@@ -100,7 +100,7 @@ export default (state, action) => {
         case START_REMOVING: return { ...state, isRemoving: true };
         case FINISH_REMOVING: return { ...state, isRemoving: false };
         case SET_PROGRESS: return { ...state, progress: action.progress };
-        case REMOVE_ENVIRONMENT: return { ...state, isInstalled: false };
+        case REMOVE_ENVIRONMENT: return { ...state, isInstalled: false, isWestPresent: false };
         default: return state;
     }
 };
