@@ -36,26 +36,13 @@
 
 import './style.scss';
 
-import { string } from 'prop-types';
 import React from 'react';
-import Button from 'react-bootstrap/Button';
 import BootstrapProgressBar from 'react-bootstrap/ProgressBar';
 
 import environmentPropType from './environmentPropType';
 import {
     progress, isRemoving, isInstalled, isInstallingToolchain, isInProgress, isCloningSdk,
 } from './environmentReducer';
-
-const PrimaryButton = ({ label, className, ...props }) => (
-    <Button className={`${className} toolchain-item-button ml-2`} variant="primary" {...props}>
-        {label}
-    </Button>
-);
-PrimaryButton.propTypes = {
-    label: string.isRequired,
-    className: string,
-};
-PrimaryButton.defaultProps = { className: '' };
 
 const className = env => {
     switch (true) {
