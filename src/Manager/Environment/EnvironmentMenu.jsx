@@ -44,7 +44,7 @@ import { shell } from 'electron';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { cloneNcs } from './environmentEffects';
-import { isInstalled, toolchainDir, version } from './environmentReducer';
+import { isInstalled, toolchainDir as getToolchainDir, version as getVersion } from './environmentReducer';
 import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
 import { showConfirmRemoveDialog } from '../managerReducer';
 
@@ -64,6 +64,9 @@ const openFolder = folder => {
 
 const EnvironmentMenu = ({ environment }) => {
     const dispatch = useDispatch();
+    const toolchainDir = getToolchainDir(environment);
+    const version = getVersion(environment);
+
     return (
         <DropdownButton
             className="ml-2"
@@ -73,16 +76,16 @@ const EnvironmentMenu = ({ environment }) => {
             disabled={!isInstalled(environment)}
         >
             {/* eslint-disable max-len */}
-            <Dropdown.Item onClick={() => openBash(toolchainDir(environment))}>Open bash</Dropdown.Item>
-            <Dropdown.Item onClick={() => openCmd(toolchainDir(environment))}>Open command prompt</Dropdown.Item>
+            <Dropdown.Item onClick={() => openBash(toolchainDir)}>Open bash</Dropdown.Item>
+            <Dropdown.Item onClick={() => openCmd(toolchainDir)}>Open command prompt</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => openFolder(path.dirname(toolchainDir(environment)))}>Open SDK folder</Dropdown.Item>
-            <Dropdown.Item onClick={() => openFolder(toolchainDir(environment))}>Open toolchain folder</Dropdown.Item>
+            <Dropdown.Item onClick={() => openFolder(path.dirname(toolchainDir))}>Open SDK folder</Dropdown.Item>
+            <Dropdown.Item onClick={() => openFolder(toolchainDir)}>Open toolchain folder</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => cloneNcs(dispatch, version(environment), toolchainDir(environment))}>Update SDK</Dropdown.Item>
-            <Dropdown.Item onClick={() => dispatch(showConfirmInstallDirDialog(version(environment)))}>Update toolchain</Dropdown.Item>
+            <Dropdown.Item onClick={() => cloneNcs(dispatch, version, toolchainDir)}>Update SDK</Dropdown.Item>
+            <Dropdown.Item onClick={() => dispatch(showConfirmInstallDirDialog(version))}>Update toolchain</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => dispatch(showConfirmRemoveDialog(version(environment)))}>Remove</Dropdown.Item>
+            <Dropdown.Item onClick={() => dispatch(showConfirmRemoveDialog(version))}>Remove</Dropdown.Item>
             {/* eslint-enable max-len */}
         </DropdownButton>
     );
