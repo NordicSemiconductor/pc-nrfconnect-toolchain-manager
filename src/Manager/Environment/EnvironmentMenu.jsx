@@ -50,16 +50,16 @@ import { showConfirmRemoveDialog } from '../managerReducer';
 
 import environmentPropType from './environmentPropType';
 
-const openBash = folder => {
-    exec(`"${path.resolve(folder, 'git-bash.exe')}"`);
+const openBash = directory => {
+    exec(`"${path.resolve(directory, 'git-bash.exe')}"`);
 };
 
-const openCmd = folder => {
-    exec(`start cmd /k "${path.resolve(folder, 'git-cmd.cmd')}"`);
+const openCmd = directory => {
+    exec(`start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`);
 };
 
-const openFolder = folder => {
-    shell.openItem(folder);
+const openDirectory = directory => {
+    shell.openItem(directory);
 };
 
 const EnvironmentMenu = ({ environment }) => {
@@ -79,8 +79,8 @@ const EnvironmentMenu = ({ environment }) => {
             <Dropdown.Item onClick={() => openBash(toolchainDir)}>Open bash</Dropdown.Item>
             <Dropdown.Item onClick={() => openCmd(toolchainDir)}>Open command prompt</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => openFolder(path.dirname(toolchainDir))}>Open SDK folder</Dropdown.Item>
-            <Dropdown.Item onClick={() => openFolder(toolchainDir)}>Open toolchain folder</Dropdown.Item>
+            <Dropdown.Item onClick={() => openDirectory(path.dirname(toolchainDir))}>Open SDK directory</Dropdown.Item>
+            <Dropdown.Item onClick={() => openDirectory(toolchainDir)}>Open toolchain directory</Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={() => cloneNcs(dispatch, version, toolchainDir)}>Update SDK</Dropdown.Item>
             <Dropdown.Item onClick={() => dispatch(showConfirmInstallDirDialog(version))}>Update toolchain</Dropdown.Item>
