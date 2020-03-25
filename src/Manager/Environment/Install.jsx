@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,49 +34,29 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { homedir } from 'os';
-import { resolve } from 'path';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 
-import {
-    UPDATE_INSTALL_DIR,
-    SHOW_INSTALL_DIR_DIALOG,
-    HIDE_INSTALL_DIR_DIALOG,
-} from './settingsActions';
+import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
+import Button from './Button';
+import environmentPropType from './environmentPropType';
+import { isOnlyAvailable, version } from './environmentReducer';
 
-import store from '../util/persistentStore';
+const Install = ({ environment }) => {
+    const dispatch = useDispatch();
 
-export const defaultInstallDir = resolve(homedir(), 'ncs');
+    if (!isOnlyAvailable(environment)) return null;
 
-if (!store.get('installDir')) {
-    store.set('installDir', defaultInstallDir);
-}
-
-const initialState = {
-    isInstallDirDialogVisible: false,
-    installDir: store.get('installDir', defaultInstallDir),
-    toolchainIndexUrl: store.get('toolchainIndexUrl',
-        'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json'),
+    return (
+        <Button
+            icon="x-mdi-briefcase-download-outline"
+            onClick={() => dispatch(showConfirmInstallDirDialog(version(environment)))}
+            label="Install"
+            variant="outline-primary"
+        />
+    );
 };
 
-const reducer = (state = initialState, { type, installDir }) => {
-    switch (type) {
-        case UPDATE_INSTALL_DIR:
-            store.set('installDir', installDir);
-            return {
-                ...state,
-                installDir,
-            };
-        case SHOW_INSTALL_DIR_DIALOG: return {
-            ...state,
-            isInstallDirDialogVisible: true,
-        };
-        case HIDE_INSTALL_DIR_DIALOG: return {
-            ...state,
-            isInstallDirDialogVisible: false,
-        };
-        default:
-            return state;
-    }
-};
+Install.propTypes = { environment: environmentPropType.isRequired };
 
-export default reducer;
+export default Install;

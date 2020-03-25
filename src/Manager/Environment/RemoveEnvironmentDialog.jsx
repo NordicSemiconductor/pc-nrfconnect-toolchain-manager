@@ -34,44 +34,30 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-    cloneNcs,
-    confirmInstall,
-    openBash,
-    openCmd,
-    openFolder,
-    openToolchainFolder,
-    confirmRemove,
-    selectEnvironmentAction,
-    gotoPage,
-} from '../managerActions';
-import { openSegger } from '../segger';
-import EnvironmentItem from '../EnvironmentItem/EnvironmentItem';
+import ConfirmationDialog from '../../ConfirmationDialog/ConfirmationDialog';
+import { hideConfirmRemoveDialog, environmentToRemove, isRemoveDirDialogVisible } from '../managerReducer';
+import { remove } from './environmentEffects';
+import { version } from './environmentReducer';
 
 export default () => {
     const dispatch = useDispatch();
-    const environmentList = useSelector(state => state.app.manager.environmentList);
+    const isVisible = useSelector(isRemoveDirDialogVisible);
+    const environment = useSelector(environmentToRemove) || {};
 
-    return environmentList.map(environment => (
-        <EnvironmentItem
-            key={environment.version}
-            environment={environment}
-            cloneNcs={() => dispatch(cloneNcs(environment.version))}
-            install={() => dispatch(confirmInstall(environment.version))}
-            open={() => dispatch(openSegger(environment.version))}
-            openBash={() => dispatch(openBash(environment.version))}
-            openCmd={() => dispatch(openCmd(environment.version))}
-            openFolder={() => dispatch(openFolder(environment.version))}
-            openToolchainFolder={() => dispatch(openToolchainFolder(environment.version))}
-            removeEnvironment={() => dispatch(confirmRemove(environment.version))}
-            gotoGuide={() => {
-                dispatch(selectEnvironmentAction(environment.version));
-                dispatch(gotoPage(2));
+    return (
+        <ConfirmationDialog
+            isVisible={isVisible}
+            title="Remove environment"
+            onCancel={() => dispatch(hideConfirmRemoveDialog())}
+            onConfirm={() => {
+                dispatch(hideConfirmRemoveDialog());
+                remove(dispatch, environment);
             }}
-        />
-    ));
+        >
+            Are you sure to remove <code>{version(environment)}</code> environment?
+        </ConfirmationDialog>
+    );
 };

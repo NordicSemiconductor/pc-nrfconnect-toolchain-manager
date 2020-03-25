@@ -34,15 +34,20 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { combineReducers } from 'redux';
-import firstInstall from './FirstInstall/firstInstallReducer';
-import installDir from './InstallDir/installDirReducer';
-import manager from './Manager/managerReducer';
+import './style.scss';
 
-const rootReducer = combineReducers({
-    firstInstall,
-    installDir,
-    manager,
-});
+import React from 'react';
+import { string } from 'prop-types';
+import BootstrapButton from 'react-bootstrap/Button';
 
-export default rootReducer;
+const Button = ({ icon, label, ...props }) => (
+    <BootstrapButton className={`mdi ${icon} toolchain-item-button ml-2`} {...props}>
+        {label}
+    </BootstrapButton>
+);
+Button.propTypes = {
+    icon: string.isRequired,
+    label: string.isRequired,
+};
+
+export default Button;

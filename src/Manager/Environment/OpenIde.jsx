@@ -34,15 +34,28 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { combineReducers } from 'redux';
-import firstInstall from './FirstInstall/firstInstallReducer';
-import installDir from './InstallDir/installDirReducer';
-import manager from './Manager/managerReducer';
+import React from 'react';
+import { openSegger } from './segger';
+import Button from './Button';
 
-const rootReducer = combineReducers({
-    firstInstall,
-    installDir,
-    manager,
-});
+import environmentPropType from './environmentPropType';
+import { canBeOpenedInSegger, isInProgress, toolchainDir } from './environmentReducer';
 
-export default rootReducer;
+const OpenIde = ({ environment }) => {
+    if (!canBeOpenedInSegger(environment)) return null;
+
+    return (
+        <Button
+            icon="x-mdi-rocket"
+            onClick={() => openSegger(toolchainDir(environment))}
+            label="Open IDE"
+            title="Open SEGGER Embedded Studio"
+            disabled={isInProgress(environment)}
+            variant="primary"
+        />
+    );
+};
+
+OpenIde.propTypes = { environment: environmentPropType.isRequired };
+
+export default OpenIde;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,38 +34,44 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { remote } from 'electron';
-import {
-    checkLocalEnvironments,
-    clearEnvironmentListAction,
-    downloadIndex,
-} from '../ManagerView/managerActions';
+import './style.scss';
 
-export const UPDATE_INSTALL_DIR = 'UPDATE_INSTALL_DIR';
-export const SHOW_INSTALL_DIR_DIALOG = 'SHOW_INSTALL_DIR_DIALOG';
-export const HIDE_INSTALL_DIR_DIALOG = 'HIDE_INSTALL_DIR_DIALOG';
-export const SHOW_INSTALL_CONFIRM_DIALOG = 'SHOW_INSTALL_CONFIRM_DIALOG';
-export const HIDE_INSTALL_CONFIRM_DIALOG = 'HIDE_INSTALL_CONFIRM_DIALOG';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
-const updateInstallDirAction = installDir => ({
-    type: UPDATE_INSTALL_DIR,
-    installDir,
-});
+import NrfCard from '../NrfCard/NrfCard';
+import { showSetInstallDirDialog, currentInstallDir } from '../InstallDir/installDirReducer';
 
-export const showInstallDirDialog = () => ({ type: 'SHOW_INSTALL_DIR_DIALOG' });
-export const hideInstallDirDialog = () => ({ type: 'HIDE_INSTALL_DIR_DIALOG' });
+export default props => {
+    const dispatch = useDispatch();
+    const installDir = useSelector(currentInstallDir);
 
-export const selectInstallDir = () => async (dispatch, getState) => {
-    const selection = remote.dialog.showOpenDialog({
-        title: 'Select installation directory',
-        defaultPath: getState().app.installDir,
-        properties: ['openDirectory', 'createDirectory'],
-    });
-    if (selection) {
-        dispatch(updateInstallDirAction(selection[0]));
-        dispatch(clearEnvironmentListAction([]));
-        dispatch(checkLocalEnvironments());
-        await dispatch(downloadIndex());
-        dispatch(hideInstallDirDialog());
-    }
+    return (
+        <div {...props}>
+            <NrfCard>
+                <Row className="settings-info">
+                    <Col className="h4">
+                        Installation directory
+                    </Col>
+                    <Col xs="auto">
+                        <Button
+                            variant="outline-primary"
+                            onClick={() => dispatch(showSetInstallDirDialog())}
+                        >
+                            Select directory
+                        </Button>
+                    </Col>
+                </Row>
+
+                <Row className="settings-info">
+                    <Col className="text-muted">
+                        {installDir}
+                    </Col>
+                </Row>
+            </NrfCard>
+        </div>
+    );
 };

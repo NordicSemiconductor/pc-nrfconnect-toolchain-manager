@@ -34,15 +34,14 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 import React from 'react';
 import { arrayOf, node } from 'prop-types';
 import Card from 'react-bootstrap/Card';
 
 import './nrfCard.scss';
 
-const NrfCard = ({ children, ...props }) => (
-    <Card body className="nrf-card" {...props}>
+const NrfCard = ({ children }) => (
+    <Card body className="nrf-card">
         {children}
     </Card>
 );

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,15 +34,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { combineReducers } from 'redux';
-import firstInstall from './FirstInstall/firstInstallReducer';
-import installDir from './InstallDir/installDirReducer';
-import manager from './Manager/managerReducer';
+// The actions in this file are handled by the reducers in pc-nrfconnect-launcher or
+// pc-nrfconnect-shared, so we instead of defining them here, we really should import
+// them from there. But before we can correct this, we need to upgrade to a new version.
 
-const rootReducer = combineReducers({
-    firstInstall,
-    installDir,
-    manager,
-});
-
-export default rootReducer;
+export const gotoPage = id => ({ type: 'NAV_MENU_ITEM_SELECTED', id });
+export const showErrorDialog = message => ({ type: 'ERROR_DIALOG_SHOW', message });

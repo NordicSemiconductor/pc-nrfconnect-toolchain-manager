@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,15 +34,18 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { combineReducers } from 'redux';
-import firstInstall from './FirstInstall/firstInstallReducer';
-import installDir from './InstallDir/installDirReducer';
-import manager from './Manager/managerReducer';
+import Store from 'electron-store';
+import path from 'path';
+import os from 'os';
 
-const rootReducer = combineReducers({
-    firstInstall,
-    installDir,
-    manager,
-});
+const store = new Store({ name: 'pc-nrfconnect-toolchain-manager' });
 
-export default rootReducer;
+export const isFirstInstall = () => store.get('isFirstInstall', true);
+export const setHasInstalledAnNcs = () => store.set('isFirstInstall', false);
+
+const defaultInstallDir = path.resolve(os.homedir(), 'ncs');
+export const persistedInstallDir = () => store.get('installDir', defaultInstallDir);
+export const setPersistedInstallDir = dir => store.set('installDir', dir);
+
+export const toolchainIndexUrl = () => store.get('toolchainIndexUrl', 'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json');
+export const toolchainUrl = name => `${path.dirname(toolchainIndexUrl())}/${name}`;

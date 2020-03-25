@@ -34,50 +34,22 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
+import {
+    arrayOf, bool, number, shape, string,
+} from 'prop-types';
 
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-
-import NrfCard from '../NrfCard/NrfCard';
-import InstallDirDialog from './InstallDirDialog';
-import { showInstallDirDialog } from './settingsActions';
-
-export default props => {
-    const dispatch = useDispatch();
-    const {
-        installDir,
-        isInstallDirDialogVisible,
-    } = useSelector(state => state.app.settings);
-
-    return (
-        <div {...props}>
-            <NrfCard>
-                <Row className="settings-info">
-                    <Col className="h4">
-                        Installation directory
-                    </Col>
-                    <Col xs="auto">
-                        <Button
-                            variant="outline-primary"
-                            onClick={() => dispatch(showInstallDirDialog())}
-                        >
-                            Select directory
-                        </Button>
-                    </Col>
-                </Row>
-
-                <Row className="settings-info">
-                    <Col className="text-muted">
-                        {installDir}
-                    </Col>
-                </Row>
-            </NrfCard>
-
-            <InstallDirDialog isVisible={isInstallDirDialogVisible} />
-        </div>
-    );
-};
+export default shape({
+    version: string.isRequired,
+    toolchainDir: string,
+    toolchains: arrayOf(shape({
+        version: string.isRequired,
+        name: string.isRequired,
+        sha512: string.isRequired,
+    }).isRequired),
+    progress: number,
+    isInstallingToolchain: bool,
+    isCloningSdk: bool,
+    isWestPresent: bool,
+    isInstalled: bool,
+    isRemoving: bool,
+});

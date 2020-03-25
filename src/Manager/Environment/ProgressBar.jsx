@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,9 +34,35 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Allows jest to test files that import nrfconnect/core.
+import './style.scss';
 
-module.exports = {
-    logger: {},
-    getAppDir: () => {},
+import React from 'react';
+import BootstrapProgressBar from 'react-bootstrap/ProgressBar';
+
+import environmentPropType from './environmentPropType';
+import {
+    progress, isRemoving, isInstalled, isInstallingToolchain, isInProgress, isCloningSdk,
+} from './environmentReducer';
+
+const className = env => {
+    switch (true) {
+        case isRemoving(env): return 'removing';
+        case isInstallingToolchain(env): return 'installing';
+        case isCloningSdk(env): return 'installing';
+        case isInstalled(env): return 'installed';
+        default: return 'available';
+    }
 };
+
+const ProgressBar = ({ environment }) => (
+    <BootstrapProgressBar
+        now={progress(environment)}
+        striped={isInProgress(environment)}
+        animated={isInProgress(environment)}
+        className={className(environment)}
+    />
+);
+
+ProgressBar.propTypes = { environment: environmentPropType.isRequired };
+
+export default ProgressBar;

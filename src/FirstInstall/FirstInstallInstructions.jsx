@@ -44,15 +44,16 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 
-import { gotoPage } from '../ManagerView/managerActions';
+import { gotoPage } from '../launcherActions';
+import { selectedVersion } from '../Manager/managerReducer';
+import { currentInstallDir } from '../InstallDir/installDirReducer';
 
 const Ie = () => (<>{' '}<i>i.e.</i>{' '}</>);
 
 const FirstInstallInstructions = props => {
     const dispatch = useDispatch();
-    const { installDir } = useSelector(({ app }) => app.settings);
-    const { selectedVersion } = useSelector(({ app }) => app.manager);
-    const version = selectedVersion || '<version>';
+    const version = useSelector(selectedVersion) || '<version>';
+    const installDir = useSelector(currentInstallDir);
     const zephyrDir = [installDir, version, 'zephyr'].join(sep);
     const sampleDir = [zephyrDir, 'samples', 'basic'].join(sep);
     const homeDir = os.homedir();
@@ -81,9 +82,9 @@ const FirstInstallInstructions = props => {
                     </p>
                     <ol>
                         <li hidden>
-                            Go to <code>{sampleDir}</code> and copy one of the folders
+                            Go to <code>{sampleDir}</code> and copy one of the directories
                             (we suggest the classic <code>{suggestedExample}</code>) to
-                            a folder of your liking, e.g. <code>{homeDir}</code>.
+                            a directory of your liking, e.g. <code>{homeDir}</code>.
                         </li>
                         <li>Start SEGGER Embedded Studio by clicking <b>Open IDE</b></li>
                         <li>Select <code>File → Open nRF Connect SDK Project…</code></li>
@@ -108,7 +109,7 @@ const FirstInstallInstructions = props => {
                                     <Ie /><code>{boardName}</code>
                                 </li>
                                 <li>
-                                    <b>Build Directory</b> - the folder in which to run the build
+                                    <b>Build Directory</b> - the directory in which to run the build
                                     (automatically filled based on the board name, but you can
                                     specify a different directory)<br />
                                     <Ie /><code>{suggestExampleBuildDir}</code>

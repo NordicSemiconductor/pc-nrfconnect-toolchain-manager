@@ -39,70 +39,49 @@ import { useDispatch, useSelector } from 'react-redux';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Button from 'react-bootstrap/Button';
 
-import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
-import InstallDirDialog from '../SettingsView/InstallDirDialog';
-import { selectInstallDir } from '../SettingsView/settingsActions';
-import EnvironmentList from './EnvironmentList/EnvironmentList';
-import {
-    hideConfirmInstallDialog,
-    hideConfirmRemoveDialog,
-    init,
-    installLatestToolchain,
-    removeEnvironment,
-} from './managerActions';
+
+import Environment from './Environment/Environment';
+import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
+import initEnvironments from './initEnvironments';
 import OtherPlatformInstructions from './OtherPlatformInstructions';
+import { environmentsByVersion } from './managerReducer';
+
+const Environments = () => {
+    const environments = useSelector(environmentsByVersion);
+
+    return (
+        <div>
+            {environments.map(environment => (
+                <Environment key={environment.version} environment={environment} />
+            ))}
+        </div>
+    );
+};
 
 export default props => {
     const dispatch = useDispatch();
-    useEffect(() => dispatch(init()), []);
-    const {
-        isInstallDirDialogVisible,
-        isRemoveDirDialogVisible,
-        environmentVersionToInstall,
-        environmentVersionToRemove,
-    } = useSelector(state => state.app.manager);
+    useEffect(() => initEnvironments(dispatch), [dispatch]);
 
     const isSupportedPlatform = process.platform === 'win32';
-    if (isSupportedPlatform) {
+    if (!isSupportedPlatform) {
         return (
             <div {...props}>
-                <ButtonToolbar hidden>
-                    <Button className="mdi mdi-briefcase-plus-outline">
-                        Install package
-                    </Button>
-                </ButtonToolbar>
-                <div>
-                    <EnvironmentList />
-                </div>
-                <FirstInstallDialog />
-                <InstallDirDialog
-                    isVisible={isInstallDirDialogVisible}
-                    title="Confirm installation directory"
-                    confirmLabel="Continue installation"
-                    optionalLabel="Change directory"
-                    onConfirm={() => dispatch(installLatestToolchain(environmentVersionToInstall))}
-                    onCancel={() => dispatch(hideConfirmInstallDialog())}
-                    onOptional={() => dispatch(selectInstallDir())}
-                />
-                <ConfirmationDialog
-                    title="Remove environment"
-                    onCancel={() => dispatch(hideConfirmRemoveDialog())}
-                    onConfirm={() => {
-                        dispatch(hideConfirmRemoveDialog());
-                        dispatch(removeEnvironment(environmentVersionToRemove));
-                    }}
-                    isVisible={isRemoveDirDialogVisible}
-                >
-                    Are you sure to remove <code>{environmentVersionToRemove}</code> environment?
-                </ConfirmationDialog>
+                <OtherPlatformInstructions />
             </div>
         );
     }
 
     return (
         <div {...props}>
-            <OtherPlatformInstructions />
+            <ButtonToolbar hidden>
+                <Button className="mdi mdi-briefcase-plus-outline">
+                        Install package
+                </Button>
+            </ButtonToolbar>
+            <Environments />
+            <FirstInstallDialog />
+            <RemoveEnvironmentDialog />
         </div>
     );
 };

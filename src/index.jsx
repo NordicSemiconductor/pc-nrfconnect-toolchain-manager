@@ -41,9 +41,10 @@ import './style.scss';
 import React from 'react';
 
 import appReducer from './reducers';
-import ManagerView from './ManagerView/ManagerView';
-import SettingsView from './SettingsView/SettingsView';
+import Manager from './Manager/Manager';
+import Settings from './Settings/Settings';
 import FirstInstallInstructions from './FirstInstall/FirstInstallInstructions';
+import InstallDirDialog from './InstallDir/InstallDirDialog';
 
 const showIf = visible => (visible ? 'd-block' : 'd-none');
 
@@ -55,10 +56,12 @@ export default {
     decorateMainView: MainView => ({ viewId }) => (
         <MainView cssClass="main-view">
             <div className="main-view-scroll">
-                <ManagerView className={showIf(viewId === 0)} />
-                <SettingsView className={showIf(viewId === 1)} />
+                <Manager className={showIf(viewId === 0)} />
+                <Settings className={showIf(viewId === 1)} />
                 <FirstInstallInstructions className={showIf(viewId === 2)} />
             </div>
+
+            <InstallDirDialog />
         </MainView>
     ),
     decorateSidePanel: () => () => null,

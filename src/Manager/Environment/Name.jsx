@@ -34,32 +34,18 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import './style.scss';
+
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
-import { selectInstallDir, hideInstallDirDialog } from './settingsActions';
+import Row from 'react-bootstrap/Row';
+import environmentPropType from './environmentPropType';
 
-export default props => {
-    const dispatch = useDispatch();
-    const installDir = useSelector(state => state.app.settings.installDir);
+const Name = ({ environment: { version } }) => (
+    <Row noGutters className="toolchain-item-info h4 mb-0 pt-3">
+            nRF Connect SDK {version}
+    </Row>
+);
 
-    return (
-        <ConfirmationDialog
-            title="Change install directory"
-            onConfirm={() => dispatch(selectInstallDir())}
-            onCancel={() => dispatch(hideInstallDirDialog())}
-            {...props}
-        >
-            <p>
-                <code>{installDir}</code> is your current installation base directory.
-                Any new installation will be a subdirectory here.
-            </p>
-            <p>
-                When you change the installation directory, SDK environments installed in the old
-                directory will not be shown in the list anymore. They will not be deleted, so
-                you can still find them on the disc and changing back to the old directory will
-                show them in the manager again.
-            </p>
-        </ConfirmationDialog>
-    );
-};
+Name.propTypes = { environment: environmentPropType.isRequired };
+
+export default Name;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,12 +34,33 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import React from 'react';
+import { useDispatch } from 'react-redux';
 
-import Store from 'electron-store';
+import { gotoPage } from '../../launcherActions';
+import { selectEnvironment } from '../managerReducer';
+import Button from './Button';
+import environmentPropType from './environmentPropType';
+import { isOnlyAvailable, version } from './environmentReducer';
 
-const store = new Store({ name: 'pc-nrfconnect-toolchain-manager' });
+const ShowFirstSteps = ({ environment }) => {
+    const dispatch = useDispatch();
+    if (isOnlyAvailable(environment)) return null;
 
-export const isFirstInstall = () => store.get('isFirstInstall', true);
-export const setHasInstalledAnNcs = () => store.set('isFirstInstall', false);
+    return (
+        <Button
+            icon="x-mdi-dog-service"
+            onClick={() => {
+                dispatch(selectEnvironment(version(environment)));
+                dispatch(gotoPage(2));
+            }}
+            label="First steps to build"
+            title="Show how to build a sample project"
+            variant="outline-primary"
+        />
+    );
+};
 
-export default store;
+ShowFirstSteps.propTypes = { environment: environmentPropType.isRequired };
+
+export default ShowFirstSteps;

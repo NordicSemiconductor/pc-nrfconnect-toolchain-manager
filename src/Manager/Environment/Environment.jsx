@@ -34,15 +34,47 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { combineReducers } from 'redux';
-import firstInstall from './FirstInstall/firstInstallReducer';
-import installDir from './InstallDir/installDirReducer';
-import manager from './Manager/managerReducer';
+import './style.scss';
 
-const rootReducer = combineReducers({
-    firstInstall,
-    installDir,
-    manager,
-});
+import React from 'react';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import NrfCard from '../../NrfCard/NrfCard';
 
-export default rootReducer;
+import Name from './Name';
+import ProgressLabel from './ProgressLabel';
+import ProgressBar from './ProgressBar';
+import ShowFirstSteps from './ShowFirstSteps';
+import Install from './Install';
+import OpenIde from './OpenIde';
+import EnvironmentMenu from './EnvironmentMenu';
+
+import environmentPropType from './environmentPropType';
+
+const Environment = ({ environment }) => (
+    <NrfCard>
+        <Row noGutters>
+            <Col>
+                <Name environment={environment} />
+                <ProgressLabel environment={environment} />
+            </Col>
+            <Col
+                as={ButtonToolbar}
+                xs="auto ml-auto"
+                className="d-flex align-items-center my-3 pl-3 wide-btns"
+            >
+                <ShowFirstSteps environment={environment} />
+                <Install environment={environment} />
+                <OpenIde environment={environment} />
+
+                <EnvironmentMenu environment={environment} />
+            </Col>
+        </Row>
+        <ProgressBar environment={environment} />
+    </NrfCard>
+);
+
+Environment.propTypes = { environment: environmentPropType.isRequired };
+
+export default Environment;

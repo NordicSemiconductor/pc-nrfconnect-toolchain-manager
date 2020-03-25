@@ -34,15 +34,17 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { combineReducers } from 'redux';
-import firstInstall from './FirstInstall/firstInstallReducer';
-import installDir from './InstallDir/installDirReducer';
-import manager from './Manager/managerReducer';
+import React from 'react';
+import Row from 'react-bootstrap/Row';
+import environmentPropType from './environmentPropType';
+import { progressLabel } from './environmentReducer';
 
-const rootReducer = combineReducers({
-    firstInstall,
-    installDir,
-    manager,
-});
+const ProgressLabel = ({ environment }) => (
+    <Row noGutters className="text-muted small font-italic">
+        {progressLabel(environment)}
+    </Row>
+);
 
-export default rootReducer;
+ProgressLabel.propTypes = { environment: environmentPropType.isRequired };
+
+export default ProgressLabel;
