@@ -135,13 +135,15 @@ const installToolchain = async (dispatch, version, toolchain, toolchainDir) => {
 
 export const isWestPresent = toolchainDir => fs.existsSync(path.resolve(toolchainDir, '../.west/config'));
 
-export const cloneNcs = async (dispatch, version, toolchainDir) => {
+export const cloneNcs = async (dispatch, version, toolchainDir, justUpdate) => {
     dispatch(startCloningSdk(version));
 
-    await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
+    if (!justUpdate) {
+        await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
+    }
     try {
         const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
-        const initScript = 'unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs; sleep 3';
+        const initScript = `unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs ${justUpdate ? '--just-update' : ''}; sleep 3`;
         await promisify(exec)(`"${gitBash}" -c "${initScript}"`);
     } catch (error) {
         console.error(`Failed to clone NCS with error: ${error}`);
@@ -150,7 +152,7 @@ export const cloneNcs = async (dispatch, version, toolchainDir) => {
     dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
 };
 
-export const install = async (dispatch, { version, toolchains }) => {
+export const install = async (dispatch, { version, toolchains }, justUpdate) => {
     const toolchain = getLatestToolchain(toolchains);
     const toolchainDir = path.resolve(installDir(), version, 'toolchain');
 
@@ -161,7 +163,7 @@ export const install = async (dispatch, { version, toolchains }) => {
     setHasInstalledAnNcs();
 
     await installToolchain(dispatch, version, toolchain, toolchainDir);
-    await cloneNcs(dispatch, version, toolchainDir);
+    await cloneNcs(dispatch, version, toolchainDir, justUpdate);
 };
 
 export const remove = async (dispatch, { toolchainDir, version }) => {

@@ -81,8 +81,8 @@ const EnvironmentMenu = ({ environment }) => {
             <Dropdown.Item onClick={() => openDirectory(path.dirname(toolchainDir))}>Open SDK directory</Dropdown.Item>
             <Dropdown.Item onClick={() => openDirectory(toolchainDir)}>Open toolchain directory</Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => cloneNcs(dispatch, version, toolchainDir)}>Update SDK</Dropdown.Item>
-            <Dropdown.Item onClick={() => install(dispatch, environment)}>Update toolchain</Dropdown.Item>
+            <Dropdown.Item onClick={() => cloneNcs(dispatch, version, toolchainDir, true)}>Update SDK</Dropdown.Item>
+            <Dropdown.Item onClick={() => install(dispatch, environment, true)}>Update toolchain</Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={() => dispatch(showConfirmRemoveDialog(version))}>Remove</Dropdown.Item>
             {/* eslint-enable max-len */}
