@@ -1,3 +1,6 @@
+## Version 0.2.2-beta.1
+- Fix updating SDK and toolchain #36
+
 ## Version 0.2.1-beta.1
 - Add confirmation dialog to remove environment #30
 - Update app icon #31
