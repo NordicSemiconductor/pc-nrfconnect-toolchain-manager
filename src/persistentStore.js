@@ -43,7 +43,10 @@ const store = new Store({ name: 'pc-nrfconnect-toolchain-manager' });
 export const isFirstInstall = () => store.get('isFirstInstall', true);
 export const setHasInstalledAnNcs = () => store.set('isFirstInstall', false);
 
-const defaultInstallDir = path.resolve(os.homedir(), 'ncs');
+const defaultInstallDir = (process.platform === 'win32')
+    ? path.resolve(os.homedir(), 'ncs')
+    : '/opt/nordic/ncs';
+
 export const persistedInstallDir = () => store.get('installDir', defaultInstallDir);
 export const setPersistedInstallDir = dir => store.set('installDir', dir);
 

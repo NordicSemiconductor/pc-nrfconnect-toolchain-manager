@@ -34,8 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { promisify } from 'util';
-import { exec } from 'child_process';
+import { execSync } from 'child_process';
 import { createHash } from 'crypto';
 import fs from 'fs';
 import path from 'path';
@@ -66,17 +65,23 @@ import {
     progress,
 } from './environmentReducer';
 
-const downloadZip = (toolchain, reportProgress) => new Promise((resolve, reject) => {
-    const { name, sha512 } = toolchain;
+const download = ({
+    name, sha512,
+    mac_name, mac_sha512, // eslint-disable-line camelcase
+}, reportProgress) => new Promise((resolve, reject) => {
+    let [packageName, packageSha512] = [name, sha512];
+    if (process.platform === 'darwin') {
+        [packageName, packageSha512] = [mac_name, mac_sha512]; // eslint-disable-line camelcase
+    }
 
     const hash = createHash('sha512');
 
     const downloadDir = path.resolve(installDir(), 'downloads');
-    const zipLocation = path.resolve(downloadDir, name);
+    const packageLocation = path.resolve(downloadDir, packageName);
     fse.mkdirpSync(downloadDir);
-    const writeStream = fs.createWriteStream(zipLocation);
+    const writeStream = fs.createWriteStream(packageLocation);
 
-    const url = toolchainUrl(name);
+    const url = toolchainUrl(packageName);
 
     remote.net.request({ url }).on('response', response => {
         const totalLength = response.headers['content-length'][0];
@@ -90,10 +95,12 @@ const downloadZip = (toolchain, reportProgress) => new Promise((resolve, reject)
         });
         response.on('end', () => {
             writeStream.end(() => {
-                if (hash.digest('hex') !== sha512) {
+                const hex = hash.digest('hex');
+                console.log(hex);
+                if (hex !== packageSha512) {
                     return reject(new Error(`Checksum verification failed ${url}`));
                 }
-                return resolve(zipLocation);
+                return resolve(packageLocation);
             });
         });
         response.on('error', error => reject(new Error(`Error when reading ${url}: `
@@ -103,13 +110,24 @@ const downloadZip = (toolchain, reportProgress) => new Promise((resolve, reject)
         .end();
 });
 
-const unzip = (src, dest, reportProgress) => new Promise(resolve => {
-    new DecompressZip(src)
-        .on('error', err => console.error('Caught an error', err))
-        .on('extract', () => resolve())
-        .on('progress', (fileIndex, fileCount) => reportProgress(fileIndex, fileCount, 2))
-        .extract({ path: dest });
-});
+const unpack = async (src, dest, reportProgress) => {
+    switch (process.platform) {
+        case 'win32':
+            return new Promise(resolve => new DecompressZip(src)
+                .on('error', err => console.error('Caught an error', err))
+                .on('extract', () => resolve())
+                .on('progress', (fileIndex, fileCount) => reportProgress(fileIndex, fileCount, 2))
+                .extract({ path: dest }));
+        case 'darwin': {
+            const volume = execSync(`hdiutil attach ${src} | grep -Eo "/Volumes/ncs-toolchain-.*`).toString().trim();
+            await fse.copy(path.join(volume, 'toolchain'), dest);
+            execSync(`hdiutil detach ${volume}`);
+            break;
+        }
+        default:
+    }
+    return undefined;
+};
 
 const setProgressIfChanged = (version, currentValue, maxValue, half) => (dispatch, getState) => {
     const prevProgress = progress(getEnvironment(getState(), version));
@@ -127,8 +145,8 @@ const installToolchain = async (dispatch, version, toolchain, toolchainDir) => {
     dispatch(startInstallToolchain(version));
 
     fse.mkdirpSync(toolchainDir);
-    const zipLocation = await downloadZip(toolchain, reportProgress);
-    await unzip(zipLocation, toolchainDir, reportProgress);
+    const packageLocation = await download(toolchain, reportProgress);
+    await unpack(packageLocation, toolchainDir, reportProgress);
 
     dispatch(finishInstallToolchain(version, toolchainDir));
 };
@@ -142,9 +160,22 @@ export const cloneNcs = async (dispatch, version, toolchainDir, justUpdate) => {
         await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
     }
     try {
-        const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
-        const initScript = `unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs ${justUpdate ? '--just-update' : ''}; sleep 3`;
-        await promisify(exec)(`"${gitBash}" -c "${initScript}"`);
+        switch (process.platform) {
+            case 'win32': {
+                const initScript = `unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs ${justUpdate ? '--just-update' : ''}; sleep 3`;
+                const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
+                execSync(`"${gitBash}" -c "${initScript}"`);
+                break;
+            }
+            case 'darwin': {
+                execSync(
+                    `unset ZEPHYR_BASE; ${toolchainDir}/ncsmgr/ncsmgr init-ncs ${justUpdate ? '--just-update' : ''}`,
+                    { env: { PATH: `${toolchainDir}/bin:${remote.process.env.PATH}` } },
+                );
+                break;
+            }
+            default:
+        }
     } catch (error) {
         console.error(`Failed to clone NCS with error: ${error}`);
     }

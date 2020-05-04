@@ -63,7 +63,7 @@ export default props => {
     const dispatch = useDispatch();
     useEffect(() => initEnvironments(dispatch), [dispatch]);
 
-    const isSupportedPlatform = process.platform === 'win32';
+    const isSupportedPlatform = process.platform !== 'linux';
     if (!isSupportedPlatform) {
         return (
             <div {...props}>

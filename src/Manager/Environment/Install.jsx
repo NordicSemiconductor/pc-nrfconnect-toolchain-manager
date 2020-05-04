@@ -41,16 +41,22 @@ import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer'
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { isOnlyAvailable, version } from './environmentReducer';
+import { install } from './environmentEffects';
 
 const Install = ({ environment }) => {
     const dispatch = useDispatch();
+    const { platform } = process;
+    const onClick = {
+        darwin: () => install(dispatch, environment, false),
+        win32: () => dispatch(showConfirmInstallDirDialog(version(environment))),
+    };
 
     if (!isOnlyAvailable(environment)) return null;
 
     return (
         <Button
             icon="x-mdi-briefcase-download-outline"
-            onClick={() => dispatch(showConfirmInstallDirDialog(version(environment)))}
+            onClick={onClick[platform]}
             label="Install"
             variant="outline-primary"
         />

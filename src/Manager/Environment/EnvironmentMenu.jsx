@@ -57,6 +57,16 @@ const openCmd = directory => {
     exec(`start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`);
 };
 
+const openTerminal = directory => {
+    const d = path.dirname(directory);
+    exec(`osascript <<END
+tell application "Terminal"
+    do script "cd ${d} ; export PATH=${d}/toolchain/bin:$PATH ; clear"
+    activate
+end tell
+END`);
+};
+
 const openDirectory = directory => {
     shell.openItem(directory);
 };
@@ -75,8 +85,15 @@ const EnvironmentMenu = ({ environment }) => {
             disabled={!isInstalled(environment)}
         >
             {/* eslint-disable max-len */}
-            <Dropdown.Item onClick={() => openBash(toolchainDir)}>Open bash</Dropdown.Item>
-            <Dropdown.Item onClick={() => openCmd(toolchainDir)}>Open command prompt</Dropdown.Item>
+            {process.platform === 'win32' && (
+                <>
+                    <Dropdown.Item onClick={() => openBash(toolchainDir)}>Open bash</Dropdown.Item>
+                    <Dropdown.Item onClick={() => openCmd(toolchainDir)}>Open command prompt</Dropdown.Item>
+                </>
+            )}
+            {process.platform !== 'win32' && (
+                <Dropdown.Item onClick={() => openTerminal(toolchainDir)}>Open Terminal</Dropdown.Item>
+            )}
             <Dropdown.Divider />
             <Dropdown.Item onClick={() => openDirectory(path.dirname(toolchainDir))}>Open SDK directory</Dropdown.Item>
             <Dropdown.Item onClick={() => openDirectory(toolchainDir)}>Open toolchain directory</Dropdown.Item>

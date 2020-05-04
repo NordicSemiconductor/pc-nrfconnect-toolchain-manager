@@ -48,6 +48,7 @@ import { showSetInstallDirDialog, currentInstallDir } from '../InstallDir/instal
 export default props => {
     const dispatch = useDispatch();
     const installDir = useSelector(currentInstallDir);
+    const disabled = process.platform !== 'win32';
 
     return (
         <div {...props}>
@@ -59,6 +60,7 @@ export default props => {
                     <Col xs="auto">
                         <Button
                             variant="outline-primary"
+                            disabled={disabled}
                             onClick={() => dispatch(showSetInstallDirDialog())}
                         >
                             Select directory
