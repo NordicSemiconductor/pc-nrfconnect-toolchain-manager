@@ -119,7 +119,7 @@ const unpack = async (src, dest, reportProgress) => {
                 .on('progress', (fileIndex, fileCount) => reportProgress(fileIndex, fileCount, 2))
                 .extract({ path: dest }));
         case 'darwin': {
-            const volume = execSync(`hdiutil attach ${src} | grep -Eo "/Volumes/ncs-toolchain-.*`).toString().trim();
+            const volume = execSync(`hdiutil attach ${src} | grep -Eo "/Volumes/ncs-toolchain-.*"`).toString().trim();
             await fse.copy(path.join(volume, 'toolchain'), dest);
             execSync(`hdiutil detach ${volume}`);
             break;
