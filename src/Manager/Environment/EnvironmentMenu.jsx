@@ -40,6 +40,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { exec } from 'child_process';
 import path from 'path';
+import { readdirSync } from 'fs';
 import { shell } from 'electron';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -59,9 +60,16 @@ const openCmd = directory => {
 
 const openTerminal = directory => {
     const d = path.dirname(directory);
+    const gitversion = readdirSync(`${d}/toolchain/Cellar/git`).pop();
+    const env = [
+        `export PATH=${d}/toolchain/bin:$PATH`,
+        `export GIT_EXEC_PATH=${d}/toolchain/Cellar/git/${gitversion}/libexec/git-core`,
+        'export ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb',
+        `export GNUARMEMB_TOOLCHAIN_PATH=${d}/toolchain`,
+    ];
     exec(`osascript <<END
 tell application "Terminal"
-    do script "cd ${d} ; export PATH=${d}/toolchain/bin:$PATH ; clear"
+    do script "cd ${d} ; ${env.join(' ; ')} ; clear"
     activate
 end tell
 END`);

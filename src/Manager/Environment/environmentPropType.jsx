@@ -35,7 +35,7 @@
  */
 
 import {
-    arrayOf, bool, number, shape, string,
+    arrayOf, oneOfType, bool, number, shape, string,
 } from 'prop-types';
 
 export default shape({
@@ -46,7 +46,7 @@ export default shape({
         name: string.isRequired,
         sha512: string.isRequired,
     }).isRequired),
-    progress: number,
+    progress: oneOfType([number, string]),
     isInstallingToolchain: bool,
     isCloningSdk: bool,
     isWestPresent: bool,

@@ -35,9 +35,8 @@
  */
 
 .nrf-card {
-    max-width: 800px;
     margin: auto;
-    height: 8em;
+    min-height: 8em;
 }
 
 .nrf-card:not(:first-of-type) {

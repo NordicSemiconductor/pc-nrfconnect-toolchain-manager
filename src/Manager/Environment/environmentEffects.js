@@ -34,7 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import { createHash } from 'crypto';
 import fs from 'fs';
 import path from 'path';
@@ -65,23 +65,15 @@ import {
     progress,
 } from './environmentReducer';
 
-const download = ({
-    name, sha512,
-    mac_name, mac_sha512, // eslint-disable-line camelcase
-}, reportProgress) => new Promise((resolve, reject) => {
-    let [packageName, packageSha512] = [name, sha512];
-    if (process.platform === 'darwin') {
-        [packageName, packageSha512] = [mac_name, mac_sha512]; // eslint-disable-line camelcase
-    }
-
+const download = ({ name, sha512 }, reportProgress) => new Promise((resolve, reject) => {
     const hash = createHash('sha512');
 
     const downloadDir = path.resolve(installDir(), 'downloads');
-    const packageLocation = path.resolve(downloadDir, packageName);
+    const packageLocation = path.resolve(downloadDir, name);
     fse.mkdirpSync(downloadDir);
     const writeStream = fs.createWriteStream(packageLocation);
 
-    const url = toolchainUrl(packageName);
+    const url = toolchainUrl(name);
 
     remote.net.request({ url }).on('response', response => {
         const totalLength = response.headers['content-length'][0];
@@ -96,8 +88,7 @@ const download = ({
         response.on('end', () => {
             writeStream.end(() => {
                 const hex = hash.digest('hex');
-                console.log(hex);
-                if (hex !== packageSha512) {
+                if (hex !== sha512) {
                     return reject(new Error(`Checksum verification failed ${url}`));
                 }
                 return resolve(packageLocation);
@@ -120,7 +111,14 @@ const unpack = async (src, dest, reportProgress) => {
                 .extract({ path: dest }));
         case 'darwin': {
             const volume = execSync(`hdiutil attach ${src} | grep -Eo "/Volumes/ncs-toolchain-.*"`).toString().trim();
-            await fse.copy(path.join(volume, 'toolchain'), dest);
+            let n = 0;
+            await fse.copy(path.join(volume, 'toolchain'), dest, {
+                filter: () => {
+                    n += 1;
+                    reportProgress(n, 45000, 2);
+                    return true;
+                },
+            });
             execSync(`hdiutil detach ${volume}`);
             break;
         }
@@ -168,10 +166,25 @@ export const cloneNcs = async (dispatch, version, toolchainDir, justUpdate) => {
                 break;
             }
             case 'darwin': {
-                execSync(
-                    `unset ZEPHYR_BASE; ${toolchainDir}/ncsmgr/ncsmgr init-ncs ${justUpdate ? '--just-update' : ''}`,
-                    { env: { PATH: `${toolchainDir}/bin:${remote.process.env.PATH}` } },
-                );
+                dispatch(setProgress(version, 'Initializing environment...'));
+                const { ZEPHYR_BASE, ...env } = process.env;
+                const gitversion = fs.readdirSync(`${toolchainDir}/Cellar/git`).pop();
+                env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
+                env.GIT_EXEC_PATH = `${toolchainDir}/Cellar/git/${gitversion}/libexec/git-core`;
+                await new Promise((resolve, reject) => {
+                    const ncsMgr = spawn(
+                        `${toolchainDir}/ncsmgr/ncsmgr`,
+                        ['init-ncs', `${justUpdate ? '--just-update' : ''}`],
+                        { env },
+                    );
+                    ncsMgr.stdout.on('data', data => {
+                        const repo = (/=== updating (\w+)/.exec(data.toString()) || []).pop();
+                        if (repo) {
+                            dispatch(setProgress(version, `Updating ${repo} repository...`));
+                        }
+                    });
+                    ncsMgr.on('exit', code => (code ? reject(code) : resolve()));
+                });
                 break;
             }
             default:

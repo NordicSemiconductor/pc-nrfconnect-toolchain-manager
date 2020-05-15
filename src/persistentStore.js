@@ -43,12 +43,24 @@ const store = new Store({ name: 'pc-nrfconnect-toolchain-manager' });
 export const isFirstInstall = () => store.get('isFirstInstall', true);
 export const setHasInstalledAnNcs = () => store.set('isFirstInstall', false);
 
-const defaultInstallDir = (process.platform === 'win32')
-    ? path.resolve(os.homedir(), 'ncs')
-    : '/opt/nordic/ncs';
+const defaultInstallDir = {
+    win32: path.resolve(os.homedir(), 'ncs'),
+    darwin: '/opt/nordic/ncs',
+    linux: '//TODO',
+}[process.platform];
 
 export const persistedInstallDir = () => store.get('installDir', defaultInstallDir);
 export const setPersistedInstallDir = dir => store.set('installDir', dir);
 
-export const toolchainIndexUrl = () => store.get('toolchainIndexUrl', 'https://developer.nordicsemi.com/.pc-tools/toolchain/index.json');
+const defaultIndexJson = {
+    win32: 'index.json',
+    darwin: 'mac.json',
+    linux: 'linux.json',
+}[process.platform];
+
+export const toolchainIndexUrl = () => store.get('toolchainIndexUrl',
+    `https://developer.nordicsemi.com/.pc-tools/toolchain/${defaultIndexJson}`);
 export const toolchainUrl = name => `${path.dirname(toolchainIndexUrl())}/${name}`;
+
+export const persistedShowMaster = () => store.get('showMaster', false);
+export const setPersistedShowMaster = visible => store.set('showMaster', visible);

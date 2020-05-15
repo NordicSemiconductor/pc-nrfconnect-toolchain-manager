@@ -38,6 +38,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
 
 import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 
@@ -45,10 +46,21 @@ import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
 import initEnvironments from './initEnvironments';
 import OtherPlatformInstructions from './OtherPlatformInstructions';
-import { environmentsByVersion } from './managerReducer';
+import { environmentsByVersion, isMasterVisible } from './managerReducer';
+
 
 const Environments = () => {
-    const environments = useSelector(environmentsByVersion);
+    const masterVisible = useSelector(isMasterVisible);
+    const environments = useSelector(environmentsByVersion)
+        .filter(({ version }) => (version === 'master' ? masterVisible : true));
+
+    if (environments.length === 0) {
+        return (
+            <Alert variant="info" className="p-4 text-center">
+                There are no environments available for installation.
+            </Alert>
+        );
+    }
 
     return (
         <div>
