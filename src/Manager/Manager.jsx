@@ -52,7 +52,11 @@ import { environmentsByVersion, isMasterVisible } from './managerReducer';
 const Environments = () => {
     const masterVisible = useSelector(isMasterVisible);
     const environments = useSelector(environmentsByVersion)
-        .filter(({ version }) => (version === 'master' ? masterVisible : true));
+        .filter(({ version, isInstalled }) => (
+            version === 'master'
+                ? isInstalled || masterVisible
+                : true
+        ));
 
     if (environments.length === 0) {
         return (
