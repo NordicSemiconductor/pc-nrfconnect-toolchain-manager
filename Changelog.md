@@ -1,3 +1,6 @@
+## Version 0.5.0
+- First public release
+
 ## Version 0.2.2-beta.1
 - Fix updating SDK and toolchain #36
 
