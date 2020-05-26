@@ -54,8 +54,8 @@ export const setPersistedInstallDir = dir => store.set('installDir', dir);
 
 const defaultIndexJson = {
     win32: 'index.json',
-    darwin: 'mac.json',
-    linux: 'linux.json',
+    darwin: 'index-mac.json',
+    linux: 'index-linux.json',
 }[process.platform];
 
 export const toolchainIndexUrl = () => store.get('toolchainIndexUrl',
