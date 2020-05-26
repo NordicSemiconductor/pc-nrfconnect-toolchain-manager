@@ -41,13 +41,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import Form from 'react-bootstrap/Form';
 
 import NrfCard from '../NrfCard/NrfCard';
 import { showSetInstallDirDialog, currentInstallDir } from '../InstallDir/installDirReducer';
+import { showMasterEnvironment, isMasterVisible } from '../Manager/managerReducer';
 
 export default props => {
     const dispatch = useDispatch();
     const installDir = useSelector(currentInstallDir);
+    const disabled = process.platform !== 'win32';
+    const masterVisible = useSelector(isMasterVisible);
 
     return (
         <div {...props}>
@@ -59,6 +63,7 @@ export default props => {
                     <Col xs="auto">
                         <Button
                             variant="outline-primary"
+                            disabled={disabled}
                             onClick={() => dispatch(showSetInstallDirDialog())}
                         >
                             Select directory
@@ -69,6 +74,18 @@ export default props => {
                 <Row className="settings-info">
                     <Col className="text-muted">
                         {installDir}
+                    </Col>
+                </Row>
+
+                <Row className="settings-info mt-4">
+                    <Col>
+                        <Form.Group controlId="toggleMaster">
+                            <Form.Switch
+                                defaultChecked={masterVisible}
+                                onChange={() => dispatch(showMasterEnvironment(!masterVisible))}
+                                label="Show unstable (master branch) environment"
+                            />
+                        </Form.Group>
                     </Col>
                 </Row>
             </NrfCard>

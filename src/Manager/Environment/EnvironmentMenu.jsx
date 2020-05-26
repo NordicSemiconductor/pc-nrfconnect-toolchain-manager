@@ -40,6 +40,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { exec } from 'child_process';
 import path from 'path';
+import { readdirSync } from 'fs';
 import { shell } from 'electron';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -55,6 +56,23 @@ const openBash = directory => {
 
 const openCmd = directory => {
     exec(`start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`);
+};
+
+const openTerminal = directory => {
+    const d = path.dirname(directory);
+    const gitversion = readdirSync(`${d}/toolchain/Cellar/git`).pop();
+    const env = [
+        `export PATH=${d}/toolchain/bin:$PATH`,
+        `export GIT_EXEC_PATH=${d}/toolchain/Cellar/git/${gitversion}/libexec/git-core`,
+        'export ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb',
+        `export GNUARMEMB_TOOLCHAIN_PATH=${d}/toolchain`,
+    ];
+    exec(`osascript <<END
+tell application "Terminal"
+    do script "cd ${d} ; ${env.join(' ; ')} ; clear"
+    activate
+end tell
+END`);
 };
 
 const openDirectory = directory => {
@@ -74,18 +92,39 @@ const EnvironmentMenu = ({ environment }) => {
             alignRight
             disabled={!isInstalled(environment)}
         >
-            {/* eslint-disable max-len */}
-            <Dropdown.Item onClick={() => openBash(toolchainDir)}>Open bash</Dropdown.Item>
-            <Dropdown.Item onClick={() => openCmd(toolchainDir)}>Open command prompt</Dropdown.Item>
+            {process.platform === 'win32' && (
+                <>
+                    <Dropdown.Item onClick={() => openBash(toolchainDir)}>
+                        Open bash
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => openCmd(toolchainDir)}>
+                        Open command prompt
+                    </Dropdown.Item>
+                </>
+            )}
+            {process.platform !== 'win32' && (
+                <Dropdown.Item onClick={() => openTerminal(toolchainDir)}>
+                    Open Terminal
+                </Dropdown.Item>
+            )}
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => openDirectory(path.dirname(toolchainDir))}>Open SDK directory</Dropdown.Item>
-            <Dropdown.Item onClick={() => openDirectory(toolchainDir)}>Open toolchain directory</Dropdown.Item>
+            <Dropdown.Item onClick={() => openDirectory(path.dirname(toolchainDir))}>
+                Open SDK directory
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => openDirectory(toolchainDir)}>
+                Open toolchain directory
+            </Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => cloneNcs(dispatch, version, toolchainDir, true)}>Update SDK</Dropdown.Item>
-            <Dropdown.Item onClick={() => install(dispatch, environment, true)}>Update toolchain</Dropdown.Item>
+            <Dropdown.Item onClick={() => cloneNcs(dispatch, version, toolchainDir, true)}>
+                Update SDK
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => install(dispatch, environment, true)}>
+                Update toolchain
+            </Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => dispatch(showConfirmRemoveDialog(version))}>Remove</Dropdown.Item>
-            {/* eslint-enable max-len */}
+            <Dropdown.Item onClick={() => dispatch(showConfirmRemoveDialog(version))}>
+                Remove
+            </Dropdown.Item>
         </DropdownButton>
     );
 };

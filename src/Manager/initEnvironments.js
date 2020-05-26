@@ -36,6 +36,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 
 import { remote } from 'electron';
 import fse from 'fs-extra';
@@ -82,6 +83,14 @@ const downloadIndex = dispatch => {
 };
 
 export default dispatch => {
+    const dir = path.dirname(installDir());
+    if (process.platform === 'darwin'
+        // eslint-disable-next-line no-bitwise
+        && (!fs.existsSync(dir) || (fs.statSync(dir).mode & 0o3775) !== 0o3775)) {
+        const prompt = `Base directory ${dir} needs to be created, to do this please...`;
+        const script = `install -d -g staff -m 3775 ${dir}`;
+        execSync(`osascript -e "do shell script \\"${script} \\" with prompt \\"${prompt} \\" with administrator privileges"`);
+    }
     fse.mkdirpSync(installDir());
     detectLocallyExistingEnvironments(dispatch);
     downloadIndex(dispatch);

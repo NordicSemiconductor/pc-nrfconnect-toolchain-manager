@@ -1,3 +1,6 @@
+## Version 0.6.0
+- Add macOS support #39
+
 ## Version 0.5.0
 - First public release
 

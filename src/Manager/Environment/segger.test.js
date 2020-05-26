@@ -84,7 +84,9 @@ expect.extend({
 });
 
 const expectNrfSettingAreCorrect = xml => {
-    expect(xml).toContainNode('settings setting[name="Nordic/ToolchainDir"]', toolchainDir);
+    if (process.platform === 'win32') {
+        expect(xml).toContainNode('settings setting[name="Nordic/ToolchainDir"]', toolchainDir);
+    }
     expect(xml).toContainNode('settings setting[name="Nordic/ZephyrBase"]', zephyrBase);
     expect(xml).toContainNode('settings setting[name="Nordic/CMakeExecutable"]', '');
     expect(xml).toContainNode('settings setting[name="Nordic/DTCExecutable"]', '');

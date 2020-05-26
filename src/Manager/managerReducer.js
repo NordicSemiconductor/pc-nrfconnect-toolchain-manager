@@ -36,6 +36,7 @@
 
 import semver from 'semver';
 import environmentReducer, { REMOVE_ENVIRONMENT, canBeDownloaded } from './Environment/environmentReducer';
+import { persistedShowMaster, setPersistedShowMaster } from '../persistentStore';
 
 const byVersion = (a, b) => {
     try {
@@ -88,6 +89,12 @@ export const hideConfirmRemoveDialog = () => ({
     type: HIDE_CONFIRM_REMOVE_DIALOG,
 });
 
+const SHOW_MASTER = 'SHOW_MASTER';
+export const showMasterEnvironment = visible => ({
+    type: SHOW_MASTER,
+    show: !!visible,
+});
+
 const append = (environments, environment) => ({
     ...environments,
     [environment.version]: {
@@ -124,6 +131,9 @@ const managerReducer = (state, action) => {
             return { ...state, isRemoveDirDialogVisible: true, versionToRemove: action.version };
         case HIDE_CONFIRM_REMOVE_DIALOG:
             return { ...state, isRemoveDirDialogVisible: false, versionToRemove: null };
+        case SHOW_MASTER:
+            setPersistedShowMaster(!!action.show);
+            return { ...state, isMasterVisible: !!action.show };
         case SELECT_ENVIRONMENT:
             return { ...state, selectedVersion: action.selectedVersion };
         default:
@@ -148,6 +158,7 @@ const maybeCallEnvironmentReducer = (state, action) => {
 const initialState = {
     environments: {},
     isRemoveDirDialogVisible: false,
+    isMasterVisible: persistedShowMaster(),
     versionToRemove: null,
     selectedVersion: null,
 };
@@ -170,3 +181,5 @@ export const selectedVersion = state => state.app.manager.selectedVersion;
 
 export const environmentsByVersion = state => (
     sortedByVersion(Object.values(state.app.manager.environments)));
+
+export const isMasterVisible = ({ app }) => app.manager.isMasterVisible;

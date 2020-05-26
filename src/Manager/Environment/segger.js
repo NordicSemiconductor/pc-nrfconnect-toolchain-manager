@@ -35,6 +35,7 @@
  */
 
 import { exec } from 'child_process';
+import { remote } from 'electron';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -94,7 +95,11 @@ export const updateSettingsXml = (xmlString, toolchainDir) => {
 
     const zephyrDir = path.resolve(toolchainDir, '..', 'zephyr');
     setSetting(xml, 'Nordic/ZephyrBase', zephyrDir);
-    setSetting(xml, 'Nordic/ToolchainDir', path.resolve(toolchainDir, 'opt'));
+    if (process.platform === 'win32') {
+        setSetting(xml, 'Nordic/ToolchainDir', path.resolve(toolchainDir, 'opt'));
+    } else {
+        setSetting(xml, 'Nordic/ToolchainDir', toolchainDir);
+    }
     setSetting(xml, 'Nordic/CMakeExecutable', '');
     setSetting(xml, 'Nordic/DTCExecutable', '');
     setSetting(xml, 'Nordic/NinjaExecutable', '');
@@ -129,5 +134,22 @@ export const openSegger = async toolchainDir => {
         updateSettingsFile('settings.xml.bak', toolchainDir),
     ]);
 
-    exec(`"${path.resolve(toolchainDir, 'SEGGER Embedded Studio.cmd')}"`);
+    switch (process.platform) {
+        case 'win32':
+            exec(`"${path.resolve(toolchainDir, 'SEGGER Embedded Studio.cmd')}"`);
+            break;
+        case 'darwin':
+            exec(
+                `open "${toolchainDir}/segger_embedded_studio/SEGGER Embedded Studio.app"`,
+                {
+                    env: {
+                        PATH: `${toolchainDir}/bin:${remote.process.env.PATH}`,
+                        ZEPHYR_TOOLCHAIN_VARIANT: 'gnuarmemb',
+                        GNUARMEMB_TOOLCHAIN_PATH: toolchainDir,
+                    },
+                },
+            );
+            break;
+        default:
+    }
 };
