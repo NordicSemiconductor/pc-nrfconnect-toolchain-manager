@@ -35,32 +35,31 @@
  */
 
 import React from 'react';
+import { string } from 'prop-types';
 import NrfCard from '../NrfCard/NrfCard';
 
-const platformDocs = () => {
-    switch (process.platform) {
-        case 'darwin': return {
-            url: 'https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_ins_mac.html',
-            description: 'on macOS',
-        };
-        case 'linux': return {
-            url: 'https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_ins_linux.html',
-            description: 'on Linux',
-        };
-        default: return {
-            url: 'https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_installing.html',
-            description: 'manually',
-        };
-    }
+const isMac = process.platform === 'darwin';
+const isLinux = process.platform === 'linux';
+
+export const OnlineDocs = ({ label }) => (
+    <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_installing.html"
+    >
+        {label}
+    </a>
+);
+
+OnlineDocs.propTypes = {
+    label: string.isRequired,
 };
 
-export default () => (
+export default () => (process.platform === 'win32' ? null : (
     <NrfCard>
-        This app is designed only for Windows. For instructions on setting up an
-        environment on your machine, please read the{' '}
-        <a target="_blank" rel="noopener noreferrer" href={platformDocs().url}>
-            installing {platformDocs().description} instructions
-        </a>{' '}
-        online.
+        {isLinux && <p>Linux is currently not supported by this app.</p>}
+        {isMac && <p>The macOS support is experimental.</p>}
+        For instructions on how to manually set up an environment on your machine,
+        please read the online <OnlineDocs label="documentation" />.
     </NrfCard>
-);
+));
