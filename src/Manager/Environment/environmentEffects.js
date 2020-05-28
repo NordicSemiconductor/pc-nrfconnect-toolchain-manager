@@ -183,6 +183,9 @@ export const cloneNcs = async (dispatch, version, toolchainDir, justUpdate) => {
                             dispatch(setProgress(version, `Updating ${repo} repository...`));
                         }
                     });
+                    ncsMgr.stderr.on('data', () => {
+                        // don't remove, otherwise the child will eventually be blocked.
+                    });
                     ncsMgr.on('exit', code => (code ? reject(code) : resolve()));
                 });
                 break;

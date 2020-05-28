@@ -34,8 +34,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
-
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
@@ -57,8 +55,13 @@ export default props => {
         <div {...props}>
             <NrfCard>
                 <Row className="settings-info">
-                    <Col className="h4">
-                        Installation directory
+                    <Col className="ml-3">
+                        <Row className="h4">
+                            Installation directory
+                        </Row>
+                        <Row className="text-muted">
+                            {installDir}
+                        </Row>
                     </Col>
                     <Col xs="auto">
                         <Button
@@ -71,12 +74,6 @@ export default props => {
                     </Col>
                 </Row>
 
-                <Row className="settings-info">
-                    <Col className="text-muted">
-                        {installDir}
-                    </Col>
-                </Row>
-
                 <Row className="settings-info mt-4">
                     <Col>
                         <Form.Group controlId="toggleMaster">
@@ -85,6 +82,10 @@ export default props => {
                                 onChange={() => dispatch(showMasterEnvironment(!masterVisible))}
                                 label="Show unstable (master branch) environment"
                             />
+                            <Form.Text className="text-muted">
+                                Note that unstable environment is not regularly updated and it its
+                                toolchain is likely not well tested.
+                            </Form.Text>
                         </Form.Group>
                     </Col>
                 </Row>

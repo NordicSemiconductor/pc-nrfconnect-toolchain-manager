@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,6 +34,32 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.settings-info {
-    height: 2em;
-}
+import React from 'react';
+import { string } from 'prop-types';
+import NrfCard from '../NrfCard/NrfCard';
+
+const isMac = process.platform === 'darwin';
+const isLinux = process.platform === 'linux';
+
+export const OnlineDocs = ({ label }) => (
+    <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_installing.html"
+    >
+        {label}
+    </a>
+);
+
+OnlineDocs.propTypes = {
+    label: string.isRequired,
+};
+
+export default () => (process.platform === 'win32' ? null : (
+    <NrfCard>
+        {isLinux && <p>Linux is currently not supported by this app.</p>}
+        {isMac && <p>The macOS support is experimental.</p>}
+        For instructions on how to manually set up an environment on your machine,
+        please read the online <OnlineDocs label="documentation" />.
+    </NrfCard>
+));

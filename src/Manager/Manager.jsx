@@ -38,20 +38,24 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
 
+import NrfCard from '../NrfCard/NrfCard';
 import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
 import initEnvironments from './initEnvironments';
-import OtherPlatformInstructions from './OtherPlatformInstructions';
+import PlatformInstructions from './PlatformInstructions';
 import { environmentsByVersion, isMasterVisible } from './managerReducer';
 
 
 const Environments = () => {
+    const dispatch = useDispatch();
+    useEffect(() => initEnvironments(dispatch), [dispatch]);
+
     const masterVisible = useSelector(isMasterVisible);
-    const environments = useSelector(environmentsByVersion)
+    const allEnvironments = useSelector(environmentsByVersion);
+    const environments = allEnvironments
         .filter(({ version, isInstalled }) => (
             version === 'master'
                 ? isInstalled || masterVisible
@@ -60,44 +64,41 @@ const Environments = () => {
 
     if (environments.length === 0) {
         return (
-            <Alert variant="info" className="p-4 text-center">
-                There are no environments available for installation.
-            </Alert>
+            <NrfCard>
+                <p>There are no environments available for installation.</p>
+                {allEnvironments.length > 0 && !masterVisible && (
+                    <p>
+                        You can enable unstable environments
+                        under <span className="mdi mdi-settings" />Settings.
+                    </p>
+                )}
+            </NrfCard>
         );
     }
 
     return (
-        <div>
+        <>
             {environments.map(environment => (
                 <Environment key={environment.version} environment={environment} />
             ))}
-        </div>
+        </>
     );
 };
 
-export default props => {
-    const dispatch = useDispatch();
-    useEffect(() => initEnvironments(dispatch), [dispatch]);
-
-    const isSupportedPlatform = process.platform !== 'linux';
-    if (!isSupportedPlatform) {
-        return (
-            <div {...props}>
-                <OtherPlatformInstructions />
-            </div>
-        );
-    }
-
-    return (
-        <div {...props}>
-            <ButtonToolbar hidden>
-                <Button className="mdi mdi-briefcase-plus-outline">
+export default props => (
+    <div {...props}>
+        <PlatformInstructions />
+        {process.platform !== 'linux' && (
+            <>
+                <ButtonToolbar hidden>
+                    <Button className="mdi mdi-briefcase-plus-outline">
                         Install package
-                </Button>
-            </ButtonToolbar>
-            <Environments />
-            <FirstInstallDialog />
-            <RemoveEnvironmentDialog />
-        </div>
-    );
-};
+                    </Button>
+                </ButtonToolbar>
+                <Environments />
+                <FirstInstallDialog />
+                <RemoveEnvironmentDialog />
+            </>
+        )}
+    </div>
+);
