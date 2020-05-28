@@ -42,7 +42,7 @@ import environmentPropType from './environmentPropType';
 
 const Name = ({ environment: { version } }) => (
     <Row noGutters className="toolchain-item-info h4 mb-0 pt-3">
-            nRF Connect SDK {version}
+        nRF Connect SDK {version}
     </Row>
 );
 
