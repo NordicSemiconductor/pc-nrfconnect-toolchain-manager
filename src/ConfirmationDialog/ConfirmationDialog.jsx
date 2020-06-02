@@ -59,12 +59,10 @@ const ConfirmationDialog = ({
         <Modal.Body>{children}</Modal.Body>
         <Modal.Footer>
             {onOptional
-               && <Button variant="outline-primary" onClick={onOptional}>{optionalLabel}</Button>
-            }
+               && <Button variant="outline-primary" onClick={onOptional}>{optionalLabel}</Button>}
             <Button variant="primary" onClick={onConfirm}>{confirmLabel}</Button>
             {onCancel
-               && <Button variant="outline-primary" onClick={onCancel}>{cancelLabel}</Button>
-            }
+               && <Button variant="outline-primary" onClick={onCancel}>{cancelLabel}</Button>}
         </Modal.Footer>
     </Modal>
 );

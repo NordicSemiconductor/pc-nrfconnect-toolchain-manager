@@ -129,7 +129,7 @@ const unpack = async (src, dest, reportProgress) => {
 
 const setProgressIfChanged = (version, currentValue, maxValue, half) => (dispatch, getState) => {
     const prevProgress = progress(getEnvironment(getState(), version));
-    const newProgress = Math.round(currentValue / maxValue * 50) + (half === 2 ? 50 : 0);
+    const newProgress = Math.round((currentValue / maxValue) * 50) + (half === 2 ? 50 : 0);
 
     if (newProgress !== prevProgress) {
         dispatch(setProgress(version, newProgress));
