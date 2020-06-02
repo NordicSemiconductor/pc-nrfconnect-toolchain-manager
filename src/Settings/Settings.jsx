@@ -83,7 +83,7 @@ export default props => {
                                 label="Show unstable (master branch) environment"
                             />
                             <Form.Text className="text-muted">
-                                Note that unstable environment is not regularly updated and it its
+                                Note that unstable environment is not regularly updated and its
                                 toolchain is likely not well tested.
                             </Form.Text>
                         </Form.Group>
