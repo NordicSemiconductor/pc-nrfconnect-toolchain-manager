@@ -158,40 +158,45 @@ export const cloneNcs = async (dispatch, version, toolchainDir, justUpdate) => {
         await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
     }
     try {
+        let ncsMgr;
         switch (process.platform) {
             case 'win32': {
-                const initScript = `unset ZEPHYR_BASE; toolchain/ncsmgr/ncsmgr init-ncs ${justUpdate ? '--just-update' : ''}; sleep 3`;
-                const gitBash = path.resolve(toolchainDir, 'git-bash.exe');
-                execSync(`"${gitBash}" -c "${initScript}"`);
+                ncsMgr = spawn(
+                    path.resolve(toolchainDir, 'bin', 'bash.exe'),
+                    ['-l', '-c', `unset ZEPHYR_BASE ; ncsmgr/ncsmgr init-ncs ${justUpdate ? '--just-update' : ''}`],
+                );
+
                 break;
             }
             case 'darwin': {
-                dispatch(setProgress(version, 'Initializing environment...'));
                 const { ZEPHYR_BASE, ...env } = process.env;
                 const gitversion = fs.readdirSync(`${toolchainDir}/Cellar/git`).pop();
                 env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
                 env.GIT_EXEC_PATH = `${toolchainDir}/Cellar/git/${gitversion}/libexec/git-core`;
-                await new Promise((resolve, reject) => {
-                    const ncsMgr = spawn(
-                        `${toolchainDir}/ncsmgr/ncsmgr`,
-                        ['init-ncs', `${justUpdate ? '--just-update' : ''}`],
-                        { env },
-                    );
-                    ncsMgr.stdout.on('data', data => {
-                        const repo = (/=== updating (\w+)/.exec(data.toString()) || []).pop();
-                        if (repo) {
-                            dispatch(setProgress(version, `Updating ${repo} repository...`));
-                        }
-                    });
-                    ncsMgr.stderr.on('data', () => {
-                        // don't remove, otherwise the child will eventually be blocked.
-                    });
-                    ncsMgr.on('exit', code => (code ? reject(code) : resolve()));
-                });
+
+                ncsMgr = spawn(
+                    `${toolchainDir}/ncsmgr/ncsmgr`,
+                    ['init-ncs', `${justUpdate ? '--just-update' : ''}`],
+                    { env },
+                );
                 break;
             }
             default:
         }
+
+        dispatch(setProgress(version, 'Initializing environment...'));
+        await new Promise((resolve, reject) => {
+            ncsMgr.stdout.on('data', data => {
+                const repo = (/=== updating (\w+)/.exec(data.toString()) || []).pop();
+                if (repo) {
+                    dispatch(setProgress(version, `Updating ${repo} repository...`));
+                }
+            });
+            ncsMgr.stderr.on('data', () => {
+                // don't remove, otherwise the child will eventually be blocked.
+            });
+            ncsMgr.on('exit', code => (code ? reject(code) : resolve()));
+        });
     } catch (error) {
         console.error(`Failed to clone NCS with error: ${error}`);
     }

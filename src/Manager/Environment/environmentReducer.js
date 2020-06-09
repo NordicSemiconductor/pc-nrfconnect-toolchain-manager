@@ -133,9 +133,6 @@ export const progressLabel = env => {
     switch (true) {
         case isInstallingToolchain(env): return `Installing ${progress(env)}%`;
         case isCloningSdk(env): {
-            if (process.platform === 'win32') {
-                return 'Cloning SDK... please wait until the terminal window is closed!';
-            }
             return env.progress;
         }
         case isRemoving(env): return 'Removing...';
