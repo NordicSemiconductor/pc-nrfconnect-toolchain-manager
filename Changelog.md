@@ -1,5 +1,5 @@
 ## Version 0.6.1
-- NCS clone process without external window on win32 #43
+- NCS clone process without external window on win32 #44
 
 ## Version 0.6.0
 - Add macOS support #39
