@@ -44,10 +44,10 @@ import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
+import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
 import initEnvironments from './initEnvironments';
 import PlatformInstructions from './PlatformInstructions';
-import { environmentsByVersion, isMasterVisible } from './managerReducer';
-
+import { environmentsByVersion, isMasterVisible, showInstallPackageDialog } from './managerReducer';
 
 const Environments = () => {
     const dispatch = useDispatch();
@@ -85,20 +85,39 @@ const Environments = () => {
     );
 };
 
-export default props => (
-    <div {...props}>
-        <PlatformInstructions />
-        {process.platform !== 'linux' && (
-            <>
-                <ButtonToolbar hidden>
-                    <Button className="mdi mdi-briefcase-plus-outline">
-                        Install package
-                    </Button>
-                </ButtonToolbar>
-                <Environments />
-                <FirstInstallDialog />
-                <RemoveEnvironmentDialog />
-            </>
-        )}
-    </div>
-);
+export default props => {
+    const dispatch = useDispatch();
+    return (
+        <div
+            onDragOver={evt => {
+                evt.preventDefault();
+                const ev = evt;
+                ev.dataTransfer.dropEffect = 'copy';
+            }}
+            onDrop={evt => {
+                evt.preventDefault();
+                const pkg = (evt.dataTransfer.getData('text') || (evt.dataTransfer.files[0] || {}).path);
+                dispatch(showInstallPackageDialog(pkg));
+            }}
+            {...props}
+        >
+            <PlatformInstructions />
+            {process.platform !== 'linux' && (
+                <>
+                    <ButtonToolbar className="pt-3 flex-row justify-content-end">
+                        <Button
+                            className="mdi x-mdi-briefcase-plus-outline"
+                            onClick={() => dispatch(showInstallPackageDialog())}
+                        >
+                            Install package
+                        </Button>
+                    </ButtonToolbar>
+                    <Environments />
+                    <FirstInstallDialog />
+                    <RemoveEnvironmentDialog />
+                    <InstallPackageDialog />
+                </>
+            )}
+        </div>
+    );
+};
