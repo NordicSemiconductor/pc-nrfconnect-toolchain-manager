@@ -61,7 +61,6 @@ describe('getLatestToolchain', () => {
     });
 });
 
-
 const reducer = combineReducers({ app: appReducer });
 describe('managerReducer', () => {
     it('adds an environment', () => {

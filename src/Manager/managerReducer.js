@@ -63,13 +63,15 @@ export const addEnvironment = environment => ({
     type: ADD_ENVIRONMENT,
     environment,
 });
-export const addLocallyExistingEnvironment = (version, toolchainDir, isWestPresent) => ({
+export const addLocallyExistingEnvironment = (
+    version, toolchainDir, isWestPresent, isInstalled = true,
+) => ({
     type: ADD_ENVIRONMENT,
     environment: {
         version,
         toolchainDir,
         isWestPresent,
-        isInstalled: true,
+        isInstalled,
     },
 });
 
@@ -87,6 +89,17 @@ export const showConfirmRemoveDialog = version => ({
 const HIDE_CONFIRM_REMOVE_DIALOG = 'HIDE_CONFIRM_REMOVE_DIALOG';
 export const hideConfirmRemoveDialog = () => ({
     type: HIDE_CONFIRM_REMOVE_DIALOG,
+});
+
+const SHOW_INSTALL_PACKAGE_DIALOG = 'SHOW_INSTALL_PACKAGE_DIALOG';
+export const showInstallPackageDialog = (dndPackage = null) => ({
+    type: SHOW_INSTALL_PACKAGE_DIALOG,
+    dndPackage,
+});
+
+const HIDE_INSTALL_PACKAGE_DIALOG = 'HIDE_INSTALL_PACKAGE_DIALOG';
+export const hideInstallPackageDialog = () => ({
+    type: HIDE_INSTALL_PACKAGE_DIALOG,
 });
 
 const SHOW_MASTER = 'SHOW_MASTER';
@@ -131,6 +144,10 @@ const managerReducer = (state, action) => {
             return { ...state, isRemoveDirDialogVisible: true, versionToRemove: action.version };
         case HIDE_CONFIRM_REMOVE_DIALOG:
             return { ...state, isRemoveDirDialogVisible: false, versionToRemove: null };
+        case SHOW_INSTALL_PACKAGE_DIALOG:
+            return { ...state, dndPackage: action.dndPackage, isInstallPackageDialogVisible: true };
+        case HIDE_INSTALL_PACKAGE_DIALOG:
+            return { ...state, dndPackage: null, isInstallPackageDialogVisible: false };
         case SHOW_MASTER:
             setPersistedShowMaster(!!action.show);
             return { ...state, isMasterVisible: !!action.show };
@@ -158,9 +175,11 @@ const maybeCallEnvironmentReducer = (state, action) => {
 const initialState = {
     environments: {},
     isRemoveDirDialogVisible: false,
+    isInstallPackageDialogVisible: false,
     isMasterVisible: persistedShowMaster(),
     versionToRemove: null,
     selectedVersion: null,
+    dndPackage: null,
 };
 
 export default (state = initialState, action) => {
@@ -171,6 +190,8 @@ export default (state = initialState, action) => {
 export const getLatestToolchain = toolchains => sortedByVersion(toolchains).pop();
 
 export const isRemoveDirDialogVisible = state => state.app.manager.isRemoveDirDialogVisible;
+
+export const isInstallPackageDialogVisible = ({ app }) => app.manager.isInstallPackageDialogVisible;
 
 export const getEnvironment = (state, version) => state.app.manager.environments[version];
 
@@ -183,3 +204,5 @@ export const environmentsByVersion = state => (
     sortedByVersion(Object.values(state.app.manager.environments)));
 
 export const isMasterVisible = ({ app }) => app.manager.isMasterVisible;
+
+export const dndPackage = ({ app }) => app.manager.dndPackage;
