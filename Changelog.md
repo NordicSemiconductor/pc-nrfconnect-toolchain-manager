@@ -1,3 +1,6 @@
+## Version 0.7.0
+- Feature: install toolchain from URL or local file
+
 ## Version 0.6.1
 - NCS clone process without external window on win32 #44
 
