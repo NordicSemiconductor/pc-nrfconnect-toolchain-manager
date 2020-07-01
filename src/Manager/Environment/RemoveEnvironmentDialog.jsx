@@ -54,7 +54,7 @@ export default () => {
             onCancel={() => dispatch(hideConfirmRemoveDialog())}
             onConfirm={() => {
                 dispatch(hideConfirmRemoveDialog());
-                remove(dispatch, environment);
+                dispatch(remove(environment));
             }}
         >
             Are you sure to remove <code>{version(environment)}</code> environment?

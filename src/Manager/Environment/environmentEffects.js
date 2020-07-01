@@ -66,50 +66,65 @@ import {
     progress,
 } from './environmentReducer';
 
-const download = ({ name, sha512, uri }, reportProgress) => new Promise((resolve, reject) => {
-    const hash = createHash('sha512');
+const DOWNLOAD = 0;
+const UNPACK = 50;
 
-    const url = uri || toolchainUrl(name);
-    const filename = name || path.basename(url);
+const reportProgress = (version, currentValue, maxValue, half) => (dispatch, getState) => {
+    const prevProgress = progress(getEnvironment(getState(), version));
+    const newProgress = Math.round((currentValue / maxValue) * 50) + half;
 
-    const downloadDir = path.resolve(installDir(), 'downloads');
-    const packageLocation = path.resolve(downloadDir, filename);
-    fse.mkdirpSync(downloadDir);
-    const writeStream = fs.createWriteStream(packageLocation);
+    if (newProgress !== prevProgress) {
+        const stage = (half === DOWNLOAD) ? 'Downloading' : 'Installing';
+        dispatch(setProgress(version, stage, newProgress));
+    }
+};
 
-    remote.net.request({ url }).on('response', response => {
-        const totalLength = response.headers['content-length'][0];
-        let currentLength = 0;
-        response.on('data', data => {
-            hash.update(data);
-            writeStream.write(data);
+const download = (version, { name, sha512, uri }) => async dispatch => (
+    new Promise((resolve, reject) => {
+        const hash = createHash('sha512');
 
-            currentLength += data.length;
-            reportProgress(currentLength, totalLength, 1);
-        });
-        response.on('end', () => {
-            writeStream.end(() => {
-                const hex = hash.digest('hex');
-                if (sha512 && (hex !== sha512)) {
-                    return reject(new Error(`Checksum verification failed ${url}`));
-                }
-                return resolve(packageLocation);
+        const url = uri || toolchainUrl(name);
+        const filename = name || path.basename(url);
+
+        const downloadDir = path.resolve(installDir(), 'downloads');
+        const packageLocation = path.resolve(downloadDir, filename);
+        fse.mkdirpSync(downloadDir);
+        const writeStream = fs.createWriteStream(packageLocation);
+
+        remote.net.request({ url }).on('response', response => {
+            const totalLength = response.headers['content-length'][0];
+            let currentLength = 0;
+            response.on('data', data => {
+                hash.update(data);
+                writeStream.write(data);
+
+                currentLength += data.length;
+                dispatch(reportProgress(version, currentLength, totalLength, DOWNLOAD));
             });
-        });
-        response.on('error', error => reject(new Error(`Error when reading ${url}: `
-            + `${error.message}`)));
+            response.on('end', () => {
+                writeStream.end(() => {
+                    const hex = hash.digest('hex');
+                    if (sha512 && (hex !== sha512)) {
+                        return reject(new Error(`Checksum verification failed ${url}`));
+                    }
+                    return resolve(packageLocation);
+                });
+            });
+            response.on('error', error => reject(new Error(`Error when reading ${url}: `
+                + `${error.message}`)));
+        })
+            .on('error', error => reject(new Error(`Unable to download ${url}: ${error.message}`)))
+            .end();
     })
-        .on('error', error => reject(new Error(`Unable to download ${url}: ${error.message}`)))
-        .end();
-});
+);
 
-const unpack = async (src, dest, reportProgress) => {
+const unpack = (version, src, dest) => async dispatch => {
     switch (process.platform) {
         case 'win32':
-            return new Promise(resolve => new DecompressZip(src)
-                .on('error', err => console.error('Caught an error', err))
-                .on('extract', () => resolve())
-                .on('progress', (fileIndex, fileCount) => reportProgress(fileIndex, fileCount, 2))
+            return new Promise((resolve, reject) => new DecompressZip(src)
+                .on('error', reject)
+                .on('extract', resolve)
+                .on('progress', (fileIndex, fileCount) => dispatch(reportProgress(version, fileIndex, fileCount, UNPACK)))
                 .extract({ path: dest }));
         case 'darwin': {
             const volume = execSync(`hdiutil attach ${src} | grep -Eo "/Volumes/ncs-toolchain-.*"`).toString().trim();
@@ -117,7 +132,7 @@ const unpack = async (src, dest, reportProgress) => {
             await fse.copy(path.join(volume, 'toolchain'), dest, {
                 filter: () => {
                     n += 1;
-                    reportProgress(n, 45000, 2);
+                    dispatch(reportProgress(version, n, 45000, UNPACK));
                     return true;
                 },
             });
@@ -129,32 +144,23 @@ const unpack = async (src, dest, reportProgress) => {
     return undefined;
 };
 
-const setProgressIfChanged = (version, currentValue, maxValue, half) => (dispatch, getState) => {
-    const prevProgress = progress(getEnvironment(getState(), version));
-    const newProgress = Math.round((currentValue / maxValue) * 50) + (half === 2 ? 50 : 0);
-
-    if (newProgress !== prevProgress) {
-        dispatch(setProgress(version, newProgress));
-    }
-};
-
-const reportProgress = (dispatch, version) => (currentValue, maxValue, half) => (
-    dispatch(setProgressIfChanged(version, currentValue, maxValue, half))
-);
-
-const installToolchain = async (dispatch, version, toolchain, toolchainDir) => {
+const installToolchain = (version, toolchain, toolchainDir) => async dispatch => {
     dispatch(startInstallToolchain(version));
 
-    fse.mkdirpSync(toolchainDir);
-    const packageLocation = await download(toolchain, reportProgress(dispatch, version));
-    await unpack(packageLocation, toolchainDir, reportProgress(dispatch, version));
+    try {
+        fse.mkdirpSync(toolchainDir);
+        const packageLocation = await dispatch(download(version, toolchain));
+        await dispatch(unpack(version, packageLocation, toolchainDir));
+    } catch (error) {
+        dispatch(showErrorDialog(`${error.message || error}`));
+    }
 
     dispatch(finishInstallToolchain(version, toolchainDir));
 };
 
 export const isWestPresent = toolchainDir => fs.existsSync(path.resolve(toolchainDir, '../.west/config'));
 
-export const cloneNcs = async (dispatch, version, toolchainDir, justUpdate) => {
+export const cloneNcs = (version, toolchainDir, justUpdate) => async dispatch => {
     dispatch(startCloningSdk(version));
 
     if (!justUpdate) {
@@ -201,13 +207,13 @@ export const cloneNcs = async (dispatch, version, toolchainDir, justUpdate) => {
             ncsMgr.on('exit', code => (code ? reject(code) : resolve()));
         });
     } catch (error) {
-        console.error(`Failed to clone NCS with error: ${error}`);
+        dispatch(showErrorDialog(`Failed to clone the repositories: ${error}`));
     }
 
     dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
 };
 
-export const install = async (dispatch, { version, toolchains }, justUpdate) => {
+export const install = ({ version, toolchains }, justUpdate) => async dispatch => {
     const toolchain = getLatestToolchain(toolchains);
     const toolchainDir = path.resolve(installDir(), version, 'toolchain');
 
@@ -217,11 +223,11 @@ export const install = async (dispatch, { version, toolchains }, justUpdate) => 
     }
     setHasInstalledAnNcs();
 
-    await installToolchain(dispatch, version, toolchain, toolchainDir);
-    await cloneNcs(dispatch, version, toolchainDir, justUpdate);
+    await dispatch(installToolchain(version, toolchain, toolchainDir));
+    await dispatch(cloneNcs(version, toolchainDir, justUpdate));
 };
 
-export const remove = async (dispatch, { toolchainDir, version }) => {
+export const remove = ({ toolchainDir, version }) => async dispatch => {
     const toBeDeletedDir = path.resolve(toolchainDir, '..', '..', 'toBeDeleted');
     dispatch(startRemoving(version));
 
@@ -249,7 +255,7 @@ export const remove = async (dispatch, { toolchainDir, version }) => {
 export const installPackage = urlOrFilePath => async dispatch => {
     const match = /ncs-toolchain-(v?.+?)(-\d{8}-[^.]+).[zip|dmg]/.exec(urlOrFilePath);
     if (!match) {
-        console.log('not an NCS toolchain package');
+        dispatch(showErrorDialog('Filename is not recognized as a toolchain package.'));
         return;
     }
     const version = match[1];
@@ -259,11 +265,15 @@ export const installPackage = urlOrFilePath => async dispatch => {
     dispatch(addLocallyExistingEnvironment(version, toolchainDir, false, false));
     dispatch(startInstallToolchain(version));
 
-    const filePath = fse.existsSync(urlOrFilePath)
-        ? urlOrFilePath
-        : await download({ uri: urlOrFilePath }, reportProgress(dispatch, version));
+    try {
+        const filePath = fse.existsSync(urlOrFilePath)
+            ? urlOrFilePath
+            : await dispatch(download(version, { uri: urlOrFilePath }));
 
-    await unpack(filePath, toolchainDir, reportProgress(dispatch, version));
-    dispatch(finishInstallToolchain(version, toolchainDir));
-    await cloneNcs(dispatch, version, toolchainDir, false);
+        await dispatch(unpack(version, filePath, toolchainDir));
+        dispatch(finishInstallToolchain(version, toolchainDir));
+        await dispatch(cloneNcs(version, toolchainDir, false));
+    } catch (error) {
+        dispatch(showErrorDialog(`${error.message || error}`));
+    }
 };

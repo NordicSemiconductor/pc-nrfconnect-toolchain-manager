@@ -47,7 +47,7 @@ const Install = ({ environment }) => {
     const dispatch = useDispatch();
     const { platform } = process;
     const onClick = {
-        darwin: () => install(dispatch, environment, false),
+        darwin: () => dispatch(install(environment, false)),
         win32: () => dispatch(showConfirmInstallDirDialog(version(environment))),
     };
 
