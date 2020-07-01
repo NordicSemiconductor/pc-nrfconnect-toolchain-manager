@@ -189,19 +189,19 @@ export default (state = initialState, action) => {
 
 export const getLatestToolchain = toolchains => sortedByVersion(toolchains).pop();
 
-export const isRemoveDirDialogVisible = state => state.app.manager.isRemoveDirDialogVisible;
+export const isRemoveDirDialogVisible = ({ app }) => app.manager.isRemoveDirDialogVisible;
 
 export const isInstallPackageDialogVisible = ({ app }) => app.manager.isInstallPackageDialogVisible;
 
-export const getEnvironment = (state, version) => state.app.manager.environments[version];
+export const getEnvironment = ({ app }, version) => app.manager.environments[version];
 
 export const environmentToRemove = state => (
     getEnvironment(state, state.app.manager.versionToRemove));
 
-export const selectedVersion = state => state.app.manager.selectedVersion;
+export const selectedVersion = ({ app }) => app.manager.selectedVersion;
 
-export const environmentsByVersion = state => (
-    sortedByVersion(Object.values(state.app.manager.environments)));
+export const environmentsByVersion = ({ app }) => (
+    sortedByVersion(Object.values(app.manager.environments)));
 
 export const isMasterVisible = ({ app }) => app.manager.isMasterVisible;
 
