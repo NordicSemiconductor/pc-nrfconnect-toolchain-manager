@@ -70,10 +70,9 @@ export default () => {
             onCancel={() => dispatch(hideInstallPackageDialog())}
         >
             <Form.Group controlId="packageUrl">
-                <Form.Label>nRF Connect SDK toolchain package URL or path:</Form.Label>
+                <Form.Label>Path to nRF Connect SDK toolchain package:</Form.Label>
                 <Form.Control
                     type="text"
-                    placeholder="https://"
                     value={pkg}
                     onChange={({ target }) => setPkg(target.value)}
                     onKeyPress={evt => (evt.charCode === 13) && onConfirm()}

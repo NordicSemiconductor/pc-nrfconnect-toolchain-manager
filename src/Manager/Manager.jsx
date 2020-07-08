@@ -104,15 +104,16 @@ export default props => {
             <PlatformInstructions />
             {process.platform !== 'linux' && (
                 <>
+                    <Environments />
                     <ButtonToolbar className="pt-3 flex-row justify-content-end">
                         <Button
-                            className="mdi x-mdi-briefcase-plus-outline"
+                            variant="link"
+                            className="mdi x-mdi-briefcase-plus-outline pr-0 pt-0"
                             onClick={() => dispatch(showInstallPackageDialog())}
                         >
-                            Install package
+                            Install package from other source
                         </Button>
                     </ButtonToolbar>
-                    <Environments />
                     <FirstInstallDialog />
                     <RemoveEnvironmentDialog />
                     <InstallPackageDialog />

@@ -36,7 +36,7 @@
 
 import React from 'react';
 import { string } from 'prop-types';
-import NrfCard from '../NrfCard/NrfCard';
+import Alert from 'react-bootstrap/Alert';
 
 const isMac = process.platform === 'darwin';
 const isLinux = process.platform === 'linux';
@@ -56,10 +56,10 @@ OnlineDocs.propTypes = {
 };
 
 export default () => (process.platform === 'win32' ? null : (
-    <NrfCard>
-        {isLinux && <p>Linux is currently not supported by this app.</p>}
-        {isMac && <p>The macOS support is experimental.</p>}
-        For instructions on how to manually set up an environment on your machine,
+    <Alert variant="warning">
+        {isLinux && <b>Linux is currently not supported by this app.</b>}
+        {isMac && <b>The macOS support is experimental.</b>}
+        {' '}For instructions on how to manually set up an environment on your machine,
         please read the online <OnlineDocs label="documentation" />.
-    </NrfCard>
+    </Alert>
 ));

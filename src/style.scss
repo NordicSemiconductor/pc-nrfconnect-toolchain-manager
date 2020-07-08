@@ -135,6 +135,14 @@ p, li {
 
 .alert {
     border-radius: 0;
+    a {
+        color: inherit;
+        text-decoration: underline;
+    }
+}
+
+.alert-warning {
+    border-color: #edddac;
 }
 
 h4 {
