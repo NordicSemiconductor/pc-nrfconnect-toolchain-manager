@@ -38,11 +38,6 @@ import { combineReducers } from 'redux';
 import appReducer from '../reducers';
 import { getLatestToolchain, environmentsByVersion, addEnvironment } from './managerReducer';
 
-jest.mock('electron-store', () => class {
-    set() {} // eslint-disable-line
-    get(_, defValue) { return defValue; } // eslint-disable-line
-});
-
 const older = {
     version: '20200217',
     name: 'ncs-toolchain-v1.2.0-20200217-a56f2eb.zip',

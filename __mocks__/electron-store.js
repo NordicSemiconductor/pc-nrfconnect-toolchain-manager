@@ -1,4 +1,4 @@
 export default jest.fn(() => ({
-    get: () => undefined,
+    get: (_, defaultValue) => defaultValue,
     set: () => undefined,
 }));
