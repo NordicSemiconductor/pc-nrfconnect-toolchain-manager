@@ -41,7 +41,6 @@ import { remote } from 'electron';
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import initEnvironments from '../Manager/initEnvironments';
 import { install } from '../Manager/Environment/environmentEffects';
-import { clearEnvironments } from '../Manager/managerReducer';
 import {
     hideInstallDirDialog,
     isDialogVisible,
@@ -59,7 +58,6 @@ const selectInstallDir = (dispatch, installDir, hideDialog) => {
     });
     if (selection) {
         dispatch(setInstallDir(selection[0]));
-        dispatch(clearEnvironments());
         initEnvironments(dispatch);
         if (hideDialog) { dispatch(hideInstallDirDialog()); }
     }

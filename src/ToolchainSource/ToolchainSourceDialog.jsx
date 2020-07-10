@@ -34,37 +34,43 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import Store from 'electron-store';
-import path from 'path';
-import os from 'os';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import Form from 'react-bootstrap/Form';
+import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import {
+    isDialogVisible, hideSetToolchainSourceDialog, setToolchainSource, toolchainRootUrl,
+} from './toolchainSourceReducer';
+import initEnvironments from '../Manager/initEnvironments';
 
-const store = new Store({ name: 'pc-nrfconnect-toolchain-manager' });
+export default () => {
+    const dispatch = useDispatch();
+    const isVisible = useSelector(isDialogVisible);
+    const savedUrl = useSelector(toolchainRootUrl);
+    const [url, setUrl] = useState(savedUrl);
 
-export const isFirstInstall = () => store.get('isFirstInstall', true);
-export const setHasInstalledAnNcs = () => store.set('isFirstInstall', false);
+    const onConfirm = () => {
+        dispatch(setToolchainSource(url));
+        dispatch(hideSetToolchainSourceDialog());
+        initEnvironments(dispatch);
+    };
 
-const defaultInstallDir = {
-    win32: path.resolve(os.homedir(), 'ncs'),
-    darwin: '/opt/nordic/ncs',
-    linux: '//TODO',
-}[process.platform];
-
-export const persistedInstallDir = () => store.get('installDir', defaultInstallDir);
-export const setPersistedInstallDir = dir => store.set('installDir', dir);
-
-const indexJson = {
-    win32: 'index.json',
-    darwin: 'index-mac.json',
-    linux: 'index-linux.json',
-}[process.platform];
-
-export const toolchainIndexUrl = () => {
-    const value = store.get('toolchainIndexUrl',
-        'https://developer.nordicsemi.com/.pc-tools/toolchain');
-    return `${value.replace(/\/index.*.json$/, '')}/${indexJson}`;
+    return (
+        <ConfirmationDialog
+            isVisible={isVisible}
+            title="Toolchain source URL"
+            onConfirm={onConfirm}
+            onCancel={() => dispatch(hideSetToolchainSourceDialog())}
+        >
+            <Form.Group controlId="toolchainSourceUrl">
+                <Form.Label>Specify toolchain source URL:</Form.Label>
+                <Form.Control
+                    type="text"
+                    value={url}
+                    onChange={({ target }) => setUrl(target.value)}
+                    onKeyPress={evt => (evt.charCode === 13) && onConfirm()}
+                />
+            </Form.Group>
+        </ConfirmationDialog>
+    );
 };
-export const toolchainUrl = name => `${path.dirname(toolchainIndexUrl())}/${name}`;
-export const setToolchainIndexUrl = value => store.set('toolchainIndexUrl', value);
-
-export const persistedShowMaster = () => store.get('showMaster', false);
-export const setPersistedShowMaster = visible => store.set('showMaster', visible);

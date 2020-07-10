@@ -42,7 +42,7 @@ import { remote } from 'electron';
 import fse from 'fs-extra';
 import { toolchainIndexUrl, persistedInstallDir as installDir } from '../persistentStore';
 import { isWestPresent } from './Environment/environmentEffects';
-import { addEnvironment, addLocallyExistingEnvironment } from './managerReducer';
+import { addEnvironment, addLocallyExistingEnvironment, clearEnvironments } from './managerReducer';
 
 const detectLocallyExistingEnvironments = dispatch => {
     fs.readdirSync(installDir(), { withFileTypes: true })
@@ -92,6 +92,7 @@ export default dispatch => {
         execSync(`osascript -e "do shell script \\"${script} \\" with prompt \\"${prompt} \\" with administrator privileges"`);
     }
     fse.mkdirpSync(installDir());
+    dispatch(clearEnvironments());
     detectLocallyExistingEnvironments(dispatch);
     downloadIndex(dispatch);
 };

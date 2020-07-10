@@ -44,12 +44,14 @@ import Form from 'react-bootstrap/Form';
 import NrfCard from '../NrfCard/NrfCard';
 import { showSetInstallDirDialog, currentInstallDir } from '../InstallDir/installDirReducer';
 import { showMasterEnvironment, isMasterVisible } from '../Manager/managerReducer';
+import { showSetToolchainSourceDialog, toolchainRootUrl } from '../ToolchainSource/toolchainSourceReducer';
 
 export default props => {
     const dispatch = useDispatch();
     const installDir = useSelector(currentInstallDir);
     const disabled = process.platform !== 'win32';
     const masterVisible = useSelector(isMasterVisible);
+    const toolchainUrl = useSelector(toolchainRootUrl);
 
     return (
         <div {...props}>
@@ -87,6 +89,25 @@ export default props => {
                                 toolchain is likely not well tested.
                             </Form.Text>
                         </Form.Group>
+                    </Col>
+                </Row>
+
+                <Row className="settings-info">
+                    <Col className="ml-3">
+                        <Row className="h4">
+                            Toolchain source URL
+                        </Row>
+                        <Row className="text-muted">
+                            {toolchainUrl}
+                        </Row>
+                    </Col>
+                    <Col xs="auto">
+                        <Button
+                            variant="outline-primary"
+                            onClick={() => dispatch(showSetToolchainSourceDialog())}
+                        >
+                            Change
+                        </Button>
                     </Col>
                 </Row>
             </NrfCard>

@@ -48,6 +48,7 @@ import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
 import initEnvironments from './initEnvironments';
 import PlatformInstructions from './PlatformInstructions';
 import { environmentsByVersion, isMasterVisible, showInstallPackageDialog } from './managerReducer';
+import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 
 const Environments = () => {
     const dispatch = useDispatch();
@@ -117,6 +118,7 @@ export default props => {
                     <FirstInstallDialog />
                     <RemoveEnvironmentDialog />
                     <InstallPackageDialog />
+                    <ToolchainSourceDialog />
                 </>
             )}
         </div>

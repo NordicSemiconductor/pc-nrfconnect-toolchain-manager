@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,37 +34,45 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import Store from 'electron-store';
-import path from 'path';
-import os from 'os';
+import { toolchainIndexUrl, setToolchainIndexUrl } from '../persistentStore';
 
-const store = new Store({ name: 'pc-nrfconnect-toolchain-manager' });
+const SET_TOOLCHAIN_SOURCE = 'SET_TOOLCHAIN_SOURCE';
+export const setToolchainSource = toolchainRootUrl => ({
+    type: SET_TOOLCHAIN_SOURCE,
+    toolchainRootUrl,
+});
 
-export const isFirstInstall = () => store.get('isFirstInstall', true);
-export const setHasInstalledAnNcs = () => store.set('isFirstInstall', false);
+const SHOW_SET_TOOLCHAIN_SOURCE_DIALOG = 'SHOW_SET_TOOLCHAIN_SOURCE_DIALOG';
+export const showSetToolchainSourceDialog = () => ({
+    type: SHOW_SET_TOOLCHAIN_SOURCE_DIALOG,
+    isDialogVisible: true,
+});
 
-const defaultInstallDir = {
-    win32: path.resolve(os.homedir(), 'ncs'),
-    darwin: '/opt/nordic/ncs',
-    linux: '//TODO',
-}[process.platform];
+const HIDE_SET_TOOLCHAIN_SOURCE_DIALOG = 'HIDE_SET_TOOLCHAIN_SOURCE_DIALOG';
+export const hideSetToolchainSourceDialog = () => ({
+    type: HIDE_SET_TOOLCHAIN_SOURCE_DIALOG,
+    isDialogVisible: false,
+});
 
-export const persistedInstallDir = () => store.get('installDir', defaultInstallDir);
-export const setPersistedInstallDir = dir => store.set('installDir', dir);
-
-const indexJson = {
-    win32: 'index.json',
-    darwin: 'index-mac.json',
-    linux: 'index-linux.json',
-}[process.platform];
-
-export const toolchainIndexUrl = () => {
-    const value = store.get('toolchainIndexUrl',
-        'https://developer.nordicsemi.com/.pc-tools/toolchain');
-    return `${value.replace(/\/index.*.json$/, '')}/${indexJson}`;
+const initialState = {
+    toolchainRootUrl: toolchainIndexUrl(),
+    isDialogVisible: false,
 };
-export const toolchainUrl = name => `${path.dirname(toolchainIndexUrl())}/${name}`;
-export const setToolchainIndexUrl = value => store.set('toolchainIndexUrl', value);
 
-export const persistedShowMaster = () => store.get('showMaster', false);
-export const setPersistedShowMaster = visible => store.set('showMaster', visible);
+export default (state = initialState, { type, ...action }) => {
+    switch (type) {
+        case SET_TOOLCHAIN_SOURCE:
+            setToolchainIndexUrl(action.toolchainRootUrl);
+        case SHOW_SET_TOOLCHAIN_SOURCE_DIALOG: // eslint-disable-line no-fallthrough
+        case HIDE_SET_TOOLCHAIN_SOURCE_DIALOG:
+            return {
+                ...state,
+                ...action,
+            };
+        default:
+            return state;
+    }
+};
+
+export const toolchainRootUrl = ({ app }) => app.toolchainSource.toolchainRootUrl;
+export const isDialogVisible = ({ app }) => app.toolchainSource.isDialogVisible;
