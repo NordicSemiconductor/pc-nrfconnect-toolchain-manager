@@ -1,3 +1,6 @@
+## Unreleased
+- Feature: settings to change toolchain source
+
 ## Version 0.7.0
 - Feature: install toolchain from URL or local file #45
 
