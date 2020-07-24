@@ -115,10 +115,10 @@ const EnvironmentMenu = ({ environment }) => {
                 Open toolchain directory
             </Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => cloneNcs(dispatch, version, toolchainDir, true)}>
+            <Dropdown.Item onClick={() => dispatch(cloneNcs(version, toolchainDir, true))}>
                 Update SDK
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => install(dispatch, environment, true)}>
+            <Dropdown.Item onClick={() => dispatch(install(environment, true))}>
                 Update toolchain
             </Dropdown.Item>
             <Dropdown.Divider />

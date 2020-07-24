@@ -1,3 +1,6 @@
+## Version 0.7.1
+- Fixed update SDK/toolchain actions
+
 ## Version 0.7.0
 - Feature: install toolchain from URL or local file #45
 
