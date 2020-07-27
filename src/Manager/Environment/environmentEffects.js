@@ -66,6 +66,9 @@ import {
     progress,
 } from './environmentReducer';
 
+const sudo = remote.require('sudo-prompt');
+const { spawn: remoteSpawn } = remote.require('child_process');
+
 const DOWNLOAD = 0;
 const UNPACK = 50;
 
@@ -139,6 +142,18 @@ const unpack = (version, src, dest) => async dispatch => {
             execSync(`hdiutil detach ${volume}`);
             break;
         }
+        case 'linux': {
+            dispatch(setProgress(version, 'Installing...', 51));
+            await new Promise((resolve, reject) => sudo.exec(
+                `snap install ${src} --devmode`,
+                { name: 'Toolchain Manager' },
+                err => (err ? reject(err) : resolve()),
+            ));
+            dispatch(setProgress(version, 'Installing...', 99));
+            fse.removeSync(dest);
+            fse.symlinkSync(`/snap/ncs-toolchain-${version}/current`, dest);
+            break;
+        }
         default:
     }
     return undefined;
@@ -168,11 +183,12 @@ export const cloneNcs = (version, toolchainDir, justUpdate) => async dispatch =>
     }
     try {
         let ncsMgr;
+        const update = justUpdate ? '--just-update' : '';
         switch (process.platform) {
             case 'win32': {
                 ncsMgr = spawn(
                     path.resolve(toolchainDir, 'bin', 'bash.exe'),
-                    ['-l', '-c', `unset ZEPHYR_BASE ; ncsmgr/ncsmgr init-ncs ${justUpdate ? '--just-update' : ''}`],
+                    ['-l', '-c', `unset ZEPHYR_BASE ; ncsmgr/ncsmgr init-ncs ${update}`],
                 );
 
                 break;
@@ -185,7 +201,20 @@ export const cloneNcs = (version, toolchainDir, justUpdate) => async dispatch =>
 
                 ncsMgr = spawn(
                     `${toolchainDir}/ncsmgr/ncsmgr`,
-                    ['init-ncs', `${justUpdate ? '--just-update' : ''}`],
+                    ['init-ncs', `${update}`],
+                    { env },
+                );
+                break;
+            }
+            case 'linux': {
+                const { ZEPHYR_BASE, ...env } = process.env;
+                env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
+
+                ncsMgr = remoteSpawn(
+                    'snap', [
+                        'run', '--shell', `ncs-toolchain-${version}.west`, '-c',
+                        `${toolchainDir}/ncsmgr/ncsmgr init-ncs ${update}`,
+                    ],
                     { env },
                 );
                 break;
@@ -194,6 +223,7 @@ export const cloneNcs = (version, toolchainDir, justUpdate) => async dispatch =>
         }
 
         dispatch(setProgress(version, 'Initializing environment...'));
+        let err = '';
         await new Promise((resolve, reject) => {
             ncsMgr.stdout.on('data', data => {
                 const repo = (/=== updating (\w+)/.exec(data.toString()) || []).pop();
@@ -201,10 +231,8 @@ export const cloneNcs = (version, toolchainDir, justUpdate) => async dispatch =>
                     dispatch(setProgress(version, `Updating ${repo} repository...`));
                 }
             });
-            ncsMgr.stderr.on('data', () => {
-                // don't remove, otherwise the child will eventually be blocked.
-            });
-            ncsMgr.on('exit', code => (code ? reject(code) : resolve()));
+            ncsMgr.stderr.on('data', data => { err += `${data}`; });
+            ncsMgr.on('exit', code => (code ? reject(err) : resolve()));
         });
     } catch (error) {
         dispatch(showErrorDialog(`Failed to clone the repositories: ${error}`));

@@ -103,24 +103,20 @@ export default props => {
             {...props}
         >
             <PlatformInstructions />
-            {process.platform !== 'linux' && (
-                <>
-                    <Environments />
-                    <ButtonToolbar className="pt-3 flex-row justify-content-end">
-                        <Button
-                            variant="link"
-                            className="mdi x-mdi-briefcase-plus-outline pr-0 pt-0"
-                            onClick={() => dispatch(showInstallPackageDialog())}
-                        >
-                            Install package from other source
-                        </Button>
-                    </ButtonToolbar>
-                    <FirstInstallDialog />
-                    <RemoveEnvironmentDialog />
-                    <InstallPackageDialog />
-                    <ToolchainSourceDialog />
-                </>
-            )}
+            <Environments />
+            <ButtonToolbar className="pt-3 flex-row justify-content-end">
+                <Button
+                    variant="link"
+                    className="mdi x-mdi-briefcase-plus-outline pr-0 pt-0"
+                    onClick={() => dispatch(showInstallPackageDialog())}
+                >
+                    Install package from other source
+                </Button>
+            </ButtonToolbar>
+            <FirstInstallDialog />
+            <RemoveEnvironmentDialog />
+            <InstallPackageDialog />
+            <ToolchainSourceDialog />
         </div>
     );
 };

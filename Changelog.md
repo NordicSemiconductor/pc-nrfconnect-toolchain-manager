@@ -1,5 +1,6 @@
 ## Unreleased
 - Feature: settings to change toolchain source
+- Linux toolchain support
 
 ## Version 0.7.1
 - Fixed update SDK/toolchain actions

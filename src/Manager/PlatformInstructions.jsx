@@ -38,8 +38,8 @@ import React from 'react';
 import { string } from 'prop-types';
 import Alert from 'react-bootstrap/Alert';
 
-const isMac = process.platform === 'darwin';
 const isLinux = process.platform === 'linux';
+const isWindows = process.platform === 'win32';
 
 export const OnlineDocs = ({ label }) => (
     <a
@@ -55,10 +55,9 @@ OnlineDocs.propTypes = {
     label: string.isRequired,
 };
 
-export default () => (process.platform === 'win32' ? null : (
+export default () => (isWindows ? null : (
     <Alert variant="warning">
-        {isLinux && <b>Linux is currently not supported by this app.</b>}
-        {isMac && <b>The macOS support is experimental.</b>}
+        <b>The {isLinux ? 'Linux' : 'macOS'} support is experimental.</b>
         {' '}For instructions on how to manually set up an environment on your machine,
         please read the online <OnlineDocs label="documentation" />.
     </Alert>

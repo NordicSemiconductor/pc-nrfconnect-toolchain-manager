@@ -42,6 +42,8 @@ import path from 'path';
 
 import fse from 'fs-extra';
 
+const { exec: remoteExec } = remote.require('child_process');
+
 const findOrCreateSettingsNode = xml => {
     let settings = xml.querySelector('settings');
     if (settings == null) {
@@ -128,15 +130,17 @@ const updateSettingsFile = async (settingsFileName, toolchainDir) => {
     fs.writeFileSync(settingsPath, updatedXml);
 };
 
-export const openSegger = async toolchainDir => {
+export const openSegger = async (toolchainDir, version) => {
     await Promise.all([
         updateSettingsFile('settings.xml', toolchainDir),
         updateSettingsFile('settings.xml.bak', toolchainDir),
     ]);
 
+    const cwd = path.dirname(toolchainDir);
+
     switch (process.platform) {
         case 'win32':
-            exec(`"${path.resolve(toolchainDir, 'SEGGER Embedded Studio.cmd')}"`);
+            exec(`"${path.resolve(toolchainDir, 'SEGGER Embedded Studio.cmd')}"`, { cwd });
             break;
         case 'darwin':
             exec(
@@ -147,8 +151,12 @@ export const openSegger = async toolchainDir => {
                         ZEPHYR_TOOLCHAIN_VARIANT: 'gnuarmemb',
                         GNUARMEMB_TOOLCHAIN_PATH: toolchainDir,
                     },
+                    cwd,
                 },
             );
+            break;
+        case 'linux':
+            remoteExec(`snap run ncs-toolchain-${version}.emstudio`, { cwd });
             break;
         default:
     }
