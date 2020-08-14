@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -37,8 +37,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { gotoPage } from '../../launcherActions';
-import { selectEnvironment } from '../managerReducer';
+import { selectEnvironment, showFirstSteps } from '../managerReducer';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { isOnlyAvailable, version } from './environmentReducer';
@@ -52,7 +51,7 @@ const ShowFirstSteps = ({ environment }) => {
             icon="x-mdi-dog-service"
             onClick={() => {
                 dispatch(selectEnvironment(version(environment)));
-                dispatch(gotoPage(2));
+                dispatch(showFirstSteps());
             }}
             label="First steps to build"
             title="Show how to build a sample project"
