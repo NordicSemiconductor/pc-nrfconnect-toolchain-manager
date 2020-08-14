@@ -2,7 +2,7 @@
   "name": "pc-nrfconnect-toolchain-manager",
   "version": "0.8.0",
   "description": "Install and manage tools to develop with the nRF Connect SDK (NCS)",
-  "displayName": "Toolchain Manager (new architecture)",
+  "displayName": "Toolchain Manager",
   "repository": {
     "type": "git",
     "url": "https://github.com/NordicSemiconductor/pc-nrfconnect-.git"

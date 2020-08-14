@@ -40,43 +40,20 @@ import './style.scss';
 
 import React from 'react';
 
+import { App } from 'pc-nrfconnect-shared';
 import appReducer from './reducers';
 import Manager from './Manager/Manager';
 import Settings from './Settings/Settings';
-import FirstInstallInstructions from './FirstInstall/FirstInstallInstructions';
-import InstallDirDialog from './InstallDir/InstallDirDialog';
 
-const showIf = visible => (visible ? 'd-block' : 'd-none');
-
-export default {
-    mapMainViewState: ({ core }, props) => ({
-        ...props,
-        viewId: core.navMenu.selectedItemId < 0 ? 0 : core.navMenu.selectedItemId,
-    }),
-    decorateMainView: MainView => ({ viewId }) => (
-        <MainView cssClass="main-view">
-            <div className="main-view-scroll">
-                <Manager className={showIf(viewId === 0)} />
-                <Settings className={showIf(viewId === 1)} />
-                <FirstInstallInstructions className={showIf(viewId === 2)} />
-            </div>
-
-            <InstallDirDialog />
-        </MainView>
-    ),
-    decorateSidePanel: () => () => null,
-    decorateLogViewer: () => () => null,
-    decorateSerialPortSelector: () => () => null,
-    decorateNavMenu: NavMenu => ({ selectedItemId, ...rest }) => (
-        <NavMenu
-            {...rest}
-            selectedItemId={selectedItemId < 0 ? 0 : selectedItemId}
-            menuItems={[
-                { id: 0, text: 'SDK environments', iconClass: 'mdi mdi-folder' },
-                { id: 1, text: 'Settings', iconClass: 'mdi mdi-settings' },
-                { id: 2, text: 'Guide', iconClass: 'mdi mdi-file-document' },
-            ]}
-        />
-    ),
-    reduceApp: appReducer,
-};
+export default () => (
+    <App
+        appReducer={appReducer}
+        deviceSelect={null}
+        sidePanel={null}
+        panes={[
+            ['SDK Environments', Manager],
+            ['Settings', Settings],
+        ]}
+        showLogByDefault={false}
+    />
+);
