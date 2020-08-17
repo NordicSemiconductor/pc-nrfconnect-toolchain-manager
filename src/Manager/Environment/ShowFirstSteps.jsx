@@ -55,7 +55,7 @@ const ShowFirstSteps = ({ environment }) => {
             }}
             label="First steps to build"
             title="Show how to build a sample project"
-            variant="outline-primary"
+            variant="secondary"
         />
     );
 };

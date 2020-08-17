@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -87,7 +87,7 @@ const EnvironmentMenu = ({ environment }) => {
     return (
         <DropdownButton
             className="ml-2"
-            variant="outline-primary"
+            variant="secondary"
             title=""
             alignRight
             disabled={!isInstalled(environment)}

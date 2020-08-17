@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -73,4 +73,8 @@
 
 .dropdown-toggle::after {
     vertical-align: 0.2em;
+}
+
+.btn-primary {
+    border: none;
 }

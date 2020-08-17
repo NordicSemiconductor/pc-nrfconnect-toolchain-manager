@@ -67,6 +67,7 @@ const FirstInstallInstructions = props => {
             <ButtonToolbar className="mb-2">
                 <Button
                     className="mdi mdi-arrow-left"
+                    variant="secondary"
                     onClick={() => dispatch(hideFirstSteps())}
                 >
                     Go back

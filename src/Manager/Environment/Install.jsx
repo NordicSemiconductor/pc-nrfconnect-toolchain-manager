@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -58,7 +58,7 @@ const Install = ({ environment }) => {
             icon="x-mdi-briefcase-download-outline"
             onClick={onClick[platform]}
             label="Install"
-            variant="outline-primary"
+            variant="secondary"
         />
     );
 };
