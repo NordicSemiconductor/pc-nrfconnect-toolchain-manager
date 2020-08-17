@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -108,6 +108,16 @@ export const showMasterEnvironment = visible => ({
     show: !!visible,
 });
 
+const SHOW_FIRST_STEPS = 'SHOW_FIRST_STEPS';
+export const showFirstSteps = () => ({
+    type: SHOW_FIRST_STEPS,
+});
+
+const HIDE_FIRST_STEPS = 'HIDE_FIRST_STEPS';
+export const hideFirstSteps = () => ({
+    type: HIDE_FIRST_STEPS,
+});
+
 const append = (environments, environment) => ({
     ...environments,
     [environment.version]: {
@@ -153,6 +163,10 @@ const managerReducer = (state, action) => {
             return { ...state, isMasterVisible: !!action.show };
         case SELECT_ENVIRONMENT:
             return { ...state, selectedVersion: action.selectedVersion };
+        case SHOW_FIRST_STEPS:
+            return { ...state, isShowingFirstSteps: true };
+        case HIDE_FIRST_STEPS:
+            return { ...state, isShowingFirstSteps: false };
         default:
             return state;
     }
@@ -177,6 +191,7 @@ const initialState = {
     isRemoveDirDialogVisible: false,
     isInstallPackageDialogVisible: false,
     isMasterVisible: persistedShowMaster(),
+    isShowingFirstSteps: false,
     versionToRemove: null,
     selectedVersion: null,
     dndPackage: null,
@@ -206,3 +221,5 @@ export const environmentsByVersion = ({ app }) => (
 export const isMasterVisible = ({ app }) => app.manager.isMasterVisible;
 
 export const dndPackage = ({ app }) => app.manager.dndPackage;
+
+export const isShowingFirstSteps = ({ app }) => app.manager.isShowingFirstSteps;
