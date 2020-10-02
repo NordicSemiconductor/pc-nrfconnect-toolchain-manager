@@ -76,7 +76,7 @@ export default () => {
                 {' '}For instructions on how to manually set up an environment on your machine,
                 please read the online <OnlineDocs label="documentation" />.
             </Alert>
-            {isSnapAvailable || (
+            {(isLinux && !isSnapAvailable) && (
                 <Alert variant="danger">
                     Linux support depends on <b>snap</b> which seems unavailable,
                     please install the package.
