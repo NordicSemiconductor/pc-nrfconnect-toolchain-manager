@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -44,8 +44,7 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 
-import { gotoPage } from '../launcherActions';
-import { selectedVersion } from '../Manager/managerReducer';
+import { hideFirstSteps, selectedVersion } from '../Manager/managerReducer';
 import { currentInstallDir } from '../InstallDir/installDirReducer';
 
 const Ie = () => (<>{' '}<i>i.e.</i>{' '}</>);
@@ -65,10 +64,11 @@ const FirstInstallInstructions = props => {
 
     return (
         <div {...props}>
-            <ButtonToolbar>
+            <ButtonToolbar className="mb-2">
                 <Button
                     className="mdi mdi-arrow-left"
-                    onClick={() => dispatch(gotoPage(0))}
+                    variant="secondary"
+                    onClick={() => dispatch(hideFirstSteps())}
                 >
                     Go back
                 </Button>

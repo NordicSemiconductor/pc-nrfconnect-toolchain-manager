@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -85,7 +85,7 @@ export default props => {
                                 label="Show unstable (master branch) environment"
                             />
                             <Form.Text className="text-muted">
-                                Note that unstable environment is not regularly updated and its
+                                Note that the unstable environment is not regularly updated, and its
                                 toolchain is likely not well tested.
                             </Form.Text>
                         </Form.Group>
