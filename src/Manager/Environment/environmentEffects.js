@@ -281,7 +281,7 @@ export const remove = ({ toolchainDir, version }) => async dispatch => {
 };
 
 export const installPackage = urlOrFilePath => async dispatch => {
-    const match = /ncs-toolchain-(v?.+?)(-\d{8}-[^.]+).[zip|dmg]/.exec(urlOrFilePath);
+    const match = /ncs-toolchain-(v?.+?)([-_]\d{8}-[^.]+).[zip|dmg|snap]/.exec(urlOrFilePath);
     if (!match) {
         dispatch(showErrorDialog('Filename is not recognized as a toolchain package.'));
         return;
