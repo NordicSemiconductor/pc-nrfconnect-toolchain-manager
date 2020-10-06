@@ -1,6 +1,6 @@
 ## Unreleased
-- Feature: settings to change toolchain source
 - Linux toolchain support
+- Install cmake support modules
 
 ## Version 0.7.1
 - Fixed update SDK/toolchain actions
