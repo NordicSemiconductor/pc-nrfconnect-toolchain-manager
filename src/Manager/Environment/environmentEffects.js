@@ -135,7 +135,7 @@ const unpack = (version, src, dest) => async dispatch => {
             await fse.copy(path.join(volume, 'toolchain'), dest, {
                 filter: () => {
                     n += 1;
-                    dispatch(reportProgress(version, n, 45000, UNPACK));
+                    dispatch(reportProgress(version, n, 57000, UNPACK));
                     return true;
                 },
             });
@@ -159,6 +159,25 @@ const unpack = (version, src, dest) => async dispatch => {
     return undefined;
 };
 
+const installCMakeModules = toolchainDir => {
+    const pkg = path.resolve(toolchainDir, 'cmake', 'NcsToolchainConfig.cmake');
+    switch (process.platform) {
+        case 'win32': {
+            const bash = path.resolve(toolchainDir, 'bin', 'bash.exe');
+            execSync(`${bash} -l -c "unset ZEPHYR_BASE ; cmake -P ${pkg}"`);
+            break;
+        }
+        case 'darwin':
+        case 'linux': {
+            const { ZEPHYR_BASE, ...env } = remote.process.env;
+            env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
+            execSync(`cmake -P ${pkg}`, { env });
+            break;
+        }
+        default:
+    }
+};
+
 const installToolchain = (version, toolchain, toolchainDir) => async dispatch => {
     dispatch(startInstallToolchain(version));
 
@@ -166,6 +185,7 @@ const installToolchain = (version, toolchain, toolchainDir) => async dispatch =>
         fse.mkdirpSync(toolchainDir);
         const packageLocation = await dispatch(download(version, toolchain));
         await dispatch(unpack(version, packageLocation, toolchainDir));
+        installCMakeModules(toolchainDir);
     } catch (error) {
         dispatch(showErrorDialog(`${error.message || error}`));
     }
@@ -299,6 +319,7 @@ export const installPackage = urlOrFilePath => async dispatch => {
             : await dispatch(download(version, { uri: urlOrFilePath }));
 
         await dispatch(unpack(version, filePath, toolchainDir));
+        installCMakeModules(toolchainDir);
         dispatch(finishInstallToolchain(version, toolchainDir));
         await dispatch(cloneNcs(version, toolchainDir, false));
     } catch (error) {
