@@ -161,6 +161,8 @@ const unpack = (version, src, dest) => async dispatch => {
 
 const installCMakeModules = toolchainDir => {
     const pkg = path.resolve(toolchainDir, 'cmake', 'NcsToolchainConfig.cmake');
+    if (!fs.existsSync(pkg)) return;
+
     switch (process.platform) {
         case 'win32': {
             const bash = path.resolve(toolchainDir, 'bin', 'bash.exe');
