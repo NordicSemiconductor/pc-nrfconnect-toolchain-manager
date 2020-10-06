@@ -34,65 +34,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.core-main-layout {
-    position: absolute;
+.core19-app-content .core19-main-and-log .core19-main-container .carousel-inner {
     height: initial;
-    top: 55px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
-.core-main-area {
-    overflow: hidden;
-    position: relative;
-}
-
-.core-main-layout > div:nth-child(1) {
-    padding-right: initial;
-    .mdi:before {
-        margin-right: 5px;
-    }
-}
-
-.main-view {
-    height: 100%;
-    .main-view-scroll {
-        height: 100%;
-        overflow: hidden auto;
-        padding: 2em;
-        > .d-block {
-            max-width: 800px;
-            margin: auto;
-            > .btn-toolbar:first-child {
-                margin-bottom: 1em;
-            }
-        }
-    }
-}
-
-.core-nav-bar {
-    > .core-nav-section:nth-child(2) {
-        // this is the placeholder of the device-selector, not needed in this app
-        display: none;
-    }
-    h4 {
-        color: white;
-        margin-top: 20px;
-    }
-}
-
-.core-main-layout > div > .core-splitter {
-    display: none;
-}
-
-.core-main-area {
-    min-width: 600px;
-}
-
-.core-main-layout > div:nth-child(2) {
-    height: 100%;
-    overflow-y: auto;
+    max-width: 800px;
+    margin: auto;
 }
 
 .btn-lg {
@@ -113,10 +58,6 @@
 
 .form-label {
     font-weight: bold;
-}
-
-.core-nav-section > button:nth-child(3) {
-    display: none;
 }
 
 .selectable {

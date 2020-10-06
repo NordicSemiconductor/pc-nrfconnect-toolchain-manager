@@ -55,6 +55,7 @@ import {
     showInstallPackageDialog,
     isShowingFirstSteps,
 } from './managerReducer';
+import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 
 const Environments = () => {
     const dispatch = useDispatch();
@@ -101,41 +102,35 @@ export default props => {
     }
 
     return (
-        <>
-            <div
-                onDragOver={evt => {
-                    evt.preventDefault();
-                    const ev = evt;
-                    ev.dataTransfer.dropEffect = 'copy';
-                }}
-                onDrop={evt => {
-                    evt.preventDefault();
-                    const pkg = (evt.dataTransfer.getData('text') || (evt.dataTransfer.files[0] || {}).path);
-                    dispatch(showInstallPackageDialog(pkg));
-                }}
-                {...props}
-            >
-                <PlatformInstructions />
-                {process.platform !== 'linux' && (
-                    <>
-                        <Environments />
-                        <ButtonToolbar className="pt-3 flex-row justify-content-end">
-                            <Button
-                                variant="link"
-                                className="mdi x-mdi-briefcase-plus-outline pr-0 pt-0"
-                                onClick={() => dispatch(showInstallPackageDialog())}
-                            >
-                                Install package from other source
-                            </Button>
-                        </ButtonToolbar>
-                        <FirstInstallDialog />
-                        <RemoveEnvironmentDialog />
-                        <InstallPackageDialog />
-                    </>
-                )}
-            </div>
-
+        <div
+            onDragOver={evt => {
+                evt.preventDefault();
+                const ev = evt;
+                ev.dataTransfer.dropEffect = 'copy';
+            }}
+            onDrop={evt => {
+                evt.preventDefault();
+                const pkg = (evt.dataTransfer.getData('text') || (evt.dataTransfer.files[0] || {}).path);
+                dispatch(showInstallPackageDialog(pkg));
+            }}
+            {...props}
+        >
+            <PlatformInstructions />
+            <Environments />
+            <ButtonToolbar className="pt-3 flex-row justify-content-end">
+                <Button
+                    variant="link"
+                    className="mdi x-mdi-briefcase-plus-outline pr-0 pt-0"
+                    onClick={() => dispatch(showInstallPackageDialog())}
+                >
+                    Install package from other source
+                </Button>
+            </ButtonToolbar>
+            <FirstInstallDialog />
+            <RemoveEnvironmentDialog />
+            <InstallPackageDialog />
+            <ToolchainSourceDialog />
             <InstallDirDialog />
-        </>
+        </div>
     );
 };

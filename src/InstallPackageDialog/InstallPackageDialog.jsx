@@ -63,7 +63,7 @@ export default () => {
             title="Install toolchain package"
             onOptional={() => setPkg((remote.dialog.showOpenDialog({
                 title: 'Select nRF Connect SDK toolchain package',
-                filters: [{ name: 'package', extensions: ['zip', 'dmg'] }],
+                filters: [{ name: 'package', extensions: ['zip', 'dmg', 'snap'] }],
             }) || [''])[0])}
             optionalLabel="Select file"
             onConfirm={onConfirm}

@@ -34,36 +34,43 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import Form from 'react-bootstrap/Form';
+import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import {
+    isDialogVisible, hideSetToolchainSourceDialog, setToolchainSource, toolchainRootUrl,
+} from './toolchainSourceReducer';
+import initEnvironments from '../Manager/initEnvironments';
 
-import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
-import Button from './Button';
-import environmentPropType from './environmentPropType';
-import { isOnlyAvailable, version } from './environmentReducer';
-import { install } from './environmentEffects';
-
-const Install = ({ environment }) => {
+export default () => {
     const dispatch = useDispatch();
-    const { platform } = process;
-    const onClick = {
-        darwin: () => dispatch(install(environment, false)),
-        linux: () => dispatch(showConfirmInstallDirDialog(version(environment))),
-        win32: () => dispatch(showConfirmInstallDirDialog(version(environment))),
+    const isVisible = useSelector(isDialogVisible);
+    const savedUrl = useSelector(toolchainRootUrl);
+    const [url, setUrl] = useState(savedUrl);
+
+    const onConfirm = () => {
+        dispatch(setToolchainSource(url));
+        dispatch(hideSetToolchainSourceDialog());
+        initEnvironments(dispatch);
     };
 
-    if (!isOnlyAvailable(environment)) return null;
-
     return (
-        <Button
-            icon="x-mdi-briefcase-download-outline"
-            onClick={onClick[platform]}
-            label="Install"
-            variant="secondary"
-        />
+        <ConfirmationDialog
+            isVisible={isVisible}
+            title="Toolchain source URL"
+            onConfirm={onConfirm}
+            onCancel={() => dispatch(hideSetToolchainSourceDialog())}
+        >
+            <Form.Group controlId="toolchainSourceUrl">
+                <Form.Label>Specify toolchain source URL:</Form.Label>
+                <Form.Control
+                    type="text"
+                    value={url}
+                    onChange={({ target }) => setUrl(target.value)}
+                    onKeyPress={evt => (evt.charCode === 13) && onConfirm()}
+                />
+            </Form.Group>
+        </ConfirmationDialog>
     );
 };
-
-Install.propTypes = { environment: environmentPropType.isRequired };
-
-export default Install;

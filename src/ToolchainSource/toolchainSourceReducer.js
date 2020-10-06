@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,36 +34,45 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import { toolchainIndexUrl, setToolchainIndexUrl } from '../persistentStore';
 
-import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
-import Button from './Button';
-import environmentPropType from './environmentPropType';
-import { isOnlyAvailable, version } from './environmentReducer';
-import { install } from './environmentEffects';
+const SET_TOOLCHAIN_SOURCE = 'SET_TOOLCHAIN_SOURCE';
+export const setToolchainSource = toolchainRootUrl => ({
+    type: SET_TOOLCHAIN_SOURCE,
+    toolchainRootUrl,
+});
 
-const Install = ({ environment }) => {
-    const dispatch = useDispatch();
-    const { platform } = process;
-    const onClick = {
-        darwin: () => dispatch(install(environment, false)),
-        linux: () => dispatch(showConfirmInstallDirDialog(version(environment))),
-        win32: () => dispatch(showConfirmInstallDirDialog(version(environment))),
-    };
+const SHOW_SET_TOOLCHAIN_SOURCE_DIALOG = 'SHOW_SET_TOOLCHAIN_SOURCE_DIALOG';
+export const showSetToolchainSourceDialog = () => ({
+    type: SHOW_SET_TOOLCHAIN_SOURCE_DIALOG,
+    isDialogVisible: true,
+});
 
-    if (!isOnlyAvailable(environment)) return null;
+const HIDE_SET_TOOLCHAIN_SOURCE_DIALOG = 'HIDE_SET_TOOLCHAIN_SOURCE_DIALOG';
+export const hideSetToolchainSourceDialog = () => ({
+    type: HIDE_SET_TOOLCHAIN_SOURCE_DIALOG,
+    isDialogVisible: false,
+});
 
-    return (
-        <Button
-            icon="x-mdi-briefcase-download-outline"
-            onClick={onClick[platform]}
-            label="Install"
-            variant="secondary"
-        />
-    );
+const initialState = {
+    toolchainRootUrl: toolchainIndexUrl(),
+    isDialogVisible: false,
 };
 
-Install.propTypes = { environment: environmentPropType.isRequired };
+export default (state = initialState, { type, ...action }) => {
+    switch (type) {
+        case SET_TOOLCHAIN_SOURCE:
+            setToolchainIndexUrl(action.toolchainRootUrl);
+        case SHOW_SET_TOOLCHAIN_SOURCE_DIALOG: // eslint-disable-line no-fallthrough
+        case HIDE_SET_TOOLCHAIN_SOURCE_DIALOG:
+            return {
+                ...state,
+                ...action,
+            };
+        default:
+            return state;
+    }
+};
 
-export default Install;
+export const toolchainRootUrl = ({ app }) => app.toolchainSource.toolchainRootUrl;
+export const isDialogVisible = ({ app }) => app.toolchainSource.isDialogVisible;

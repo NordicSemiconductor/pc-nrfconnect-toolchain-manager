@@ -102,7 +102,9 @@ export default (state, { type, ...action }) => {
         case START_CLONING_SDK: return { ...state, isCloningSdk: true };
         case FINISH_CLONING_SDK: return (
             { ...state, isCloningSdk: false, isWestPresent: action.isWestPresent });
-        case START_REMOVING: return { ...state, stage: 'Removing...', isRemoving: true };
+        case START_REMOVING: return {
+            ...state, stage: 'Removing...', isRemoving: true, progress: 100,
+        };
         case FINISH_REMOVING: return { ...state, stage: null, isRemoving: false };
         case SET_PROGRESS: return { ...state, ...action };
         case REMOVE_ENVIRONMENT: return { ...state, isInstalled: false, isWestPresent: false };

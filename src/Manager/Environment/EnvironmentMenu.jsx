@@ -38,7 +38,7 @@ import './style.scss';
 
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { exec } from 'child_process';
+import { exec, execSync } from 'child_process';
 import path from 'path';
 import { readdirSync } from 'fs';
 import { shell } from 'electron';
@@ -58,21 +58,31 @@ const openCmd = directory => {
     exec(`start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`);
 };
 
-const openTerminal = directory => {
-    const d = path.dirname(directory);
-    const gitversion = readdirSync(`${d}/toolchain/Cellar/git`).pop();
-    const env = [
-        `export PATH=${d}/toolchain/bin:$PATH`,
-        `export GIT_EXEC_PATH=${d}/toolchain/Cellar/git/${gitversion}/libexec/git-core`,
-        'export ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb',
-        `export GNUARMEMB_TOOLCHAIN_PATH=${d}/toolchain`,
-    ];
-    exec(`osascript <<END
+const openTerminal = {
+    darwin: directory => {
+        const d = path.dirname(directory);
+        const gitversion = readdirSync(`${d}/toolchain/Cellar/git`).pop();
+        const env = [
+            `export PATH=${d}/toolchain/bin:$PATH`,
+            `export GIT_EXEC_PATH=${d}/toolchain/Cellar/git/${gitversion}/libexec/git-core`,
+            'export ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb',
+            `export GNUARMEMB_TOOLCHAIN_PATH=${d}/toolchain`,
+        ];
+        exec(`osascript <<END
 tell application "Terminal"
     do script "cd ${d} ; ${env.join(' ; ')} ; clear"
     activate
 end tell
 END`);
+    },
+    linux: (directory, version) => {
+        const terminalApp = execSync('gsettings get org.gnome.desktop.default-applications.terminal exec')
+            .toString().trim().replace(/'/g, '');
+        exec(
+            `${terminalApp} -l -e "snap run --shell ncs-toolchain-${version}.west"`,
+            { cwd: path.dirname(directory) },
+        );
+    },
 };
 
 const openDirectory = directory => {
@@ -83,6 +93,7 @@ const EnvironmentMenu = ({ environment }) => {
     const dispatch = useDispatch();
     const toolchainDir = getToolchainDir(environment);
     const version = getVersion(environment);
+    const { platform } = process;
 
     return (
         <DropdownButton
@@ -103,7 +114,7 @@ const EnvironmentMenu = ({ environment }) => {
                 </>
             )}
             {process.platform !== 'win32' && (
-                <Dropdown.Item onClick={() => openTerminal(toolchainDir)}>
+                <Dropdown.Item onClick={() => openTerminal[platform](toolchainDir, version)}>
                     Open Terminal
                 </Dropdown.Item>
             )}

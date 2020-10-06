@@ -39,7 +39,7 @@ import { openSegger } from './segger';
 import Button from './Button';
 
 import environmentPropType from './environmentPropType';
-import { canBeOpenedInSegger, isInProgress, toolchainDir } from './environmentReducer';
+import { canBeOpenedInSegger, isInProgress } from './environmentReducer';
 
 const OpenIde = ({ environment }) => {
     if (!canBeOpenedInSegger(environment)) return null;
@@ -47,7 +47,7 @@ const OpenIde = ({ environment }) => {
     return (
         <Button
             icon="x-mdi-rocket"
-            onClick={() => openSegger(toolchainDir(environment))}
+            onClick={() => openSegger(environment.toolchainDir, environment.version)}
             label="Open IDE"
             title="Open SEGGER Embedded Studio"
             disabled={isInProgress(environment)}

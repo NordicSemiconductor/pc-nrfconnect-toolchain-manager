@@ -34,12 +34,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { string } from 'prop-types';
+import { execSync } from 'child_process';
 import Alert from 'react-bootstrap/Alert';
 
-const isMac = process.platform === 'darwin';
 const isLinux = process.platform === 'linux';
+const isWindows = process.platform === 'win32';
 
 export const OnlineDocs = ({ label }) => (
     <a
@@ -55,11 +56,32 @@ OnlineDocs.propTypes = {
     label: string.isRequired,
 };
 
-export default () => (process.platform === 'win32' ? null : (
-    <Alert variant="warning">
-        {isLinux && <b>Linux is currently not supported by this app.</b>}
-        {isMac && <b>The macOS support is experimental.</b>}
-        {' '}For instructions on how to manually set up an environment on your machine,
-        please read the online <OnlineDocs label="documentation" />.
-    </Alert>
-));
+export default () => {
+    if (isWindows) return null;
+
+    const [isSnapAvailable, setSnapAvailable] = useState(true);
+
+    useEffect(() => {
+        try {
+            execSync('which snap');
+        } catch (err) {
+            setSnapAvailable(false);
+        }
+    }, []);
+
+    return (
+        <>
+            <Alert variant="warning">
+                <b>Support for {isLinux ? 'Linux' : 'macOS'} is experimental.</b>
+                {' '}For instructions on how to manually set up an environment on your machine,
+                please read the online <OnlineDocs label="documentation" />.
+            </Alert>
+            {(isLinux && !isSnapAvailable) && (
+                <Alert variant="danger">
+                    Linux support depends on <b>snap</b> which seems unavailable,
+                    please install the package.
+                </Alert>
+            )}
+        </>
+    );
+};
