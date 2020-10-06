@@ -92,7 +92,7 @@ export default props => {
                     </Col>
                 </Row>
 
-                <Row className="settings-info">
+                <Row className="settings-info d-none">
                     <Col className="ml-3">
                         <Row className="h4">
                             Toolchain source URL
