@@ -165,8 +165,7 @@ const installCMakeModules = toolchainDir => {
 
     switch (process.platform) {
         case 'win32': {
-            const bash = path.resolve(toolchainDir, 'bin', 'bash.exe');
-            execSync(`${bash} -l -c "unset ZEPHYR_BASE ; cmake -P ${pkg}"`);
+            execSync(`${toolchainDir}/opt/bin/cmake -P ${pkg}"`);
             break;
         }
         case 'darwin':
