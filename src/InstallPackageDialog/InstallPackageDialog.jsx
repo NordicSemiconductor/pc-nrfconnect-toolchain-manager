@@ -57,14 +57,20 @@ export default () => {
         dispatch(hideInstallPackageDialog());
     };
 
+    const getPackage = () => {
+        remote.dialog.showOpenDialog({
+            title: 'Select nRF Connect SDK toolchain package',
+            filters: [{ name: 'package', extensions: ['zip', 'dmg', 'snap'] }],
+        }).then(({ filePaths: [filePath] }) => {
+            setPkg(filePath || '');
+        });
+    };
+
     return (
         <ConfirmationDialog
             isVisible={isVisible}
             title="Install toolchain package"
-            onOptional={() => setPkg((remote.dialog.showOpenDialog({
-                title: 'Select nRF Connect SDK toolchain package',
-                filters: [{ name: 'package', extensions: ['zip', 'dmg', 'snap'] }],
-            }) || [''])[0])}
+            onOptional={getPackage}
             optionalLabel="Select file"
             onConfirm={onConfirm}
             onCancel={() => dispatch(hideInstallPackageDialog())}
