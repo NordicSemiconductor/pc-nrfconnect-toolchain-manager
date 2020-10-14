@@ -97,37 +97,36 @@ const NewSteps = () => (
     <ul>
         <li>
             <b>nRF Connect SDK Release</b> - Select the NCS version that you
-            want to work with.<br />
-            The drop-down list contains the current version of all NCS
-            installation directories that SES knows about.
+            want to work with.
         </li>
         <li>
             <b>nRF Connect Toolchain Version</b> - Select the version of the
-            toolchain that works with the selected NCS version.<br />
-            The drop-down list contains only toolchain versions that are
-            compatible with the selected NCS version.
+            toolchain that works with the selected NCS version.
         </li>
         <li>
             <b>Projects</b> - Select the project that you want to work with.
             <br />
-            The drop-down list contains a selection of samples and
-            applications from the sdk-nrf and sdk-zephyr repositories.
-            Select any of the checkboxes underneath to add the samples from
-            that area to the drop-down list. To add projects to the
-            drop-down list, for example, your own custom projects, click
-            {' '}<Dotdotdot /> and select the folder that contains the
-            projects that you want to add.
+            Select any of the checkboxes to add samples and applications from
+            the respective area to the drop-down list. To add custom projects to
+            the drop-down list, click <Dotdotdot /> and select the folder that
+            contains the projects that you want to add.
         </li>
         <li>
             <b>Board Name</b> - Select the board that you want to work with.
             <br />
-            The drop-down list contains the build targets for all Nordic
-            Semiconductor boards that are defined in the sdk-nrf and
-            sdk-zephyr repositories. Select any of the checkboxes underneath
-            to add the build targets from that area to the drop-down list.
-            To add build targets to the drop-down list, for example, targets
-            for your own custom board, click <Dotdotdot /> and select the
-            folder that contains the board definitions.
+            Select any of the checkboxes to add the respective build targets to
+            the drop-down list. To add custom build targets to the drop-down
+            list, click <Dotdotdot /> and select the folder that contains the
+            board definitions.
+            <Alert variant="success">
+                <p>
+                    Note that if you work with a TrustZone device, you usually
+                    build the firmware for the non-secure domain and must
+                    therefore select the non-secure build target, for example,
+                    {' '}<code>nrf9160dk_nrf9160ns</code> or
+                    {' '}<code>nrf5340pdk_nrf5340_cpuappns</code>.
+                </p>
+            </Alert>
         </li>
         <li>
             <b>Build Directory</b> - Select the folder in which to run the
