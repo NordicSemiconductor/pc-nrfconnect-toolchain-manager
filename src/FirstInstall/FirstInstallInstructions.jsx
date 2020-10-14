@@ -96,12 +96,12 @@ const OldSteps = () => {
 const NewSteps = () => (
     <ul>
         <li>
-            <b>nRF Connect SDK Release</b> - Select the NCS version that you
-            want to work with.
+            <b>nRF Connect SDK Release</b> - Select the nRF Connect SDK version
+            that you want to work with.
         </li>
         <li>
             <b>nRF Connect Toolchain Version</b> - Select the version of the
-            toolchain that works with the selected NCS version.
+            toolchain that works with the selected nRF Connect SDK version.
         </li>
         <li>
             <b>Projects</b> - Select the project that you want to work with.
@@ -164,7 +164,7 @@ const FirstInstallInstructions = props => {
                 <Card body className="selectable first-install nrf-card">
                     <h4>Building with SEGGER Embedded Studio</h4>
                     <p>
-                        Once the installation of the tools and the NCS is finished,
+                        Once the installation of the tools and the nRF Connect SDK is finished,
                         complete the following steps to build nRF Connect SDK projects with SES.
                     </p>
                     <ol>
