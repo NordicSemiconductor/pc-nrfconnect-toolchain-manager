@@ -40,7 +40,10 @@
     height: initial;
     max-width: 800px;
     margin: auto;
-    @include scrollbars($gray-50);
+}
+
+.core19-main-container {
+    @include scrollbars-helper($gray-100, $gray-400, $gray-200);
 }
 
 .carousel-inner {
