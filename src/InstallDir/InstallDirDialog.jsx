@@ -50,14 +50,14 @@ import {
     environmentToInstall,
 } from './installDirReducer';
 
-const selectInstallDir = (dispatch, installDir, hideDialog) => {
-    const selection = remote.dialog.showOpenDialog({
+const selectInstallDir = async (dispatch, installDir, hideDialog) => {
+    const { filePaths: [filePath] } = await remote.dialog.showOpenDialog({
         title: 'Select installation directory',
         defaultPath: installDir,
         properties: ['openDirectory', 'createDirectory'],
     });
-    if (selection) {
-        dispatch(setInstallDir(selection[0]));
+    if (filePath) {
+        dispatch(setInstallDir(filePath));
         initEnvironments(dispatch);
         if (hideDialog) { dispatch(hideInstallDirDialog()); }
     }
