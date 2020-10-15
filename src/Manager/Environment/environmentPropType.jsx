@@ -34,18 +34,18 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {
-    arrayOf, oneOfType, bool, number, shape, string,
-} from 'prop-types';
+import { arrayOf, oneOfType, bool, number, shape, string } from 'prop-types';
 
 export default shape({
     version: string.isRequired,
     toolchainDir: string,
-    toolchains: arrayOf(shape({
-        version: string.isRequired,
-        name: string.isRequired,
-        sha512: string.isRequired,
-    }).isRequired),
+    toolchains: arrayOf(
+        shape({
+            version: string.isRequired,
+            name: string.isRequired,
+            sha512: string.isRequired,
+        }).isRequired
+    ),
     progress: oneOfType([number, string]),
     isInstallingToolchain: bool,
     isCloningSdk: bool,

@@ -39,4 +39,7 @@
 // them from there. But before we can correct this, we need to upgrade to a new version.
 
 export const gotoPage = id => ({ type: 'NAV_MENU_ITEM_SELECTED', id });
-export const showErrorDialog = message => ({ type: 'ERROR_DIALOG_SHOW', message });
+export const showErrorDialog = message => ({
+    type: 'ERROR_DIALOG_SHOW',
+    message,
+});

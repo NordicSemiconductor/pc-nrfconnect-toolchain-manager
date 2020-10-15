@@ -34,7 +34,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { persistedInstallDir, setPersistedInstallDir } from '../persistentStore';
+import {
+    persistedInstallDir,
+    setPersistedInstallDir,
+} from '../persistentStore';
 import { getEnvironment } from '../Manager/managerReducer';
 
 const CONFIRM_DIR = Symbol('Confirm the install directory');
@@ -102,6 +105,7 @@ export default (state = initialState, action) => {
 
 export const currentInstallDir = state => state.app.installDir.currentDir;
 export const isDialogVisible = state => state.app.installDir.isDialogVisible;
-export const isConfirmDirFlavour = state => state.app.installDir.dialogFlavour === CONFIRM_DIR;
-export const environmentToInstall = state => (
-    getEnvironment(state, state.app.installDir.versionToInstall));
+export const isConfirmDirFlavour = state =>
+    state.app.installDir.dialogFlavour === CONFIRM_DIR;
+export const environmentToInstall = state =>
+    getEnvironment(state, state.app.installDir.versionToInstall);

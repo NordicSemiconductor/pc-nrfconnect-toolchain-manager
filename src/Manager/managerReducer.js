@@ -35,17 +35,26 @@
  */
 
 import semver from 'semver';
-import environmentReducer, { REMOVE_ENVIRONMENT, canBeDownloaded } from './Environment/environmentReducer';
-import { persistedShowMaster, setPersistedShowMaster } from '../persistentStore';
+import environmentReducer, {
+    REMOVE_ENVIRONMENT,
+    canBeDownloaded,
+} from './Environment/environmentReducer';
+import {
+    persistedShowMaster,
+    setPersistedShowMaster,
+} from '../persistentStore';
 
 const byVersion = (a, b) => {
     try {
         return -semver.compare(a.version, b.version);
     } catch (_) {
         switch (true) {
-            case (a.version < b.version): return -1;
-            case (a.version > b.version): return 1;
-            default: return 0;
+            case a.version < b.version:
+                return -1;
+            case a.version > b.version:
+                return 1;
+            default:
+                return 0;
         }
     }
 };
@@ -64,7 +73,10 @@ export const addEnvironment = environment => ({
     environment,
 });
 export const addLocallyExistingEnvironment = (
-    version, toolchainDir, isWestPresent, isInstalled = true,
+    version,
+    toolchainDir,
+    isWestPresent,
+    isInstalled = true
 ) => ({
     type: ADD_ENVIRONMENT,
     environment: {
@@ -121,7 +133,7 @@ export const hideFirstSteps = () => ({
 const append = (environments, environment) => ({
     ...environments,
     [environment.version]: {
-        ...environments[environment.version] || {},
+        ...(environments[environment.version] || {}),
         ...environment,
     },
 });
@@ -145,19 +157,41 @@ const remove = (environments, version) => {
 const managerReducer = (state, action) => {
     switch (action.type) {
         case ADD_ENVIRONMENT:
-            return { ...state, environments: append(state.environments, action.environment) };
+            return {
+                ...state,
+                environments: append(state.environments, action.environment),
+            };
         case CLEAR_ENVIRONMENTS:
             return { ...state, environments: {} };
         case REMOVE_ENVIRONMENT:
-            return { ...state, environments: remove(state.environments, action.version) };
+            return {
+                ...state,
+                environments: remove(state.environments, action.version),
+            };
         case SHOW_CONFIRM_REMOVE_DIALOG:
-            return { ...state, isRemoveDirDialogVisible: true, versionToRemove: action.version };
+            return {
+                ...state,
+                isRemoveDirDialogVisible: true,
+                versionToRemove: action.version,
+            };
         case HIDE_CONFIRM_REMOVE_DIALOG:
-            return { ...state, isRemoveDirDialogVisible: false, versionToRemove: null };
+            return {
+                ...state,
+                isRemoveDirDialogVisible: false,
+                versionToRemove: null,
+            };
         case SHOW_INSTALL_PACKAGE_DIALOG:
-            return { ...state, dndPackage: action.dndPackage, isInstallPackageDialogVisible: true };
+            return {
+                ...state,
+                dndPackage: action.dndPackage,
+                isInstallPackageDialogVisible: true,
+            };
         case HIDE_INSTALL_PACKAGE_DIALOG:
-            return { ...state, dndPackage: null, isInstallPackageDialogVisible: false };
+            return {
+                ...state,
+                dndPackage: null,
+                isInstallPackageDialogVisible: false,
+            };
         case SHOW_MASTER:
             setPersistedShowMaster(!!action.show);
             return { ...state, isMasterVisible: !!action.show };
@@ -181,7 +215,10 @@ const maybeCallEnvironmentReducer = (state, action) => {
         ...state,
         environments: {
             ...state.environments,
-            [action.version]: environmentReducer(state.environments[action.version], action),
+            [action.version]: environmentReducer(
+                state.environments[action.version],
+                action
+            ),
         },
     };
 };
@@ -198,25 +235,32 @@ const initialState = {
 };
 
 export default (state = initialState, action) => {
-    const stateAfterEnvironmentReducer = maybeCallEnvironmentReducer(state, action);
+    const stateAfterEnvironmentReducer = maybeCallEnvironmentReducer(
+        state,
+        action
+    );
     return managerReducer(stateAfterEnvironmentReducer, action);
 };
 
-export const getLatestToolchain = toolchains => sortedByVersion(toolchains).pop();
+export const getLatestToolchain = toolchains =>
+    sortedByVersion(toolchains).pop();
 
-export const isRemoveDirDialogVisible = ({ app }) => app.manager.isRemoveDirDialogVisible;
+export const isRemoveDirDialogVisible = ({ app }) =>
+    app.manager.isRemoveDirDialogVisible;
 
-export const isInstallPackageDialogVisible = ({ app }) => app.manager.isInstallPackageDialogVisible;
+export const isInstallPackageDialogVisible = ({ app }) =>
+    app.manager.isInstallPackageDialogVisible;
 
-export const getEnvironment = ({ app }, version) => app.manager.environments[version];
+export const getEnvironment = ({ app }, version) =>
+    app.manager.environments[version];
 
-export const environmentToRemove = state => (
-    getEnvironment(state, state.app.manager.versionToRemove));
+export const environmentToRemove = state =>
+    getEnvironment(state, state.app.manager.versionToRemove);
 
 export const selectedVersion = ({ app }) => app.manager.selectedVersion;
 
-export const environmentsByVersion = ({ app }) => (
-    sortedByVersion(Object.values(app.manager.environments)));
+export const environmentsByVersion = ({ app }) =>
+    sortedByVersion(Object.values(app.manager.environments));
 
 export const isMasterVisible = ({ app }) => app.manager.isMasterVisible;
 

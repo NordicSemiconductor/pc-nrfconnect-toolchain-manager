@@ -74,5 +74,6 @@ export default (state = initialState, { type, ...action }) => {
     }
 };
 
-export const toolchainRootUrl = ({ app }) => app.toolchainSource.toolchainRootUrl;
+export const toolchainRootUrl = ({ app }) =>
+    app.toolchainSource.toolchainRootUrl;
 export const isDialogVisible = ({ app }) => app.toolchainSource.isDialogVisible;

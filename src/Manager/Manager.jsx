@@ -63,12 +63,9 @@ const Environments = () => {
 
     const masterVisible = useSelector(isMasterVisible);
     const allEnvironments = useSelector(environmentsByVersion);
-    const environments = allEnvironments
-        .filter(({ version, isInstalled }) => (
-            version === 'master'
-                ? isInstalled || masterVisible
-                : true
-        ));
+    const environments = allEnvironments.filter(({ version, isInstalled }) =>
+        version === 'master' ? isInstalled || masterVisible : true
+    );
 
     if (environments.length === 0) {
         return (
@@ -76,8 +73,9 @@ const Environments = () => {
                 <p>There are no environments available for installation.</p>
                 {allEnvironments.length > 0 && !masterVisible && (
                     <p>
-                        You can enable unstable environments
-                        under <span className="mdi mdi-settings" />Settings.
+                        You can enable unstable environments under{' '}
+                        <span className="mdi mdi-settings" />
+                        Settings.
                     </p>
                 )}
             </NrfCard>
@@ -87,7 +85,10 @@ const Environments = () => {
     return (
         <>
             {environments.map(environment => (
-                <Environment key={environment.version} environment={environment} />
+                <Environment
+                    key={environment.version}
+                    environment={environment}
+                />
             ))}
         </>
     );
@@ -110,7 +111,9 @@ export default props => {
             }}
             onDrop={evt => {
                 evt.preventDefault();
-                const pkg = (evt.dataTransfer.getData('text') || (evt.dataTransfer.files[0] || {}).path);
+                const pkg =
+                    evt.dataTransfer.getData('text') ||
+                    (evt.dataTransfer.files[0] || {}).path;
                 dispatch(showInstallPackageDialog(pkg));
             }}
             {...props}
