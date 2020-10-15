@@ -49,7 +49,8 @@ const defaultInstallDir = {
     linux: '//TODO',
 }[process.platform];
 
-export const persistedInstallDir = () => store.get('installDir', defaultInstallDir);
+export const persistedInstallDir = () =>
+    store.get('installDir', defaultInstallDir);
 export const setPersistedInstallDir = dir => store.set('installDir', dir);
 
 const indexJson = {
@@ -59,12 +60,17 @@ const indexJson = {
 }[process.platform];
 
 export const toolchainIndexUrl = () => {
-    const value = store.get('toolchainIndexUrl',
-        'https://developer.nordicsemi.com/.pc-tools/toolchain');
+    const value = store.get(
+        'toolchainIndexUrl',
+        'https://developer.nordicsemi.com/.pc-tools/toolchain'
+    );
     return `${value.replace(/\/index.*.json$/, '')}/${indexJson}`;
 };
-export const toolchainUrl = name => `${path.dirname(toolchainIndexUrl())}/${name}`;
-export const setToolchainIndexUrl = value => store.set('toolchainIndexUrl', value);
+export const toolchainUrl = name =>
+    `${path.dirname(toolchainIndexUrl())}/${name}`;
+export const setToolchainIndexUrl = value =>
+    store.set('toolchainIndexUrl', value);
 
 export const persistedShowMaster = () => store.get('showMaster', false);
-export const setPersistedShowMaster = visible => store.set('showMaster', visible);
+export const setPersistedShowMaster = visible =>
+    store.set('showMaster', visible);

@@ -72,14 +72,17 @@ export default () => {
     return (
         <>
             <Alert variant="warning">
-                <b>Support for {isLinux ? 'Linux' : 'macOS'} is experimental.</b>
-                {' '}For instructions on how to manually set up an environment on your machine,
-                please read the online <OnlineDocs label="documentation" />.
+                <b>
+                    Support for {isLinux ? 'Linux' : 'macOS'} is experimental.
+                </b>{' '}
+                For instructions on how to manually set up an environment on
+                your machine, please read the online{' '}
+                <OnlineDocs label="documentation" />.
             </Alert>
-            {(isLinux && !isSnapAvailable) && (
+            {isLinux && !isSnapAvailable && (
                 <Alert variant="danger">
-                    Linux support depends on <b>snap</b> which seems unavailable,
-                    please install the package.
+                    Linux support depends on <b>snap</b> which seems
+                    unavailable, please install the package.
                 </Alert>
             )}
         </>

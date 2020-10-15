@@ -41,7 +41,10 @@ import { string } from 'prop-types';
 import BootstrapButton from 'react-bootstrap/Button';
 
 const Button = ({ icon, label, ...props }) => (
-    <BootstrapButton className={`mdi ${icon} toolchain-item-button ml-2`} {...props}>
+    <BootstrapButton
+        className={`mdi ${icon} toolchain-item-button ml-2`}
+        {...props}
+    >
         {label}
     </BootstrapButton>
 );

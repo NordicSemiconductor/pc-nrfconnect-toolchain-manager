@@ -39,7 +39,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import { remote } from 'electron';
 import {
-    isInstallPackageDialogVisible, hideInstallPackageDialog, dndPackage,
+    isInstallPackageDialogVisible,
+    hideInstallPackageDialog,
+    dndPackage,
 } from '../Manager/managerReducer';
 import { installPackage } from '../Manager/Environment/environmentEffects';
 
@@ -58,12 +60,16 @@ export default () => {
     };
 
     const getPackage = () => {
-        remote.dialog.showOpenDialog({
-            title: 'Select nRF Connect SDK toolchain package',
-            filters: [{ name: 'package', extensions: ['zip', 'dmg', 'snap'] }],
-        }).then(({ filePaths: [filePath] }) => {
-            setPkg(filePath || '');
-        });
+        remote.dialog
+            .showOpenDialog({
+                title: 'Select nRF Connect SDK toolchain package',
+                filters: [
+                    { name: 'package', extensions: ['zip', 'dmg', 'snap'] },
+                ],
+            })
+            .then(({ filePaths: [filePath] }) => {
+                setPkg(filePath || '');
+            });
     };
 
     return (
@@ -76,12 +82,14 @@ export default () => {
             onCancel={() => dispatch(hideInstallPackageDialog())}
         >
             <Form.Group controlId="packageUrl">
-                <Form.Label>Path to nRF Connect SDK toolchain package:</Form.Label>
+                <Form.Label>
+                    Path to nRF Connect SDK toolchain package:
+                </Form.Label>
                 <Form.Control
                     type="text"
                     value={pkg}
                     onChange={({ target }) => setPkg(target.value)}
-                    onKeyPress={evt => (evt.charCode === 13) && onConfirm()}
+                    onKeyPress={evt => evt.charCode === 13 && onConfirm()}
                 />
             </Form.Group>
         </ConfirmationDialog>

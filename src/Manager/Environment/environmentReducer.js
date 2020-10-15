@@ -88,36 +88,50 @@ export const removeEnvironment = version => ({
 
 export default (state, { type, ...action }) => {
     switch (type) {
-        case START_INSTALL_TOOLCHAIN: return {
-            ...state,
-            isInstallingToolchain: true,
-        };
-        case FINISH_INSTALL_TOOLCHAIN: return {
-            ...state,
-            stage: null,
-            isInstallingToolchain: false,
-            toolchainDir: action.toolchainDir,
-            isInstalled: true,
-        };
-        case START_CLONING_SDK: return { ...state, isCloningSdk: true };
-        case FINISH_CLONING_SDK: return (
-            { ...state, isCloningSdk: false, isWestPresent: action.isWestPresent });
-        case START_REMOVING: return {
-            ...state, stage: 'Removing...', isRemoving: true, progress: 100,
-        };
-        case FINISH_REMOVING: return { ...state, stage: null, isRemoving: false };
-        case SET_PROGRESS: return { ...state, ...action };
-        case REMOVE_ENVIRONMENT: return { ...state, isInstalled: false, isWestPresent: false };
-        default: return state;
+        case START_INSTALL_TOOLCHAIN:
+            return {
+                ...state,
+                isInstallingToolchain: true,
+            };
+        case FINISH_INSTALL_TOOLCHAIN:
+            return {
+                ...state,
+                stage: null,
+                isInstallingToolchain: false,
+                toolchainDir: action.toolchainDir,
+                isInstalled: true,
+            };
+        case START_CLONING_SDK:
+            return { ...state, isCloningSdk: true };
+        case FINISH_CLONING_SDK:
+            return {
+                ...state,
+                isCloningSdk: false,
+                isWestPresent: action.isWestPresent,
+            };
+        case START_REMOVING:
+            return {
+                ...state,
+                stage: 'Removing...',
+                isRemoving: true,
+                progress: 100,
+            };
+        case FINISH_REMOVING:
+            return { ...state, stage: null, isRemoving: false };
+        case SET_PROGRESS:
+            return { ...state, ...action };
+        case REMOVE_ENVIRONMENT:
+            return { ...state, isInstalled: false, isWestPresent: false };
+        default:
+            return state;
     }
 };
 
 export const isInstallingToolchain = env => env.isInstallingToolchain;
 export const isCloningSdk = env => env.isCloningSdk;
 export const isRemoving = env => env.isRemoving;
-export const isInProgress = env => env.isInstallingToolchain
-    || env.isCloningSdk
-    || env.isRemoving;
+export const isInProgress = env =>
+    env.isInstallingToolchain || env.isCloningSdk || env.isRemoving;
 
 export const isInstalled = env => env.isInstalled && !isInProgress(env);
 export const isOnlyAvailable = env => !isInstalled(env) && !isInProgress(env);
@@ -129,8 +143,9 @@ export const canBeOpenedInSegger = env => env.isWestPresent;
 
 export const progress = env => env.progress;
 
-export const progressLabel = env => (
+export const progressLabel = env =>
     isInProgress(env)
-        ? `${env.stage || ''}${(env.progress % 100) !== 0 ? ` ${env.progress}%` : ''}`
-        : ''
-);
+        ? `${env.stage || ''}${
+              env.progress % 100 !== 0 ? ` ${env.progress}%` : ''
+          }`
+        : '';

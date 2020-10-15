@@ -43,7 +43,10 @@ import DecompressZip from 'decompress-zip';
 import { remote } from 'electron';
 import fse from 'fs-extra';
 import {
-    isFirstInstall, setHasInstalledAnNcs, toolchainUrl, persistedInstallDir as installDir,
+    isFirstInstall,
+    setHasInstalledAnNcs,
+    toolchainUrl,
+    persistedInstallDir as installDir,
 } from '../../persistentStore';
 import { showFirstInstallDialog } from '../../FirstInstall/firstInstallReducer';
 import { showErrorDialog } from '../../launcherActions';
@@ -72,17 +75,20 @@ const { spawn: remoteSpawn } = remote.require('child_process');
 const DOWNLOAD = 0;
 const UNPACK = 50;
 
-const reportProgress = (version, currentValue, maxValue, half) => (dispatch, getState) => {
+const reportProgress = (version, currentValue, maxValue, half) => (
+    dispatch,
+    getState
+) => {
     const prevProgress = progress(getEnvironment(getState(), version));
     const newProgress = Math.round((currentValue / maxValue) * 50) + half;
 
     if (newProgress !== prevProgress) {
-        const stage = (half === DOWNLOAD) ? 'Downloading' : 'Installing';
+        const stage = half === DOWNLOAD ? 'Downloading' : 'Installing';
         dispatch(setProgress(version, stage, newProgress));
     }
 };
 
-const download = (version, { name, sha512, uri }) => async dispatch => (
+const download = (version, { name, sha512, uri }) => async dispatch =>
     new Promise((resolve, reject) => {
         const hash = createHash('sha512');
 
@@ -94,43 +100,73 @@ const download = (version, { name, sha512, uri }) => async dispatch => (
         fse.mkdirpSync(downloadDir);
         const writeStream = fs.createWriteStream(packageLocation);
 
-        remote.net.request({ url }).on('response', response => {
-            const totalLength = response.headers['content-length'][0];
-            let currentLength = 0;
-            response.on('data', data => {
-                hash.update(data);
-                writeStream.write(data);
+        remote.net
+            .request({ url })
+            .on('response', response => {
+                const totalLength = response.headers['content-length'][0];
+                let currentLength = 0;
+                response.on('data', data => {
+                    hash.update(data);
+                    writeStream.write(data);
 
-                currentLength += data.length;
-                dispatch(reportProgress(version, currentLength, totalLength, DOWNLOAD));
-            });
-            response.on('end', () => {
-                writeStream.end(() => {
-                    const hex = hash.digest('hex');
-                    if (sha512 && (hex !== sha512)) {
-                        return reject(new Error(`Checksum verification failed ${url}`));
-                    }
-                    return resolve(packageLocation);
+                    currentLength += data.length;
+                    dispatch(
+                        reportProgress(
+                            version,
+                            currentLength,
+                            totalLength,
+                            DOWNLOAD
+                        )
+                    );
                 });
-            });
-            response.on('error', error => reject(new Error(`Error when reading ${url}: `
-                + `${error.message}`)));
-        })
-            .on('error', error => reject(new Error(`Unable to download ${url}: ${error.message}`)))
+                response.on('end', () => {
+                    writeStream.end(() => {
+                        const hex = hash.digest('hex');
+                        if (sha512 && hex !== sha512) {
+                            return reject(
+                                new Error(`Checksum verification failed ${url}`)
+                            );
+                        }
+                        return resolve(packageLocation);
+                    });
+                });
+                response.on('error', error =>
+                    reject(
+                        new Error(`Error when reading ${url}: ${error.message}`)
+                    )
+                );
+            })
+            .on('error', error =>
+                reject(new Error(`Unable to download ${url}: ${error.message}`))
+            )
             .end();
-    })
-);
+    });
 
 const unpack = (version, src, dest) => async dispatch => {
     switch (process.platform) {
         case 'win32':
-            return new Promise((resolve, reject) => new DecompressZip(src)
-                .on('error', reject)
-                .on('extract', resolve)
-                .on('progress', (fileIndex, fileCount) => dispatch(reportProgress(version, fileIndex, fileCount, UNPACK)))
-                .extract({ path: dest }));
+            return new Promise((resolve, reject) =>
+                new DecompressZip(src)
+                    .on('error', reject)
+                    .on('extract', resolve)
+                    .on('progress', (fileIndex, fileCount) =>
+                        dispatch(
+                            reportProgress(
+                                version,
+                                fileIndex,
+                                fileCount,
+                                UNPACK
+                            )
+                        )
+                    )
+                    .extract({ path: dest })
+            );
         case 'darwin': {
-            const volume = execSync(`hdiutil attach ${src} | grep -Eo "/Volumes/ncs-toolchain-.*"`).toString().trim();
+            const volume = execSync(
+                `hdiutil attach ${src} | grep -Eo "/Volumes/ncs-toolchain-.*"`
+            )
+                .toString()
+                .trim();
             let n = 0;
             await fse.copy(path.join(volume, 'toolchain'), dest, {
                 filter: () => {
@@ -144,11 +180,13 @@ const unpack = (version, src, dest) => async dispatch => {
         }
         case 'linux': {
             dispatch(setProgress(version, 'Installing...', 51));
-            await new Promise((resolve, reject) => sudo.exec(
-                `snap install ${src} --devmode`,
-                { name: 'Toolchain Manager' },
-                err => (err ? reject(err) : resolve()),
-            ));
+            await new Promise((resolve, reject) =>
+                sudo.exec(
+                    `snap install ${src} --devmode`,
+                    { name: 'Toolchain Manager' },
+                    err => (err ? reject(err) : resolve())
+                )
+            );
             dispatch(setProgress(version, 'Installing...', 99));
             fse.removeSync(dest);
             fse.symlinkSync(`/snap/ncs-toolchain-${version}/current`, dest);
@@ -170,6 +208,7 @@ const installCMakeModules = toolchainDir => {
         }
         case 'darwin':
         case 'linux': {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { ZEPHYR_BASE, ...env } = remote.process.env;
             env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
             execSync(`cmake -P ${pkg}`, { env });
@@ -179,7 +218,11 @@ const installCMakeModules = toolchainDir => {
     }
 };
 
-const installToolchain = (version, toolchain, toolchainDir) => async dispatch => {
+const installToolchain = (
+    version,
+    toolchain,
+    toolchainDir
+) => async dispatch => {
     dispatch(startInstallToolchain(version));
 
     try {
@@ -194,9 +237,14 @@ const installToolchain = (version, toolchain, toolchainDir) => async dispatch =>
     dispatch(finishInstallToolchain(version, toolchainDir));
 };
 
-export const isWestPresent = toolchainDir => fs.existsSync(path.resolve(toolchainDir, '../.west/config'));
+export const isWestPresent = toolchainDir =>
+    fs.existsSync(path.resolve(toolchainDir, '../.west/config'));
 
-export const cloneNcs = (version, toolchainDir, justUpdate) => async dispatch => {
+export const cloneNcs = (
+    version,
+    toolchainDir,
+    justUpdate
+) => async dispatch => {
     dispatch(startCloningSdk(version));
 
     if (!justUpdate) {
@@ -207,36 +255,45 @@ export const cloneNcs = (version, toolchainDir, justUpdate) => async dispatch =>
         const update = justUpdate ? '--just-update' : '';
         switch (process.platform) {
             case 'win32': {
-                ncsMgr = spawn(
-                    path.resolve(toolchainDir, 'bin', 'bash.exe'),
-                    ['-l', '-c', `unset ZEPHYR_BASE ; ncsmgr/ncsmgr init-ncs ${update}`],
-                );
+                ncsMgr = spawn(path.resolve(toolchainDir, 'bin', 'bash.exe'), [
+                    '-l',
+                    '-c',
+                    `unset ZEPHYR_BASE ; ncsmgr/ncsmgr init-ncs ${update}`,
+                ]);
 
                 break;
             }
             case 'darwin': {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { ZEPHYR_BASE, ...env } = process.env;
-                const gitversion = fs.readdirSync(`${toolchainDir}/Cellar/git`).pop();
+                const gitversion = fs
+                    .readdirSync(`${toolchainDir}/Cellar/git`)
+                    .pop();
                 env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
                 env.GIT_EXEC_PATH = `${toolchainDir}/Cellar/git/${gitversion}/libexec/git-core`;
 
                 ncsMgr = spawn(
                     `${toolchainDir}/ncsmgr/ncsmgr`,
                     ['init-ncs', `${update}`],
-                    { env },
+                    { env }
                 );
                 break;
             }
             case 'linux': {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { ZEPHYR_BASE, ...env } = process.env;
                 env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
 
                 ncsMgr = remoteSpawn(
-                    'snap', [
-                        'run', '--shell', `ncs-toolchain-${version}.west`, '-c',
+                    'snap',
+                    [
+                        'run',
+                        '--shell',
+                        `ncs-toolchain-${version}.west`,
+                        '-c',
                         `${toolchainDir}/ncsmgr/ncsmgr init-ncs ${update}`,
                     ],
-                    { env },
+                    { env }
                 );
                 break;
             }
@@ -247,12 +304,18 @@ export const cloneNcs = (version, toolchainDir, justUpdate) => async dispatch =>
         let err = '';
         await new Promise((resolve, reject) => {
             ncsMgr.stdout.on('data', data => {
-                const repo = (/=== updating (\w+)/.exec(data.toString()) || []).pop();
+                const repo = (
+                    /=== updating (\w+)/.exec(data.toString()) || []
+                ).pop();
                 if (repo) {
-                    dispatch(setProgress(version, `Updating ${repo} repository...`));
+                    dispatch(
+                        setProgress(version, `Updating ${repo} repository...`)
+                    );
                 }
             });
-            ncsMgr.stderr.on('data', data => { err += `${data}`; });
+            ncsMgr.stderr.on('data', data => {
+                err += `${data}`;
+            });
             ncsMgr.on('exit', code => (code ? reject(err) : resolve()));
         });
     } catch (error) {
@@ -262,7 +325,10 @@ export const cloneNcs = (version, toolchainDir, justUpdate) => async dispatch =>
     dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
 };
 
-export const install = ({ version, toolchains }, justUpdate) => async dispatch => {
+export const install = (
+    { version, toolchains },
+    justUpdate
+) => async dispatch => {
     const toolchain = getLatestToolchain(toolchains);
     const toolchainDir = path.resolve(installDir(), version, 'toolchain');
 
@@ -277,7 +343,12 @@ export const install = ({ version, toolchains }, justUpdate) => async dispatch =
 };
 
 export const remove = ({ toolchainDir, version }) => async dispatch => {
-    const toBeDeletedDir = path.resolve(toolchainDir, '..', '..', 'toBeDeleted');
+    const toBeDeletedDir = path.resolve(
+        toolchainDir,
+        '..',
+        '..',
+        'toBeDeleted'
+    );
     dispatch(startRemoving(version));
 
     const srcDir = path.dirname(toolchainDir);
@@ -287,12 +358,14 @@ export const remove = ({ toolchainDir, version }) => async dispatch => {
         renameOfDirSuccessful = true;
         await fse.remove(toBeDeletedDir);
     } catch (error) {
-        const [,, message] = `${error}`.split(/[:,] /);
-        dispatch(showErrorDialog(
-            `Failed to remove ${srcDir}, ${message}. `
-            + 'Please close any application or window that might keep this '
-            + 'environment locked, then try to remove it again.',
-        ));
+        const [, , message] = `${error}`.split(/[:,] /);
+        dispatch(
+            showErrorDialog(
+                `Failed to remove ${srcDir}, ${message}. ` +
+                    'Please close any application or window that might keep this ' +
+                    'environment locked, then try to remove it again.'
+            )
+        );
     }
     if (renameOfDirSuccessful) {
         dispatch(removeEnvironment(version));
@@ -302,16 +375,24 @@ export const remove = ({ toolchainDir, version }) => async dispatch => {
 };
 
 export const installPackage = urlOrFilePath => async dispatch => {
-    const match = /ncs-toolchain-(v?.+?)([-_]\d{8}-[^.]+).[zip|dmg|snap]/.exec(urlOrFilePath);
+    const match = /ncs-toolchain-(v?.+?)([-_]\d{8}-[^.]+).[zip|dmg|snap]/.exec(
+        urlOrFilePath
+    );
     if (!match) {
-        dispatch(showErrorDialog('Filename is not recognized as a toolchain package.'));
+        dispatch(
+            showErrorDialog(
+                'Filename is not recognized as a toolchain package.'
+            )
+        );
         return;
     }
     const version = match[1];
     const toolchainDir = path.resolve(installDir(), version, 'toolchain');
     fse.mkdirpSync(toolchainDir);
 
-    dispatch(addLocallyExistingEnvironment(version, toolchainDir, false, false));
+    dispatch(
+        addLocallyExistingEnvironment(version, toolchainDir, false, false)
+    );
     dispatch(startInstallToolchain(version));
 
     try {

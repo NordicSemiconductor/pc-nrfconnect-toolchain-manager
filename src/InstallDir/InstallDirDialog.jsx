@@ -51,7 +51,9 @@ import {
 } from './installDirReducer';
 
 const selectInstallDir = async (dispatch, installDir, hideDialog) => {
-    const { filePaths: [filePath] } = await remote.dialog.showOpenDialog({
+    const {
+        filePaths: [filePath],
+    } = await remote.dialog.showOpenDialog({
         title: 'Select installation directory',
         defaultPath: installDir,
         properties: ['openDirectory', 'createDirectory'],
@@ -59,7 +61,9 @@ const selectInstallDir = async (dispatch, installDir, hideDialog) => {
     if (filePath) {
         dispatch(setInstallDir(filePath));
         initEnvironments(dispatch);
-        if (hideDialog) { dispatch(hideInstallDirDialog()); }
+        if (hideDialog) {
+            dispatch(hideInstallDirDialog());
+        }
     }
 };
 
@@ -86,22 +90,22 @@ export default () => {
         onConfirm: () => selectInstallDir(dispatch, installDir, true),
         onCancel: () => dispatch(hideInstallDirDialog()),
     };
-    const dialogProps = isConfirmFlavour ? confirmDirDialogProps : changeDirDialogProps;
+    const dialogProps = isConfirmFlavour
+        ? confirmDirDialogProps
+        : changeDirDialogProps;
 
     return (
-        <ConfirmationDialog
-            isVisible={isVisible}
-            {...dialogProps}
-        >
+        <ConfirmationDialog isVisible={isVisible} {...dialogProps}>
             <p>
-                <code>{installDir}</code> is your current installation base directory.
-                Any new installation will be a subdirectory here.
+                <code>{installDir}</code> is your current installation base
+                directory. Any new installation will be a subdirectory here.
             </p>
             <p>
-                When you change the installation directory, SDK environments installed in the old
-                directory will not be shown in the list anymore. They will not be deleted, so
-                you can still find them on the disc and changing back to the old directory will
-                show them in the manager again.
+                When you change the installation directory, SDK environments
+                installed in the old directory will not be shown in the list
+                anymore. They will not be deleted, so you can still find them on
+                the disc and changing back to the old directory will show them
+                in the manager again.
             </p>
         </ConfirmationDialog>
     );

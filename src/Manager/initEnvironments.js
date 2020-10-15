@@ -40,9 +40,16 @@ import { execSync } from 'child_process';
 
 import { remote } from 'electron';
 import fse from 'fs-extra';
-import { toolchainIndexUrl, persistedInstallDir as installDir } from '../persistentStore';
+import {
+    toolchainIndexUrl,
+    persistedInstallDir as installDir,
+} from '../persistentStore';
 import { isWestPresent } from './Environment/environmentEffects';
-import { addEnvironment, addLocallyExistingEnvironment, clearEnvironments } from './managerReducer';
+import {
+    addEnvironment,
+    addLocallyExistingEnvironment,
+    clearEnvironments,
+} from './managerReducer';
 
 const detectLocallyExistingEnvironments = dispatch => {
     fs.readdirSync(installDir(), { withFileTypes: true })
@@ -51,13 +58,17 @@ const detectLocallyExistingEnvironments = dispatch => {
             version: name,
             toolchainDir: path.resolve(installDir(), name, 'toolchain'),
         }))
-        .filter(({ toolchainDir }) => fs.existsSync(path.resolve(toolchainDir, 'ncsmgr/manifest.env')))
+        .filter(({ toolchainDir }) =>
+            fs.existsSync(path.resolve(toolchainDir, 'ncsmgr/manifest.env'))
+        )
         .forEach(({ version, toolchainDir }) => {
-            dispatch(addLocallyExistingEnvironment(
-                version,
-                toolchainDir,
-                isWestPresent(toolchainDir),
-            ));
+            dispatch(
+                addLocallyExistingEnvironment(
+                    version,
+                    toolchainDir,
+                    isWestPresent(toolchainDir)
+                )
+            );
         });
 };
 
@@ -68,12 +79,17 @@ const downloadIndex = dispatch => {
         let result = '';
         response.on('end', () => {
             if (response.statusCode !== 200) {
-                console.error(`Unable to download ${toolchainIndexUrl()}. Got status code ${response.statusCode}`);
+                console.error(
+                    `Unable to download ${toolchainIndexUrl()}. Got status code ${
+                        response.statusCode
+                    }`
+                );
                 return;
             }
 
-            JSON.parse(result)
-                .forEach(environment => dispatch(addEnvironment(environment)));
+            JSON.parse(result).forEach(environment =>
+                dispatch(addEnvironment(environment))
+            );
         });
         response.on('data', buf => {
             result += `${buf}`;
@@ -84,12 +100,16 @@ const downloadIndex = dispatch => {
 
 export default dispatch => {
     const dir = path.dirname(installDir());
-    if (process.platform === 'darwin'
+    if (
+        process.platform === 'darwin' &&
         // eslint-disable-next-line no-bitwise
-        && (!fs.existsSync(dir) || (fs.statSync(dir).mode & 0o3775) !== 0o3775)) {
+        (!fs.existsSync(dir) || (fs.statSync(dir).mode & 0o3775) !== 0o3775)
+    ) {
         const prompt = `Base directory ${dir} needs to be created, to do this please...`;
         const script = `install -d -g staff -m 3775 ${dir}`;
-        execSync(`osascript -e "do shell script \\"${script} \\" with prompt \\"${prompt} \\" with administrator privileges"`);
+        execSync(
+            `osascript -e "do shell script \\"${script} \\" with prompt \\"${prompt} \\" with administrator privileges"`
+        );
     }
     fse.mkdirpSync(installDir());
     dispatch(clearEnvironments());
