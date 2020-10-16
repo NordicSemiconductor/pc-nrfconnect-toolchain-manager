@@ -58,7 +58,7 @@ import {
 export default props => {
     const dispatch = useDispatch();
     const installDir = useSelector(currentInstallDir);
-    const disabled = process.platform !== 'win32';
+    const disabled = process.platform === 'darwin';
     const masterVisible = useSelector(isMasterVisible);
     const toolchainUrl = useSelector(toolchainRootUrl);
 

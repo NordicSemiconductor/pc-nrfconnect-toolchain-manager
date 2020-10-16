@@ -86,8 +86,9 @@ END`);
             .toString()
             .trim()
             .replace(/'/g, '');
+        const shortVer = version.replace(/\./g, '');
         exec(
-            `${terminalApp} -l -e "snap run --shell ncs-toolchain-${version}.west"`,
+            `${terminalApp} -l -e "snap run --shell ncs-toolchain-${shortVer}.west"`,
             { cwd: path.dirname(directory) }
         );
     },

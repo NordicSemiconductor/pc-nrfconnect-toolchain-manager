@@ -186,9 +186,11 @@ export const openSegger = async (toolchainDir, version) => {
                 }
             );
             break;
-        case 'linux':
-            remoteExec(`snap run ncs-toolchain-${version}.emstudio`, { cwd });
+        case 'linux': {
+            const shortVer = version.replace(/\./g, '');
+            remoteExec(`ncs-toolchain-${shortVer}.emstudio`, { cwd });
             break;
+        }
         default:
     }
 };
