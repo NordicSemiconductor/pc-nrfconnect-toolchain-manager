@@ -189,7 +189,8 @@ const unpack = (version, src, dest) => async dispatch => {
             );
             dispatch(setProgress(version, 'Installing...', 99));
             fse.removeSync(dest);
-            fse.symlinkSync(`/snap/ncs-toolchain-${version}/current`, dest);
+            const shortVer = version.replace(/\./g, '');
+            fse.symlinkSync(`/snap/ncs-toolchain-${shortVer}/current`, dest);
             break;
         }
         default:
@@ -283,13 +284,14 @@ export const cloneNcs = (
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { ZEPHYR_BASE, ...env } = process.env;
                 env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
+                const shortVer = version.replace(/\./g, '');
 
                 ncsMgr = remoteSpawn(
                     'snap',
                     [
                         'run',
                         '--shell',
-                        `ncs-toolchain-${version}.west`,
+                        `ncs-toolchain-${shortVer}.west`,
                         '-c',
                         `${toolchainDir}/ncsmgr/ncsmgr init-ncs ${update}`,
                     ],

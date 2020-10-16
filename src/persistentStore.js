@@ -46,7 +46,7 @@ export const setHasInstalledAnNcs = () => store.set('isFirstInstall', false);
 const defaultInstallDir = {
     win32: path.resolve(os.homedir(), 'ncs'),
     darwin: '/opt/nordic/ncs',
-    linux: '//TODO',
+    linux: path.resolve(os.homedir(), 'ncs'),
 }[process.platform];
 
 export const persistedInstallDir = () =>
