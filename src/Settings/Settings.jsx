@@ -42,14 +42,23 @@ import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
 
 import NrfCard from '../NrfCard/NrfCard';
-import { showSetInstallDirDialog, currentInstallDir } from '../InstallDir/installDirReducer';
-import { showMasterEnvironment, isMasterVisible } from '../Manager/managerReducer';
-import { showSetToolchainSourceDialog, toolchainRootUrl } from '../ToolchainSource/toolchainSourceReducer';
+import {
+    showSetInstallDirDialog,
+    currentInstallDir,
+} from '../InstallDir/installDirReducer';
+import {
+    showMasterEnvironment,
+    isMasterVisible,
+} from '../Manager/managerReducer';
+import {
+    showSetToolchainSourceDialog,
+    toolchainRootUrl,
+} from '../ToolchainSource/toolchainSourceReducer';
 
 export default props => {
     const dispatch = useDispatch();
     const installDir = useSelector(currentInstallDir);
-    const disabled = process.platform !== 'win32';
+    const disabled = process.platform === 'darwin';
     const masterVisible = useSelector(isMasterVisible);
     const toolchainUrl = useSelector(toolchainRootUrl);
 
@@ -58,12 +67,8 @@ export default props => {
             <NrfCard>
                 <Row className="settings-info">
                     <Col className="ml-3">
-                        <Row className="h4">
-                            Installation directory
-                        </Row>
-                        <Row className="text-muted">
-                            {installDir}
-                        </Row>
+                        <Row className="h4">Installation directory</Row>
+                        <Row className="text-muted">{installDir}</Row>
                     </Col>
                     <Col xs="auto">
                         <Button
@@ -81,12 +86,17 @@ export default props => {
                         <Form.Group controlId="toggleMaster">
                             <Form.Switch
                                 defaultChecked={masterVisible}
-                                onChange={() => dispatch(showMasterEnvironment(!masterVisible))}
+                                onChange={() =>
+                                    dispatch(
+                                        showMasterEnvironment(!masterVisible)
+                                    )
+                                }
                                 label="Show unstable (master branch) environment"
                             />
                             <Form.Text className="text-muted">
-                                Note that the unstable environment is not regularly updated, and its
-                                toolchain is likely not well tested.
+                                Note that the unstable environment is not
+                                regularly updated, and its toolchain is likely
+                                not well tested.
                             </Form.Text>
                         </Form.Group>
                     </Col>
@@ -94,17 +104,15 @@ export default props => {
 
                 <Row className="settings-info d-none">
                     <Col className="ml-3">
-                        <Row className="h4">
-                            Toolchain source URL
-                        </Row>
-                        <Row className="text-muted">
-                            {toolchainUrl}
-                        </Row>
+                        <Row className="h4">Toolchain source URL</Row>
+                        <Row className="text-muted">{toolchainUrl}</Row>
                     </Col>
                     <Col xs="auto">
                         <Button
                             variant="outline-primary"
-                            onClick={() => dispatch(showSetToolchainSourceDialog())}
+                            onClick={() =>
+                                dispatch(showSetToolchainSourceDialog())
+                            }
                         >
                             Change
                         </Button>

@@ -45,7 +45,11 @@ import { shell } from 'electron';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { cloneNcs, install } from './environmentEffects';
-import { isInstalled, toolchainDir as getToolchainDir, version as getVersion } from './environmentReducer';
+import {
+    isInstalled,
+    toolchainDir as getToolchainDir,
+    version as getVersion,
+} from './environmentReducer';
 import { showConfirmRemoveDialog } from '../managerReducer';
 
 import environmentPropType from './environmentPropType';
@@ -76,11 +80,16 @@ end tell
 END`);
     },
     linux: (directory, version) => {
-        const terminalApp = execSync('gsettings get org.gnome.desktop.default-applications.terminal exec')
-            .toString().trim().replace(/'/g, '');
+        const terminalApp = execSync(
+            'gsettings get org.gnome.desktop.default-applications.terminal exec'
+        )
+            .toString()
+            .trim()
+            .replace(/'/g, '');
+        const shortVer = version.replace(/\./g, '');
         exec(
-            `${terminalApp} -l -e "snap run --shell ncs-toolchain-${version}.west"`,
-            { cwd: path.dirname(directory) },
+            `${terminalApp} -l -e "snap run --shell ncs-toolchain-${shortVer}.west"`,
+            { cwd: path.dirname(directory) }
         );
     },
 };
@@ -114,26 +123,36 @@ const EnvironmentMenu = ({ environment }) => {
                 </>
             )}
             {process.platform !== 'win32' && (
-                <Dropdown.Item onClick={() => openTerminal[platform](toolchainDir, version)}>
+                <Dropdown.Item
+                    onClick={() =>
+                        openTerminal[platform](toolchainDir, version)
+                    }
+                >
                     Open Terminal
                 </Dropdown.Item>
             )}
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => openDirectory(path.dirname(toolchainDir))}>
+            <Dropdown.Item
+                onClick={() => openDirectory(path.dirname(toolchainDir))}
+            >
                 Open SDK directory
             </Dropdown.Item>
             <Dropdown.Item onClick={() => openDirectory(toolchainDir)}>
                 Open toolchain directory
             </Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => dispatch(cloneNcs(version, toolchainDir, true))}>
+            <Dropdown.Item
+                onClick={() => dispatch(cloneNcs(version, toolchainDir, true))}
+            >
                 Update SDK
             </Dropdown.Item>
             <Dropdown.Item onClick={() => dispatch(install(environment, true))}>
                 Update toolchain
             </Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={() => dispatch(showConfirmRemoveDialog(version))}>
+            <Dropdown.Item
+                onClick={() => dispatch(showConfirmRemoveDialog(version))}
+            >
                 Remove
             </Dropdown.Item>
         </DropdownButton>

@@ -34,9 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {
-    bool, func, node, string,
-} from 'prop-types';
+import { bool, func, node, string } from 'prop-types';
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -58,11 +56,19 @@ const ConfirmationDialog = ({
         </Modal.Header>
         <Modal.Body>{children}</Modal.Body>
         <Modal.Footer>
-            {onOptional
-               && <Button variant="outline-primary" onClick={onOptional}>{optionalLabel}</Button>}
-            <Button variant="primary" onClick={onConfirm}>{confirmLabel}</Button>
-            {onCancel
-               && <Button variant="outline-primary" onClick={onCancel}>{cancelLabel}</Button>}
+            {onOptional && (
+                <Button variant="outline-primary" onClick={onOptional}>
+                    {optionalLabel}
+                </Button>
+            )}
+            <Button variant="primary" onClick={onConfirm}>
+                {confirmLabel}
+            </Button>
+            {onCancel && (
+                <Button variant="outline-primary" onClick={onCancel}>
+                    {cancelLabel}
+                </Button>
+            )}
         </Modal.Footer>
     </Modal>
 );

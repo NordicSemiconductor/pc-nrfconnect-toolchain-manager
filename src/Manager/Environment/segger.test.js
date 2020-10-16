@@ -54,7 +54,10 @@ const existingUserSettings = 'User settings set by a user';
 
 expect.extend({
     toContainNode(xmlString, nodeSelector, nodeContent) {
-        const xml = new DOMParser().parseFromString(xmlString, 'application/xml');
+        const xml = new DOMParser().parseFromString(
+            xmlString,
+            'application/xml'
+        );
 
         const node = xml.querySelector(nodeSelector);
         if (node == null) {
@@ -94,23 +97,47 @@ expect.extend({
 
 const expectNrfSettingAreCorrect = xml => {
     if (process.platform === 'win32') {
-        expect(xml).toContainNode('settings setting[name="Nordic/ToolchainDir"]', toolchainDir);
+        expect(xml).toContainNode(
+            'settings setting[name="Nordic/ToolchainDir"]',
+            toolchainDir
+        );
     }
-    expect(xml).toContainNode('settings setting[name="Nordic/ZephyrBase"]', zephyrBase);
-    expect(xml).toContainNode('settings setting[name="Nordic/CMakeExecutable"]', '');
-    expect(xml).toContainNode('settings setting[name="Nordic/DTCExecutable"]', '');
-    expect(xml).toContainNode('settings setting[name="Nordic/NinjaExecutable"]', '');
-    expect(xml).toContainNode('settings setting[name="Nordic/PythonExecutable"]', '');
+    expect(xml).toContainNode(
+        'settings setting[name="Nordic/ZephyrBase"]',
+        zephyrBase
+    );
+    expect(xml).toContainNode(
+        'settings setting[name="Nordic/CMakeExecutable"]',
+        ''
+    );
+    expect(xml).toContainNode(
+        'settings setting[name="Nordic/DTCExecutable"]',
+        ''
+    );
+    expect(xml).toContainNode(
+        'settings setting[name="Nordic/NinjaExecutable"]',
+        ''
+    );
+    expect(xml).toContainNode(
+        'settings setting[name="Nordic/PythonExecutable"]',
+        ''
+    );
 };
 
 const expectFirstTimeSettingAreCorrect = xml => {
     expectNrfSettingAreCorrect(xml);
-    expect(xml).toContainNode('settings setting[name="Environment/User Settings"]', firstTimeUserSettings);
+    expect(xml).toContainNode(
+        'settings setting[name="Environment/User Settings"]',
+        firstTimeUserSettings
+    );
 };
 
 const expectExistingUserSettingsAreRetained = xml => {
     expectNrfSettingAreCorrect(xml);
-    expect(xml).toContainNode('settings setting[name="Environment/User Settings"]', existingUserSettings);
+    expect(xml).toContainNode(
+        'settings setting[name="Environment/User Settings"]',
+        existingUserSettings
+    );
 };
 
 describe('update segger settings', () => {

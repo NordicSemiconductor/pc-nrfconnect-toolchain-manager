@@ -63,7 +63,12 @@ const createSettingNode = (xml, settingName) => {
     return settingNode;
 };
 
-const setSetting = (xml, settingName, settingValue, overwriteExistingSetting = true) => {
+const setSetting = (
+    xml,
+    settingName,
+    settingValue,
+    overwriteExistingSetting = true
+) => {
     let node = xml.querySelector(`setting[name='${settingName}']`);
     if (!overwriteExistingSetting && node != null) {
         return;
@@ -76,13 +81,24 @@ const setSetting = (xml, settingName, settingValue, overwriteExistingSetting = t
 
 export const userSettings = zephyrDir => {
     const cmakeLists = `ARM/Zephyr/CMakeLists=${path.resolve(
-        zephyrDir, 'samples', 'basic', 'blinky', 'CMakeLists.txt',
+        zephyrDir,
+        'samples',
+        'basic',
+        'blinky',
+        'CMakeLists.txt'
     )};`;
     const buildDir = `ARM/Zephyr/BuildDir=${path.resolve(
-        zephyrDir, 'samples', 'basic', 'blinky', 'build_nrf9160_pca10090',
+        zephyrDir,
+        'samples',
+        'basic',
+        'blinky',
+        'build_nrf9160_pca10090'
     )};`;
     const boardDir = `ARM/Zephyr/BoardDir=${path.resolve(
-        zephyrDir, 'boards', 'arm', 'nrf9160_pca10090',
+        zephyrDir,
+        'boards',
+        'arm',
+        'nrf9160_pca10090'
     )};`;
     return `${cmakeLists}${buildDir}${boardDir}`.replace(/\\/g, '/');
 };
@@ -98,7 +114,11 @@ export const updateSettingsXml = (xmlString, toolchainDir) => {
     const zephyrDir = path.resolve(toolchainDir, '..', 'zephyr');
     setSetting(xml, 'Nordic/ZephyrBase', zephyrDir);
     if (process.platform === 'win32') {
-        setSetting(xml, 'Nordic/ToolchainDir', path.resolve(toolchainDir, 'opt'));
+        setSetting(
+            xml,
+            'Nordic/ToolchainDir',
+            path.resolve(toolchainDir, 'opt')
+        );
     } else {
         setSetting(xml, 'Nordic/ToolchainDir', toolchainDir);
     }
@@ -106,7 +126,12 @@ export const updateSettingsXml = (xmlString, toolchainDir) => {
     setSetting(xml, 'Nordic/DTCExecutable', '');
     setSetting(xml, 'Nordic/NinjaExecutable', '');
     setSetting(xml, 'Nordic/PythonExecutable', '');
-    setSetting(xml, 'Environment/User Settings', userSettings(zephyrDir), false);
+    setSetting(
+        xml,
+        'Environment/User Settings',
+        userSettings(zephyrDir),
+        false
+    );
 
     return new XMLSerializer().serializeToString(xml);
 };
@@ -121,7 +146,10 @@ const readFile = filePath => {
 };
 
 const updateSettingsFile = async (settingsFileName, toolchainDir) => {
-    const seggerSettingsDir = path.resolve(os.homedir(), 'Nordic/SEGGER Embedded Studio/v3');
+    const seggerSettingsDir = path.resolve(
+        os.homedir(),
+        'Nordic/SEGGER Embedded Studio/v3'
+    );
     fse.mkdirpSync(seggerSettingsDir);
     const settingsPath = path.resolve(seggerSettingsDir, settingsFileName);
 
@@ -140,7 +168,10 @@ export const openSegger = async (toolchainDir, version) => {
 
     switch (process.platform) {
         case 'win32':
-            exec(`"${path.resolve(toolchainDir, 'SEGGER Embedded Studio.cmd')}"`, { cwd });
+            exec(
+                `"${path.resolve(toolchainDir, 'SEGGER Embedded Studio.cmd')}"`,
+                { cwd }
+            );
             break;
         case 'darwin':
             exec(
@@ -152,12 +183,14 @@ export const openSegger = async (toolchainDir, version) => {
                         GNUARMEMB_TOOLCHAIN_PATH: toolchainDir,
                     },
                     cwd,
-                },
+                }
             );
             break;
-        case 'linux':
-            remoteExec(`snap run ncs-toolchain-${version}.emstudio`, { cwd });
+        case 'linux': {
+            const shortVer = version.replace(/\./g, '');
+            remoteExec(`ncs-toolchain-${shortVer}.emstudio`, { cwd });
             break;
+        }
         default:
     }
 };

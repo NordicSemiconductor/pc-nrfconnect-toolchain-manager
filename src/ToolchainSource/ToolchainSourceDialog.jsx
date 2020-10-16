@@ -39,7 +39,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import {
-    isDialogVisible, hideSetToolchainSourceDialog, setToolchainSource, toolchainRootUrl,
+    isDialogVisible,
+    hideSetToolchainSourceDialog,
+    setToolchainSource,
+    toolchainRootUrl,
 } from './toolchainSourceReducer';
 import initEnvironments from '../Manager/initEnvironments';
 
@@ -68,7 +71,7 @@ export default () => {
                     type="text"
                     value={url}
                     onChange={({ target }) => setUrl(target.value)}
-                    onKeyPress={evt => (evt.charCode === 13) && onConfirm()}
+                    onKeyPress={evt => evt.charCode === 13 && onConfirm()}
                 />
             </Form.Group>
         </ConfirmationDialog>

@@ -41,16 +41,26 @@ import BootstrapProgressBar from 'react-bootstrap/ProgressBar';
 
 import environmentPropType from './environmentPropType';
 import {
-    progress, isRemoving, isInstalled, isInstallingToolchain, isInProgress, isCloningSdk,
+    progress,
+    isRemoving,
+    isInstalled,
+    isInstallingToolchain,
+    isInProgress,
+    isCloningSdk,
 } from './environmentReducer';
 
 const className = env => {
     switch (true) {
-        case isRemoving(env): return 'removing';
-        case isInstallingToolchain(env): return 'installing';
-        case isCloningSdk(env): return 'installing';
-        case isInstalled(env): return 'installed';
-        default: return 'available';
+        case isRemoving(env):
+            return 'removing';
+        case isInstallingToolchain(env):
+            return 'installing';
+        case isCloningSdk(env):
+            return 'installing';
+        case isInstalled(env):
+            return 'installed';
+        default:
+            return 'available';
     }
 };
 

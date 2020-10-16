@@ -36,7 +36,11 @@
 
 import { combineReducers } from 'redux';
 import appReducer from '../reducers';
-import { getLatestToolchain, environmentsByVersion, addEnvironment } from './managerReducer';
+import {
+    getLatestToolchain,
+    environmentsByVersion,
+    addEnvironment,
+} from './managerReducer';
 
 const older = {
     version: '20200217',
@@ -66,9 +70,14 @@ describe('managerReducer', () => {
     it('adds an environment', () => {
         const anEnvironment = { version: 'v1.2.0' };
 
-        const withAnEnvironment = reducer(undefined, addEnvironment(anEnvironment));
+        const withAnEnvironment = reducer(
+            undefined,
+            addEnvironment(anEnvironment)
+        );
 
-        expect(environmentsByVersion(withAnEnvironment)).toStrictEqual([anEnvironment]);
+        expect(environmentsByVersion(withAnEnvironment)).toStrictEqual([
+            anEnvironment,
+        ]);
     });
 
     it('updates an environment', () => {
@@ -80,8 +89,9 @@ describe('managerReducer', () => {
             addEnvironment(anUpdatedEnvironment),
         ].reduce(reducer, undefined);
 
-        expect(environmentsByVersion(withAnUpdatedEnvironment))
-            .toStrictEqual([anUpdatedEnvironment]);
+        expect(environmentsByVersion(withAnUpdatedEnvironment)).toStrictEqual([
+            anUpdatedEnvironment,
+        ]);
     });
 
     it('provides a list of all environments', () => {
@@ -99,9 +109,11 @@ describe('managerReducer', () => {
             addEnvironment(olderEnvironment),
         ].reduce(reducer, undefined);
 
-        expect(environmentsByVersion(withAllEnvironments))
-            .toStrictEqual(listOfAllEnvironments);
-        expect(environmentsByVersion(withAllEnvironmentsAddedInDifferentOrder))
-            .toStrictEqual(listOfAllEnvironments);
+        expect(environmentsByVersion(withAllEnvironments)).toStrictEqual(
+            listOfAllEnvironments
+        );
+        expect(
+            environmentsByVersion(withAllEnvironmentsAddedInDifferentOrder)
+        ).toStrictEqual(listOfAllEnvironments);
     });
 });
