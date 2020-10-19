@@ -198,27 +198,6 @@ const unpack = (version, src, dest) => async dispatch => {
     return undefined;
 };
 
-const installCMakeModules = toolchainDir => {
-    const pkg = path.resolve(toolchainDir, 'cmake', 'NcsToolchainConfig.cmake');
-    if (!fs.existsSync(pkg)) return;
-
-    switch (process.platform) {
-        case 'win32': {
-            execSync(`${toolchainDir}/opt/bin/cmake -P ${pkg}"`);
-            break;
-        }
-        case 'darwin':
-        case 'linux': {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { ZEPHYR_BASE, ...env } = remote.process.env;
-            env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
-            execSync(`cmake -P ${pkg}`, { env });
-            break;
-        }
-        default:
-    }
-};
-
 const installToolchain = (
     version,
     toolchain,
@@ -230,7 +209,6 @@ const installToolchain = (
         fse.mkdirpSync(toolchainDir);
         const packageLocation = await dispatch(download(version, toolchain));
         await dispatch(unpack(version, packageLocation, toolchainDir));
-        installCMakeModules(toolchainDir);
     } catch (error) {
         dispatch(showErrorDialog(`${error.message || error}`));
     }
@@ -403,7 +381,6 @@ export const installPackage = urlOrFilePath => async dispatch => {
             : await dispatch(download(version, { uri: urlOrFilePath }));
 
         await dispatch(unpack(version, filePath, toolchainDir));
-        installCMakeModules(toolchainDir);
         dispatch(finishInstallToolchain(version, toolchainDir));
         await dispatch(cloneNcs(version, toolchainDir, false));
     } catch (error) {

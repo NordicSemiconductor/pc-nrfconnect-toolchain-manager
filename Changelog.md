@@ -1,6 +1,5 @@
-## Unreleased
+## Version 0.8.0
 - Linux toolchain support
-- Install cmake support modules
 
 ## Version 0.7.1
 - Fixed update SDK/toolchain actions
