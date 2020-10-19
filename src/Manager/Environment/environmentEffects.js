@@ -103,7 +103,7 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
         remote.net
             .request({ url })
             .on('response', response => {
-                const totalLength = response.headers['content-length'][0];
+                const totalLength = response.headers['content-length'];
                 let currentLength = 0;
                 response.on('data', data => {
                     hash.update(data);
