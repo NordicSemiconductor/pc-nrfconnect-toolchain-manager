@@ -47,6 +47,7 @@
   },
   "bundledDependencies": [
     "electron-store",
+    "extract-zip",
     "fs-extra",
     "semver"
   ],
