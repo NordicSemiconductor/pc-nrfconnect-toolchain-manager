@@ -1,5 +1,6 @@
 ## Version 0.8.0
 - Linux toolchain support
+- Fixed incorrect percentage number for download progress
 
 ## Version 0.7.1
 - Fixed update SDK/toolchain actions
