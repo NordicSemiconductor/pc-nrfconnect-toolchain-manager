@@ -144,10 +144,10 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
 
 const unpack = (version, src, dest) => async dispatch => {
     switch (process.platform) {
-        case 'win32':
+        case 'win32': {
             let fileCount = 0;
             const totalFileCount = 26000; // ncs 1.4 has 25456 files
-            return await extract(src, {
+            return extract(src, {
                 dir: dest,
                 onEntry: () => {
                     fileCount += 1;
@@ -158,9 +158,10 @@ const unpack = (version, src, dest) => async dispatch => {
                             totalFileCount,
                             UNPACK
                         )
-                    )
-                }
+                    );
+                },
             });
+        }
         case 'darwin': {
             const volume = execSync(
                 `hdiutil attach ${src} | grep -Eo "/Volumes/ncs-toolchain-.*"`
