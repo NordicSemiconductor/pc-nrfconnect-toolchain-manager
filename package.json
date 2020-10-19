@@ -40,14 +40,14 @@
     "sudo-prompt": "^9.2.1"
   },
   "dependencies": {
-    "decompress-zip": "^0.2.2",
     "electron-store": "^3.2.0",
+    "extract-zip": "^2.0.1",
     "fs-extra": "^8.1.0",
     "semver": "^7.1.1"
   },
   "bundledDependencies": [
-    "decompress-zip",
     "electron-store",
+    "extract-zip",
     "fs-extra",
     "semver"
   ],

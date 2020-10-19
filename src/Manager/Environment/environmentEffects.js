@@ -39,34 +39,34 @@ import { createHash } from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
-import DecompressZip from 'decompress-zip';
 import { remote } from 'electron';
+import extract from 'extract-zip';
 import fse from 'fs-extra';
+
+import { showFirstInstallDialog } from '../../FirstInstall/firstInstallReducer';
+import { showErrorDialog } from '../../launcherActions';
 import {
+    persistedInstallDir as installDir,
     isFirstInstall,
     setHasInstalledAnNcs,
     toolchainUrl,
-    persistedInstallDir as installDir,
 } from '../../persistentStore';
-import { showFirstInstallDialog } from '../../FirstInstall/firstInstallReducer';
-import { showErrorDialog } from '../../launcherActions';
-
 import {
-    selectEnvironment,
-    getLatestToolchain,
-    getEnvironment,
     addLocallyExistingEnvironment,
+    getEnvironment,
+    getLatestToolchain,
+    selectEnvironment,
 } from '../managerReducer';
 import {
-    startInstallToolchain,
+    finishCloningSdk,
     finishInstallToolchain,
+    finishRemoving,
+    progress,
+    removeEnvironment,
     setProgress,
     startCloningSdk,
-    finishCloningSdk,
+    startInstallToolchain,
     startRemoving,
-    finishRemoving,
-    removeEnvironment,
-    progress,
 } from './environmentReducer';
 
 const sudo = remote.require('sudo-prompt');
@@ -103,7 +103,7 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
         remote.net
             .request({ url })
             .on('response', response => {
-                const totalLength = response.headers['content-length'][0];
+                const totalLength = response.headers['content-length'];
                 let currentLength = 0;
                 response.on('data', data => {
                     hash.update(data);
@@ -144,23 +144,24 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
 
 const unpack = (version, src, dest) => async dispatch => {
     switch (process.platform) {
-        case 'win32':
-            return new Promise((resolve, reject) =>
-                new DecompressZip(src)
-                    .on('error', reject)
-                    .on('extract', resolve)
-                    .on('progress', (fileIndex, fileCount) =>
-                        dispatch(
-                            reportProgress(
-                                version,
-                                fileIndex,
-                                fileCount,
-                                UNPACK
-                            )
+        case 'win32': {
+            let fileCount = 0;
+            const totalFileCount = 26000; // ncs 1.4 has 25456 files
+            return extract(src, {
+                dir: dest,
+                onEntry: () => {
+                    fileCount += 1;
+                    dispatch(
+                        reportProgress(
+                            version,
+                            fileCount,
+                            totalFileCount,
+                            UNPACK
                         )
-                    )
-                    .extract({ path: dest })
-            );
+                    );
+                },
+            });
+        }
         case 'darwin': {
             const volume = execSync(
                 `hdiutil attach ${src} | grep -Eo "/Volumes/ncs-toolchain-.*"`
