@@ -39,10 +39,9 @@
 // them from there. But before we can correct this, we need to upgrade to a new version.
 
 import { usageData } from 'pc-nrfconnect-shared';
-import pkgJson from '../../package.json';
+import pkgJson from '../package.json';
 
-export const EventAction = {
-}
+export const EventAction = {};
 
 const EventCategory = pkgJson.name;
 
