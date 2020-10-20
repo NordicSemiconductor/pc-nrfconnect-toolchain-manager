@@ -38,22 +38,31 @@
 
 import './style.scss';
 
-import React from 'react';
-
 import { App } from 'pc-nrfconnect-shared';
-import appReducer from './reducers';
-import Manager from './Manager/Manager';
-import Settings from './Settings/Settings';
+import React, { useEffect } from 'react';
 
-export default () => (
-    <App
-        appReducer={appReducer}
-        deviceSelect={null}
-        sidePanel={null}
-        panes={[
-            ['SDK Environments', Manager],
-            ['Settings', Settings],
-        ]}
-        showLogByDefault={false}
-    />
-);
+import Manager from './Manager/Manager';
+import appReducer from './reducers';
+import Settings from './Settings/Settings';
+import { initUsageData } from './usageDataActions';
+
+export default () => {
+    useEffect(() => {
+        // Init usage data functionality comes after rendering.
+        // Usage data functionality should not block rendering.
+        initUsageData();
+    }, []);
+
+    return (
+        <App
+            appReducer={appReducer}
+            deviceSelect={null}
+            sidePanel={null}
+            panes={[
+                ['SDK Environments', Manager],
+                ['Settings', Settings],
+            ]}
+            showLogByDefault={false}
+        />
+    );
+};

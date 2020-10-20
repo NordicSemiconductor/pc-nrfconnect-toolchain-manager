@@ -39,16 +39,22 @@
 // them from there. But before we can correct this, we need to upgrade to a new version.
 
 import { usageData } from 'pc-nrfconnect-shared';
+
 import pkgJson from '../package.json';
 
-export const EventAction = {};
+export const EventAction = {
+    LAUNCH_APP: 'Launch app',
+};
 
 const EventCategory = pkgJson.name;
 
-try {
-    usageData.init(EventCategory);
-} catch (e) {
-    console.warn('Usage data not available and will not be stored');
+export async function initUsageData() {
+    try {
+        await usageData.init(EventCategory);
+        sendUsageData(EventAction.LAUNCH_APP);
+    } catch (e) {
+        console.warn('Usage data not available and will not be stored');
+    }
 }
 
 export function sendUsageData(action, label) {
