@@ -70,10 +70,10 @@ const setSetting = (
     overwriteExistingSetting = true
 ) => {
     let node = xml.querySelector(`setting[name='${settingName}']`);
-    if (!overwriteExistingSetting && node != null) {
+    if (!overwriteExistingSetting && node !== null) {
         return;
     }
-    if (node == null) {
+    if (node === null) {
         node = createSettingNode(xml, settingName);
     }
     node.textContent = settingValue;
@@ -103,13 +103,16 @@ export const userSettings = zephyrDir => {
     return `${cmakeLists}${buildDir}${boardDir}`.replace(/\\/g, '/');
 };
 
-export const updateSettingsXml = (xmlString, toolchainDir) => {
+const createXmlDocument = xmlString => {
     let xml = new DOMParser().parseFromString(xmlString, 'application/xml');
-
-    const couldNotParseSettings = xml.querySelector('parsererror') != null;
-    if (couldNotParseSettings) {
+    if (xml.querySelector('parsererror') !== null) {
         xml = new Document();
     }
+    return xml;
+};
+
+export const updateSettingsXml = (xmlString, toolchainDir) => {
+    const xml = createXmlDocument(xmlString);
 
     const zephyrDir = path.resolve(toolchainDir, '..', 'zephyr');
     setSetting(xml, 'Nordic/ZephyrBase', zephyrDir);
@@ -136,6 +139,33 @@ export const updateSettingsXml = (xmlString, toolchainDir) => {
     return new XMLSerializer().serializeToString(xml);
 };
 
+const updateConfigXml = (xmlString, toolchainDir) => {
+    const xml = createXmlDocument(xmlString);
+
+    const node = xml.querySelector(
+        `environment-settings switch ${
+            process.platform === 'darwin' ? 'case[value=macos]' : 'default'
+        }`
+    );
+    const binDir =
+        process.platform === 'win32'
+            ? path.resolve(toolchainDir, 'opt', 'bin')
+            : path.resolve(toolchainDir, 'bin');
+    const ext = process.platform === 'win32' ? '.exe' : '';
+    [
+        ['CMAKE', 'cmake'],
+        ['NINJA', 'ninja'],
+        ['PYTHON', process.platform === 'win32' ? 'python' : 'python3'],
+        ['DTC', 'dtc'],
+    ].forEach(([name, command]) => {
+        node.querySelector(`define[name=DEFAULT_${name}_PATH]`).setAttribute(
+            'value',
+            path.resolve(binDir, `${command}${ext}`)
+        );
+    });
+    return new XMLSerializer().serializeToString(xml);
+};
+
 const readFile = filePath => {
     try {
         return fs.readFileSync(filePath);
@@ -145,7 +175,7 @@ const readFile = filePath => {
     }
 };
 
-const updateSettingsFile = async (settingsFileName, toolchainDir) => {
+const updateSettingsFile = (settingsFileName, toolchainDir) => {
     const seggerSettingsDir = path.resolve(
         os.homedir(),
         'Nordic/SEGGER Embedded Studio/v3'
@@ -154,8 +184,30 @@ const updateSettingsFile = async (settingsFileName, toolchainDir) => {
     const settingsPath = path.resolve(seggerSettingsDir, settingsFileName);
 
     const xml = readFile(settingsPath);
-    const updatedXml = updateSettingsXml(xml, toolchainDir);
-    fs.writeFileSync(settingsPath, updatedXml);
+    if (xml) {
+        const updatedXml = updateSettingsXml(xml, toolchainDir);
+        fs.writeFileSync(settingsPath, updatedXml);
+    }
+};
+
+export const updateConfigFile = toolchainDir => {
+    if (process.platform === 'linux') {
+        // on Linux SES is executed from snap which will always set correct PATH
+        return;
+    }
+    const configPath = path.resolve(
+        toolchainDir,
+        'segger_embedded_studio',
+        'bin',
+        'config.xml'
+    );
+    let xmlContent = readFile(configPath);
+    if (xmlContent) {
+        xmlContent = updateConfigXml(xmlContent, toolchainDir);
+        if (xmlContent) {
+            fs.writeFileSync(configPath, xmlContent);
+        }
+    }
 };
 
 export const openSegger = async (toolchainDir, version) => {

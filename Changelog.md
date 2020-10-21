@@ -2,6 +2,7 @@
 - Linux toolchain support
 - Fixed unzipping issue on Windows
 - Fixed incorrect percentage number for download progress
+- Update SES default config with tool paths
 
 ## Version 0.7.1
 - Fixed update SDK/toolchain actions
