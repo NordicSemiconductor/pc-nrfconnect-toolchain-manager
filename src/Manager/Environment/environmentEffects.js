@@ -68,6 +68,7 @@ import {
     startInstallToolchain,
     startRemoving,
 } from './environmentReducer';
+import { updateConfigFile } from './segger';
 
 const sudo = remote.require('sudo-prompt');
 const { spawn: remoteSpawn } = remote.require('child_process');
@@ -80,7 +81,10 @@ const reportProgress = (version, currentValue, maxValue, half) => (
     getState
 ) => {
     const prevProgress = progress(getEnvironment(getState(), version));
-    const newProgress = Math.round((currentValue / maxValue) * 50) + half;
+    const newProgress = Math.min(
+        100,
+        Math.round((currentValue / maxValue) * 50) + half
+    );
 
     if (newProgress !== prevProgress) {
         const stage = half === DOWNLOAD ? 'Downloading' : 'Installing';
@@ -90,6 +94,7 @@ const reportProgress = (version, currentValue, maxValue, half) => (
 
 const download = (version, { name, sha512, uri }) => async dispatch =>
     new Promise((resolve, reject) => {
+        dispatch(setProgress(version, 'Downloading', 0));
         const hash = createHash('sha512');
 
         const url = uri || toolchainUrl(name);
@@ -143,6 +148,7 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
     });
 
 const unpack = (version, src, dest) => async dispatch => {
+    dispatch(setProgress(version, 'Installing...', 50));
     switch (process.platform) {
         case 'win32': {
             let fileCount = 0;
@@ -172,7 +178,7 @@ const unpack = (version, src, dest) => async dispatch => {
             await fse.copy(path.join(volume, 'toolchain'), dest, {
                 filter: () => {
                     n += 1;
-                    dispatch(reportProgress(version, n, 57000, UNPACK));
+                    dispatch(reportProgress(version, n, 63000, UNPACK));
                     return true;
                 },
             });
@@ -180,7 +186,6 @@ const unpack = (version, src, dest) => async dispatch => {
             break;
         }
         case 'linux': {
-            dispatch(setProgress(version, 'Installing...', 51));
             await new Promise((resolve, reject) =>
                 sudo.exec(
                     `snap install ${src} --devmode`,
@@ -210,6 +215,7 @@ const installToolchain = (
         fse.mkdirpSync(toolchainDir);
         const packageLocation = await dispatch(download(version, toolchain));
         await dispatch(unpack(version, packageLocation, toolchainDir));
+        updateConfigFile(toolchainDir);
     } catch (error) {
         dispatch(showErrorDialog(`${error.message || error}`));
     }
@@ -382,6 +388,7 @@ export const installPackage = urlOrFilePath => async dispatch => {
             : await dispatch(download(version, { uri: urlOrFilePath }));
 
         await dispatch(unpack(version, filePath, toolchainDir));
+        updateConfigFile(toolchainDir);
         dispatch(finishInstallToolchain(version, toolchainDir));
         await dispatch(cloneNcs(version, toolchainDir, false));
     } catch (error) {
