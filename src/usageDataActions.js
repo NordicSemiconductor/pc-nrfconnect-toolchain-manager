@@ -44,6 +44,11 @@ import pkgJson from '../package.json';
 
 export const EventAction = {
     LAUNCH_APP: 'Launch app',
+    LAUNCH_MANAGER_VIEW: 'Launch manager view',
+    LAUNCH_SETTINGS_VIEW: 'Launch settings view',
+    LAUNCH_ABOUT_VIEW: 'Launch about view',
+    REPORT_OS_INFO: 'Report OS info',
+    REPORT_ERROR: 'Report error',
 };
 
 const EventCategory = pkgJson.name;
@@ -51,7 +56,11 @@ const EventCategory = pkgJson.name;
 export async function initUsageData() {
     try {
         await usageData.init(EventCategory);
-        sendUsageData(EventAction.LAUNCH_APP);
+        sendUsageData(EventAction.LAUNCH_APP, `v${pkgJson.version}`);
+        sendUsageData(
+            EventAction.REPORT_OS_INFO,
+            `${process.platform};${process.arch}`
+        );
     } catch (e) {
         console.warn('Usage data not available and will not be stored');
     }

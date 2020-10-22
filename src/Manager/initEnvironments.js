@@ -34,16 +34,19 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
 
 import { remote } from 'electron';
 import fse from 'fs-extra';
+import { logger } from 'pc-nrfconnect-shared';
+
 import {
-    toolchainIndexUrl,
     persistedInstallDir as installDir,
+    toolchainIndexUrl,
 } from '../persistentStore';
+import { EventAction, sendUsageData } from '../usageDataActions';
 import { isWestPresent } from './Environment/environmentEffects';
 import {
     addEnvironment,
@@ -52,24 +55,30 @@ import {
 } from './managerReducer';
 
 const detectLocallyExistingEnvironments = dispatch => {
-    fs.readdirSync(installDir(), { withFileTypes: true })
-        .filter(dirEnt => dirEnt.isDirectory())
-        .map(({ name }) => ({
-            version: name,
-            toolchainDir: path.resolve(installDir(), name, 'toolchain'),
-        }))
-        .filter(({ toolchainDir }) =>
-            fs.existsSync(path.resolve(toolchainDir, 'ncsmgr/manifest.env'))
-        )
-        .forEach(({ version, toolchainDir }) => {
-            dispatch(
-                addLocallyExistingEnvironment(
-                    version,
-                    toolchainDir,
-                    isWestPresent(toolchainDir)
-                )
-            );
-        });
+    try {
+        fs.readdirSync(installDir(), { withFileTypes: true })
+            .filter(dirEnt => dirEnt.isDirectory())
+            .map(({ name }) => ({
+                version: name,
+                toolchainDir: path.resolve(installDir(), name, 'toolchain'),
+            }))
+            .filter(({ toolchainDir }) =>
+                fs.existsSync(path.resolve(toolchainDir, 'ncsmgr/manifest.env'))
+            )
+            .forEach(({ version, toolchainDir }) => {
+                dispatch(
+                    addLocallyExistingEnvironment(
+                        version,
+                        toolchainDir,
+                        isWestPresent(toolchainDir)
+                    )
+                );
+            });
+    } catch (e) {
+        const errorMsg = `Fail to detect locally existing environments with error: ${e}`;
+        logger.error(errorMsg);
+        sendUsageData(EventAction.REPORT_ERROR, errorMsg);
+    }
 };
 
 const downloadIndex = dispatch => {
