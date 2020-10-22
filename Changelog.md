@@ -2,7 +2,8 @@
 - Linux toolchain support
 - Fixed unzipping issue on Windows
 - Fixed incorrect percentage number for download progress
-- Update SES default config with tool paths
+- Updated SES default config with tool paths
+- Added link about snap installation
 
 ## Version 0.7.1
 - Fixed update SDK/toolchain actions
