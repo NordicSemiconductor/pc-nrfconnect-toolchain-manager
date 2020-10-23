@@ -136,7 +136,7 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
                             );
                         }
                         sendUsageData(
-                            EventAction.DOWNLOAD_TOOLCHAIN_SUCCEED,
+                            EventAction.DOWNLOAD_TOOLCHAIN_SUCCESS,
                             url
                         );
                         return resolve(packageLocation);
@@ -155,6 +155,11 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
     });
 
 const unpack = (version, src, dest) => async dispatch => {
+    logger.info(`Start to unpack toolchain ${version}`);
+    sendUsageData(
+        EventAction.UNPACK_TOOLCHAIN,
+        `${version}; ${process.platform}; ${process.arch}`
+    );
     switch (process.platform) {
         case 'win32': {
             let fileCount = 0;
@@ -222,6 +227,10 @@ const installToolchain = (
         fse.mkdirpSync(toolchainDir);
         const packageLocation = await dispatch(download(version, toolchain));
         await dispatch(unpack(version, packageLocation, toolchainDir));
+        sendUsageData(
+            EventAction.UNPACK_TOOLCHAIN_SUCCESS,
+            `${version}; ${process.platform}; ${process.arch}`
+        );
     } catch (error) {
         dispatch(showErrorDialog(`${error.message || error}`));
         sendErrorReport(error.message || error);
@@ -239,6 +248,7 @@ export const cloneNcs = (
     justUpdate
 ) => async dispatch => {
     dispatch(startCloningSdk(version));
+    logger.info(`Start to clone nRF Connect SDK ${version}`);
 
     if (!justUpdate) {
         await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
@@ -326,7 +336,6 @@ export const install = (
     logger.info(`Start to install toolchain ${version}`);
     const toolchain = getLatestToolchain(toolchains);
     const toolchainDir = path.resolve(installDir(), version, 'toolchain');
-    console.log(toolchain);
     logger.info(`Installing ${toolchain.name} at ${toolchainDir}`);
     logger.debug(`With toolchain version ${toolchain.version}`);
     logger.debug(`With sha512 ${toolchain.sha512}`);
