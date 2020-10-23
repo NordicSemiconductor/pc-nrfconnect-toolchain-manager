@@ -55,7 +55,7 @@ export const EventAction = {
 const EventCategory = pkgJson.name;
 
 let isInited = false;
-const eventQueue = [];
+let eventQueue = [];
 
 export async function initUsageData() {
     try {
@@ -81,6 +81,7 @@ export function sendUsageData(action, label) {
             usageData.sendEvent(EventCategory, e.action, e.label || '');
         });
     }
+    eventQueue = [];
     usageData.sendEvent(EventCategory, action, label || '');
 }
 
