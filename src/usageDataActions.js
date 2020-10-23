@@ -38,7 +38,7 @@
 // pc-nrfconnect-shared, so we instead of defining them here, we really should import
 // them from there. But before we can correct this, we need to upgrade to a new version.
 
-import { usageData } from 'pc-nrfconnect-shared';
+import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import pkgJson from '../package.json';
 
@@ -49,17 +49,22 @@ export const EventAction = {
     LAUNCH_ABOUT_VIEW: 'Launch about view',
     REPORT_OS_INFO: 'Report OS info',
     REPORT_ERROR: 'Report error',
+    REPORT_LOACAL_ENVS: 'Report locally existing environments',
 };
 
 const EventCategory = pkgJson.name;
 
+let isInited = false;
+const eventQueue = [];
+
 export async function initUsageData() {
     try {
         await usageData.init(EventCategory);
+        isInited = true;
         sendUsageData(EventAction.LAUNCH_APP, `v${pkgJson.version}`);
         sendUsageData(
             EventAction.REPORT_OS_INFO,
-            `${process.platform};${process.arch}`
+            `${process.platform}; ${process.arch}`
         );
     } catch (e) {
         console.warn('Usage data not available and will not be stored');
@@ -67,5 +72,19 @@ export async function initUsageData() {
 }
 
 export function sendUsageData(action, label) {
+    if (!isInited) {
+        eventQueue.push({ action, label });
+        return;
+    }
+    if (eventQueue.length > 0) {
+        eventQueue.forEach(e => {
+            usageData.sendEvent(EventCategory, e.action, e.label || '');
+        });
+    }
     usageData.sendEvent(EventCategory, action, label || '');
+}
+
+export function sendErrorReport(error) {
+    logger.error(error);
+    sendUsageData(EventAction.REPORT_ERROR, error);
 }
