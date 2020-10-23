@@ -305,6 +305,7 @@ export const cloneNcs = (
         }
 
         dispatch(setProgress(version, 'Initializing environment...'));
+        logger.info(`Initializing environment for ${version}`);
         let err = '';
         await new Promise((resolve, reject) => {
             ncsMgr.stdout.on('data', data => {
@@ -315,6 +316,7 @@ export const cloneNcs = (
                     dispatch(
                         setProgress(version, `Updating ${repo} repository...`)
                     );
+                    logger.info(`Updating ${repo} repository for ${version}`);
                 }
             });
             ncsMgr.stderr.on('data', data => {
@@ -323,10 +325,13 @@ export const cloneNcs = (
             ncsMgr.on('exit', code => (code ? reject(err) : resolve()));
         });
     } catch (error) {
-        dispatch(showErrorDialog(`Failed to clone the repositories: ${error}`));
+        const errorMsg = `Failed to clone the repositories: ${error}`;
+        dispatch(showErrorDialog(errorMsg));
+        sendErrorReport(errorMsg);
     }
 
     dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
+    logger.info(`Finish cloning nRF Connect SDK ${version}`);
 };
 
 export const install = (
@@ -392,11 +397,9 @@ export const installPackage = urlOrFilePath => async dispatch => {
         urlOrFilePath
     );
     if (!match) {
-        dispatch(
-            showErrorDialog(
-                'Filename is not recognized as a toolchain package.'
-            )
-        );
+        const errorMsg = 'Filename is not recognized as a toolchain package.';
+        dispatch(showErrorDialog(errorMsg));
+        sendErrorReport(errorMsg);
         return;
     }
     const version = match[1];
