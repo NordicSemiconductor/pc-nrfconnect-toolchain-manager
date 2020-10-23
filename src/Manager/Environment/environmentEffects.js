@@ -42,6 +42,7 @@ import path from 'path';
 import { remote } from 'electron';
 import extract from 'extract-zip';
 import fse from 'fs-extra';
+import { logger } from 'pc-nrfconnect-shared';
 
 import { showFirstInstallDialog } from '../../FirstInstall/firstInstallReducer';
 import { showErrorDialog } from '../../launcherActions';
@@ -51,6 +52,11 @@ import {
     setHasInstalledAnNcs,
     toolchainUrl,
 } from '../../persistentStore';
+import {
+    EventAction,
+    sendErrorReport,
+    sendUsageData,
+} from '../../usageDataActions';
 import {
     addLocallyExistingEnvironment,
     getEnvironment,
@@ -90,10 +96,12 @@ const reportProgress = (version, currentValue, maxValue, half) => (
 
 const download = (version, { name, sha512, uri }) => async dispatch =>
     new Promise((resolve, reject) => {
+        logger.info(`Start to install toolchain ${version}`);
         const hash = createHash('sha512');
 
         const url = uri || toolchainUrl(name);
         const filename = name || path.basename(url);
+        sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, url);
 
         const downloadDir = path.resolve(installDir(), 'downloads');
         const packageLocation = path.resolve(downloadDir, filename);
@@ -127,6 +135,10 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
                                 new Error(`Checksum verification failed ${url}`)
                             );
                         }
+                        sendUsageData(
+                            EventAction.DOWNLOAD_TOOLCHAIN_SUCCEED,
+                            url
+                        );
                         return resolve(packageLocation);
                     });
                 });
@@ -212,6 +224,7 @@ const installToolchain = (
         await dispatch(unpack(version, packageLocation, toolchainDir));
     } catch (error) {
         dispatch(showErrorDialog(`${error.message || error}`));
+        sendErrorReport(error.message || error);
     }
 
     dispatch(finishInstallToolchain(version, toolchainDir));
@@ -310,11 +323,21 @@ export const install = (
     { version, toolchains },
     justUpdate
 ) => async dispatch => {
+    logger.info(`Start to install toolchain ${version}`);
     const toolchain = getLatestToolchain(toolchains);
     const toolchainDir = path.resolve(installDir(), version, 'toolchain');
+    console.log(toolchain);
+    logger.info(`Installing ${toolchain.name} at ${toolchainDir}`);
+    logger.debug(`With toolchain version ${toolchain.version}`);
+    logger.debug(`With sha512 ${toolchain.sha512}`);
+    sendUsageData(
+        EventAction.INSTALL_TOOLCHAIN,
+        `${version}; ${toolchain.name}`
+    );
 
     dispatch(selectEnvironment(version));
     if (isFirstInstall()) {
+        logger.debug(`Show first install dialog for toolchain ${version}`);
         dispatch(showFirstInstallDialog());
     }
     setHasInstalledAnNcs();
