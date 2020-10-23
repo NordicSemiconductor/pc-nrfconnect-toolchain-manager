@@ -81,6 +81,8 @@ const { spawn: remoteSpawn } = remote.require('child_process');
 const DOWNLOAD = 0;
 const UNPACK = 50;
 
+const calculateTimeConsumed = timeStart => Math.round((new Date() - timeStart) / 1000 / 60);
+
 const reportProgress = (version, currentValue, maxValue, half) => (
     dispatch,
     getState
@@ -96,7 +98,7 @@ const reportProgress = (version, currentValue, maxValue, half) => (
 
 const download = (version, { name, sha512, uri }) => async dispatch =>
     new Promise((resolve, reject) => {
-        logger.info(`Start to install toolchain ${version}`);
+        logger.info(`Downloading toolchain ${version}`);
         const hash = createHash('sha512');
 
         const url = uri || toolchainUrl(name);
@@ -108,6 +110,7 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
         fse.mkdirpSync(downloadDir);
         const writeStream = fs.createWriteStream(packageLocation);
 
+        const downloadTimeStart = new Date();
         remote.net
             .request({ url })
             .on('response', response => {
@@ -139,6 +142,17 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
                             EventAction.DOWNLOAD_TOOLCHAIN_SUCCESS,
                             url
                         );
+                        sendUsageData(
+                            EventAction.DOWNLOAD_TOOLCHAIN_TIME,
+                            `${calculateTimeConsumed(
+                                downloadTimeStart
+                            )} min; ${url}`
+                        );
+                        logger.info(
+                            `Finish downlaoding toolchain ${version} in approximate ${calculateTimeConsumed(
+                                downloadTimeStart
+                            )} min`
+                        );
                         return resolve(packageLocation);
                     });
                 });
@@ -155,16 +169,17 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
     });
 
 const unpack = (version, src, dest) => async dispatch => {
-    logger.info(`Start to unpack toolchain ${version}`);
+    logger.info(`Unpacking toolchain ${version}`);
     sendUsageData(
         EventAction.UNPACK_TOOLCHAIN,
         `${version}; ${process.platform}; ${process.arch}`
     );
+    const unpackTimeStart = new Date();
     switch (process.platform) {
         case 'win32': {
             let fileCount = 0;
             const totalFileCount = 26000; // ncs 1.4 has 25456 files
-            return extract(src, {
+            await extract(src, {
                 dir: dest,
                 onEntry: () => {
                     fileCount += 1;
@@ -178,6 +193,7 @@ const unpack = (version, src, dest) => async dispatch => {
                     );
                 },
             });
+            break;
         }
         case 'darwin': {
             const volume = execSync(
@@ -213,6 +229,19 @@ const unpack = (version, src, dest) => async dispatch => {
         }
         default:
     }
+
+    const unpackInfo = `${version}; ${process.platform}; ${process.arch}`;
+    sendUsageData(EventAction.UNPACK_TOOLCHAIN_SUCCESS, unpackInfo);
+    sendUsageData(
+        EventAction.UNPACK_TOOLCHAIN_TIME,
+        `${calculateTimeConsumed(unpackTimeStart)} min; ${unpackInfo}`
+    );
+    logger.info(
+        `Finish unpacking toolchain ${unpackInfo} in approximate ${calculateTimeConsumed(
+            unpackTimeStart
+        )} min`
+    );
+
     return undefined;
 };
 
@@ -227,10 +256,6 @@ const installToolchain = (
         fse.mkdirpSync(toolchainDir);
         const packageLocation = await dispatch(download(version, toolchain));
         await dispatch(unpack(version, packageLocation, toolchainDir));
-        sendUsageData(
-            EventAction.UNPACK_TOOLCHAIN_SUCCESS,
-            `${version}; ${process.platform}; ${process.arch}`
-        );
     } catch (error) {
         dispatch(showErrorDialog(`${error.message || error}`));
         sendErrorReport(error.message || error);
@@ -248,7 +273,12 @@ export const cloneNcs = (
     justUpdate
 ) => async dispatch => {
     dispatch(startCloningSdk(version));
-    logger.info(`Start to clone nRF Connect SDK ${version}`);
+    logger.info(`Cloning nRF Connect SDK ${version}`);
+    sendUsageData(
+        EventAction.CLONE_NCS,
+        `${version}; ${process.platform}; ${process.arch}`
+    );
+    const cloneTimeStart = new Date();
 
     if (!justUpdate) {
         await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
@@ -332,6 +362,19 @@ export const cloneNcs = (
 
     dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
     logger.info(`Finish cloning nRF Connect SDK ${version}`);
+    sendUsageData(
+        EventAction.CLONE_NCS_SUCCESS,
+        `${version}; ${process.platform}; ${process.arch}`
+    );
+    sendUsageData(
+        EventAction.CLONE_NCS_TIME,
+        `${calculateTimeConsumed(cloneTimeStart)} min; ${version}`
+    );
+    logger.info(
+        `Finish cloning nRF Connect SDK ${version} in approximate ${calculateTimeConsumed(
+            cloneTimeStart
+        )} min`
+    );
 };
 
 export const install = (
