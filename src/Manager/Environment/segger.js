@@ -166,6 +166,9 @@ const updateSettingsFile = async (settingsFileName, toolchainDir) => {
 };
 
 export const openSegger = async (toolchainDir, version) => {
+    logger.info('Open Segger Embedded Studio');
+    sendUsageData(EventAction.OPEN_SES, process.platform);
+
     await Promise.all([
         updateSettingsFile('settings.xml', toolchainDir),
         updateSettingsFile('settings.xml.bak', toolchainDir),
@@ -179,8 +182,6 @@ export const openSegger = async (toolchainDir, version) => {
         if (stdout) logger.debug(stdout);
     };
 
-    logger.info('Open Segger Embedded Studio');
-    sendUsageData(EventAction.OPEN_SES, process.platform);
     switch (process.platform) {
         case 'win32':
             exec(
