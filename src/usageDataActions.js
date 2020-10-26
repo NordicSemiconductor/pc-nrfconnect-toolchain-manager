@@ -108,6 +108,6 @@ export function sendErrorReport(error) {
     logger.error(error);
     sendUsageData(
         EventAction.REPORT_ERROR,
-        `${process.platform}; ${process.arch}; ${error}`
+        `${process.platform}; ${process.arch}; v${pkgJson.version}; ${error}`
     );
 }
