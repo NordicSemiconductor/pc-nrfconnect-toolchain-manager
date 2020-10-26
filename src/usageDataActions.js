@@ -58,7 +58,7 @@ export const EventAction = {
     CLONE_NCS: 'Clone nRF Connect SDK',
     CLONE_NCS_SUCCESS: 'Clone nRF Connect SDK successfully',
     CLONE_NCS_TIME: 'Clone nRF Connect SDK time consumed',
-    OPEN_IDE: 'Open IDE',
+    OPEN_SES: 'Open SES',
     OPEN_BASH: 'Open bash',
     OPEN_CMD: 'Open command prompt',
     OPEN_SDK_DIR: 'Open SDK directory',
@@ -105,5 +105,8 @@ export function sendUsageData(action, label) {
 
 export function sendErrorReport(error) {
     logger.error(error);
-    sendUsageData(EventAction.REPORT_ERROR, error);
+    sendUsageData(
+        EventAction.REPORT_ERROR,
+        `${process.platform}; ${process.arch}; ${error}`
+    );
 }

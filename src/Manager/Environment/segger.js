@@ -35,12 +35,19 @@
  */
 
 import { exec } from 'child_process';
-import { remote } from 'electron';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import { remote } from 'electron';
 import fse from 'fs-extra';
+import { logger } from 'pc-nrfconnect-shared';
+
+import {
+    EventAction,
+    sendErrorReport,
+    sendUsageData,
+} from '../../usageDataActions';
 
 const { exec: remoteExec } = remote.require('child_process');
 
@@ -165,12 +172,21 @@ export const openSegger = async (toolchainDir, version) => {
     ]);
 
     const cwd = path.dirname(toolchainDir);
+    const execCallback = (error, stdout, stderr) => {
+        logger.info('Segger Embedded Studio has closed');
+        if (error) sendErrorReport(error);
+        if (stderr) sendErrorReport(stderr);
+        if (stdout) logger.debug(stdout);
+    };
 
+    logger.info('Open Segger Embedded Studio');
+    sendUsageData(EventAction.OPEN_SES, process.platform);
     switch (process.platform) {
         case 'win32':
             exec(
                 `"${path.resolve(toolchainDir, 'SEGGER Embedded Studio.cmd')}"`,
-                { cwd }
+                { cwd },
+                execCallback
             );
             break;
         case 'darwin':
