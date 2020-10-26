@@ -81,7 +81,8 @@ const { spawn: remoteSpawn } = remote.require('child_process');
 const DOWNLOAD = 0;
 const UNPACK = 50;
 
-const calculateTimeConsumed = timeStart => Math.round((new Date() - timeStart) / 1000 / 60);
+const calculateTimeConsumed = timeStart =>
+    Math.round((new Date() - timeStart) / 1000 / 60);
 
 const reportProgress = (version, currentValue, maxValue, half) => (
     dispatch,
@@ -361,7 +362,6 @@ export const cloneNcs = (
     }
 
     dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
-    logger.info(`Finish cloning nRF Connect SDK ${version}`);
     sendUsageData(
         EventAction.CLONE_NCS_SUCCESS,
         `${version}; ${process.platform}; ${process.arch}`
@@ -388,7 +388,7 @@ export const install = (
     logger.debug(`With toolchain version ${toolchain.version}`);
     logger.debug(`With sha512 ${toolchain.sha512}`);
     sendUsageData(
-        EventAction.INSTALL_TOOLCHAIN,
+        EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
         `${version}; ${toolchain.name}`
     );
 
@@ -436,6 +436,7 @@ export const remove = ({ toolchainDir, version }) => async dispatch => {
 };
 
 export const installPackage = urlOrFilePath => async dispatch => {
+    sendUsageData(EventAction.INSTALL_TOOLCHAIN_FROM_PATH, `${urlOrFilePath}`);
     const match = /ncs-toolchain-(v?.+?)([-_]\d{8}-[^.]+).[zip|dmg|snap]/.exec(
         urlOrFilePath
     );
