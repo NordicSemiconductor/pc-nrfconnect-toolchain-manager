@@ -155,9 +155,9 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
                             )} min; ${url}`
                         );
                         logger.info(
-                            `Finish downlaoding toolchain ${version} in approximate ${calculateTimeConsumed(
+                            `Finished downloading version ${version} of the toolchain after approximate ${calculateTimeConsumed(
                                 downloadTimeStart
-                            )} min`
+                            )} minute(s)`
                         );
                         return resolve(packageLocation);
                     });
@@ -243,9 +243,9 @@ const unpack = (version, src, dest) => async dispatch => {
         `${calculateTimeConsumed(unpackTimeStart)} min; ${unpackInfo}`
     );
     logger.info(
-        `Finish unpacking toolchain ${unpackInfo} in approximate ${calculateTimeConsumed(
+        `Finished unpacking version ${unpackInfo} of the toolchain after approximate ${calculateTimeConsumed(
             unpackTimeStart
-        )} min`
+        )} minute(s)`
     );
 
     return undefined;
@@ -378,9 +378,9 @@ export const cloneNcs = (
         `${calculateTimeConsumed(cloneTimeStart)} min; ${version}`
     );
     logger.info(
-        `Finish cloning nRF Connect SDK ${version} in approximate ${calculateTimeConsumed(
+        `Finished cloning version ${version} of the nRF Connect SDK after approximate ${calculateTimeConsumed(
             cloneTimeStart
-        )} min`
+        )} minute(s)`
     );
 };
 
