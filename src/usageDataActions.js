@@ -65,6 +65,7 @@ export const EventAction = {
     OPEN_DIR: 'Open directory',
     UDPATE_SDK: 'Update SDK',
     UDPATE_TOOLCHAIN: 'Update toolchain',
+    REMOVE_TOOLCHAIN: 'Remove toolchain',
     REPORT_OS_INFO: 'Report OS info',
     REPORT_ERROR: 'Report error',
     REPORT_LOACAL_ENVS: 'Report locally existing environments',

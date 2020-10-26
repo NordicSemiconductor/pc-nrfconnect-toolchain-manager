@@ -281,10 +281,11 @@ export const cloneNcs = (
     );
     const cloneTimeStart = new Date();
 
-    if (!justUpdate) {
-        await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
-    }
     try {
+        if (!justUpdate) {
+            await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
+        }
+
         let ncsMgr;
         const update = justUpdate ? '--just-update' : '';
         switch (process.platform) {
@@ -404,6 +405,9 @@ export const install = (
 };
 
 export const remove = ({ toolchainDir, version }) => async dispatch => {
+    logger.info(`Removing ${version} at ${toolchainDir}`);
+    sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
+
     const toBeDeletedDir = path.resolve(
         toolchainDir,
         '..',
@@ -420,13 +424,12 @@ export const remove = ({ toolchainDir, version }) => async dispatch => {
         await fse.remove(toBeDeletedDir);
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
-        dispatch(
-            showErrorDialog(
-                `Failed to remove ${srcDir}, ${message}. ` +
-                    'Please close any application or window that might keep this ' +
-                    'environment locked, then try to remove it again.'
-            )
-        );
+        const errorMsg =
+            `Failed to remove ${srcDir}, ${message}. ` +
+            'Please close any application or window that might keep this ' +
+            'environment locked, then try to remove it again.';
+        dispatch(showErrorDialog(errorMsg));
+        sendErrorReport(errorMsg);
     }
     if (renameOfDirSuccessful) {
         dispatch(removeEnvironment(version));
