@@ -392,8 +392,8 @@ export const install = (
     const toolchain = getLatestToolchain(toolchains);
     const toolchainDir = path.resolve(installDir(), version, 'toolchain');
     logger.info(`Installing ${toolchain.name} at ${toolchainDir}`);
-    logger.debug(`With toolchain version ${toolchain.version}`);
-    logger.debug(`With sha512 ${toolchain.sha512}`);
+    logger.debug(`Install with toolchain version ${toolchain.version}`);
+    logger.debug(`Intall with sha512 ${toolchain.sha512}`);
     sendUsageData(
         EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
         `${version}; ${toolchain.name}`
@@ -401,7 +401,7 @@ export const install = (
 
     dispatch(selectEnvironment(version));
     if (isFirstInstall()) {
-        logger.debug(`Show first install dialog for toolchain ${version}`);
+        logger.info(`Show first install dialog for toolchain ${version}`);
         dispatch(showFirstInstallDialog());
     }
     setHasInstalledAnNcs();
@@ -428,6 +428,7 @@ export const remove = ({ toolchainDir, version }) => async dispatch => {
         await fse.move(srcDir, toBeDeletedDir, { overwrite: true });
         renameOfDirSuccessful = true;
         await fse.remove(toBeDeletedDir);
+        logger.info(`Finish removing ${version} at ${toolchainDir}`);
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
         const errorMsg =

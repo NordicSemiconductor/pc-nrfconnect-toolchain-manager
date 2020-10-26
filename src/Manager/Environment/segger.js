@@ -154,22 +154,23 @@ const updateConfigXml = (xmlString, toolchainDir) => {
             process.platform === 'darwin' ? 'case[value=macos]' : 'default'
         }`
     );
-    const binDir =
-        process.platform === 'win32'
-            ? path.resolve(toolchainDir, 'opt', 'bin')
-            : path.resolve(toolchainDir, 'bin');
-    const ext = process.platform === 'win32' ? '.exe' : '';
-    [
-        ['CMAKE', 'cmake'],
-        ['NINJA', 'ninja'],
-        ['PYTHON', process.platform === 'win32' ? 'python' : 'python3'],
-        ['DTC', 'dtc'],
-    ].forEach(([name, command]) => {
-        node.querySelector(`define[name=DEFAULT_${name}_PATH]`).setAttribute(
-            'value',
-            path.resolve(binDir, `${command}${ext}`)
-        );
-    });
+    if (node !== null) {
+        const binDir =
+            process.platform === 'win32'
+                ? path.resolve(toolchainDir, 'opt', 'bin')
+                : path.resolve(toolchainDir, 'bin');
+        const ext = process.platform === 'win32' ? '.exe' : '';
+        [
+            ['CMAKE', 'cmake'],
+            ['NINJA', 'ninja'],
+            ['PYTHON', process.platform === 'win32' ? 'python' : 'python3'],
+            ['DTC', 'dtc'],
+        ].forEach(([name, command]) => {
+            node.querySelector(
+                `define[name=DEFAULT_${name}_PATH]`
+            ).setAttribute('value', path.resolve(binDir, `${command}${ext}`));
+        });
+    }
     return new XMLSerializer().serializeToString(xml);
 };
 
@@ -210,12 +211,16 @@ export const updateConfigFile = toolchainDir => {
         'bin',
         'config.xml'
     );
-    let xmlContent = readFile(configPath);
-    if (xmlContent) {
-        xmlContent = updateConfigXml(xmlContent, toolchainDir);
+    try {
+        let xmlContent = readFile(configPath);
         if (xmlContent) {
-            fs.writeFileSync(configPath, xmlContent);
+            xmlContent = updateConfigXml(xmlContent, toolchainDir);
+            if (xmlContent) {
+                fs.writeFileSync(configPath, xmlContent);
+            }
         }
+    } catch (e) {
+        sendErrorReport(e.message || e);
     }
 };
 
