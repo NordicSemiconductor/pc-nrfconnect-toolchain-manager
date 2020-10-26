@@ -393,7 +393,7 @@ export const install = (
     const toolchainDir = path.resolve(installDir(), version, 'toolchain');
     logger.info(`Installing ${toolchain.name} at ${toolchainDir}`);
     logger.debug(`Install with toolchain version ${toolchain.version}`);
-    logger.debug(`Intall with sha512 ${toolchain.sha512}`);
+    logger.debug(`Install with sha512 ${toolchain.sha512}`);
     sendUsageData(
         EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
         `${version}; ${toolchain.name}`
