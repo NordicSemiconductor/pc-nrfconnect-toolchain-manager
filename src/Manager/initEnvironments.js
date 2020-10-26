@@ -128,7 +128,9 @@ const downloadIndex = dispatch => {
             }
         });
         response.on('data', buf => {
-            logger.debug(`Downloading index json with buffer: ${buf}`);
+            logger.debug(
+                `Downloading index json with buffer length: ${buf.length}`
+            );
             result += `${buf}`;
         });
     });
