@@ -178,6 +178,7 @@ const readFile = filePath => {
         return fs.readFileSync(filePath);
     } catch (error) {
         // The file may be just not there yet, so we treat this case not as an error
+        sendErrorReport(error.message || error);
         return null;
     }
 };
@@ -198,6 +199,7 @@ const updateSettingsFile = (settingsFileName, toolchainDir) => {
 };
 
 export const updateConfigFile = toolchainDir => {
+    logger.info('Update config file');
     if (process.platform === 'linux') {
         // on Linux SES is executed from snap which will always set correct PATH
         return;
@@ -252,12 +254,17 @@ export const openSegger = async (toolchainDir, version) => {
                         GNUARMEMB_TOOLCHAIN_PATH: toolchainDir,
                     },
                     cwd,
-                }
+                },
+                execCallback
             );
             break;
         case 'linux': {
             const shortVer = version.replace(/\./g, '');
-            remoteExec(`ncs-toolchain-${shortVer}.emstudio`, { cwd });
+            remoteExec(
+                `ncs-toolchain-${shortVer}.emstudio`,
+                { cwd },
+                execCallback
+            );
             break;
         }
         default:

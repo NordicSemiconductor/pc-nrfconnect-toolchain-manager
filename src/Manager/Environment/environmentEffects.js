@@ -475,5 +475,6 @@ export const installPackage = urlOrFilePath => async dispatch => {
         await dispatch(cloneNcs(version, toolchainDir, false));
     } catch (error) {
         dispatch(showErrorDialog(`${error.message || error}`));
+        sendErrorReport(error.message || error);
     }
 };
