@@ -36,34 +36,63 @@
 
 import './style.scss';
 
-import React from 'react';
-import { useDispatch } from 'react-redux';
 import { exec, execSync } from 'child_process';
-import path from 'path';
 import { readdirSync } from 'fs';
+import path from 'path';
+
 import { shell } from 'electron';
+import { logger } from 'pc-nrfconnect-shared';
+import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import { cloneNcs, install } from './environmentEffects';
+import { useDispatch } from 'react-redux';
+
 import {
-    isInstalled,
+    EventAction,
+    sendErrorReport,
+    sendUsageData,
+} from '../../usageDataActions';
+import { showConfirmRemoveDialog } from '../managerReducer';
+import { cloneNcs, install } from './environmentEffects';
+import environmentPropType from './environmentPropType';
+import {
     toolchainDir as getToolchainDir,
     version as getVersion,
+    isInstalled,
 } from './environmentReducer';
-import { showConfirmRemoveDialog } from '../managerReducer';
 
-import environmentPropType from './environmentPropType';
+const execCallback = (error, stdout, stderr) => {
+    logger.info('Terminal has closed');
+    if (error) sendErrorReport(error);
+    if (stderr) sendErrorReport(stderr);
+    if (stdout) logger.debug(stdout);
+};
 
 const openBash = directory => {
-    exec(`"${path.resolve(directory, 'git-bash.exe')}"`);
+    logger.info('Open bash');
+    sendUsageData(
+        EventAction.OPEN_BASH,
+        `${process.platform}; ${process.arch}`
+    );
+    exec(`"${path.resolve(directory, 'git-bash.exe')}"`, execCallback);
 };
 
 const openCmd = directory => {
-    exec(`start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`);
+    logger.info('Open command prompt');
+    sendUsageData(EventAction.OPEN_CMD, `${process.platform}; ${process.arch}`);
+    exec(
+        `start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`,
+        execCallback
+    );
 };
 
 const openTerminal = {
     darwin: directory => {
+        logger.info('Open terminal');
+        sendUsageData(
+            EventAction.OPEN_TERMINAL,
+            `${process.platform}; ${process.arch}`
+        );
         const d = path.dirname(directory);
         const gitversion = readdirSync(`${d}/toolchain/Cellar/git`).pop();
         const env = [
@@ -72,14 +101,24 @@ const openTerminal = {
             'export ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb',
             `export GNUARMEMB_TOOLCHAIN_PATH=${d}/toolchain`,
         ];
-        exec(`osascript <<END
+        exec(
+            `
+osascript <<END
 tell application "Terminal"
     do script "cd ${d} ; ${env.join(' ; ')} ; clear"
     activate
 end tell
-END`);
+END
+            `,
+            execCallback
+        );
     },
     linux: (directory, version) => {
+        logger.info('Open terminal');
+        sendUsageData(
+            EventAction.OPEN_TERMINAL,
+            `${process.platform}; ${process.arch}`
+        );
         const terminalApp = execSync(
             'gsettings get org.gnome.desktop.default-applications.terminal exec'
         )
@@ -89,12 +128,18 @@ END`);
         const shortVer = version.replace(/\./g, '');
         exec(
             `${terminalApp} -l -e "snap run --shell ncs-toolchain-${shortVer}.west"`,
-            { cwd: path.dirname(directory) }
+            { cwd: path.dirname(directory) },
+            execCallback
         );
     },
 };
 
 const openDirectory = directory => {
+    logger.info(`Open directory ${directory}`);
+    sendUsageData(
+        EventAction.OPEN_DIR,
+        `${process.platform}; ${process.arch}; ${directory}`
+    );
     shell.openItem(directory);
 };
 

@@ -35,12 +35,19 @@
  */
 
 import { exec } from 'child_process';
-import { remote } from 'electron';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import { remote } from 'electron';
 import fse from 'fs-extra';
+import { logger } from 'pc-nrfconnect-shared';
+
+import {
+    EventAction,
+    sendErrorReport,
+    sendUsageData,
+} from '../../usageDataActions';
 
 const { exec: remoteExec } = remote.require('child_process');
 
@@ -147,22 +154,23 @@ const updateConfigXml = (xmlString, toolchainDir) => {
             process.platform === 'darwin' ? 'case[value=macos]' : 'default'
         }`
     );
-    const binDir =
-        process.platform === 'win32'
-            ? path.resolve(toolchainDir, 'opt', 'bin')
-            : path.resolve(toolchainDir, 'bin');
-    const ext = process.platform === 'win32' ? '.exe' : '';
-    [
-        ['CMAKE', 'cmake'],
-        ['NINJA', 'ninja'],
-        ['PYTHON', process.platform === 'win32' ? 'python' : 'python3'],
-        ['DTC', 'dtc'],
-    ].forEach(([name, command]) => {
-        node.querySelector(`define[name=DEFAULT_${name}_PATH]`).setAttribute(
-            'value',
-            path.resolve(binDir, `${command}${ext}`)
-        );
-    });
+    if (node !== null) {
+        const binDir =
+            process.platform === 'win32'
+                ? path.resolve(toolchainDir, 'opt', 'bin')
+                : path.resolve(toolchainDir, 'bin');
+        const ext = process.platform === 'win32' ? '.exe' : '';
+        [
+            ['CMAKE', 'cmake'],
+            ['NINJA', 'ninja'],
+            ['PYTHON', process.platform === 'win32' ? 'python' : 'python3'],
+            ['DTC', 'dtc'],
+        ].forEach(([name, command]) => {
+            node.querySelector(
+                `define[name=DEFAULT_${name}_PATH]`
+            ).setAttribute('value', path.resolve(binDir, `${command}${ext}`));
+        });
+    }
     return new XMLSerializer().serializeToString(xml);
 };
 
@@ -171,6 +179,7 @@ const readFile = filePath => {
         return fs.readFileSync(filePath);
     } catch (error) {
         // The file may be just not there yet, so we treat this case not as an error
+        sendErrorReport(error.message || error);
         return null;
     }
 };
@@ -191,6 +200,7 @@ const updateSettingsFile = (settingsFileName, toolchainDir) => {
 };
 
 export const updateConfigFile = toolchainDir => {
+    logger.info('Update config file');
     if (process.platform === 'linux') {
         // on Linux SES is executed from snap which will always set correct PATH
         return;
@@ -201,28 +211,42 @@ export const updateConfigFile = toolchainDir => {
         'bin',
         'config.xml'
     );
-    let xmlContent = readFile(configPath);
-    if (xmlContent) {
-        xmlContent = updateConfigXml(xmlContent, toolchainDir);
+    try {
+        let xmlContent = readFile(configPath);
         if (xmlContent) {
-            fs.writeFileSync(configPath, xmlContent);
+            xmlContent = updateConfigXml(xmlContent, toolchainDir);
+            if (xmlContent) {
+                fs.writeFileSync(configPath, xmlContent);
+            }
         }
+    } catch (e) {
+        sendErrorReport(e.message || e);
     }
 };
 
 export const openSegger = async (toolchainDir, version) => {
+    logger.info('Open Segger Embedded Studio');
+    sendUsageData(EventAction.OPEN_SES, process.platform);
+
     await Promise.all([
         updateSettingsFile('settings.xml', toolchainDir),
         updateSettingsFile('settings.xml.bak', toolchainDir),
     ]);
 
     const cwd = path.dirname(toolchainDir);
+    const execCallback = (error, stdout, stderr) => {
+        logger.info('Segger Embedded Studio has closed');
+        if (error) sendErrorReport(error);
+        if (stderr) sendErrorReport(stderr);
+        if (stdout) logger.debug(stdout);
+    };
 
     switch (process.platform) {
         case 'win32':
             exec(
                 `"${path.resolve(toolchainDir, 'SEGGER Embedded Studio.cmd')}"`,
-                { cwd }
+                { cwd },
+                execCallback
             );
             break;
         case 'darwin':
@@ -235,12 +259,17 @@ export const openSegger = async (toolchainDir, version) => {
                         GNUARMEMB_TOOLCHAIN_PATH: toolchainDir,
                     },
                     cwd,
-                }
+                },
+                execCallback
             );
             break;
         case 'linux': {
             const shortVer = version.replace(/\./g, '');
-            remoteExec(`ncs-toolchain-${shortVer}.emstudio`, { cwd });
+            remoteExec(
+                `ncs-toolchain-${shortVer}.emstudio`,
+                { cwd },
+                execCallback
+            );
             break;
         }
         default:

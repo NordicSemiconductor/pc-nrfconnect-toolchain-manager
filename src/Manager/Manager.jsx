@@ -34,28 +34,29 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { logger } from 'pc-nrfconnect-shared';
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Button from 'react-bootstrap/Button';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import { useDispatch, useSelector } from 'react-redux';
 
-import NrfCard from '../NrfCard/NrfCard';
 import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 import FirstInstallInstructions from '../FirstInstall/FirstInstallInstructions';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
-
+import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
+import NrfCard from '../NrfCard/NrfCard';
+import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
+import { EventAction, sendUsageData } from '../usageDataActions';
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
-import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
 import initEnvironments from './initEnvironments';
-import PlatformInstructions from './PlatformInstructions';
 import {
     environmentsByVersion,
     isMasterVisible,
-    showInstallPackageDialog,
     isShowingFirstSteps,
+    showInstallPackageDialog,
 } from './managerReducer';
-import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
+import PlatformInstructions from './PlatformInstructions';
 
 const Environments = () => {
     const dispatch = useDispatch();
@@ -99,6 +100,11 @@ export default props => {
     const showingFirstSteps = useSelector(isShowingFirstSteps);
 
     if (showingFirstSteps) {
+        logger.info('Show first intall instructions');
+        sendUsageData(
+            EventAction.SHOW_FIRST_INSTALL_INSTRUCTIONS,
+            `${process.platform}; ${process.arch}`
+        );
         return <FirstInstallInstructions />;
     }
 

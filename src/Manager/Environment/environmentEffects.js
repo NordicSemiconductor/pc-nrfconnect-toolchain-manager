@@ -42,6 +42,7 @@ import path from 'path';
 import { remote } from 'electron';
 import extract from 'extract-zip';
 import fse from 'fs-extra';
+import { logger } from 'pc-nrfconnect-shared';
 
 import { showFirstInstallDialog } from '../../FirstInstall/firstInstallReducer';
 import { showErrorDialog } from '../../launcherActions';
@@ -51,6 +52,11 @@ import {
     setHasInstalledAnNcs,
     toolchainUrl,
 } from '../../persistentStore';
+import {
+    EventAction,
+    sendErrorReport,
+    sendUsageData,
+} from '../../usageDataActions';
 import {
     addLocallyExistingEnvironment,
     getEnvironment,
@@ -76,6 +82,9 @@ const { spawn: remoteSpawn } = remote.require('child_process');
 const DOWNLOAD = 0;
 const UNPACK = 50;
 
+const calculateTimeConsumed = timeStart =>
+    Math.round((new Date() - timeStart) / 1000 / 60);
+
 const reportProgress = (version, currentValue, maxValue, half) => (
     dispatch,
     getState
@@ -94,17 +103,20 @@ const reportProgress = (version, currentValue, maxValue, half) => (
 
 const download = (version, { name, sha512, uri }) => async dispatch =>
     new Promise((resolve, reject) => {
+        logger.info(`Downloading toolchain ${version}`);
         dispatch(setProgress(version, 'Downloading', 0));
         const hash = createHash('sha512');
 
         const url = uri || toolchainUrl(name);
         const filename = name || path.basename(url);
+        sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, url);
 
         const downloadDir = path.resolve(installDir(), 'downloads');
         const packageLocation = path.resolve(downloadDir, filename);
         fse.mkdirpSync(downloadDir);
         const writeStream = fs.createWriteStream(packageLocation);
 
+        const downloadTimeStart = new Date();
         remote.net
             .request({ url })
             .on('response', response => {
@@ -132,6 +144,21 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
                                 new Error(`Checksum verification failed ${url}`)
                             );
                         }
+                        sendUsageData(
+                            EventAction.DOWNLOAD_TOOLCHAIN_SUCCESS,
+                            url
+                        );
+                        sendUsageData(
+                            EventAction.DOWNLOAD_TOOLCHAIN_TIME,
+                            `${calculateTimeConsumed(
+                                downloadTimeStart
+                            )} min; ${url}`
+                        );
+                        logger.info(
+                            `Finished downloading version ${version} of the toolchain after approximately ${calculateTimeConsumed(
+                                downloadTimeStart
+                            )} minute(s)`
+                        );
                         return resolve(packageLocation);
                     });
                 });
@@ -148,12 +175,18 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
     });
 
 const unpack = (version, src, dest) => async dispatch => {
+    logger.info(`Unpacking toolchain ${version}`);
+    sendUsageData(
+        EventAction.UNPACK_TOOLCHAIN,
+        `${version}; ${process.platform}; ${process.arch}`
+    );
+    const unpackTimeStart = new Date();
     dispatch(setProgress(version, 'Installing...', 50));
     switch (process.platform) {
         case 'win32': {
             let fileCount = 0;
             const totalFileCount = 26000; // ncs 1.4 has 25456 files
-            return extract(src, {
+            await extract(src, {
                 dir: dest,
                 onEntry: () => {
                     fileCount += 1;
@@ -167,6 +200,7 @@ const unpack = (version, src, dest) => async dispatch => {
                     );
                 },
             });
+            break;
         }
         case 'darwin': {
             const volume = execSync(
@@ -201,6 +235,19 @@ const unpack = (version, src, dest) => async dispatch => {
         }
         default:
     }
+
+    const unpackInfo = `${version}; ${process.platform}; ${process.arch}`;
+    sendUsageData(EventAction.UNPACK_TOOLCHAIN_SUCCESS, unpackInfo);
+    sendUsageData(
+        EventAction.UNPACK_TOOLCHAIN_TIME,
+        `${calculateTimeConsumed(unpackTimeStart)} min; ${unpackInfo}`
+    );
+    logger.info(
+        `Finished unpacking version ${unpackInfo} of the toolchain after approximately ${calculateTimeConsumed(
+            unpackTimeStart
+        )} minute(s)`
+    );
+
     return undefined;
 };
 
@@ -218,6 +265,7 @@ const installToolchain = (
         updateConfigFile(toolchainDir);
     } catch (error) {
         dispatch(showErrorDialog(`${error.message || error}`));
+        sendErrorReport(error.message || error);
     }
 
     dispatch(finishInstallToolchain(version, toolchainDir));
@@ -232,11 +280,18 @@ export const cloneNcs = (
     justUpdate
 ) => async dispatch => {
     dispatch(startCloningSdk(version));
+    logger.info(`Cloning nRF Connect SDK ${version}`);
+    sendUsageData(
+        EventAction.CLONE_NCS,
+        `${version}; ${process.platform}; ${process.arch}`
+    );
+    const cloneTimeStart = new Date();
 
-    if (!justUpdate) {
-        await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
-    }
     try {
+        if (!justUpdate) {
+            await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
+        }
+
         let ncsMgr;
         const update = justUpdate ? '--just-update' : '';
         switch (process.platform) {
@@ -288,6 +343,7 @@ export const cloneNcs = (
         }
 
         dispatch(setProgress(version, 'Initializing environment...'));
+        logger.info(`Initializing environment for ${version}`);
         let err = '';
         await new Promise((resolve, reject) => {
             ncsMgr.stdout.on('data', data => {
@@ -298,6 +354,7 @@ export const cloneNcs = (
                     dispatch(
                         setProgress(version, `Updating ${repo} repository...`)
                     );
+                    logger.info(`Updating ${repo} repository for ${version}`);
                 }
             });
             ncsMgr.stderr.on('data', data => {
@@ -306,21 +363,45 @@ export const cloneNcs = (
             ncsMgr.on('exit', code => (code ? reject(err) : resolve()));
         });
     } catch (error) {
-        dispatch(showErrorDialog(`Failed to clone the repositories: ${error}`));
+        const errorMsg = `Failed to clone the repositories: ${error}`;
+        dispatch(showErrorDialog(errorMsg));
+        sendErrorReport(errorMsg);
     }
 
     dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
+    sendUsageData(
+        EventAction.CLONE_NCS_SUCCESS,
+        `${version}; ${process.platform}; ${process.arch}`
+    );
+    sendUsageData(
+        EventAction.CLONE_NCS_TIME,
+        `${calculateTimeConsumed(cloneTimeStart)} min; ${version}`
+    );
+    logger.info(
+        `Finished cloning version ${version} of the nRF Connect SDK after approximately ${calculateTimeConsumed(
+            cloneTimeStart
+        )} minute(s)`
+    );
 };
 
 export const install = (
     { version, toolchains },
     justUpdate
 ) => async dispatch => {
+    logger.info(`Start to install toolchain ${version}`);
     const toolchain = getLatestToolchain(toolchains);
     const toolchainDir = path.resolve(installDir(), version, 'toolchain');
+    logger.info(`Installing ${toolchain.name} at ${toolchainDir}`);
+    logger.debug(`Install with toolchain version ${toolchain.version}`);
+    logger.debug(`Install with sha512 ${toolchain.sha512}`);
+    sendUsageData(
+        EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
+        `${version}; ${toolchain.name}`
+    );
 
     dispatch(selectEnvironment(version));
     if (isFirstInstall()) {
+        logger.info(`Show first install dialog for toolchain ${version}`);
         dispatch(showFirstInstallDialog());
     }
     setHasInstalledAnNcs();
@@ -330,6 +411,9 @@ export const install = (
 };
 
 export const remove = ({ toolchainDir, version }) => async dispatch => {
+    logger.info(`Removing ${version} at ${toolchainDir}`);
+    sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
+
     const toBeDeletedDir = path.resolve(
         toolchainDir,
         '..',
@@ -344,15 +428,15 @@ export const remove = ({ toolchainDir, version }) => async dispatch => {
         await fse.move(srcDir, toBeDeletedDir, { overwrite: true });
         renameOfDirSuccessful = true;
         await fse.remove(toBeDeletedDir);
+        logger.info(`Finish removing ${version} at ${toolchainDir}`);
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
-        dispatch(
-            showErrorDialog(
-                `Failed to remove ${srcDir}, ${message}. ` +
-                    'Please close any application or window that might keep this ' +
-                    'environment locked, then try to remove it again.'
-            )
-        );
+        const errorMsg =
+            `Failed to remove ${srcDir}, ${message}. ` +
+            'Please close any application or window that might keep this ' +
+            'environment locked, then try to remove it again.';
+        dispatch(showErrorDialog(errorMsg));
+        sendErrorReport(errorMsg);
     }
     if (renameOfDirSuccessful) {
         dispatch(removeEnvironment(version));
@@ -362,15 +446,14 @@ export const remove = ({ toolchainDir, version }) => async dispatch => {
 };
 
 export const installPackage = urlOrFilePath => async dispatch => {
+    sendUsageData(EventAction.INSTALL_TOOLCHAIN_FROM_PATH, `${urlOrFilePath}`);
     const match = /ncs-toolchain-(v?.+?)([-_]\d{8}-[^.]+).[zip|dmg|snap]/.exec(
         urlOrFilePath
     );
     if (!match) {
-        dispatch(
-            showErrorDialog(
-                'Filename is not recognized as a toolchain package.'
-            )
-        );
+        const errorMsg = 'Filename is not recognized as a toolchain package.';
+        dispatch(showErrorDialog(errorMsg));
+        sendErrorReport(errorMsg);
         return;
     }
     const version = match[1];
@@ -393,5 +476,6 @@ export const installPackage = urlOrFilePath => async dispatch => {
         await dispatch(cloneNcs(version, toolchainDir, false));
     } catch (error) {
         dispatch(showErrorDialog(`${error.message || error}`));
+        sendErrorReport(error.message || error);
     }
 };
