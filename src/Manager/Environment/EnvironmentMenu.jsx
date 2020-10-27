@@ -40,7 +40,7 @@ import { exec, execSync } from 'child_process';
 import { readdirSync } from 'fs';
 import path from 'path';
 
-import { shell } from 'electron';
+import { shell, remote } from 'electron';
 import { logger } from 'pc-nrfconnect-shared';
 import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -68,6 +68,8 @@ const execCallback = (error, stdout, stderr) => {
     if (stdout) logger.debug(stdout);
 };
 
+const { exec: remoteExec } = remote.require('child_process');
+
 const openBash = directory => {
     logger.info('Open bash');
     sendUsageData(
@@ -87,25 +89,24 @@ const openCmd = directory => {
 };
 
 const openTerminal = {
-    darwin: directory => {
+    darwin: toolchainDir => {
         logger.info('Open terminal');
         sendUsageData(
             EventAction.OPEN_TERMINAL,
             `${process.platform}; ${process.arch}`
         );
-        const d = path.dirname(directory);
-        const gitversion = readdirSync(`${d}/toolchain/Cellar/git`).pop();
+        const gitversion = readdirSync(`${toolchainDir}/Cellar/git`).pop();
         const env = [
-            `export PATH=${d}/toolchain/bin:$PATH`,
-            `export GIT_EXEC_PATH=${d}/toolchain/Cellar/git/${gitversion}/libexec/git-core`,
+            `export PATH=${toolchainDir}/bin:$PATH`,
+            `export GIT_EXEC_PATH=${toolchainDir}/Cellar/git/${gitversion}/libexec/git-core`,
             'export ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb',
-            `export GNUARMEMB_TOOLCHAIN_PATH=${d}/toolchain`,
+            `export GNUARMEMB_TOOLCHAIN_PATH=${toolchainDir}`,
         ];
         exec(
             `
 osascript <<END
 tell application "Terminal"
-    do script "cd ${d} ; ${env.join(' ; ')} ; clear"
+    do script "cd ${path.dirname(toolchainDir)} ; ${env.join(' ; ')} ; clear"
     activate
 end tell
 END
@@ -113,7 +114,7 @@ END
             execCallback
         );
     },
-    linux: (directory, version) => {
+    linux: toolchainDir => {
         logger.info('Open terminal');
         sendUsageData(
             EventAction.OPEN_TERMINAL,
@@ -125,10 +126,18 @@ END
             .toString()
             .trim()
             .replace(/'/g, '');
-        const shortVer = version.replace(/\./g, '');
-        exec(
-            `${terminalApp} -l -e "snap run --shell ncs-toolchain-${shortVer}.west"`,
-            { cwd: path.dirname(directory) },
+
+        const e = [
+            `PATH=${toolchainDir}/bin:${toolchainDir}/usr/bin:${toolchainDir}/segger_embedded_studio/bin:${remote.process.env.PATH}`,
+            `PYTHONHOME=${toolchainDir}/lib/python3.8`,
+            `PYTHONPATH=${toolchainDir}/usr/lib/python3.8:${toolchainDir}/lib/python3.8/site-packages:${toolchainDir}/usr/lib/python3/dist-packages:${toolchainDir}/usr/lib/python3.8/lib-dynload`,
+            `GIT_EXEC_PATH=${toolchainDir}/usr/lib/git-core`,
+            `LD_LIBRARY_PATH=/var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void:${toolchainDir}/lib/python3.8/site-packages/.libs_cffi_backend:${toolchainDir}/lib/python3.8/site-packages/Pillow.libs:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/segger_embedded_studio/bin:${toolchainDir}/usr/lib/x86_64-linux-gnu:${toolchainDir}/lib:${toolchainDir}/usr/lib:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/usr/lib/x86_64-linux-gnu`,
+        ].join(' ');
+
+        remoteExec(
+            `${terminalApp} -- -e "${e} bash"`,
+            { cwd: path.dirname(toolchainDir) },
             execCallback
         );
     },

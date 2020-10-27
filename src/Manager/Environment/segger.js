@@ -224,10 +224,9 @@ export const updateConfigFile = toolchainDir => {
     }
 };
 
-export const openSegger = async (toolchainDir, version) => {
+export const openSegger = async toolchainDir => {
     logger.info('Open Segger Embedded Studio');
     sendUsageData(EventAction.OPEN_SES, process.platform);
-
     await Promise.all([
         updateSettingsFile('settings.xml', toolchainDir),
         updateSettingsFile('settings.xml.bak', toolchainDir),
@@ -264,10 +263,19 @@ export const openSegger = async (toolchainDir, version) => {
             );
             break;
         case 'linux': {
-            const shortVer = version.replace(/\./g, '');
             remoteExec(
-                `ncs-toolchain-${shortVer}.emstudio`,
-                { cwd },
+                `${toolchainDir}/segger_embedded_studio/bin/emStudio`,
+                {
+                    env: {
+                        ...remote.process.env,
+                        PATH: `${toolchainDir}/bin:${toolchainDir}/usr/bin:${remote.process.env.PATH}`,
+                        PYTHONHOME: `${toolchainDir}/lib/python3.8`,
+                        PYTHONPATH: `${toolchainDir}/usr/lib/python3.8:${toolchainDir}/lib/python3.8/site-packages:${toolchainDir}/usr/lib/python3/dist-packages:${toolchainDir}/usr/lib/python3.8/lib-dynload`,
+                        GIT_EXEC_PATH: `${toolchainDir}/usr/lib/git-core`,
+                        LD_LIBRARY_PATH: `/var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void:${toolchainDir}/lib/python3.8/site-packages/.libs_cffi_backend:${toolchainDir}/lib/python3.8/site-packages/Pillow.libs:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/segger_embedded_studio/bin:${toolchainDir}/usr/lib/x86_64-linux-gnu:${toolchainDir}/lib:${toolchainDir}/usr/lib:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/usr/lib/x86_64-linux-gnu`,
+                    },
+                    cwd,
+                },
                 execCallback
             );
             break;
