@@ -83,6 +83,16 @@ export default () => {
                 <Alert variant="danger">
                     Linux support depends on <b>snap</b> which seems
                     unavailable, please install the package.
+                    <br />
+                    For more information please follow the manual for your{' '}
+                    <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://snapcraft.io/docs/installing-snapd"
+                    >
+                        distribution
+                    </a>
+                    .
                 </Alert>
             )}
         </>

@@ -4,6 +4,7 @@
 - Fixed incorrect percentage number for download progress
 - Update SES default config with tool paths
 - Added usage statistics
+- Added link about snap installation
 
 ## Version 0.7.1
 - Fixed update SDK/toolchain actions
