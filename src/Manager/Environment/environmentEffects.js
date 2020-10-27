@@ -323,10 +323,11 @@ export const cloneNcs = (
             case 'linux': {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { ZEPHYR_BASE, ...env } = process.env;
-                env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
+                env.PATH = `${toolchainDir}/bin:${toolchainDir}/usr/bin:${remote.process.env.PATH}`;
                 env.PYTHONHOME = `${toolchainDir}/lib/python3.8`;
                 env.PYTHONPATH = `${toolchainDir}/usr/lib/python3.8:${toolchainDir}/lib/python3.8/site-packages:${toolchainDir}/usr/lib/python3/dist-packages:${toolchainDir}/usr/lib/python3.8/lib-dynload`;
                 env.GIT_EXEC_PATH = `${toolchainDir}/usr/lib/git-core`;
+                env.LD_LIBRARY_PATH = `/var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void:${toolchainDir}/lib/python3.8/site-packages/.libs_cffi_backend:${toolchainDir}/lib/python3.8/site-packages/Pillow.libs:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/segger_embedded_studio/bin:${toolchainDir}/usr/lib/x86_64-linux-gnu:${toolchainDir}/lib:${toolchainDir}/usr/lib:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/usr/lib/x86_64-linux-gnu`;
 
                 ncsMgr = remoteSpawn(
                     `${toolchainDir}/ncsmgr/ncsmgr`,
