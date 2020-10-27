@@ -224,10 +224,9 @@ export const updateConfigFile = toolchainDir => {
     }
 };
 
-export const openSegger = async (toolchainDir, version) => {
+export const openSegger = async toolchainDir => {
     logger.info('Open Segger Embedded Studio');
     sendUsageData(EventAction.OPEN_SES, process.platform);
-
     await Promise.all([
         updateSettingsFile('settings.xml', toolchainDir),
         updateSettingsFile('settings.xml.bak', toolchainDir),
@@ -264,10 +263,18 @@ export const openSegger = async (toolchainDir, version) => {
             );
             break;
         case 'linux': {
-            const shortVer = version.replace(/\./g, '');
             remoteExec(
-                `ncs-toolchain-${shortVer}.emstudio`,
-                { cwd },
+                `${toolchainDir}/segger_embedded_studio/bin/emStudio`,
+                {
+                    env: {
+                        ...remote.process.env,
+                        PATH: `${toolchainDir}/bin:${remote.process.env.PATH}`,
+                        PYTHONHOME: `${toolchainDir}/lib/python3.8`,
+                        PYTHONPATH: `${toolchainDir}/usr/lib/python3.8:${toolchainDir}/lib/python3.8/site-packages:${toolchainDir}/usr/lib/python3/dist-packages:${toolchainDir}/usr/lib/python3.8/lib-dynload`,
+                        GIT_EXEC_PATH: `${toolchainDir}/usr/lib/git-core`,
+                    },
+                    cwd,
+                },
                 execCallback
             );
             break;

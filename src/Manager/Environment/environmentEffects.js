@@ -324,17 +324,13 @@ export const cloneNcs = (
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { ZEPHYR_BASE, ...env } = process.env;
                 env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
-                const shortVer = version.replace(/\./g, '');
+                env.PYTHONHOME = `${toolchainDir}/lib/python3.8`;
+                env.PYTHONPATH = `${toolchainDir}/usr/lib/python3.8:${toolchainDir}/lib/python3.8/site-packages:${toolchainDir}/usr/lib/python3/dist-packages:${toolchainDir}/usr/lib/python3.8/lib-dynload`;
+                env.GIT_EXEC_PATH = `${toolchainDir}/usr/lib/git-core`;
 
                 ncsMgr = remoteSpawn(
-                    'snap',
-                    [
-                        'run',
-                        '--shell',
-                        `ncs-toolchain-${shortVer}.west`,
-                        '-c',
-                        `${toolchainDir}/ncsmgr/ncsmgr init-ncs ${update}`,
-                    ],
+                    `${toolchainDir}/ncsmgr/ncsmgr`,
+                    ['init-ncs', `${update}`],
                     { env }
                 );
                 break;
