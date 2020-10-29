@@ -136,7 +136,7 @@ END
         ].join(' ');
 
         remoteExec(
-            `${terminalApp} -- -e "${e} bash"`,
+            `${terminalApp} -- bash -c "${e} bash"`,
             { cwd: path.dirname(toolchainDir) },
             execCallback
         );

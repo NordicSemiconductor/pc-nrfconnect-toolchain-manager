@@ -56,7 +56,7 @@ import {
     isShowingFirstSteps,
     showInstallPackageDialog,
 } from './managerReducer';
-import PlatformInstructions from './PlatformInstructions';
+import PlatformInstructions, { enableLinux } from './PlatformInstructions';
 
 const Environments = () => {
     const dispatch = useDispatch();
@@ -125,21 +125,25 @@ export default props => {
             {...props}
         >
             <PlatformInstructions />
-            <Environments />
-            <ButtonToolbar className="pt-3 flex-row justify-content-end">
-                <Button
-                    variant="link"
-                    className="mdi x-mdi-briefcase-plus-outline pr-0 pt-0"
-                    onClick={() => dispatch(showInstallPackageDialog())}
-                >
-                    Install package from other source
-                </Button>
-            </ButtonToolbar>
-            <FirstInstallDialog />
-            <RemoveEnvironmentDialog />
-            <InstallPackageDialog />
-            <ToolchainSourceDialog />
-            <InstallDirDialog />
+            {(process.platform !== 'linux' || enableLinux) && (
+                <>
+                    <Environments />
+                    <ButtonToolbar className="pt-3 flex-row justify-content-end">
+                        <Button
+                            variant="link"
+                            className="mdi x-mdi-briefcase-plus-outline pr-0 pt-0"
+                            onClick={() => dispatch(showInstallPackageDialog())}
+                        >
+                            Install package from other source
+                        </Button>
+                    </ButtonToolbar>
+                    <FirstInstallDialog />
+                    <RemoveEnvironmentDialog />
+                    <InstallPackageDialog />
+                    <ToolchainSourceDialog />
+                    <InstallDirDialog />
+                </>
+            )}
         </div>
     );
 };

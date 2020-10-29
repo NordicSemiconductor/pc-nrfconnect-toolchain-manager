@@ -42,6 +42,8 @@ import Alert from 'react-bootstrap/Alert';
 const isLinux = process.platform === 'linux';
 const isWindows = process.platform === 'win32';
 
+export const enableLinux = false;
+
 export const OnlineDocs = ({ label }) => (
     <a
         target="_blank"
@@ -62,6 +64,7 @@ export default () => {
     const [isSnapAvailable, setSnapAvailable] = useState(true);
 
     useEffect(() => {
+        if (!enableLinux || !isLinux) return;
         try {
             execSync('which snap');
         } catch (err) {
@@ -72,10 +75,11 @@ export default () => {
     return (
         <>
             <Alert variant="warning">
-                <b>
-                    Support for {isLinux ? 'Linux' : 'macOS'} is experimental.
-                </b>{' '}
-                For instructions on how to manually set up an environment on
+                {isLinux && (
+                    <b>Linux is currently not supported by this app.</b>
+                )}
+                {isLinux || <b>Support for macOS is experimental.</b>} For
+                instructions on how to manually set up an environment on your
                 your machine, please read the online{' '}
                 <OnlineDocs label="documentation" />.
             </Alert>
