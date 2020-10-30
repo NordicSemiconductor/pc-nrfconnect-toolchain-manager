@@ -1,11 +1,11 @@
 {
   "name": "pc-nrfconnect-toolchain-manager",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Install and manage tools to develop with the nRF Connect SDK (NCS)",
   "displayName": "Toolchain Manager",
   "repository": {
     "type": "git",
-    "url": "https://github.com/NordicSemiconductor/pc-nrfconnect-.git"
+    "url": "https://github.com/NordicSemiconductor/pc-nrfconnect-toolchain-manager.git"
   },
   "author": "Nordic Semiconductor ASA",
   "license": "SEE LICENSE IN LICENSE",

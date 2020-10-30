@@ -1,3 +1,6 @@
+## Version 0.8.1
+- Fixed source code link
+
 ## Version 0.8.0
 - Fixed unzipping issue on Windows
 - Fixed incorrect percentage number for download progress
