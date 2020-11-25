@@ -1,5 +1,5 @@
 ## Version 0.8.2
-- Fixed cmake configuration issue on macOS
+- Fixed cmake configuration issue on macOS #66
 - Minor style update
 
 ## Version 0.8.1
