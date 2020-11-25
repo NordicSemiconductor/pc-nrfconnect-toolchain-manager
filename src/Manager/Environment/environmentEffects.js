@@ -312,6 +312,7 @@ export const cloneNcs = (
                     .pop();
                 env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
                 env.GIT_EXEC_PATH = `${toolchainDir}/Cellar/git/${gitversion}/libexec/git-core`;
+                env.HOME = `${remote.process.env.HOME}`;
 
                 ncsMgr = spawn(
                     `${toolchainDir}/ncsmgr/ncsmgr`,
