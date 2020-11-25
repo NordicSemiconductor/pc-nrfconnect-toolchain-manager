@@ -1,3 +1,7 @@
+## Version 0.8.2
+- Fixed cmake configuration issue on macOS
+- Minor style update
+
 ## Version 0.8.1
 - Fixed source code link
 
