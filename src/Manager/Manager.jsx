@@ -48,6 +48,7 @@ import NrfCard from '../NrfCard/NrfCard';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import { EventAction, sendUsageData } from '../usageDataActions';
 import Environment from './Environment/Environment';
+import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
 import initEnvironments from './initEnvironments';
 import {
@@ -142,6 +143,7 @@ export default props => {
                     <InstallPackageDialog />
                     <ToolchainSourceDialog />
                     <InstallDirDialog />
+                    <ReduxConfirmDialog />
                 </>
             )}
         </div>
