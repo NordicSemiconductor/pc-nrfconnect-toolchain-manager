@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,19 +34,32 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { combineReducers } from 'redux';
-import firstInstall from './FirstInstall/firstInstallReducer';
-import installDir from './InstallDir/installDirReducer';
-import manager from './Manager/managerReducer';
-import toolchainSource from './ToolchainSource/toolchainSourceReducer';
-import reduxConfirmDialog from './ReduxConfirmDialog/reduxConfirmDialogReducer';
-
-const rootReducer = combineReducers({
-    firstInstall,
-    installDir,
-    manager,
-    toolchainSource,
-    reduxConfirmDialog,
+const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
+export const showReduxConfirmDialogAction = ({ ...args }) => ({
+    type: SHOW_REDUX_CONFIRM_DIALOG,
+    ...args,
+});
+const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
+export const hideReduxConfirmDialogAction = () => ({
+    type: HIDE_REDUX_CONFIRM_DIALOG,
 });
 
-export default rootReducer;
+const initialState = {
+    callback: null,
+    title: null,
+    content: null,
+    confirmLabel: null,
+};
+
+export default (state = initialState, { type, ...action }) => {
+    switch (type) {
+        case SHOW_REDUX_CONFIRM_DIALOG:
+            return { ...state, ...action };
+        case HIDE_REDUX_CONFIRM_DIALOG:
+            return initialState;
+        default:
+            return state;
+    }
+};
+
+export const reduxConfirmDialogSelector = ({ app }) => app.reduxConfirmDialog;
