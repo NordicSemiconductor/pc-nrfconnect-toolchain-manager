@@ -398,7 +398,7 @@ const confirmRemoveDir = dir => dispatch =>
         showReduxConfirmDialog({
             title: 'Inconsistent directory structure',
             content:
-                `The \`${dir}\` directory blocks installation, it should be removed.\n\n` +
+                `The \`${dir}\` directory blocks installation, and should be removed.\n\n` +
                 'If this directory is part of manually installed nRF Connect SDK environment, ' +
                 'consider changing the installation directory in SETTINGS.\n\n' +
                 'If this directory is left over from an incorrect installation, click _Remove_.\n\n' +
