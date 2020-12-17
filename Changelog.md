@@ -1,3 +1,7 @@
+## Version 0.9.0
+- Added dialog and instructions to remove directories that would block installation #67
+- Disabled First steps screen during installation #67
+
 ## Version 0.8.2
 - Fixed cmake configuration issue on macOS #66
 - Minor style update
