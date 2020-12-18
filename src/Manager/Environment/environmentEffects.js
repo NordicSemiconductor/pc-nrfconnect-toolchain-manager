@@ -75,6 +75,7 @@ import {
     startRemoving,
 } from './environmentReducer';
 import { updateConfigFile } from './segger';
+import { showReduxConfirmDialogAction } from '../../ReduxConfirmDialog/reduxConfirmDialogReducer';
 
 const sudo = remote.require('sudo-prompt');
 const { spawn: remoteSpawn } = remote.require('child_process');
@@ -382,6 +383,62 @@ export const cloneNcs = (
     );
 };
 
+const showReduxConfirmDialog = ({ ...args }) => dispatch =>
+    new Promise((resolve, reject) => {
+        dispatch(
+            showReduxConfirmDialogAction({
+                callback: err => (err ? reject() : resolve()),
+                ...args,
+            })
+        );
+    });
+
+const confirmRemoveDir = dir => dispatch =>
+    dispatch(
+        showReduxConfirmDialog({
+            title: 'Inconsistent directory structure',
+            content:
+                `The \`${dir}\` directory blocks installation, and should be removed.\n\n` +
+                'If this directory is part of manually installed nRF Connect SDK environment, ' +
+                'consider changing the installation directory in SETTINGS.\n\n' +
+                'If this directory is left over from an incorrect installation, click _Remove_.\n\n' +
+                'Should you intend to manually remedy the issue, click _Open folder_. ' +
+                'Make sure hidden items are visible.',
+            confirmLabel: 'Remove',
+            onOptional: () => remote.shell.showItemInFolder(dir),
+            optionalLabel: 'Open folder',
+        })
+    );
+
+const ensureCleanTargetDir = toolchainDir => async dispatch => {
+    let dir = toolchainDir;
+    let toBeDeleted = null;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+        const westdir = path.resolve(dir, '.west');
+        if (fs.existsSync(westdir)) {
+            toBeDeleted = westdir;
+            break;
+        }
+        const parent = path.dirname(dir);
+        if (parent === dir) {
+            break;
+        }
+        dir = parent;
+    }
+    if (toBeDeleted) {
+        try {
+            await dispatch(confirmRemoveDir(toBeDeleted));
+            await dispatch(removeDir(toBeDeleted));
+        } catch (err) {
+            throw new Error(
+                `${toBeDeleted} must be removed to continue installation`
+            );
+        }
+        await dispatch(ensureCleanTargetDir(toolchainDir));
+    }
+};
+
 export const install = (
     { version, toolchains },
     justUpdate
@@ -404,29 +461,23 @@ export const install = (
     }
     setHasInstalledAnNcs();
 
-    await dispatch(installToolchain(version, toolchain, toolchainDir));
-    await dispatch(cloneNcs(version, toolchainDir, justUpdate));
+    try {
+        await dispatch(ensureCleanTargetDir(toolchainDir));
+        await dispatch(installToolchain(version, toolchain, toolchainDir));
+        await dispatch(cloneNcs(version, toolchainDir, justUpdate));
+    } catch (error) {
+        dispatch(showErrorDialog(`${error.message || error}`));
+        sendErrorReport(error.message || error);
+    }
 };
 
-export const remove = ({ toolchainDir, version }) => async dispatch => {
-    logger.info(`Removing ${version} at ${toolchainDir}`);
-    sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
-
-    const toBeDeletedDir = path.resolve(
-        toolchainDir,
-        '..',
-        '..',
-        'toBeDeleted'
-    );
-    dispatch(startRemoving(version));
-
-    const srcDir = path.dirname(toolchainDir);
+export const removeDir = srcDir => async dispatch => {
     let renameOfDirSuccessful = false;
     try {
+        const toBeDeletedDir = path.resolve(srcDir, '..', 'toBeDeleted');
         await fse.move(srcDir, toBeDeletedDir, { overwrite: true });
         renameOfDirSuccessful = true;
         await fse.remove(toBeDeletedDir);
-        logger.info(`Finish removing ${version} at ${toolchainDir}`);
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
         const errorMsg =
@@ -436,7 +487,17 @@ export const remove = ({ toolchainDir, version }) => async dispatch => {
         dispatch(showErrorDialog(errorMsg));
         sendErrorReport(errorMsg);
     }
-    if (renameOfDirSuccessful) {
+    return renameOfDirSuccessful;
+};
+
+export const remove = ({ toolchainDir, version }) => async dispatch => {
+    logger.info(`Removing ${version} at ${toolchainDir}`);
+    sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
+
+    dispatch(startRemoving(version));
+
+    if (await dispatch(removeDir(path.dirname(toolchainDir)))) {
+        logger.info(`Finished removing ${version} at ${toolchainDir}`);
         dispatch(removeEnvironment(version));
     }
 
@@ -454,16 +515,20 @@ export const installPackage = urlOrFilePath => async dispatch => {
         sendErrorReport(errorMsg);
         return;
     }
-    const version = match[1];
-    const toolchainDir = path.resolve(installDir(), version, 'toolchain');
-    fse.mkdirpSync(toolchainDir);
-
-    dispatch(
-        addLocallyExistingEnvironment(version, toolchainDir, false, false)
-    );
-    dispatch(startInstallToolchain(version));
 
     try {
+        const version = match[1];
+        const toolchainDir = path.resolve(installDir(), version, 'toolchain');
+
+        await dispatch(ensureCleanTargetDir(toolchainDir));
+
+        fse.mkdirpSync(toolchainDir);
+
+        dispatch(
+            addLocallyExistingEnvironment(version, toolchainDir, false, false)
+        );
+        dispatch(startInstallToolchain(version));
+
         const filePath = fse.existsSync(urlOrFilePath)
             ? urlOrFilePath
             : await dispatch(download(version, { uri: urlOrFilePath }));

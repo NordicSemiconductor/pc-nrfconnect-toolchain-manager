@@ -40,7 +40,7 @@ import { useDispatch } from 'react-redux';
 import { selectEnvironment, showFirstSteps } from '../managerReducer';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
-import { isOnlyAvailable, version } from './environmentReducer';
+import { isInstalled, isOnlyAvailable, version } from './environmentReducer';
 
 const ShowFirstSteps = ({ environment }) => {
     const dispatch = useDispatch();
@@ -56,6 +56,7 @@ const ShowFirstSteps = ({ environment }) => {
             label="First steps to build"
             title="Show how to build a sample project"
             variant="secondary"
+            disabled={!isInstalled(environment)}
         />
     );
 };
