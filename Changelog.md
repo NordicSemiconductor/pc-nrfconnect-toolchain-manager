@@ -1,3 +1,7 @@
+## Version 0.9.1
+- Fix opening SEGGER Embedded Studio on macOS #70
+- Prevent using non-default base path on macOS #70
+
 ## Version 0.9.0
 - Added dialog and instructions to remove directories that would block installation #67
 - Disabled First steps screen during installation #67
