@@ -50,7 +50,9 @@ const defaultInstallDir = {
 }[process.platform];
 
 export const persistedInstallDir = () =>
-    store.get('installDir', defaultInstallDir);
+    process.platform === 'darwin'
+        ? defaultInstallDir
+        : store.get('installDir', defaultInstallDir);
 export const setPersistedInstallDir = dir => store.set('installDir', dir);
 
 const indexJson = {
