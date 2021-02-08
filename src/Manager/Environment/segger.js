@@ -248,9 +248,12 @@ export const openSegger = async toolchainDir => {
                 execCallback
             );
             break;
-        case 'darwin':
+        case 'darwin': {
+            const realStudioPath = fs.readlinkSync(
+                `${toolchainDir}/segger_embedded_studio/SEGGER Embedded Studio.app`
+            );
             exec(
-                `open "${toolchainDir}/segger_embedded_studio/SEGGER Embedded Studio.app"`,
+                `open "${toolchainDir}/segger_embedded_studio/${realStudioPath}"`,
                 {
                     env: {
                         PATH: `${toolchainDir}/bin:${remote.process.env.PATH}`,
@@ -262,6 +265,7 @@ export const openSegger = async toolchainDir => {
                 execCallback
             );
             break;
+        }
         case 'linux': {
             remoteExec(
                 `${toolchainDir}/segger_embedded_studio/bin/emStudio`,
