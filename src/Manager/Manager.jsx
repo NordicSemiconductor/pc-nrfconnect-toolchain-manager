@@ -102,7 +102,7 @@ export default props => {
 
     if (showingFirstSteps) {
         logger.info('Show first intall instructions');
-        sendUsageData(
+        usageData.sendUsageData(
             EventAction.SHOW_FIRST_INSTALL_INSTRUCTIONS,
             `${process.platform}; ${process.arch}`
         );

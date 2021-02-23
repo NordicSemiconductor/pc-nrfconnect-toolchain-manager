@@ -42,13 +42,9 @@ import { exec, execSync } from 'child_process';
 import { remote, shell } from 'electron';
 import { readdirSync } from 'fs';
 import path from 'path';
-import { logger } from 'pc-nrfconnect-shared';
+import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import {
-    EventAction,
-    sendErrorReport,
-    sendUsageData,
-} from '../../usageDataActions';
+import EventAction from '../../usageDataActions';
 import { showConfirmRemoveDialog } from '../managerReducer';
 import { cloneNcs, install } from './environmentEffects';
 import environmentPropType from './environmentPropType';
@@ -62,8 +58,8 @@ import './style.scss';
 
 const execCallback = (error, stdout, stderr) => {
     logger.info('Terminal has closed');
-    if (error) sendErrorReport(error);
-    if (stderr) sendErrorReport(stderr);
+    if (error) usageData.sendErrorReport(error);
+    if (stderr) usageData.sendErrorReport(stderr);
     if (stdout) logger.debug(stdout);
 };
 
@@ -71,7 +67,7 @@ const { exec: remoteExec } = remote.require('child_process');
 
 const openBash = directory => {
     logger.info('Open bash');
-    sendUsageData(
+    usageData.sendUsageData(
         EventAction.OPEN_BASH,
         `${process.platform}; ${process.arch}`
     );
@@ -80,7 +76,10 @@ const openBash = directory => {
 
 const openCmd = directory => {
     logger.info('Open command prompt');
-    sendUsageData(EventAction.OPEN_CMD, `${process.platform}; ${process.arch}`);
+    usageData.sendUsageData(
+        EventAction.OPEN_CMD,
+        `${process.platform}; ${process.arch}`
+    );
     exec(
         `start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`,
         execCallback
@@ -90,7 +89,7 @@ const openCmd = directory => {
 const openTerminal = {
     darwin: toolchainDir => {
         logger.info('Open terminal');
-        sendUsageData(
+        usageData.sendUsageData(
             EventAction.OPEN_TERMINAL,
             `${process.platform}; ${process.arch}`
         );
@@ -115,7 +114,7 @@ END
     },
     linux: toolchainDir => {
         logger.info('Open terminal');
-        sendUsageData(
+        usageData.sendUsageData(
             EventAction.OPEN_TERMINAL,
             `${process.platform}; ${process.arch}`
         );
@@ -144,7 +143,7 @@ END
 
 const openDirectory = directory => {
     logger.info(`Open directory ${directory}`);
-    sendUsageData(
+    usageData.sendUsageData(
         EventAction.OPEN_DIR,
         `${process.platform}; ${process.arch}; ${directory}`
     );
