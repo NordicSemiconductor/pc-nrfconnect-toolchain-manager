@@ -1,6 +1,6 @@
 {
   "name": "pc-nrfconnect-toolchain-manager",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Install and manage tools to develop with the nRF Connect SDK (NCS)",
   "displayName": "Toolchain Manager",
   "repository": {
@@ -10,7 +10,7 @@
   "author": "Nordic Semiconductor ASA",
   "license": "SEE LICENSE IN LICENSE",
   "engines": {
-    "nrfconnect": "^3.6.0"
+    "nrfconnect": "^3.7.0"
   },
   "main": "dist/bundle.js",
   "files": [
@@ -33,7 +33,7 @@
     "clean-modules": "rimraf \"node_modules/!(rimraf|.bin)\""
   },
   "devDependencies": {
-    "pc-nrfconnect-shared": "git+https://github.com/NordicSemiconductor/pc-nrfconnect-shared.git#semver:4.14.1",
+    "pc-nrfconnect-shared": "git+https://github.com/NordicSemiconductor/pc-nrfconnect-shared.git#semver:4.18.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-redux": "7.2.0",

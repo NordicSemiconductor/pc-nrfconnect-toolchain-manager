@@ -34,18 +34,18 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
+import { useDispatch, useSelector } from 'react-redux';
 import { remote } from 'electron';
-import {
-    isInstallPackageDialogVisible,
-    hideInstallPackageDialog,
-    dndPackage,
-} from '../Manager/managerReducer';
-import { installPackage } from '../Manager/Environment/environmentEffects';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import { installPackage } from '../Manager/Environment/environmentEffects';
+import {
+    dndPackage,
+    hideInstallPackageDialog,
+    isInstallPackageDialogVisible,
+} from '../Manager/managerReducer';
 
 export default () => {
     const dispatch = useDispatch();

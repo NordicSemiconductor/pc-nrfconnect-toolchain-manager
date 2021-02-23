@@ -44,6 +44,7 @@ jest.mock('electron', () => ({
 }));
 
 import path from 'path';
+
 import { updateSettingsXml, userSettings } from './segger';
 
 const testPath = '/test/path';

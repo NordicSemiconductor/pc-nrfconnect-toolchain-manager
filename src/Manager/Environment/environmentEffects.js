@@ -36,22 +36,22 @@
 
 import { execSync, spawn } from 'child_process';
 import { createHash } from 'crypto';
-import fs from 'fs';
-import path from 'path';
-
 import { remote } from 'electron';
 import extract from 'extract-zip';
+import fs from 'fs';
 import fse from 'fs-extra';
+import path from 'path';
 import { logger } from 'pc-nrfconnect-shared';
 
 import { showFirstInstallDialog } from '../../FirstInstall/firstInstallReducer';
 import { showErrorDialog } from '../../launcherActions';
 import {
-    persistedInstallDir as installDir,
     isFirstInstall,
+    persistedInstallDir as installDir,
     setHasInstalledAnNcs,
     toolchainUrl,
 } from '../../persistentStore';
+import { showReduxConfirmDialogAction } from '../../ReduxConfirmDialog/reduxConfirmDialogReducer';
 import {
     EventAction,
     sendErrorReport,
@@ -75,7 +75,6 @@ import {
     startRemoving,
 } from './environmentReducer';
 import { updateConfigFile } from './segger';
-import { showReduxConfirmDialogAction } from '../../ReduxConfirmDialog/reduxConfirmDialogReducer';
 
 const sudo = remote.require('sudo-prompt');
 const { spawn: remoteSpawn } = remote.require('child_process');

@@ -39,8 +39,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmationDialog from '../../ConfirmationDialog/ConfirmationDialog';
 import {
-    hideConfirmRemoveDialog,
     environmentToRemove,
+    hideConfirmRemoveDialog,
     isRemoveDirDialogVisible,
 } from '../managerReducer';
 import { remove } from './environmentEffects';

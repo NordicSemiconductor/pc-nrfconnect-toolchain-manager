@@ -35,11 +35,12 @@
  */
 
 import { combineReducers } from 'redux';
+
 import firstInstall from './FirstInstall/firstInstallReducer';
 import installDir from './InstallDir/installDirReducer';
 import manager from './Manager/managerReducer';
-import toolchainSource from './ToolchainSource/toolchainSourceReducer';
 import reduxConfirmDialog from './ReduxConfirmDialog/reduxConfirmDialogReducer';
+import toolchainSource from './ToolchainSource/toolchainSourceReducer';
 
 const rootReducer = combineReducers({
     firstInstall,

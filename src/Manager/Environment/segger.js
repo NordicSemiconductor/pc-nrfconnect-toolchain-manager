@@ -35,12 +35,11 @@
  */
 
 import { exec } from 'child_process';
+import { remote } from 'electron';
 import fs from 'fs';
+import fse from 'fs-extra';
 import os from 'os';
 import path from 'path';
-
-import { remote } from 'electron';
-import fse from 'fs-extra';
 import { logger } from 'pc-nrfconnect-shared';
 
 import {

@@ -35,11 +35,10 @@
  */
 
 import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
-
 import { remote } from 'electron';
+import fs from 'fs';
 import fse from 'fs-extra';
+import path from 'path';
 import { logger } from 'pc-nrfconnect-shared';
 
 import {

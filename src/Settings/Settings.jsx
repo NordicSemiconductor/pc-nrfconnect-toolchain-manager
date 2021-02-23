@@ -35,21 +35,21 @@
  */
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+import { useDispatch, useSelector } from 'react-redux';
 
-import NrfCard from '../NrfCard/NrfCard';
 import {
-    showSetInstallDirDialog,
     currentInstallDir,
+    showSetInstallDirDialog,
 } from '../InstallDir/installDirReducer';
 import {
-    showMasterEnvironment,
     isMasterVisible,
+    showMasterEnvironment,
 } from '../Manager/managerReducer';
+import NrfCard from '../NrfCard/NrfCard';
 import {
     showSetToolchainSourceDialog,
     toolchainRootUrl,

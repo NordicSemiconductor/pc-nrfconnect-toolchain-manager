@@ -34,23 +34,22 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
-
 import React from 'react';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+
 import NrfCard from '../../NrfCard/NrfCard';
-
-import Name from './Name';
-import ProgressLabel from './ProgressLabel';
-import ProgressBar from './ProgressBar';
-import ShowFirstSteps from './ShowFirstSteps';
-import Install from './Install';
-import OpenIde from './OpenIde';
 import EnvironmentMenu from './EnvironmentMenu';
-
 import environmentPropType from './environmentPropType';
+import Install from './Install';
+import Name from './Name';
+import OpenIde from './OpenIde';
+import ProgressBar from './ProgressBar';
+import ProgressLabel from './ProgressLabel';
+import ShowFirstSteps from './ShowFirstSteps';
+
+import './style.scss';
 
 const Environment = ({ environment }) => (
     <NrfCard>

@@ -39,15 +39,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { remote } from 'electron';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
-import initEnvironments from '../Manager/initEnvironments';
 import { install } from '../Manager/Environment/environmentEffects';
+import initEnvironments from '../Manager/initEnvironments';
 import {
-    hideInstallDirDialog,
-    isDialogVisible,
-    isConfirmDirFlavour,
-    setInstallDir,
     currentInstallDir,
     environmentToInstall,
+    hideInstallDirDialog,
+    isConfirmDirFlavour,
+    isDialogVisible,
+    setInstallDir,
 } from './installDirReducer';
 
 const selectInstallDir = async (dispatch, installDir, hideDialog) => {

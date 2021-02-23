@@ -34,18 +34,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
-
-import { exec, execSync } from 'child_process';
-import { readdirSync } from 'fs';
-import path from 'path';
-
-import { shell, remote } from 'electron';
-import { logger } from 'pc-nrfconnect-shared';
 import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { useDispatch } from 'react-redux';
+import { exec, execSync } from 'child_process';
+import { remote, shell } from 'electron';
+import { readdirSync } from 'fs';
+import path from 'path';
+import { logger } from 'pc-nrfconnect-shared';
 
 import {
     EventAction,
@@ -56,10 +53,12 @@ import { showConfirmRemoveDialog } from '../managerReducer';
 import { cloneNcs, install } from './environmentEffects';
 import environmentPropType from './environmentPropType';
 import {
+    isInstalled,
     toolchainDir as getToolchainDir,
     version as getVersion,
-    isInstalled,
 } from './environmentReducer';
+
+import './style.scss';
 
 const execCallback = (error, stdout, stderr) => {
     logger.info('Terminal has closed');

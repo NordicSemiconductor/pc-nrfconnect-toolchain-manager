@@ -35,16 +35,17 @@
  */
 
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import Form from 'react-bootstrap/Form';
+import { useDispatch, useSelector } from 'react-redux';
+
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import initEnvironments from '../Manager/initEnvironments';
 import {
-    isDialogVisible,
     hideSetToolchainSourceDialog,
+    isDialogVisible,
     setToolchainSource,
     toolchainRootUrl,
 } from './toolchainSourceReducer';
-import initEnvironments from '../Manager/initEnvironments';
 
 export default () => {
     const dispatch = useDispatch();

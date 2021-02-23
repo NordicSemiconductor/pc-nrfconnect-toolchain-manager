@@ -34,21 +34,21 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { logger } from 'pc-nrfconnect-shared';
 import React, { useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import { useDispatch, useSelector } from 'react-redux';
+import { logger } from 'pc-nrfconnect-shared';
 
 import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 import FirstInstallInstructions from '../FirstInstall/FirstInstallInstructions';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
 import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
 import NrfCard from '../NrfCard/NrfCard';
+import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import { EventAction, sendUsageData } from '../usageDataActions';
 import Environment from './Environment/Environment';
-import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
 import initEnvironments from './initEnvironments';
 import {

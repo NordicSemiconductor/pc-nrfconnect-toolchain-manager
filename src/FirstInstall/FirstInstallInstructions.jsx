@@ -35,16 +35,15 @@
  */
 
 import React from 'react';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import Card from 'react-bootstrap/Card';
 import { useDispatch, useSelector } from 'react-redux';
 import { sep } from 'path';
 
-import Alert from 'react-bootstrap/Alert';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-
-import { hideFirstSteps, selectedVersion } from '../Manager/managerReducer';
 import { currentInstallDir } from '../InstallDir/installDirReducer';
+import { hideFirstSteps, selectedVersion } from '../Manager/managerReducer';
 
 const Ie = () => (
     <>

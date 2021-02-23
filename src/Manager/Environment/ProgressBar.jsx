@@ -34,20 +34,20 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
-
 import React from 'react';
 import BootstrapProgressBar from 'react-bootstrap/ProgressBar';
 
 import environmentPropType from './environmentPropType';
 import {
-    progress,
-    isRemoving,
+    isCloningSdk,
+    isInProgress,
     isInstalled,
     isInstallingToolchain,
-    isInProgress,
-    isCloningSdk,
+    isRemoving,
+    progress,
 } from './environmentReducer';
+
+import './style.scss';
 
 const className = env => {
     switch (true) {
