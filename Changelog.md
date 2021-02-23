@@ -1,3 +1,8 @@
+## Unreleased
+### Changed
+- Updated to pc-nrfconnect-shared 4.18.0
+- Updated API call to send usage data, replacing `sendEvent` by `sendUsageData`
+
 ## Version 0.9.1
 - Fixed opening SEGGER Embedded Studio on macOS #70
 - Prevented using non-default base path on macOS #70
