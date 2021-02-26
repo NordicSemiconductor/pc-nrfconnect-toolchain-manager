@@ -35,9 +35,9 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { string } from 'prop-types';
-import { execSync } from 'child_process';
 import Alert from 'react-bootstrap/Alert';
+import { execSync } from 'child_process';
+import { string } from 'prop-types';
 
 const isLinux = process.platform === 'linux';
 const isWindows = process.platform === 'win32';

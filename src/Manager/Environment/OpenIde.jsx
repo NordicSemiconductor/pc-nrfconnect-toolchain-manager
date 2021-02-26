@@ -35,11 +35,11 @@
  */
 
 import React from 'react';
-import { openSegger } from './segger';
-import Button from './Button';
 
+import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { canBeOpenedInSegger, isInProgress } from './environmentReducer';
+import { openSegger } from './segger';
 
 const OpenIde = ({ environment }) => {
     if (!canBeOpenedInSegger(environment)) return null;

@@ -35,22 +35,17 @@
  */
 
 import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
-
 import { remote } from 'electron';
+import fs from 'fs';
 import fse from 'fs-extra';
-import { logger } from 'pc-nrfconnect-shared';
+import path from 'path';
+import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import {
     persistedInstallDir as installDir,
     toolchainIndexUrl,
 } from '../persistentStore';
-import {
-    EventAction,
-    sendErrorReport,
-    sendUsageData,
-} from '../usageDataActions';
+import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/environmentEffects';
 import {
     addEnvironment,
@@ -75,8 +70,8 @@ const detectLocallyExistingEnvironments = dispatch => {
                 );
                 logger.info(`With version: ${version}`);
                 logger.info(`With west found: ${isWestPresent ? 'yes' : 'no'}`);
-                sendUsageData(
-                    EventAction.REPORT_LOACAL_ENVS,
+                usageData.sendUsageData(
+                    EventAction.REPORT_LOCAL_ENVS,
                     `${version}; ${
                         isWestPresent ? 'west found' : 'west not found'
                     }`
@@ -90,7 +85,7 @@ const detectLocallyExistingEnvironments = dispatch => {
                 );
             });
     } catch (e) {
-        sendErrorReport(
+        usageData.sendErrorReport(
             `Fail to detect locally existing environments with error: ${e}`
         );
     }
@@ -103,7 +98,7 @@ const downloadIndex = dispatch => {
         let result = '';
         response.on('end', () => {
             if (response.statusCode !== 200) {
-                sendErrorReport(
+                usageData.sendErrorReport(
                     `Unable to download ${toolchainIndexUrl()}. Got status code ${
                         response.statusCode
                     }`
@@ -122,7 +117,7 @@ const downloadIndex = dispatch => {
                     );
                 });
             } catch (e) {
-                sendErrorReport(
+                usageData.sendErrorReport(
                     `Fail to parse index json file with error: ${e}`
                 );
             }
@@ -135,7 +130,7 @@ const downloadIndex = dispatch => {
         });
     });
     request.on('error', e => {
-        sendErrorReport(
+        usageData.sendErrorReport(
             `Fail to detect locally existing environments with error: ${e}`
         );
     });

@@ -39,9 +39,9 @@ import { useDispatch } from 'react-redux';
 
 import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
 import Button from './Button';
+import { install } from './environmentEffects';
 import environmentPropType from './environmentPropType';
 import { isOnlyAvailable, version } from './environmentReducer';
-import { install } from './environmentEffects';
 
 const Install = ({ environment }) => {
     const dispatch = useDispatch();

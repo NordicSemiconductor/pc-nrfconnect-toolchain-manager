@@ -35,8 +35,8 @@
  */
 
 import Store from 'electron-store';
-import path from 'path';
 import os from 'os';
+import path from 'path';
 
 const store = new Store({ name: 'pc-nrfconnect-toolchain-manager' });
 

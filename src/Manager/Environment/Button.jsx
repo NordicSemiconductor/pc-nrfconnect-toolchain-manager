@@ -34,11 +34,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
-
 import React from 'react';
-import { string } from 'prop-types';
 import BootstrapButton from 'react-bootstrap/Button';
+import { string } from 'prop-types';
+
+import './style.scss';
 
 const Button = ({ icon, label, ...props }) => (
     <BootstrapButton

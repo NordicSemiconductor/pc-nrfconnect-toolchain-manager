@@ -34,7 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { toolchainIndexUrl, setToolchainIndexUrl } from '../persistentStore';
+import { setToolchainIndexUrl, toolchainIndexUrl } from '../persistentStore';
 
 const SET_TOOLCHAIN_SOURCE = 'SET_TOOLCHAIN_SOURCE';
 export const setToolchainSource = toolchainRootUrl => ({

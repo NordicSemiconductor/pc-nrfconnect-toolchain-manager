@@ -35,8 +35,8 @@
  */
 
 import React from 'react';
-import { arrayOf, node } from 'prop-types';
 import Card from 'react-bootstrap/Card';
+import { arrayOf, node } from 'prop-types';
 
 import './nrfCard.scss';
 

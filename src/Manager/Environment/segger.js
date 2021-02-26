@@ -35,19 +35,14 @@
  */
 
 import { exec } from 'child_process';
+import { remote } from 'electron';
 import fs from 'fs';
+import fse from 'fs-extra';
 import os from 'os';
 import path from 'path';
+import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import { remote } from 'electron';
-import fse from 'fs-extra';
-import { logger } from 'pc-nrfconnect-shared';
-
-import {
-    EventAction,
-    sendErrorReport,
-    sendUsageData,
-} from '../../usageDataActions';
+import { EventAction } from '../../usageDataActions';
 
 const { exec: remoteExec } = remote.require('child_process');
 
@@ -179,7 +174,7 @@ const readFile = filePath => {
         return fs.readFileSync(filePath);
     } catch (error) {
         // The file may be just not there yet, so we treat this case not as an error
-        sendErrorReport(error.message || error);
+        usageData.sendErrorReport(error.message || error);
         return null;
     }
 };
@@ -220,13 +215,13 @@ export const updateConfigFile = toolchainDir => {
             }
         }
     } catch (e) {
-        sendErrorReport(e.message || e);
+        usageData.sendErrorReport(e.message || e);
     }
 };
 
 export const openSegger = async toolchainDir => {
     logger.info('Open Segger Embedded Studio');
-    sendUsageData(EventAction.OPEN_SES, process.platform);
+    usageData.sendUsageData(EventAction.OPEN_SES, process.platform);
     await Promise.all([
         updateSettingsFile('settings.xml', toolchainDir),
         updateSettingsFile('settings.xml.bak', toolchainDir),
@@ -235,8 +230,8 @@ export const openSegger = async toolchainDir => {
     const cwd = path.dirname(toolchainDir);
     const execCallback = (error, stdout, stderr) => {
         logger.info('Segger Embedded Studio has closed');
-        if (error) sendErrorReport(error);
-        if (stderr) sendErrorReport(stderr);
+        if (error) usageData.sendErrorReport(error);
+        if (stderr) usageData.sendErrorReport(stderr);
         if (stdout) logger.debug(stdout);
     };
 

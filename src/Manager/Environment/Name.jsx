@@ -34,11 +34,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import './style.scss';
-
 import React from 'react';
 import Row from 'react-bootstrap/Row';
+
 import environmentPropType from './environmentPropType';
+
+import './style.scss';
 
 const Name = ({ environment: { version } }) => (
     <Row noGutters className="toolchain-item-info h4 mb-0 pt-3">

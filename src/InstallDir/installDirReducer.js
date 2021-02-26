@@ -34,11 +34,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { getEnvironment } from '../Manager/managerReducer';
 import {
     persistedInstallDir,
     setPersistedInstallDir,
 } from '../persistentStore';
-import { getEnvironment } from '../Manager/managerReducer';
 
 const CONFIRM_DIR = Symbol('Confirm the install directory');
 const SET_DIR = Symbol('Set the install directory');

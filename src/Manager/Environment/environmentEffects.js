@@ -36,27 +36,23 @@
 
 import { execSync, spawn } from 'child_process';
 import { createHash } from 'crypto';
-import fs from 'fs';
-import path from 'path';
-
 import { remote } from 'electron';
 import extract from 'extract-zip';
+import fs from 'fs';
 import fse from 'fs-extra';
-import { logger } from 'pc-nrfconnect-shared';
+import path from 'path';
+import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import { showFirstInstallDialog } from '../../FirstInstall/firstInstallReducer';
 import { showErrorDialog } from '../../launcherActions';
 import {
-    persistedInstallDir as installDir,
     isFirstInstall,
+    persistedInstallDir as installDir,
     setHasInstalledAnNcs,
     toolchainUrl,
 } from '../../persistentStore';
-import {
-    EventAction,
-    sendErrorReport,
-    sendUsageData,
-} from '../../usageDataActions';
+import { showReduxConfirmDialogAction } from '../../ReduxConfirmDialog/reduxConfirmDialogReducer';
+import { EventAction } from '../../usageDataActions';
 import {
     addLocallyExistingEnvironment,
     getEnvironment,
@@ -75,7 +71,6 @@ import {
     startRemoving,
 } from './environmentReducer';
 import { updateConfigFile } from './segger';
-import { showReduxConfirmDialogAction } from '../../ReduxConfirmDialog/reduxConfirmDialogReducer';
 
 const sudo = remote.require('sudo-prompt');
 const { spawn: remoteSpawn } = remote.require('child_process');
@@ -110,7 +105,7 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
 
         const url = uri || toolchainUrl(name);
         const filename = name || path.basename(url);
-        sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, url);
+        usageData.sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, url);
 
         const downloadDir = path.resolve(installDir(), 'downloads');
         const packageLocation = path.resolve(downloadDir, filename);
@@ -145,11 +140,11 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
                                 new Error(`Checksum verification failed ${url}`)
                             );
                         }
-                        sendUsageData(
+                        usageData.sendUsageData(
                             EventAction.DOWNLOAD_TOOLCHAIN_SUCCESS,
                             url
                         );
-                        sendUsageData(
+                        usageData.sendUsageData(
                             EventAction.DOWNLOAD_TOOLCHAIN_TIME,
                             `${calculateTimeConsumed(
                                 downloadTimeStart
@@ -177,7 +172,7 @@ const download = (version, { name, sha512, uri }) => async dispatch =>
 
 const unpack = (version, src, dest) => async dispatch => {
     logger.info(`Unpacking toolchain ${version}`);
-    sendUsageData(
+    usageData.sendUsageData(
         EventAction.UNPACK_TOOLCHAIN,
         `${version}; ${process.platform}; ${process.arch}`
     );
@@ -238,8 +233,8 @@ const unpack = (version, src, dest) => async dispatch => {
     }
 
     const unpackInfo = `${version}; ${process.platform}; ${process.arch}`;
-    sendUsageData(EventAction.UNPACK_TOOLCHAIN_SUCCESS, unpackInfo);
-    sendUsageData(
+    usageData.sendUsageData(EventAction.UNPACK_TOOLCHAIN_SUCCESS, unpackInfo);
+    usageData.sendUsageData(
         EventAction.UNPACK_TOOLCHAIN_TIME,
         `${calculateTimeConsumed(unpackTimeStart)} min; ${unpackInfo}`
     );
@@ -266,7 +261,7 @@ const installToolchain = (
         updateConfigFile(toolchainDir);
     } catch (error) {
         dispatch(showErrorDialog(`${error.message || error}`));
-        sendErrorReport(error.message || error);
+        usageData.sendErrorReport(error.message || error);
     }
 
     dispatch(finishInstallToolchain(version, toolchainDir));
@@ -282,7 +277,7 @@ export const cloneNcs = (
 ) => async dispatch => {
     dispatch(startCloningSdk(version));
     logger.info(`Cloning nRF Connect SDK ${version}`);
-    sendUsageData(
+    usageData.sendUsageData(
         EventAction.CLONE_NCS,
         `${version}; ${process.platform}; ${process.arch}`
     );
@@ -364,15 +359,15 @@ export const cloneNcs = (
     } catch (error) {
         const errorMsg = `Failed to clone the repositories: ${error}`;
         dispatch(showErrorDialog(errorMsg));
-        sendErrorReport(errorMsg);
+        usageData.sendErrorReport(errorMsg);
     }
 
     dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
-    sendUsageData(
+    usageData.sendUsageData(
         EventAction.CLONE_NCS_SUCCESS,
         `${version}; ${process.platform}; ${process.arch}`
     );
-    sendUsageData(
+    usageData.sendUsageData(
         EventAction.CLONE_NCS_TIME,
         `${calculateTimeConsumed(cloneTimeStart)} min; ${version}`
     );
@@ -449,7 +444,7 @@ export const install = (
     logger.info(`Installing ${toolchain.name} at ${toolchainDir}`);
     logger.debug(`Install with toolchain version ${toolchain.version}`);
     logger.debug(`Install with sha512 ${toolchain.sha512}`);
-    sendUsageData(
+    usageData.sendUsageData(
         EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
         `${version}; ${toolchain.name}`
     );
@@ -467,7 +462,7 @@ export const install = (
         await dispatch(cloneNcs(version, toolchainDir, justUpdate));
     } catch (error) {
         dispatch(showErrorDialog(`${error.message || error}`));
-        sendErrorReport(error.message || error);
+        usageData.sendErrorReport(error.message || error);
     }
 };
 
@@ -485,14 +480,14 @@ export const removeDir = srcDir => async dispatch => {
             'Please close any application or window that might keep this ' +
             'environment locked, then try to remove it again.';
         dispatch(showErrorDialog(errorMsg));
-        sendErrorReport(errorMsg);
+        usageData.sendErrorReport(errorMsg);
     }
     return renameOfDirSuccessful;
 };
 
 export const remove = ({ toolchainDir, version }) => async dispatch => {
     logger.info(`Removing ${version} at ${toolchainDir}`);
-    sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
+    usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
 
     dispatch(startRemoving(version));
 
@@ -505,14 +500,17 @@ export const remove = ({ toolchainDir, version }) => async dispatch => {
 };
 
 export const installPackage = urlOrFilePath => async dispatch => {
-    sendUsageData(EventAction.INSTALL_TOOLCHAIN_FROM_PATH, `${urlOrFilePath}`);
+    usageData.sendUsageData(
+        EventAction.INSTALL_TOOLCHAIN_FROM_PATH,
+        `${urlOrFilePath}`
+    );
     const match = /ncs-toolchain-(v?.+?)([-_]\d{8}-[^.]+).[zip|dmg|snap]/.exec(
         urlOrFilePath
     );
     if (!match) {
         const errorMsg = 'Filename is not recognized as a toolchain package.';
         dispatch(showErrorDialog(errorMsg));
-        sendErrorReport(errorMsg);
+        usageData.sendErrorReport(errorMsg);
         return;
     }
 
@@ -539,6 +537,6 @@ export const installPackage = urlOrFilePath => async dispatch => {
         await dispatch(cloneNcs(version, toolchainDir, false));
     } catch (error) {
         dispatch(showErrorDialog(`${error.message || error}`));
-        sendErrorReport(error.message || error);
+        usageData.sendErrorReport(error.message || error);
     }
 };

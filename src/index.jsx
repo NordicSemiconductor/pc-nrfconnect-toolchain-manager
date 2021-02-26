@@ -36,21 +36,25 @@
 
 /* eslint-disable react/prop-types */
 
-import './style.scss';
-
-import { App } from 'pc-nrfconnect-shared';
 import React, { useEffect } from 'react';
+import { App, usageData } from 'pc-nrfconnect-shared';
 
+import packageJson from '../package.json';
 import Manager from './Manager/Manager';
 import appReducer from './reducers';
 import Settings from './Settings/Settings';
-import { initUsageData } from './usageDataActions';
+
+import './style.scss';
 
 export default () => {
     useEffect(() => {
-        // Init usage data functionality comes after rendering.
-        // Usage data functionality should not block rendering.
-        initUsageData();
+        // Usage data functionality should not block rendering
+        try {
+            usageData.init(packageJson);
+        } catch (error) {
+            // No need to display the error message for the user
+            console.log(error);
+        }
     }, []);
 
     return (

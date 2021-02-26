@@ -34,7 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { arrayOf, oneOfType, bool, number, shape, string } from 'prop-types';
+import { arrayOf, bool, number, oneOfType, shape, string } from 'prop-types';
 
 export default shape({
     version: string.isRequired,

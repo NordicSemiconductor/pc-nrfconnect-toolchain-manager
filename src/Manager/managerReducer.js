@@ -35,14 +35,15 @@
  */
 
 import semver from 'semver';
-import environmentReducer, {
-    REMOVE_ENVIRONMENT,
-    canBeDownloaded,
-} from './Environment/environmentReducer';
+
 import {
     persistedShowMaster,
     setPersistedShowMaster,
 } from '../persistentStore';
+import environmentReducer, {
+    canBeDownloaded,
+    REMOVE_ENVIRONMENT,
+} from './Environment/environmentReducer';
 
 const byVersion = (a, b) => {
     try {
