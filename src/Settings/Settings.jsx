@@ -55,7 +55,7 @@ import {
     toolchainRootUrl,
 } from '../ToolchainSource/toolchainSourceReducer';
 
-export default props => {
+export default () => {
     const dispatch = useDispatch();
     const installDir = useSelector(currentInstallDir);
     const disabled = process.platform === 'darwin';
@@ -63,7 +63,7 @@ export default props => {
     const toolchainUrl = useSelector(toolchainRootUrl);
 
     return (
-        <div {...props}>
+        <div>
             <NrfCard>
                 <Row className="settings-info">
                     <Col className="ml-3">
