@@ -63,8 +63,8 @@ export default () => {
             deviceSelect={null}
             sidePanel={null}
             panes={[
-                ['SDK Environments', Manager],
-                ['Settings', Settings],
+                { name: 'SDK Environments', Main: Manager },
+                { name: 'Settings', Main: Settings },
             ]}
             showLogByDefault={false}
         />
