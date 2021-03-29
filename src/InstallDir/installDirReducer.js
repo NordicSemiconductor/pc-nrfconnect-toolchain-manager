@@ -65,14 +65,14 @@ export const hideInstallDirDialog = () => ({
     type: HIDE_INSTALL_DIR_DIALOG,
 });
 
-const initialState = {
+const initialState = () => ({
     currentDir: persistedInstallDir(),
     isDialogVisible: false,
     dialogFlavour: null,
     versionToInstall: null,
-};
+});
 
-export default (state = initialState, action) => {
+export default (state = initialState(), action) => {
     switch (action.type) {
         case SET_INSTALL_DIR:
             setPersistedInstallDir(action.dir);

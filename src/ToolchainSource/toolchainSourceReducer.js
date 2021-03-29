@@ -54,12 +54,12 @@ export const hideSetToolchainSourceDialog = () => ({
     isDialogVisible: false,
 });
 
-const initialState = {
+const initialState = () => ({
     toolchainRootUrl: toolchainIndexUrl(),
     isDialogVisible: false,
-};
+});
 
-export default (state = initialState, { type, ...action }) => {
+export default (state = initialState(), { type, ...action }) => {
     switch (type) {
         case SET_TOOLCHAIN_SOURCE:
             setToolchainIndexUrl(action.toolchainRootUrl);
