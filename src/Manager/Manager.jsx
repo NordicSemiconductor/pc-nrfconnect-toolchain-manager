@@ -96,7 +96,7 @@ const Environments = () => {
     );
 };
 
-export default props => {
+export default () => {
     const dispatch = useDispatch();
     const showingFirstSteps = useSelector(isShowingFirstSteps);
 
@@ -123,7 +123,6 @@ export default props => {
                     (evt.dataTransfer.files[0] || {}).path;
                 dispatch(showInstallPackageDialog(pkg));
             }}
-            {...props}
         >
             <PlatformInstructions />
             {(process.platform !== 'linux' || enableLinux) && (

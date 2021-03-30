@@ -34,14 +34,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import Store from 'electron-store';
 import os from 'os';
 import path from 'path';
+import { getPersistentStore as store } from 'pc-nrfconnect-shared';
 
-const store = new Store({ name: 'pc-nrfconnect-toolchain-manager' });
-
-export const isFirstInstall = () => store.get('isFirstInstall', true);
-export const setHasInstalledAnNcs = () => store.set('isFirstInstall', false);
+export const isFirstInstall = () => store().get('isFirstInstall', true);
+export const setHasInstalledAnNcs = () => store().set('isFirstInstall', false);
 
 const defaultInstallDir = {
     win32: path.resolve(os.homedir(), 'ncs'),
@@ -52,8 +50,8 @@ const defaultInstallDir = {
 export const persistedInstallDir = () =>
     process.platform === 'darwin'
         ? defaultInstallDir
-        : store.get('installDir', defaultInstallDir);
-export const setPersistedInstallDir = dir => store.set('installDir', dir);
+        : store().get('installDir', defaultInstallDir);
+export const setPersistedInstallDir = dir => store().set('installDir', dir);
 
 const indexJson = {
     win32: 'index.json',
@@ -62,7 +60,7 @@ const indexJson = {
 }[process.platform];
 
 export const toolchainIndexUrl = () => {
-    const value = store.get(
+    const value = store().get(
         'toolchainIndexUrl',
         'https://developer.nordicsemi.com/.pc-tools/toolchain'
     );
@@ -71,8 +69,8 @@ export const toolchainIndexUrl = () => {
 export const toolchainUrl = name =>
     `${path.dirname(toolchainIndexUrl())}/${name}`;
 export const setToolchainIndexUrl = value =>
-    store.set('toolchainIndexUrl', value);
+    store().set('toolchainIndexUrl', value);
 
-export const persistedShowMaster = () => store.get('showMaster', false);
+export const persistedShowMaster = () => store().get('showMaster', false);
 export const setPersistedShowMaster = visible =>
-    store.set('showMaster', visible);
+    store().set('showMaster', visible);

@@ -36,37 +36,25 @@
 
 /* eslint-disable react/prop-types */
 
-import React, { useEffect } from 'react';
-import { App, usageData } from 'pc-nrfconnect-shared';
+import React from 'react';
+import { App } from 'pc-nrfconnect-shared';
 
-import packageJson from '../package.json';
 import Manager from './Manager/Manager';
 import appReducer from './reducers';
 import Settings from './Settings/Settings';
 
 import './style.scss';
 
-export default () => {
-    useEffect(() => {
-        // Usage data functionality should not block rendering
-        try {
-            usageData.init(packageJson);
-        } catch (error) {
-            // No need to display the error message for the user
-            console.log(error);
-        }
-    }, []);
-
-    return (
-        <App
-            appReducer={appReducer}
-            deviceSelect={null}
-            sidePanel={null}
-            panes={[
-                ['SDK Environments', Manager],
-                ['Settings', Settings],
-            ]}
-            showLogByDefault={false}
-        />
-    );
-};
+export default () => (
+    <App
+        reportUsageData
+        appReducer={appReducer}
+        deviceSelect={null}
+        sidePanel={null}
+        panes={[
+            { name: 'SDK Environments', Main: Manager },
+            { name: 'Settings', Main: Settings },
+        ]}
+        showLogByDefault={false}
+    />
+);

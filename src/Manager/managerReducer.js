@@ -224,7 +224,7 @@ const maybeCallEnvironmentReducer = (state, action) => {
     };
 };
 
-const initialState = {
+const initialState = () => ({
     environments: {},
     isRemoveDirDialogVisible: false,
     isInstallPackageDialogVisible: false,
@@ -233,9 +233,9 @@ const initialState = {
     versionToRemove: null,
     selectedVersion: null,
     dndPackage: null,
-};
+});
 
-export default (state = initialState, action) => {
+export default (state = initialState(), action) => {
     const stateAfterEnvironmentReducer = maybeCallEnvironmentReducer(
         state,
         action
