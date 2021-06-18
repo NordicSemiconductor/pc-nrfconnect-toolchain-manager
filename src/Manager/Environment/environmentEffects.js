@@ -81,94 +81,100 @@ const UNPACK = 50;
 const calculateTimeConsumed = timeStart =>
     Math.round((new Date() - timeStart) / 1000 / 60);
 
-const reportProgress = (version, currentValue, maxValue, half) => (
-    dispatch,
-    getState
-) => {
-    const prevProgress = progress(getEnvironment(getState(), version));
-    const newProgress = Math.min(
-        100,
-        Math.round((currentValue / maxValue) * 50) + half
-    );
+const reportProgress =
+    (version, currentValue, maxValue, half) => (dispatch, getState) => {
+        const prevProgress = progress(getEnvironment(getState(), version));
+        const newProgress = Math.min(
+            100,
+            Math.round((currentValue / maxValue) * 50) + half
+        );
 
-    if (newProgress !== prevProgress) {
-        const stage = half === DOWNLOAD ? 'Downloading' : 'Installing';
-        dispatch(setProgress(version, stage, newProgress));
-    }
-};
+        if (newProgress !== prevProgress) {
+            const stage = half === DOWNLOAD ? 'Downloading' : 'Installing';
+            dispatch(setProgress(version, stage, newProgress));
+        }
+    };
 
-const download = (version, { name, sha512, uri }) => async dispatch =>
-    new Promise((resolve, reject) => {
-        logger.info(`Downloading toolchain ${version}`);
-        dispatch(setProgress(version, 'Downloading', 0));
-        const hash = createHash('sha512');
+const download =
+    (version, { name, sha512, uri }) =>
+    async dispatch =>
+        new Promise((resolve, reject) => {
+            logger.info(`Downloading toolchain ${version}`);
+            dispatch(setProgress(version, 'Downloading', 0));
+            const hash = createHash('sha512');
 
-        const url = uri || toolchainUrl(name);
-        const filename = name || path.basename(url);
-        usageData.sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, url);
+            const url = uri || toolchainUrl(name);
+            const filename = name || path.basename(url);
+            usageData.sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, url);
 
-        const downloadDir = path.resolve(installDir(), 'downloads');
-        const packageLocation = path.resolve(downloadDir, filename);
-        fse.mkdirpSync(downloadDir);
-        const writeStream = fs.createWriteStream(packageLocation);
+            const downloadDir = path.resolve(installDir(), 'downloads');
+            const packageLocation = path.resolve(downloadDir, filename);
+            fse.mkdirpSync(downloadDir);
+            const writeStream = fs.createWriteStream(packageLocation);
 
-        const downloadTimeStart = new Date();
-        remote.net
-            .request({ url })
-            .on('response', response => {
-                const totalLength = response.headers['content-length'];
-                let currentLength = 0;
-                response.on('data', data => {
-                    hash.update(data);
-                    writeStream.write(data);
+            const downloadTimeStart = new Date();
+            remote.net
+                .request({ url })
+                .on('response', response => {
+                    const totalLength = response.headers['content-length'];
+                    let currentLength = 0;
+                    response.on('data', data => {
+                        hash.update(data);
+                        writeStream.write(data);
 
-                    currentLength += data.length;
-                    dispatch(
-                        reportProgress(
-                            version,
-                            currentLength,
-                            totalLength,
-                            DOWNLOAD
+                        currentLength += data.length;
+                        dispatch(
+                            reportProgress(
+                                version,
+                                currentLength,
+                                totalLength,
+                                DOWNLOAD
+                            )
+                        );
+                    });
+                    response.on('end', () => {
+                        writeStream.end(() => {
+                            const hex = hash.digest('hex');
+                            if (sha512 && hex !== sha512) {
+                                return reject(
+                                    new Error(
+                                        `Checksum verification failed ${url}`
+                                    )
+                                );
+                            }
+                            usageData.sendUsageData(
+                                EventAction.DOWNLOAD_TOOLCHAIN_SUCCESS,
+                                url
+                            );
+                            usageData.sendUsageData(
+                                EventAction.DOWNLOAD_TOOLCHAIN_TIME,
+                                `${calculateTimeConsumed(
+                                    downloadTimeStart
+                                )} min; ${url}`
+                            );
+                            logger.info(
+                                `Finished downloading version ${version} of the toolchain after approximately ${calculateTimeConsumed(
+                                    downloadTimeStart
+                                )} minute(s)`
+                            );
+                            return resolve(packageLocation);
+                        });
+                    });
+                    response.on('error', error =>
+                        reject(
+                            new Error(
+                                `Error when reading ${url}: ${error.message}`
+                            )
                         )
                     );
-                });
-                response.on('end', () => {
-                    writeStream.end(() => {
-                        const hex = hash.digest('hex');
-                        if (sha512 && hex !== sha512) {
-                            return reject(
-                                new Error(`Checksum verification failed ${url}`)
-                            );
-                        }
-                        usageData.sendUsageData(
-                            EventAction.DOWNLOAD_TOOLCHAIN_SUCCESS,
-                            url
-                        );
-                        usageData.sendUsageData(
-                            EventAction.DOWNLOAD_TOOLCHAIN_TIME,
-                            `${calculateTimeConsumed(
-                                downloadTimeStart
-                            )} min; ${url}`
-                        );
-                        logger.info(
-                            `Finished downloading version ${version} of the toolchain after approximately ${calculateTimeConsumed(
-                                downloadTimeStart
-                            )} minute(s)`
-                        );
-                        return resolve(packageLocation);
-                    });
-                });
-                response.on('error', error =>
+                })
+                .on('error', error =>
                     reject(
-                        new Error(`Error when reading ${url}: ${error.message}`)
+                        new Error(`Unable to download ${url}: ${error.message}`)
                     )
-                );
-            })
-            .on('error', error =>
-                reject(new Error(`Unable to download ${url}: ${error.message}`))
-            )
-            .end();
-    });
+                )
+                .end();
+        });
 
 const unpack = (version, src, dest) => async dispatch => {
     logger.info(`Unpacking toolchain ${version}`);
@@ -247,146 +253,154 @@ const unpack = (version, src, dest) => async dispatch => {
     return undefined;
 };
 
-const installToolchain = (
-    version,
-    toolchain,
-    toolchainDir
-) => async dispatch => {
-    dispatch(startInstallToolchain(version));
+const installToolchain =
+    (version, toolchain, toolchainDir) => async dispatch => {
+        dispatch(startInstallToolchain(version));
 
-    try {
-        fse.mkdirpSync(toolchainDir);
-        const packageLocation = await dispatch(download(version, toolchain));
-        await dispatch(unpack(version, packageLocation, toolchainDir));
-        updateConfigFile(toolchainDir);
-    } catch (error) {
-        dispatch(showErrorDialog(`${error.message || error}`));
-        usageData.sendErrorReport(error.message || error);
-    }
+        try {
+            fse.mkdirpSync(toolchainDir);
+            const packageLocation = await dispatch(
+                download(version, toolchain)
+            );
+            await dispatch(unpack(version, packageLocation, toolchainDir));
+            updateConfigFile(toolchainDir);
+        } catch (error) {
+            dispatch(showErrorDialog(`${error.message || error}`));
+            usageData.sendErrorReport(error.message || error);
+        }
 
-    dispatch(finishInstallToolchain(version, toolchainDir));
-};
+        dispatch(finishInstallToolchain(version, toolchainDir));
+    };
 
 export const isWestPresent = toolchainDir =>
     fs.existsSync(path.resolve(toolchainDir, '../.west/config'));
 
-export const cloneNcs = (
-    version,
-    toolchainDir,
-    justUpdate
-) => async dispatch => {
-    dispatch(startCloningSdk(version));
-    logger.info(`Cloning nRF Connect SDK ${version}`);
-    usageData.sendUsageData(
-        EventAction.CLONE_NCS,
-        `${version}; ${process.platform}; ${process.arch}`
-    );
-    const cloneTimeStart = new Date();
-
-    try {
-        if (!justUpdate) {
-            await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
-        }
-
-        let ncsMgr;
-        const update = justUpdate ? '--just-update' : '';
-        switch (process.platform) {
-            case 'win32': {
-                ncsMgr = spawn(path.resolve(toolchainDir, 'bin', 'bash.exe'), [
-                    '-l',
-                    '-c',
-                    `unset ZEPHYR_BASE ; ncsmgr/ncsmgr init-ncs ${update}`,
-                ]);
-
-                break;
-            }
-            case 'darwin': {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { ZEPHYR_BASE, ...env } = process.env;
-                const gitversion = fs
-                    .readdirSync(`${toolchainDir}/Cellar/git`)
-                    .pop();
-                env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
-                env.GIT_EXEC_PATH = `${toolchainDir}/Cellar/git/${gitversion}/libexec/git-core`;
-                env.HOME = `${remote.process.env.HOME}`;
-
-                ncsMgr = spawn(
-                    `${toolchainDir}/ncsmgr/ncsmgr`,
-                    ['init-ncs', `${update}`],
-                    { env }
-                );
-                break;
-            }
-            case 'linux': {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { ZEPHYR_BASE, ...env } = process.env;
-                env.PATH = `${toolchainDir}/bin:${toolchainDir}/usr/bin:${remote.process.env.PATH}`;
-                env.PYTHONHOME = `${toolchainDir}/lib/python3.8`;
-                env.PYTHONPATH = `${toolchainDir}/usr/lib/python3.8:${toolchainDir}/lib/python3.8/site-packages:${toolchainDir}/usr/lib/python3/dist-packages:${toolchainDir}/usr/lib/python3.8/lib-dynload`;
-                env.GIT_EXEC_PATH = `${toolchainDir}/usr/lib/git-core`;
-                env.LD_LIBRARY_PATH = `/var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void:${toolchainDir}/lib/python3.8/site-packages/.libs_cffi_backend:${toolchainDir}/lib/python3.8/site-packages/Pillow.libs:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/segger_embedded_studio/bin:${toolchainDir}/usr/lib/x86_64-linux-gnu:${toolchainDir}/lib:${toolchainDir}/usr/lib:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/usr/lib/x86_64-linux-gnu`;
-
-                ncsMgr = remoteSpawn(
-                    `${toolchainDir}/ncsmgr/ncsmgr`,
-                    ['init-ncs', `${update}`],
-                    { env }
-                );
-                break;
-            }
-            default:
-        }
-
-        dispatch(setProgress(version, 'Initializing environment...'));
-        logger.info(`Initializing environment for ${version}`);
-        let err = '';
-        await new Promise((resolve, reject) => {
-            ncsMgr.stdout.on('data', data => {
-                const repo = (
-                    /=== updating (\w+)/.exec(data.toString()) || []
-                ).pop();
-                if (repo) {
-                    dispatch(
-                        setProgress(version, `Updating ${repo} repository...`)
-                    );
-                    logger.info(`Updating ${repo} repository for ${version}`);
-                }
-            });
-            ncsMgr.stderr.on('data', data => {
-                err += `${data}`;
-            });
-            ncsMgr.on('exit', code => (code ? reject(err) : resolve()));
-        });
-    } catch (error) {
-        const errorMsg = `Failed to clone the repositories: ${error}`;
-        dispatch(showErrorDialog(errorMsg));
-        usageData.sendErrorReport(errorMsg);
-    }
-
-    dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
-    usageData.sendUsageData(
-        EventAction.CLONE_NCS_SUCCESS,
-        `${version}; ${process.platform}; ${process.arch}`
-    );
-    usageData.sendUsageData(
-        EventAction.CLONE_NCS_TIME,
-        `${calculateTimeConsumed(cloneTimeStart)} min; ${version}`
-    );
-    logger.info(
-        `Finished cloning version ${version} of the nRF Connect SDK after approximately ${calculateTimeConsumed(
-            cloneTimeStart
-        )} minute(s)`
-    );
-};
-
-const showReduxConfirmDialog = ({ ...args }) => dispatch =>
-    new Promise((resolve, reject) => {
-        dispatch(
-            showReduxConfirmDialogAction({
-                callback: err => (err ? reject() : resolve()),
-                ...args,
-            })
+export const cloneNcs =
+    (version, toolchainDir, justUpdate) => async dispatch => {
+        dispatch(startCloningSdk(version));
+        logger.info(`Cloning nRF Connect SDK ${version}`);
+        usageData.sendUsageData(
+            EventAction.CLONE_NCS,
+            `${version}; ${process.platform}; ${process.arch}`
         );
-    });
+        const cloneTimeStart = new Date();
+
+        try {
+            if (!justUpdate) {
+                await fse.remove(
+                    path.resolve(path.dirname(toolchainDir), '.west')
+                );
+            }
+
+            let ncsMgr;
+            const update = justUpdate ? '--just-update' : '';
+            switch (process.platform) {
+                case 'win32': {
+                    ncsMgr = spawn(
+                        path.resolve(toolchainDir, 'bin', 'bash.exe'),
+                        [
+                            '-l',
+                            '-c',
+                            `unset ZEPHYR_BASE ; ncsmgr/ncsmgr init-ncs ${update}`,
+                        ]
+                    );
+
+                    break;
+                }
+                case 'darwin': {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { ZEPHYR_BASE, ...env } = process.env;
+                    const gitversion = fs
+                        .readdirSync(`${toolchainDir}/Cellar/git`)
+                        .pop();
+                    env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
+                    env.GIT_EXEC_PATH = `${toolchainDir}/Cellar/git/${gitversion}/libexec/git-core`;
+                    env.HOME = `${remote.process.env.HOME}`;
+
+                    ncsMgr = spawn(
+                        `${toolchainDir}/ncsmgr/ncsmgr`,
+                        ['init-ncs', `${update}`],
+                        { env }
+                    );
+                    break;
+                }
+                case 'linux': {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { ZEPHYR_BASE, ...env } = process.env;
+                    env.PATH = `${toolchainDir}/bin:${toolchainDir}/usr/bin:${remote.process.env.PATH}`;
+                    env.PYTHONHOME = `${toolchainDir}/lib/python3.8`;
+                    env.PYTHONPATH = `${toolchainDir}/usr/lib/python3.8:${toolchainDir}/lib/python3.8/site-packages:${toolchainDir}/usr/lib/python3/dist-packages:${toolchainDir}/usr/lib/python3.8/lib-dynload`;
+                    env.GIT_EXEC_PATH = `${toolchainDir}/usr/lib/git-core`;
+                    env.LD_LIBRARY_PATH = `/var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void:${toolchainDir}/lib/python3.8/site-packages/.libs_cffi_backend:${toolchainDir}/lib/python3.8/site-packages/Pillow.libs:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/segger_embedded_studio/bin:${toolchainDir}/usr/lib/x86_64-linux-gnu:${toolchainDir}/lib:${toolchainDir}/usr/lib:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/usr/lib/x86_64-linux-gnu`;
+
+                    ncsMgr = remoteSpawn(
+                        `${toolchainDir}/ncsmgr/ncsmgr`,
+                        ['init-ncs', `${update}`],
+                        { env }
+                    );
+                    break;
+                }
+                default:
+            }
+
+            dispatch(setProgress(version, 'Initializing environment...'));
+            logger.info(`Initializing environment for ${version}`);
+            let err = '';
+            await new Promise((resolve, reject) => {
+                ncsMgr.stdout.on('data', data => {
+                    const repo = (
+                        /=== updating (\w+)/.exec(data.toString()) || []
+                    ).pop();
+                    if (repo) {
+                        dispatch(
+                            setProgress(
+                                version,
+                                `Updating ${repo} repository...`
+                            )
+                        );
+                        logger.info(
+                            `Updating ${repo} repository for ${version}`
+                        );
+                    }
+                });
+                ncsMgr.stderr.on('data', data => {
+                    err += `${data}`;
+                });
+                ncsMgr.on('exit', code => (code ? reject(err) : resolve()));
+            });
+        } catch (error) {
+            const errorMsg = `Failed to clone the repositories: ${error}`;
+            dispatch(showErrorDialog(errorMsg));
+            usageData.sendErrorReport(errorMsg);
+        }
+
+        dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
+        usageData.sendUsageData(
+            EventAction.CLONE_NCS_SUCCESS,
+            `${version}; ${process.platform}; ${process.arch}`
+        );
+        usageData.sendUsageData(
+            EventAction.CLONE_NCS_TIME,
+            `${calculateTimeConsumed(cloneTimeStart)} min; ${version}`
+        );
+        logger.info(
+            `Finished cloning version ${version} of the nRF Connect SDK after approximately ${calculateTimeConsumed(
+                cloneTimeStart
+            )} minute(s)`
+        );
+    };
+
+const showReduxConfirmDialog =
+    ({ ...args }) =>
+    dispatch =>
+        new Promise((resolve, reject) => {
+            dispatch(
+                showReduxConfirmDialogAction({
+                    callback: err => (err ? reject() : resolve()),
+                    ...args,
+                })
+            );
+        });
 
 const confirmRemoveDir = dir => dispatch =>
     dispatch(
@@ -434,37 +448,36 @@ const ensureCleanTargetDir = toolchainDir => async dispatch => {
     }
 };
 
-export const install = (
-    { version, toolchains },
-    justUpdate
-) => async dispatch => {
-    logger.info(`Start to install toolchain ${version}`);
-    const toolchain = getLatestToolchain(toolchains);
-    const toolchainDir = path.resolve(installDir(), version, 'toolchain');
-    logger.info(`Installing ${toolchain.name} at ${toolchainDir}`);
-    logger.debug(`Install with toolchain version ${toolchain.version}`);
-    logger.debug(`Install with sha512 ${toolchain.sha512}`);
-    usageData.sendUsageData(
-        EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
-        `${version}; ${toolchain.name}`
-    );
+export const install =
+    ({ version, toolchains }, justUpdate) =>
+    async dispatch => {
+        logger.info(`Start to install toolchain ${version}`);
+        const toolchain = getLatestToolchain(toolchains);
+        const toolchainDir = path.resolve(installDir(), version, 'toolchain');
+        logger.info(`Installing ${toolchain.name} at ${toolchainDir}`);
+        logger.debug(`Install with toolchain version ${toolchain.version}`);
+        logger.debug(`Install with sha512 ${toolchain.sha512}`);
+        usageData.sendUsageData(
+            EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
+            `${version}; ${toolchain.name}`
+        );
 
-    dispatch(selectEnvironment(version));
-    if (isFirstInstall()) {
-        logger.info(`Show first install dialog for toolchain ${version}`);
-        dispatch(showFirstInstallDialog());
-    }
-    setHasInstalledAnNcs();
+        dispatch(selectEnvironment(version));
+        if (isFirstInstall()) {
+            logger.info(`Show first install dialog for toolchain ${version}`);
+            dispatch(showFirstInstallDialog());
+        }
+        setHasInstalledAnNcs();
 
-    try {
-        await dispatch(ensureCleanTargetDir(toolchainDir));
-        await dispatch(installToolchain(version, toolchain, toolchainDir));
-        await dispatch(cloneNcs(version, toolchainDir, justUpdate));
-    } catch (error) {
-        dispatch(showErrorDialog(`${error.message || error}`));
-        usageData.sendErrorReport(error.message || error);
-    }
-};
+        try {
+            await dispatch(ensureCleanTargetDir(toolchainDir));
+            await dispatch(installToolchain(version, toolchain, toolchainDir));
+            await dispatch(cloneNcs(version, toolchainDir, justUpdate));
+        } catch (error) {
+            dispatch(showErrorDialog(`${error.message || error}`));
+            usageData.sendErrorReport(error.message || error);
+        }
+    };
 
 export const removeDir = srcDir => async dispatch => {
     let renameOfDirSuccessful = false;
@@ -485,19 +498,21 @@ export const removeDir = srcDir => async dispatch => {
     return renameOfDirSuccessful;
 };
 
-export const remove = ({ toolchainDir, version }) => async dispatch => {
-    logger.info(`Removing ${version} at ${toolchainDir}`);
-    usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
+export const remove =
+    ({ toolchainDir, version }) =>
+    async dispatch => {
+        logger.info(`Removing ${version} at ${toolchainDir}`);
+        usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
 
-    dispatch(startRemoving(version));
+        dispatch(startRemoving(version));
 
-    if (await dispatch(removeDir(path.dirname(toolchainDir)))) {
-        logger.info(`Finished removing ${version} at ${toolchainDir}`);
-        dispatch(removeEnvironment(version));
-    }
+        if (await dispatch(removeDir(path.dirname(toolchainDir)))) {
+            logger.info(`Finished removing ${version} at ${toolchainDir}`);
+            dispatch(removeEnvironment(version));
+        }
 
-    dispatch(finishRemoving(version));
-};
+        dispatch(finishRemoving(version));
+    };
 
 export const installPackage = urlOrFilePath => async dispatch => {
     usageData.sendUsageData(
