@@ -52,7 +52,7 @@ import {
     toolchainUrl,
 } from '../../persistentStore';
 import { showReduxConfirmDialogAction } from '../../ReduxConfirmDialog/reduxConfirmDialogReducer';
-import { EventAction } from '../../usageDataActions';
+import EventAction from '../../usageDataActions';
 import {
     addLocallyExistingEnvironment,
     getEnvironment,
