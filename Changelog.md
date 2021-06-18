@@ -1,3 +1,7 @@
+## Version 0.9.2
+### Updated
+- Establish compatibility with nRF Connect for Desktop 3.7
+
 ## Version 0.9.1
 - Fixed opening SEGGER Embedded Studio on macOS #70
 - Prevented using non-default base path on macOS #70
