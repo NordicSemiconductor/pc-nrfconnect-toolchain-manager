@@ -3,6 +3,7 @@
 - Establish compatibility with nRF Connect for Desktop 3.7
 ### Fixed
 - Installation would not start
+- Open IDE button was not working
 
 ## Version 0.9.1
 - Fixed opening SEGGER Embedded Studio on macOS #70

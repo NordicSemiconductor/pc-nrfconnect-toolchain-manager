@@ -42,7 +42,7 @@ import os from 'os';
 import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import { EventAction } from '../../usageDataActions';
+import EventAction from '../../usageDataActions';
 
 const { exec: remoteExec } = remote.require('child_process');
 
