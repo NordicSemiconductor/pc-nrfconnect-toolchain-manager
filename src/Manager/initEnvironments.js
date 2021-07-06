@@ -66,7 +66,7 @@ const detectLocallyExistingEnvironments = dispatch => {
             )
             .forEach(({ version, toolchainDir }) => {
                 logger.info(
-                    `Locally exsisting environment found at ${toolchainDir}`
+                    `Locally existing environment found at ${toolchainDir}`
                 );
                 logger.info(`With version: ${version}`);
                 logger.info(`With west found: ${isWestPresent ? 'yes' : 'no'}`);
