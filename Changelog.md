@@ -1,3 +1,7 @@
+## Version 0.9.3
+### Updated
+- Removed experimental banner for Mac
+
 ## Version 0.9.2
 ### Updated
 - Establish compatibility with nRF Connect for Desktop 3.7
