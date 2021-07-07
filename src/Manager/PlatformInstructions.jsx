@@ -40,7 +40,6 @@ import { execSync } from 'child_process';
 import { string } from 'prop-types';
 
 const isLinux = process.platform === 'linux';
-const isWindows = process.platform === 'win32';
 
 export const enableLinux = false;
 
@@ -59,7 +58,7 @@ OnlineDocs.propTypes = {
 };
 
 export default () => {
-    if (isWindows) return null;
+    if (!isLinux) return null;
 
     const [isSnapAvailable, setSnapAvailable] = useState(true);
 
@@ -75,15 +74,10 @@ export default () => {
     return (
         <>
             <Alert variant="warning">
-                {isLinux && (
-                    <b>Linux is currently not supported by this app.</b>
-                )}
-                {isLinux || <b>Support for macOS is experimental.</b>} For
-                instructions on how to manually set up an environment on your
-                your machine, please read the online{' '}
+                <b>Linux is currently not supported by this app.</b>
                 <OnlineDocs label="documentation" />.
             </Alert>
-            {isLinux && !isSnapAvailable && (
+            {!isSnapAvailable && (
                 <Alert variant="danger">
                     Linux support depends on <b>snap</b> which seems
                     unavailable, please install the package.
