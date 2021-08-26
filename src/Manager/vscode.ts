@@ -36,7 +36,6 @@
 
 import { spawnSync } from 'child_process';
 
-// Not sure where to get this from yet.
 const REQUIRED_EXTENSIONS = [
     'nordic-semiconductor.nrf-connect',
     'marus25.cortex-debug',
@@ -70,16 +69,16 @@ export const getVsCodeStatus = () => {
         : VsCodeStatus.EXTENSIONS_MISSING;
 };
 
-export const installExtensions = (fromVsix = false) => {
+export const installExtensions = () => {
     const existing = listInstalledExtensions();
     const missing = [...REQUIRED_EXTENSIONS, ...RECOMENDED_EXTENSIONS].filter(
         identifier => !existing?.includes(identifier)
     );
-    missing.forEach(extension => installExtension(extension, fromVsix));
+    missing.forEach(extension => installExtension(extension));
 };
 
-const installExtension = (identifier: string, fromVsix: boolean) => {
-    const pathOrIdentifier = fromVsix ? getPath(identifier) : identifier;
+const installExtension = (identifier: string) => {
+    const pathOrIdentifier = identifier;
 
     return spawnSync('code', ['--install-extension', pathOrIdentifier], {
         shell: true,
@@ -97,8 +96,4 @@ const listInstalledExtensions = () => {
     }
 
     return stdout.trim().split('\n');
-};
-
-const getPath = (identifier: string) => {
-    return identifier;
 };
