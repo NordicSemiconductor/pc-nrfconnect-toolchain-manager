@@ -45,6 +45,7 @@ import environmentPropType from './environmentPropType';
 import Install from './Install';
 import Name from './Name';
 import OpenIde from './OpenIde';
+import OpenVsCode from './OpenVsCode';
 import ProgressBar from './ProgressBar';
 import ProgressLabel from './ProgressLabel';
 import ShowFirstSteps from './ShowFirstSteps';
@@ -66,7 +67,7 @@ const Environment = ({ environment }) => (
                 <ShowFirstSteps environment={environment} />
                 <Install environment={environment} />
                 <OpenIde environment={environment} />
-
+                <OpenVsCode environment={environment} />
                 <EnvironmentMenu environment={environment} />
             </Col>
         </Row>
