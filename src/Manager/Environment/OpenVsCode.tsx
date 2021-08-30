@@ -36,8 +36,11 @@
 
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { AnyAction } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 
 import { showReduxConfirmDialogAction } from '../../ReduxConfirmDialog/reduxConfirmDialogReducer';
+import { Environment, RootState } from '../../state';
 import {
     getVsCodeStatus,
     installExtensions,
@@ -48,8 +51,10 @@ import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { isInProgress } from './environmentReducer';
 
-function cb(cancelled) {
-    return dispatch => {
+export type Dispatch = ThunkDispatch<RootState, null, AnyAction>;
+
+function cb(cancelled: boolean) {
+    return (dispatch: Dispatch) => {
         if (!cancelled) {
             console.log('Confirmed');
             dispatch(showVsCodeDialog());
@@ -57,8 +62,8 @@ function cb(cancelled) {
     };
 }
 
-function installVsCodeExtensions(cancelled) {
-    return dispatch => {
+function installVsCodeExtensions(cancelled: boolean) {
+    return (dispatch: Dispatch) => {
         if (cancelled) return;
 
         installExtensions();
@@ -76,12 +81,12 @@ function installVsCodeExtensions(cancelled) {
 }
 
 function showInstallVsCodeExtensions() {
-    return dispatch => {
+    return (dispatch: Dispatch) => {
         dispatch(
             showReduxConfirmDialogAction({
                 title: 'Opening VS Code',
                 content: `For developing nRF applications with VS Code we recommend using the following extensions:\n\n${listInstalledExtensions()
-                    .toString()
+                    ?.toString()
                     .replace(/,/g, '\n\n')}`,
                 callback: ret => dispatch(installVsCodeExtensions(ret)),
                 confirmLabel: 'Install all missing extensions',
@@ -93,14 +98,14 @@ function showInstallVsCodeExtensions() {
     };
 }
 
-function openVsCode(cancelled) {
+function openVsCode(cancelled?: boolean) {
     if (cancelled) return;
 
     console.log('Open VS Code');
 }
 
 function showInstallVsCode() {
-    return dispatch => {
+    return (dispatch: Dispatch) => {
         let installLink;
         if (process.platform === 'win32') {
             installLink = 'https://code.visualstudio.com/docs/setup/windows';
@@ -126,7 +131,7 @@ function showInstallVsCode() {
 }
 
 function showVsCodeDialog() {
-    return dispatch => {
+    return (dispatch: Dispatch) => {
         const ret = getVsCodeStatus();
         if (ret === VsCodeStatus.NOT_INSTALLED) dispatch(showInstallVsCode());
         else if (ret === VsCodeStatus.EXTENSIONS_MISSING)
@@ -135,16 +140,16 @@ function showVsCodeDialog() {
     };
 }
 
-const OpenVsCode = ({ environment }) => {
+const OpenVsCode = ({ environment }: { environment: Environment }) => {
     const dispatch = useDispatch();
     return (
         <Button
             icon="x-mdi-rocket"
-            onClick={() => dispatch(showVsCodeDialog())}
             label="Open VS Code"
             title="Open Visual Studio Code"
             disabled={isInProgress(environment)}
             variant="primary"
+            onClick={() => dispatch(showVsCodeDialog())}
         />
     );
 };
