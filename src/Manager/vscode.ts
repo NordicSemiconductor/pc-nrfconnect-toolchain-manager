@@ -85,7 +85,7 @@ const installExtension = (identifier: string) => {
     }).status;
 };
 
-const listInstalledExtensions = () => {
+export const listInstalledExtensions = () => {
     const { stdout, status, error } = spawnSync('code', ['--list-extensions'], {
         shell: true,
         encoding: 'utf-8',

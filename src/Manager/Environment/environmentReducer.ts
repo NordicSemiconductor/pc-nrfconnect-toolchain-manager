@@ -34,46 +34,57 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { AnyAction } from 'redux';
+
+import { Environment } from '../../state';
+
 const START_INSTALL_TOOLCHAIN = 'START_INSTALL_TOOLCHAIN';
-export const startInstallToolchain = version => ({
+export const startInstallToolchain = (version: string) => ({
     type: START_INSTALL_TOOLCHAIN,
     version,
 });
 
 const FINISH_INSTALL_TOOLCHAIN = 'FINISH_INSTALL_TOOLCHAIN';
-export const finishInstallToolchain = (version, toolchainDir) => ({
+export const finishInstallToolchain = (
+    version: string,
+    toolchainDir: string
+) => ({
     type: FINISH_INSTALL_TOOLCHAIN,
     version,
     toolchainDir,
 });
 
 const START_CLONING_SDK = 'START_CLONING_SDK';
-export const startCloningSdk = version => ({
+export const startCloningSdk = (version: string) => ({
     type: START_CLONING_SDK,
     version,
 });
 
 const FINISH_CLONING_SDK = 'FINISH_CLONING_SDK';
-export const finishCloningSdk = (version, isWestPresent) => ({
+export const finishCloningSdk = (version: string, isWestPresent: boolean) => ({
     type: FINISH_CLONING_SDK,
     version,
     isWestPresent,
 });
 
 const START_REMOVING = 'START_REMOVING';
-export const startRemoving = version => ({
+export const startRemoving = (version: string) => ({
     type: START_REMOVING,
     version,
 });
 
 const FINISH_REMOVING = 'FINISH_REMOVING';
-export const finishRemoving = version => ({
+export const finishRemoving = (version: string) => ({
     type: FINISH_REMOVING,
     version,
 });
 
 const SET_PROGRESS = 'SET_PROGRESS';
-export const setProgress = (version, stage, progress = 100) => ({
+export const setProgress = (
+    version: string,
+    stage: string,
+    progress = 100
+) => ({
     type: SET_PROGRESS,
     version,
     stage,
@@ -81,12 +92,12 @@ export const setProgress = (version, stage, progress = 100) => ({
 });
 
 export const REMOVE_ENVIRONMENT = 'REMOVE_ENVIRONMENT';
-export const removeEnvironment = version => ({
+export const removeEnvironment = (version: string) => ({
     type: REMOVE_ENVIRONMENT,
     version,
 });
 
-export default (state, { type, ...action }) => {
+export default (state: Environment, { type, ...action }: AnyAction) => {
     switch (type) {
         case START_INSTALL_TOOLCHAIN:
             return {
@@ -127,24 +138,27 @@ export default (state, { type, ...action }) => {
     }
 };
 
-export const isInstallingToolchain = env => env.isInstallingToolchain;
-export const isCloningSdk = env => env.isCloningSdk;
-export const isRemoving = env => env.isRemoving;
-export const isInProgress = env =>
+export const isInstallingToolchain = (env: Environment) =>
+    env.isInstallingToolchain;
+export const isCloningSdk = (env: Environment) => env.isCloningSdk;
+export const isRemoving = (env: Environment) => env.isRemoving;
+export const isInProgress = (env: Environment) =>
     env.isInstallingToolchain || env.isCloningSdk || env.isRemoving;
 
-export const isInstalled = env => env.isInstalled && !isInProgress(env);
-export const isOnlyAvailable = env => !isInstalled(env) && !isInProgress(env);
-export const canBeDownloaded = env => env.toolchains != null;
+export const isInstalled = (env: Environment) =>
+    env.isInstalled && !isInProgress(env);
+export const isOnlyAvailable = (env: Environment) =>
+    !isInstalled(env) && !isInProgress(env);
+export const canBeDownloaded = (env: Environment) => env.toolchains != null;
 
-export const version = env => env.version;
-export const toolchainDir = env => env.toolchainDir;
-export const canBeOpenedInSegger = env => env.isWestPresent;
+export const version = (env: Environment) => env.version;
+export const toolchainDir = (env: Environment) => env.toolchainDir;
+export const canBeOpenedInSegger = (env: Environment) => env.isWestPresent;
 
-export const progress = env => env.progress;
+export const progress = (env: Environment) => env.progress;
 
-export const progressLabel = env =>
-    isInProgress(env)
+export const progressLabel = (env: Environment) =>
+    isInProgress(env) && env.progress !== undefined
         ? `${env.stage || ''}${
               env.progress % 100 !== 0 ? ` ${env.progress}%` : ''
           }`

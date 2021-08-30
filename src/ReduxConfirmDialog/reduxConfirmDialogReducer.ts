@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,23 +34,48 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import BootstrapButton from 'react-bootstrap/Button';
-import { string } from 'prop-types';
+import { Reducer } from 'react';
 
-import './style.scss';
+import { ConfirmDialogAction, RootState } from '../state';
 
-const Button = ({ icon, label, ...props }) => (
-    <BootstrapButton
-        className={`mdi ${icon} toolchain-item-button ml-2`}
-        {...props}
-    >
-        {label}
-    </BootstrapButton>
-);
-Button.propTypes = {
-    icon: string.isRequired,
-    label: string.isRequired,
+type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
+
+const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
+export const showReduxConfirmDialogAction = ({
+    ...args
+}: ConfirmDialogAction) => ({
+    type: SHOW_REDUX_CONFIRM_DIALOG,
+    ...args,
+});
+const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
+export const hideReduxConfirmDialogAction = () => ({
+    type: HIDE_REDUX_CONFIRM_DIALOG,
+});
+
+const initialState = {
+    callback: null,
+    title: null,
+    content: null,
+    confirmLabel: null,
 };
 
-export default Button;
+type Model = typeof initialState;
+
+export const reduxConfirmDialogReducer: Reducer<
+    typeof initialState,
+    { type: ACTIONS } & Model
+> = (state = initialState, { type, ...action }) => {
+    switch (type) {
+        case SHOW_REDUX_CONFIRM_DIALOG:
+            return { ...state, ...action };
+        case HIDE_REDUX_CONFIRM_DIALOG:
+            return initialState;
+        default:
+            return state;
+    }
+};
+
+export const reduxConfirmDialogSelector = ({ app }: RootState) =>
+    app.reduxConfirmDialog;
+
+export default reduxConfirmDialogReducer;
