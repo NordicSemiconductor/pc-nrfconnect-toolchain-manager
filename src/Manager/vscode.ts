@@ -36,11 +36,11 @@
 
 import { spawnSync } from 'child_process';
 
-const REQUIRED_EXTENSIONS = [
+export const REQUIRED_EXTENSIONS = [
     'nordic-semiconductor.nrf-connect',
     'marus25.cortex-debug',
 ];
-const RECOMENDED_EXTENSIONS = [
+export const RECOMENDED_EXTENSIONS = [
     'nordic-semiconductor.nrf-terminal',
     'luveti.kconfig',
     'plorefice.devicetree',
