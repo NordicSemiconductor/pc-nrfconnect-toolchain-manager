@@ -16,7 +16,7 @@ export type ToolchainSource = {
 
 export type Environment = {
     version: string;
-    toolchainDir?: string;
+    toolchainDir: string;
     isWestPresent?: boolean;
     isInstalled?: boolean;
     toolchains: Toolchain[];

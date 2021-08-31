@@ -35,44 +35,19 @@
  */
 
 import React from 'react';
-import BootstrapProgressBar from 'react-bootstrap/ProgressBar';
+import Row from 'react-bootstrap/Row';
 
+import { Environment } from '../../state';
 import environmentPropType from './environmentPropType';
-import {
-    isCloningSdk,
-    isInProgress,
-    isInstalled,
-    isInstallingToolchain,
-    isRemoving,
-    progress,
-} from './environmentReducer';
+import { progressLabel } from './environmentReducer';
 
-import './style.scss';
-
-const className = env => {
-    switch (true) {
-        case isRemoving(env):
-            return 'removing';
-        case isInstallingToolchain(env):
-            return 'installing';
-        case isCloningSdk(env):
-            return 'installing';
-        case isInstalled(env):
-            return 'installed';
-        default:
-            return 'available';
-    }
-};
-
-const ProgressBar = ({ environment }) => (
-    <BootstrapProgressBar
-        now={progress(environment)}
-        striped={isInProgress(environment)}
-        animated={isInProgress(environment)}
-        className={className(environment)}
-    />
+type Props = { environment: Environment };
+const ProgressLabel = ({ environment }: Props) => (
+    <Row noGutters className="text-muted small font-italic">
+        {progressLabel(environment)}
+    </Row>
 );
 
-ProgressBar.propTypes = { environment: environmentPropType.isRequired };
+ProgressLabel.propTypes = { environment: environmentPropType.isRequired };
 
-export default ProgressBar;
+export default ProgressLabel;

@@ -35,17 +35,30 @@
  */
 
 import React from 'react';
-import Row from 'react-bootstrap/Row';
 
+import { Environment } from '../../state';
+import Button from './Button';
 import environmentPropType from './environmentPropType';
-import { progressLabel } from './environmentReducer';
+import { canBeOpenedInSegger, isInProgress } from './environmentReducer';
+import { openSegger } from './segger';
 
-const ProgressLabel = ({ environment }) => (
-    <Row noGutters className="text-muted small font-italic">
-        {progressLabel(environment)}
-    </Row>
-);
+type Props = { environment: Environment };
 
-ProgressLabel.propTypes = { environment: environmentPropType.isRequired };
+const OpenIde = ({ environment }: Props) => {
+    if (!canBeOpenedInSegger(environment)) return null;
 
-export default ProgressLabel;
+    return (
+        <Button
+            icon="x-mdi-rocket"
+            onClick={() => openSegger(environment.toolchainDir)}
+            label="Open IDE"
+            title="Open SEGGER Embedded Studio"
+            disabled={isInProgress(environment)}
+            variant="primary"
+        />
+    );
+};
+
+OpenIde.propTypes = { environment: environmentPropType.isRequired };
+
+export default OpenIde;

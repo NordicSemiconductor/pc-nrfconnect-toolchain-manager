@@ -35,29 +35,74 @@
  */
 
 import React from 'react';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { bool, func, node, string } from 'prop-types';
 
-import Button from './Button';
-import environmentPropType from './environmentPropType';
-import { canBeOpenedInSegger, isInProgress } from './environmentReducer';
-import { openSegger } from './segger';
+const ConfirmationDialog = ({
+    title,
+    children,
+    isVisible,
+    onCancel,
+    onConfirm,
+    onOptional,
+    confirmLabel,
+    cancelLabel,
+    optionalLabel,
+}: Props) => (
+    <Modal show={isVisible} onHide={onCancel || onConfirm} backdrop>
+        <Modal.Header closeButton={false}>
+            <Modal.Title>{title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{children}</Modal.Body>
+        <Modal.Footer>
+            {onOptional && (
+                <Button variant="outline-primary" onClick={onOptional}>
+                    {optionalLabel}
+                </Button>
+            )}
+            <Button variant="primary" onClick={onConfirm}>
+                {confirmLabel}
+            </Button>
+            {onCancel && (
+                <Button variant="outline-primary" onClick={onCancel}>
+                    {cancelLabel}
+                </Button>
+            )}
+        </Modal.Footer>
+    </Modal>
+);
 
-const OpenIde = ({ environment }) => {
-    if (!canBeOpenedInSegger(environment)) return null;
-
-    return (
-        <Button
-            icon="x-mdi-rocket"
-            onClick={() =>
-                openSegger(environment.toolchainDir, environment.version)
-            }
-            label="Open IDE"
-            title="Open SEGGER Embedded Studio"
-            disabled={isInProgress(environment)}
-            variant="primary"
-        />
-    );
+type Props = {
+    title: string;
+    children: string;
+    isVisible: string;
+    onCancel: () => void;
+    onConfirm: () => void;
+    onOptional: () => void;
+    confirmLabel: string;
+    cancelLabel: string;
+    optionalLabel: string;
 };
 
-OpenIde.propTypes = { environment: environmentPropType.isRequired };
+ConfirmationDialog.propTypes = {
+    title: string.isRequired,
+    children: node.isRequired,
+    isVisible: bool.isRequired,
+    onConfirm: func.isRequired,
+    onCancel: func,
+    onOptional: func,
+    confirmLabel: string,
+    cancelLabel: string,
+    optionalLabel: string,
+};
 
-export default OpenIde;
+ConfirmationDialog.defaultProps = {
+    cancelLabel: 'Cancel',
+    confirmLabel: 'OK',
+    onCancel: null,
+    onOptional: null,
+    optionalLabel: null,
+};
+
+export default ConfirmationDialog;
