@@ -6,6 +6,7 @@ export type Toolchain = {
     version: string;
     name: string;
     sha512: string;
+    uri?: string;
 };
 
 export type ToolchainSource = {
@@ -25,6 +26,9 @@ export type Environment = {
     progress?: number;
     stage?: 'Downloading' | 'Installing';
 };
+export type Environments = {
+    [key: string]: Environment;
+};
 
 export type ConfirmDialogState = {
     callback?: (isCancelled: boolean) => void;
@@ -34,6 +38,17 @@ export type ConfirmDialogState = {
     cancelLabel?: string;
     onOptional?: (isCancelled: boolean) => void;
     optionalLabel?: string;
+};
+
+export type Manager = {
+    environments: Environments;
+    dndPackage: null;
+    isRemoveDirDialogVisible: boolean;
+    isInstallPackageDialogVisible: boolean;
+    isMasterVisible: boolean;
+    isShowingFirstSteps: boolean;
+    versionToRemove: string;
+    selectedVersion?: string;
 };
 
 export type AppState = {
@@ -46,18 +61,7 @@ export type AppState = {
         dialogFlavour: null;
         versionToInstall: null;
     };
-    manager: {
-        environments: {
-            [key: string]: Environment | undefined;
-        };
-        dndPackage: null;
-        isRemoveDirDialogVisible: boolean;
-        isInstallPackageDialogVisible: boolean;
-        isMasterVisible: boolean;
-        isShowingFirstSteps: boolean;
-        versionToRemove: string;
-        selectedVersion: string;
-    };
+    manager: Manager;
     toolchainSource: ToolchainSource;
     reduxConfirmDialog: ConfirmDialogState;
 };

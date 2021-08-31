@@ -45,14 +45,15 @@ import {
     persistedInstallDir as installDir,
     toolchainUrl,
 } from '../../../persistentStore';
+import { Dispatch, Toolchain } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { setProgress } from '../environmentReducer';
 import { calculateTimeConsumed } from './helpers';
 import { DOWNLOAD, reportProgress } from './reportProgress';
 
 export const downloadToolchain =
-    (version, { name, sha512, uri }) =>
-    async dispatch =>
+    (version: string, { name, sha512, uri }: Toolchain) =>
+    async (dispatch: Dispatch) =>
         new Promise((resolve, reject) => {
             logger.info(`Downloading toolchain ${version}`);
             dispatch(setProgress(version, 'Downloading', 0));
@@ -71,7 +72,9 @@ export const downloadToolchain =
             remote.net
                 .request({ url })
                 .on('response', response => {
-                    const totalLength = response.headers['content-length'];
+                    const totalLength = response.headers[
+                        'content-length'
+                    ] as unknown as number;
                     let currentLength = 0;
                     response.on('data', data => {
                         hash.update(data);
@@ -115,7 +118,7 @@ export const downloadToolchain =
                             return resolve(packageLocation);
                         });
                     });
-                    response.on('error', error =>
+                    response.on('error', (error: Error) =>
                         reject(
                             new Error(
                                 `Error when reading ${url}: ${error.message}`

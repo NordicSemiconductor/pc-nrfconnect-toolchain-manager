@@ -149,7 +149,8 @@ export const isInstalled = (env: Environment) =>
     env.isInstalled && !isInProgress(env);
 export const isOnlyAvailable = (env: Environment) =>
     !isInstalled(env) && !isInProgress(env);
-export const canBeDownloaded = (env: Environment) => env.toolchains != null;
+export const canBeDownloaded = (env: Environment | undefined) =>
+    env?.toolchains != null;
 
 export const version = (env: Environment) => env.version;
 export const toolchainDir = (env: Environment) => env.toolchainDir;
