@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,34 +34,40 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import fse from 'fs-extra';
-import { usageData } from 'pc-nrfconnect-shared';
+import { AnyAction } from 'redux';
 
-import { showErrorDialog } from '../../../launcherActions';
-import {
-    finishInstallToolchain,
-    startInstallToolchain,
-} from '../environmentReducer';
-import { updateConfigFile } from '../segger';
-import { downloadToolchain } from './downloadToolchain';
-import { unpack } from './unpack';
+import { RootState } from '../state';
 
-// eslint-disable-next-line import/prefer-default-export
-export const installToolchain =
-    (version, toolchain, toolchainDir) => async dispatch => {
-        dispatch(startInstallToolchain(version));
+const SHOW_FIRST_INSTALL_DIALOG = 'SHOW_FIRST_INSTALL_DIALOG';
+export const showFirstInstallDialog = () => ({
+    type: SHOW_FIRST_INSTALL_DIALOG,
+});
 
-        try {
-            fse.mkdirpSync(toolchainDir);
-            const packageLocation = await dispatch(
-                downloadToolchain(version, toolchain)
-            );
-            await dispatch(unpack(version, packageLocation, toolchainDir));
-            updateConfigFile(toolchainDir);
-        } catch (error) {
-            dispatch(showErrorDialog(`${error.message || error}`));
-            usageData.sendErrorReport(error.message || error);
-        }
+const HIDE_FIRST_INSTALL_DIALOG = 'HIDE_FIRST_INSTALL_DIALOG';
+export const hideFirstInstallDialog = () => ({
+    type: HIDE_FIRST_INSTALL_DIALOG,
+});
 
-        dispatch(finishInstallToolchain(version, toolchainDir));
-    };
+const initialState = {
+    isDialogVisible: false,
+};
+
+export default (state = initialState, action: AnyAction) => {
+    switch (action.type) {
+        case SHOW_FIRST_INSTALL_DIALOG:
+            return {
+                ...state,
+                isDialogVisible: true,
+            };
+        case HIDE_FIRST_INSTALL_DIALOG:
+            return {
+                ...state,
+                isDialogVisible: false,
+            };
+        default:
+            return state;
+    }
+};
+
+export const isDialogVisible = (state: RootState) =>
+    state.app.firstInstall.isDialogVisible;

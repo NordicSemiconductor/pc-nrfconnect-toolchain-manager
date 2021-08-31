@@ -34,50 +34,35 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import path from 'path';
-import { logger, usageData } from 'pc-nrfconnect-shared';
+import fse from 'fs-extra';
+import { usageData } from 'pc-nrfconnect-shared';
 
-import { showFirstInstallDialog } from '../../../FirstInstall/firstInstallReducer';
 import { showErrorDialog } from '../../../launcherActions';
+import { Dispatch, Toolchain } from '../../../state';
 import {
-    isFirstInstall,
-    persistedInstallDir as installDir,
-    setHasInstalledAnNcs,
-} from '../../../persistentStore';
-import EventAction from '../../../usageDataActions';
-import { getLatestToolchain, selectEnvironment } from '../../managerReducer';
-import { cloneNcs } from './cloneNcs';
-import { ensureCleanTargetDir } from './ensureCleanTargetDir';
-import { installToolchain } from './installToolchain';
+    finishInstallToolchain,
+    startInstallToolchain,
+} from '../environmentReducer';
+import { updateConfigFile } from '../segger';
+import { downloadToolchain } from './downloadToolchain';
+import { unpack } from './unpack';
 
 // eslint-disable-next-line import/prefer-default-export
-export const install =
-    ({ version, toolchains }, justUpdate) =>
-    async dispatch => {
-        logger.info(`Start to install toolchain ${version}`);
-        const toolchain = getLatestToolchain(toolchains);
-        const toolchainDir = path.resolve(installDir(), version, 'toolchain');
-        logger.info(`Installing ${toolchain.name} at ${toolchainDir}`);
-        logger.debug(`Install with toolchain version ${toolchain.version}`);
-        logger.debug(`Install with sha512 ${toolchain.sha512}`);
-        usageData.sendUsageData(
-            EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
-            `${version}; ${toolchain.name}`
-        );
-
-        dispatch(selectEnvironment(version));
-        if (isFirstInstall()) {
-            logger.info(`Show first install dialog for toolchain ${version}`);
-            dispatch(showFirstInstallDialog());
-        }
-        setHasInstalledAnNcs();
+export const installToolchain =
+    (version: string, toolchain: Toolchain, toolchainDir: string) => async (dispatch: Dispatch) => {
+        dispatch(startInstallToolchain(version));
 
         try {
-            await dispatch(ensureCleanTargetDir(toolchainDir));
-            await dispatch(installToolchain(version, toolchain, toolchainDir));
-            await dispatch(cloneNcs(version, toolchainDir, justUpdate));
+            fse.mkdirpSync(toolchainDir);
+            const packageLocation = await dispatch(
+                downloadToolchain(version, toolchain)
+            );
+            await dispatch(unpack(version, packageLocation, toolchainDir));
+            updateConfigFile(toolchainDir);
         } catch (error) {
             dispatch(showErrorDialog(`${error.message || error}`));
             usageData.sendErrorReport(error.message || error);
         }
+
+        dispatch(finishInstallToolchain(version, toolchainDir));
     };

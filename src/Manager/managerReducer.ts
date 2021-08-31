@@ -53,7 +53,7 @@ import environmentReducer, {
     REMOVE_ENVIRONMENT,
 } from './Environment/environmentReducer';
 
-const byVersion = (a: Environment, b: Environment) => {
+const byVersion = (a: { version: string }, b: { version: string }) => {
     try {
         return -semver.compare(a.version, b.version);
     } catch (_) {
@@ -68,7 +68,8 @@ const byVersion = (a: Environment, b: Environment) => {
     }
 };
 
-const sortedByVersion = (list: Environment[]) => [...list].sort(byVersion);
+const sortedByVersion = <T extends { version: string }>(list: T[]): T[] =>
+    [...list].sort(byVersion);
 
 const SELECT_ENVIRONMENT = 'SELECT_ENVIRONMENT';
 export const selectEnvironment = (selectedVersion: string) => ({

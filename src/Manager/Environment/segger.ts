@@ -34,7 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { exec } from 'child_process';
+import { exec, ExecException } from 'child_process';
 import { remote } from 'electron';
 import fs from 'fs';
 import fse from 'fs-extra';
@@ -46,7 +46,7 @@ import EventAction from '../../usageDataActions';
 
 const { exec: remoteExec } = remote.require('child_process');
 
-const findOrCreateSettingsNode = xml => {
+const findOrCreateSettingsNode = (xml: Document) => {
     let settings = xml.querySelector('settings');
     if (settings == null) {
         settings = xml.createElement('settings');
@@ -56,7 +56,7 @@ const findOrCreateSettingsNode = xml => {
     return settings;
 };
 
-const createSettingNode = (xml, settingName) => {
+const createSettingNode = (xml: Document, settingName: string) => {
     const settingNode = xml.createElement('setting');
     settingNode.setAttribute('name', settingName);
 
@@ -66,9 +66,9 @@ const createSettingNode = (xml, settingName) => {
 };
 
 const setSetting = (
-    xml,
-    settingName,
-    settingValue,
+    xml: Document,
+    settingName: string,
+    settingValue: string,
     overwriteExistingSetting = true
 ) => {
     let node = xml.querySelector(`setting[name='${settingName}']`);
@@ -81,7 +81,7 @@ const setSetting = (
     node.textContent = settingValue;
 };
 
-export const userSettings = zephyrDir => {
+export const userSettings = (zephyrDir: string) => {
     const cmakeLists = `ARM/Zephyr/CMakeLists=${path.resolve(
         zephyrDir,
         'samples',
@@ -105,7 +105,7 @@ export const userSettings = zephyrDir => {
     return `${cmakeLists}${buildDir}${boardDir}`.replace(/\\/g, '/');
 };
 
-const createXmlDocument = xmlString => {
+const createXmlDocument = (xmlString: string) => {
     let xml = new DOMParser().parseFromString(xmlString, 'application/xml');
     if (xml.querySelector('parsererror') !== null) {
         xml = new Document();
@@ -113,7 +113,7 @@ const createXmlDocument = xmlString => {
     return xml;
 };
 
-export const updateSettingsXml = (xmlString, toolchainDir) => {
+export const updateSettingsXml = (xmlString: string, toolchainDir: string) => {
     const xml = createXmlDocument(xmlString);
 
     const zephyrDir = path.resolve(toolchainDir, '..', 'zephyr');
@@ -141,7 +141,7 @@ export const updateSettingsXml = (xmlString, toolchainDir) => {
     return new XMLSerializer().serializeToString(xml);
 };
 
-const updateConfigXml = (xmlString, toolchainDir) => {
+const updateConfigXml = (xmlString: string, toolchainDir: string) => {
     const xml = createXmlDocument(xmlString);
 
     const node = xml.querySelector(
@@ -163,15 +163,15 @@ const updateConfigXml = (xmlString, toolchainDir) => {
         ].forEach(([name, command]) => {
             node.querySelector(
                 `define[name=DEFAULT_${name}_PATH]`
-            ).setAttribute('value', path.resolve(binDir, `${command}${ext}`));
+            )?.setAttribute('value', path.resolve(binDir, `${command}${ext}`));
         });
     }
     return new XMLSerializer().serializeToString(xml);
 };
 
-const readFile = filePath => {
+const readFile = (filePath: string): string | null => {
     try {
-        return fs.readFileSync(filePath);
+        return fs.readFileSync(filePath, { encoding: 'utf8' });
     } catch (error) {
         // The file may be just not there yet, so we treat this case not as an error
         usageData.sendErrorReport(error.message || error);
@@ -179,7 +179,7 @@ const readFile = filePath => {
     }
 };
 
-const updateSettingsFile = (settingsFileName, toolchainDir) => {
+const updateSettingsFile = (settingsFileName: string, toolchainDir: string) => {
     const seggerSettingsDir = path.resolve(
         os.homedir(),
         'Nordic/SEGGER Embedded Studio/v3'
@@ -188,13 +188,13 @@ const updateSettingsFile = (settingsFileName, toolchainDir) => {
     const settingsPath = path.resolve(seggerSettingsDir, settingsFileName);
 
     const xml = readFile(settingsPath);
-    if (xml) {
+    if (xml !== null) {
         const updatedXml = updateSettingsXml(xml, toolchainDir);
         fs.writeFileSync(settingsPath, updatedXml);
     }
 };
 
-export const updateConfigFile = toolchainDir => {
+export const updateConfigFile = (toolchainDir: string) => {
     logger.info('Update config file');
     if (process.platform === 'linux') {
         // on Linux SES is executed from snap which will always set correct PATH
@@ -219,7 +219,7 @@ export const updateConfigFile = toolchainDir => {
     }
 };
 
-export const openSegger = async toolchainDir => {
+export const openSegger = async (toolchainDir: string) => {
     logger.info('Open Segger Embedded Studio');
     usageData.sendUsageData(EventAction.OPEN_SES, process.platform);
     await Promise.all([
@@ -228,9 +228,13 @@ export const openSegger = async toolchainDir => {
     ]);
 
     const cwd = path.dirname(toolchainDir);
-    const execCallback = (error, stdout, stderr) => {
+    const execCallback = (
+        error: ExecException | null,
+        stdout: string,
+        stderr: string
+    ) => {
         logger.info('Segger Embedded Studio has closed');
-        if (error) usageData.sendErrorReport(error);
+        if (error) usageData.sendErrorReport(error.message);
         if (stderr) usageData.sendErrorReport(stderr);
         if (stdout) logger.debug(stdout);
     };

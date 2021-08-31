@@ -19,7 +19,7 @@ export type Environment = {
     toolchainDir?: string;
     isWestPresent?: boolean;
     isInstalled?: boolean;
-    toolchains?: Toolchain[];
+    toolchains: Toolchain[];
     isInstallingToolchain?: boolean;
     isCloningSdk?: boolean;
     isRemoving?: boolean;
