@@ -168,12 +168,12 @@ const NewSteps = () => (
     </ul>
 );
 
-const FirstInstallInstructions = props => {
+const FirstInstallInstructions = () => {
     const dispatch = useDispatch();
     const version = useSelector(selectedVersion) || '<version>';
 
     return (
-        <div {...props}>
+        <div>
             <ButtonToolbar className="mb-2">
                 <Button
                     className="mdi mdi-arrow-left"

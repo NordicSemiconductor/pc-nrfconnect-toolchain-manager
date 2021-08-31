@@ -42,7 +42,7 @@ export type ConfirmDialogState = {
 
 export type Manager = {
     environments: Environments;
-    dndPackage: null;
+    dndPackage: string | null;
     isRemoveDirDialogVisible: boolean;
     isInstallPackageDialogVisible: boolean;
     isMasterVisible: boolean;

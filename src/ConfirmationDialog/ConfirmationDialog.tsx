@@ -34,22 +34,22 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
+import React, { FC } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { bool, func, node, string } from 'prop-types';
+import { bool, func, string } from 'prop-types';
 
-const ConfirmationDialog = ({
+const ConfirmationDialog: FC<Props> = ({
     title,
     children,
     isVisible,
-    onCancel,
+    onCancel = null,
     onConfirm,
-    onOptional,
-    confirmLabel,
-    cancelLabel,
-    optionalLabel,
-}: Props) => (
+    onOptional = null,
+    confirmLabel = 'OK',
+    cancelLabel = 'Cancel',
+    optionalLabel = null,
+}) => (
     <Modal show={isVisible} onHide={onCancel || onConfirm} backdrop>
         <Modal.Header closeButton={false}>
             <Modal.Title>{title}</Modal.Title>
@@ -75,19 +75,17 @@ const ConfirmationDialog = ({
 
 type Props = {
     title: string;
-    children: string;
-    isVisible: string;
-    onCancel: () => void;
+    isVisible: boolean;
+    onCancel?: () => void;
     onConfirm: () => void;
-    onOptional: () => void;
-    confirmLabel: string;
-    cancelLabel: string;
-    optionalLabel: string;
+    onOptional?: () => void;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    optionalLabel?: string;
 };
 
 ConfirmationDialog.propTypes = {
     title: string.isRequired,
-    children: node.isRequired,
     isVisible: bool.isRequired,
     onConfirm: func.isRequired,
     onCancel: func,
@@ -95,14 +93,6 @@ ConfirmationDialog.propTypes = {
     confirmLabel: string,
     cancelLabel: string,
     optionalLabel: string,
-};
-
-ConfirmationDialog.defaultProps = {
-    cancelLabel: 'Cancel',
-    confirmLabel: 'OK',
-    onCancel: null,
-    onOptional: null,
-    optionalLabel: null,
 };
 
 export default ConfirmationDialog;

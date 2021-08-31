@@ -41,6 +41,7 @@ import { remote } from 'electron';
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { install } from '../Manager/Environment/effects/installEnvironment';
 import initEnvironments from '../Manager/initEnvironments';
+import { Dispatch } from '../state';
 import {
     currentInstallDir,
     environmentToInstall,
@@ -50,7 +51,11 @@ import {
     setInstallDir,
 } from './installDirReducer';
 
-const selectInstallDir = async (dispatch, installDir, hideDialog) => {
+const selectInstallDir = async (
+    dispatch: Dispatch,
+    installDir: string,
+    hideDialog: boolean
+) => {
     const {
         filePaths: [filePath],
     } = await remote.dialog.showOpenDialog({

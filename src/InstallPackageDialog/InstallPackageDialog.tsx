@@ -52,7 +52,7 @@ export default () => {
     const isVisible = useSelector(isInstallPackageDialogVisible);
     const dnd = useSelector(dndPackage);
     const [pkg, setPkg] = useState('');
-    useEffect(() => setPkg(dnd), [dnd]);
+    useEffect(() => setPkg(dnd ?? ''), [dnd]);
 
     const onConfirm = () => {
         dispatch(installPackage(pkg));
@@ -89,7 +89,9 @@ export default () => {
                     type="text"
                     value={pkg}
                     onChange={({ target }) => setPkg(target.value)}
-                    onKeyPress={evt => evt.charCode === 13 && onConfirm()}
+                    onKeyPress={(evt: React.KeyboardEvent) =>
+                        evt.key === 'Enter' && onConfirm()
+                    }
                 />
             </Form.Group>
         </ConfirmationDialog>
