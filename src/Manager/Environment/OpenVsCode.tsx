@@ -36,13 +36,11 @@
 
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { AnyAction } from 'redux';
-import { ThunkDispatch } from 'redux-thunk';
 
 import checkInstalled from '../../../resources/check-circle-installed.svg';
 import checkNotInstalled from '../../../resources/check-circle-not-installed.svg';
 import { showReduxConfirmDialogAction } from '../../ReduxConfirmDialog/reduxConfirmDialogReducer';
-import { Environment, RootState } from '../../state';
+import { Dispatch, Environment } from '../../state';
 import {
     getVsCodeStatus,
     installExtensions,
@@ -55,8 +53,6 @@ import {
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { isInProgress } from './environmentReducer';
-
-export type Dispatch = ThunkDispatch<RootState, null, AnyAction>;
 
 function cancelCheckCallback(cancelled: boolean, func: () => void) {
     return (dispatch: Dispatch) => {

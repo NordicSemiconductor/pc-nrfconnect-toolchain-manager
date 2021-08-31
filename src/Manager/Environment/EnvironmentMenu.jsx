@@ -46,7 +46,8 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import EventAction from '../../usageDataActions';
 import { showConfirmRemoveDialog } from '../managerReducer';
-import { cloneNcs, install } from './environmentEffects';
+import { cloneNcs } from './effects/cloneNcs';
+import { install } from './effects/installEnvironment';
 import environmentPropType from './environmentPropType';
 import {
     isInstalled,

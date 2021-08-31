@@ -36,14 +36,14 @@
 
 import { Reducer } from 'react';
 
-import { ConfirmDialogAction, RootState } from '../state';
+import { ConfirmDialogState, RootState } from '../state';
 
 type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
 
 const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
 export const showReduxConfirmDialogAction = ({
     ...args
-}: ConfirmDialogAction) => ({
+}: ConfirmDialogState) => ({
     type: SHOW_REDUX_CONFIRM_DIALOG,
     ...args,
 });
@@ -52,18 +52,11 @@ export const hideReduxConfirmDialogAction = () => ({
     type: HIDE_REDUX_CONFIRM_DIALOG,
 });
 
-const initialState = {
-    callback: null,
-    title: null,
-    content: null,
-    confirmLabel: null,
-};
-
-type Model = typeof initialState;
+const initialState: ConfirmDialogState = {};
 
 export const reduxConfirmDialogReducer: Reducer<
-    typeof initialState,
-    { type: ACTIONS } & Model
+    ConfirmDialogState,
+    { type: ACTIONS } & ConfirmDialogState
 > = (state = initialState, { type, ...action }) => {
     switch (type) {
         case SHOW_REDUX_CONFIRM_DIALOG:

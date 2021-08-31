@@ -92,7 +92,7 @@ export const setProgress = (
 });
 
 export const REMOVE_ENVIRONMENT = 'REMOVE_ENVIRONMENT';
-export const removeEnvironment = (version: string) => ({
+export const removeEnvironmentReducer = (version: string) => ({
     type: REMOVE_ENVIRONMENT,
     version,
 });

@@ -46,7 +46,7 @@ import {
     toolchainIndexUrl,
 } from '../persistentStore';
 import EventAction from '../usageDataActions';
-import { isWestPresent } from './Environment/environmentEffects';
+import { isWestPresent } from './Environment/effects/helpers';
 import {
     addEnvironment,
     addLocallyExistingEnvironment,

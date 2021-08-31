@@ -39,7 +39,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { remote } from 'electron';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
-import { install } from '../Manager/Environment/environmentEffects';
+import { install } from '../Manager/Environment/effects/installEnvironment';
 import initEnvironments from '../Manager/initEnvironments';
 import {
     currentInstallDir,

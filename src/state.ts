@@ -1,4 +1,6 @@
 import { NrfConnectState } from 'pc-nrfconnect-shared';
+import { AnyAction } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 
 export type Toolchain = {
     version: string;
@@ -24,8 +26,8 @@ export type Environment = {
     stage?: 'Downloading' | 'Installing';
 };
 
-export type ConfirmDialogAction = {
-    callback: (isCancelled: boolean) => void;
+export type ConfirmDialogState = {
+    callback?: (isCancelled: boolean) => void;
     title?: string;
     content?: string;
     confirmLabel?: string;
@@ -57,7 +59,8 @@ export type AppState = {
         selectedVersion: string;
     };
     toolchainSource: ToolchainSource;
-    reduxConfirmDialog: ConfirmDialogAction;
+    reduxConfirmDialog: ConfirmDialogState;
 };
 
 export type RootState = NrfConnectState<AppState>;
+export type Dispatch = ThunkDispatch<RootState, null, AnyAction>;

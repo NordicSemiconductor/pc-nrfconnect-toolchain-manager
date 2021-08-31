@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,38 +34,28 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import fse from 'fs-extra';
+import path from 'path';
+import { usageData } from 'pc-nrfconnect-shared';
 
-import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
-import Button from './Button';
-import { install } from './effects/installEnvironment';
-import environmentPropType from './environmentPropType';
-import { isOnlyAvailable, version } from './environmentReducer';
+import { showErrorDialog } from '../../../launcherActions';
 
-const Install = ({ environment }) => {
-    const dispatch = useDispatch();
-    const { platform } = process;
-    const onClick = {
-        darwin: () => dispatch(install(environment, false)),
-        linux: () =>
-            dispatch(showConfirmInstallDirDialog(version(environment))),
-        win32: () =>
-            dispatch(showConfirmInstallDirDialog(version(environment))),
-    };
-
-    if (!isOnlyAvailable(environment)) return null;
-
-    return (
-        <Button
-            icon="x-mdi-briefcase-download-outline"
-            onClick={onClick[platform]}
-            label="Install"
-            variant="secondary"
-        />
-    );
+// eslint-disable-next-line import/prefer-default-export
+export const removeDir = srcDir => async dispatch => {
+    let renameOfDirSuccessful = false;
+    try {
+        const toBeDeletedDir = path.resolve(srcDir, '..', 'toBeDeleted');
+        await fse.move(srcDir, toBeDeletedDir, { overwrite: true });
+        renameOfDirSuccessful = true;
+        await fse.remove(toBeDeletedDir);
+    } catch (error) {
+        const [, , message] = `${error}`.split(/[:,] /);
+        const errorMsg =
+            `Failed to remove ${srcDir}, ${message}. ` +
+            'Please close any application or window that might keep this ' +
+            'environment locked, then try to remove it again.';
+        dispatch(showErrorDialog(errorMsg));
+        usageData.sendErrorReport(errorMsg);
+    }
+    return renameOfDirSuccessful;
 };
-
-Install.propTypes = { environment: environmentPropType.isRequired };
-
-export default Install;

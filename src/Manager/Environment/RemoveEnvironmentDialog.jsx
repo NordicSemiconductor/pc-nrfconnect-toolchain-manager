@@ -43,7 +43,7 @@ import {
     hideConfirmRemoveDialog,
     isRemoveDirDialogVisible,
 } from '../managerReducer';
-import { remove } from './environmentEffects';
+import { removeEnvironment } from './effects/removeEnvironment';
 import { version } from './environmentReducer';
 
 export default () => {
@@ -58,7 +58,7 @@ export default () => {
             onCancel={() => dispatch(hideConfirmRemoveDialog())}
             onConfirm={() => {
                 dispatch(hideConfirmRemoveDialog());
-                dispatch(remove(environment));
+                dispatch(removeEnvironment(environment));
             }}
         >
             Are you sure to remove <code>{version(environment)}</code>{' '}
