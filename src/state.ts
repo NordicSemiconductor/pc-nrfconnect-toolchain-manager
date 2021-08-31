@@ -59,7 +59,7 @@ export type AppState = {
         currentDir: string;
         isDialogVisible: boolean;
         dialogFlavour: null;
-        versionToInstall: null;
+        versionToInstall: string;
     };
     manager: Manager;
     toolchainSource: ToolchainSource;

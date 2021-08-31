@@ -34,23 +34,26 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { AnyAction } from 'redux';
+
 import { getEnvironment } from '../Manager/managerReducer';
 import {
     persistedInstallDir,
     setPersistedInstallDir,
 } from '../persistentStore';
+import { RootState } from '../state';
 
 const CONFIRM_DIR = Symbol('Confirm the install directory');
 const SET_DIR = Symbol('Set the install directory');
 
 const SET_INSTALL_DIR = 'SET_INSTALL_DIR';
-export const setInstallDir = dir => ({
+export const setInstallDir = (dir: string) => ({
     type: SET_INSTALL_DIR,
     dir,
 });
 
 const SHOW_CONFIRM_INSTALL_DIR_DIALOG = 'SHOW_CONFIRM_INSTALL_DIR_DIALOG';
-export const showConfirmInstallDirDialog = versionToInstall => ({
+export const showConfirmInstallDirDialog = (versionToInstall: string) => ({
     type: SHOW_CONFIRM_INSTALL_DIR_DIALOG,
     versionToInstall,
 });
@@ -72,7 +75,7 @@ const initialState = () => ({
     versionToInstall: null,
 });
 
-export default (state = initialState(), action) => {
+export default (state = initialState(), action: AnyAction) => {
     switch (action.type) {
         case SET_INSTALL_DIR:
             setPersistedInstallDir(action.dir);
@@ -103,9 +106,11 @@ export default (state = initialState(), action) => {
     }
 };
 
-export const currentInstallDir = state => state.app.installDir.currentDir;
-export const isDialogVisible = state => state.app.installDir.isDialogVisible;
-export const isConfirmDirFlavour = state =>
+export const currentInstallDir = (state: RootState) =>
+    state.app.installDir.currentDir;
+export const isDialogVisible = (state: RootState) =>
+    state.app.installDir.isDialogVisible;
+export const isConfirmDirFlavour = (state: RootState) =>
     state.app.installDir.dialogFlavour === CONFIRM_DIR;
-export const environmentToInstall = state =>
+export const environmentToInstall = (state: RootState) =>
     getEnvironment(state, state.app.installDir.versionToInstall);

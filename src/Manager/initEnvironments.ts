@@ -45,6 +45,7 @@ import {
     persistedInstallDir as installDir,
     toolchainIndexUrl,
 } from '../persistentStore';
+import { Dispatch, Environment } from '../state';
 import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
 import {
@@ -53,7 +54,7 @@ import {
     clearEnvironments,
 } from './managerReducer';
 
-const detectLocallyExistingEnvironments = dispatch => {
+const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
     try {
         fs.readdirSync(installDir(), { withFileTypes: true })
             .filter(dirEnt => dirEnt.isDirectory())
@@ -65,22 +66,23 @@ const detectLocallyExistingEnvironments = dispatch => {
                 fs.existsSync(path.resolve(toolchainDir, 'ncsmgr/manifest.env'))
             )
             .forEach(({ version, toolchainDir }) => {
+                const westPresent = isWestPresent(toolchainDir);
                 logger.info(
                     `Locally exsisting environment found at ${toolchainDir}`
                 );
                 logger.info(`With version: ${version}`);
-                logger.info(`With west found: ${isWestPresent ? 'yes' : 'no'}`);
+                logger.info(`With west found: ${westPresent ? 'yes' : 'no'}`);
                 usageData.sendUsageData(
                     EventAction.REPORT_LOCAL_ENVS,
                     `${version}; ${
-                        isWestPresent ? 'west found' : 'west not found'
+                        westPresent ? 'west found' : 'west not found'
                     }`
                 );
                 dispatch(
                     addLocallyExistingEnvironment(
                         version,
                         toolchainDir,
-                        isWestPresent(toolchainDir)
+                        westPresent
                     )
                 );
             });
@@ -91,7 +93,7 @@ const detectLocallyExistingEnvironments = dispatch => {
     }
 };
 
-const downloadIndex = dispatch => {
+const downloadIndex = (dispatch: Dispatch) => {
     const request = remote.net.request({ url: toolchainIndexUrl() });
     request.setHeader('pragma', 'no-cache');
     request.on('response', response => {
@@ -110,7 +112,7 @@ const downloadIndex = dispatch => {
                 logger.debug(
                     `Index json has been downloaded with result: ${result}`
                 );
-                JSON.parse(result).forEach(environment => {
+                JSON.parse(result).forEach((environment: Environment) => {
                     dispatch(addEnvironment(environment));
                     logger.info(
                         `Toolchain ${environment.version} has been added to the list`
@@ -137,7 +139,7 @@ const downloadIndex = dispatch => {
     request.end();
 };
 
-export default dispatch => {
+export default (dispatch: Dispatch) => {
     logger.info('Initializing environments...');
     const dir = path.dirname(installDir());
     if (

@@ -34,10 +34,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { AnyAction } from 'redux';
+
 import { setToolchainIndexUrl, toolchainIndexUrl } from '../persistentStore';
+import { RootState } from '../state';
 
 const SET_TOOLCHAIN_SOURCE = 'SET_TOOLCHAIN_SOURCE';
-export const setToolchainSource = toolchainRootUrl => ({
+export const setToolchainSource = (toolchainRootUrl: string) => ({
     type: SET_TOOLCHAIN_SOURCE,
     toolchainRootUrl,
 });
@@ -59,7 +62,7 @@ const initialState = () => ({
     isDialogVisible: false,
 });
 
-export default (state = initialState(), { type, ...action }) => {
+export default (state = initialState(), { type, ...action }: AnyAction) => {
     switch (type) {
         case SET_TOOLCHAIN_SOURCE:
             setToolchainIndexUrl(action.toolchainRootUrl);
@@ -74,6 +77,7 @@ export default (state = initialState(), { type, ...action }) => {
     }
 };
 
-export const toolchainRootUrl = ({ app }) =>
+export const toolchainRootUrl = ({ app }: RootState) =>
     app.toolchainSource.toolchainRootUrl;
-export const isDialogVisible = ({ app }) => app.toolchainSource.isDialogVisible;
+export const isDialogVisible = ({ app }: RootState) =>
+    app.toolchainSource.isDialogVisible;
