@@ -34,7 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { spawn } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import { remote } from 'electron';
 import fs from 'fs';
 import fse from 'fs-extra';
@@ -42,6 +42,7 @@ import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import { showErrorDialog } from '../../../launcherActions';
+import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import {
     finishCloningSdk,
@@ -54,7 +55,8 @@ const { spawn: remoteSpawn } = remote.require('child_process');
 
 // eslint-disable-next-line import/prefer-default-export
 export const cloneNcs =
-    (version, toolchainDir, justUpdate) => async dispatch => {
+    (version: string, toolchainDir: string, justUpdate: boolean) =>
+    async (dispatch: Dispatch) => {
         dispatch(startCloningSdk(version));
         logger.info(`Cloning nRF Connect SDK ${version}`);
         usageData.sendUsageData(
@@ -70,7 +72,7 @@ export const cloneNcs =
                 );
             }
 
-            let ncsMgr;
+            let ncsMgr: ChildProcess;
             const update = justUpdate ? '--just-update' : '';
             switch (process.platform) {
                 case 'win32': {
@@ -124,8 +126,8 @@ export const cloneNcs =
             dispatch(setProgress(version, 'Initializing environment...'));
             logger.info(`Initializing environment for ${version}`);
             let err = '';
-            await new Promise((resolve, reject) => {
-                ncsMgr.stdout.on('data', data => {
+            await new Promise<void>((resolve, reject) => {
+                ncsMgr.stdout?.on('data', data => {
                     const repo = (
                         /=== updating (\w+)/.exec(data.toString()) || []
                     ).pop();
@@ -141,7 +143,7 @@ export const cloneNcs =
                         );
                     }
                 });
-                ncsMgr.stderr.on('data', data => {
+                ncsMgr.stderr?.on('data', data => {
                     err += `${data}`;
                 });
                 ncsMgr.on('exit', code => (code ? reject(err) : resolve()));
