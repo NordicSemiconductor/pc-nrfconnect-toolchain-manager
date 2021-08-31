@@ -52,14 +52,14 @@ import { calculateTimeConsumed } from './helpers';
 import { DOWNLOAD, reportProgress } from './reportProgress';
 
 export const downloadToolchain =
-    (version: string, { name, sha512, uri }: Toolchain) =>
+    (version: string, { name, sha512, uri }: Partial<Toolchain>) =>
     async (dispatch: Dispatch) =>
         new Promise<string>((resolve, reject) => {
             logger.info(`Downloading toolchain ${version}`);
             dispatch(setProgress(version, 'Downloading', 0));
             const hash = createHash('sha512');
 
-            const url = uri || toolchainUrl(name);
+            const url = uri || toolchainUrl(name || '');
             const filename = name || path.basename(url);
             usageData.sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, url);
 

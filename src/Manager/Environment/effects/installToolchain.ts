@@ -49,7 +49,8 @@ import { unpack } from './unpack';
 
 // eslint-disable-next-line import/prefer-default-export
 export const installToolchain =
-    (version: string, toolchain: Toolchain, toolchainDir: string) => async (dispatch: Dispatch) => {
+    (version: string, toolchain: Toolchain, toolchainDir: string) =>
+    async (dispatch: Dispatch) => {
         dispatch(startInstallToolchain(version));
 
         try {

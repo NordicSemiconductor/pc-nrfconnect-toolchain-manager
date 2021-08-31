@@ -40,6 +40,7 @@ import { usageData } from 'pc-nrfconnect-shared';
 
 import { showErrorDialog } from '../../../launcherActions';
 import { persistedInstallDir as installDir } from '../../../persistentStore';
+import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { addLocallyExistingEnvironment } from '../../managerReducer';
 import {
@@ -53,46 +54,58 @@ import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { unpack } from './unpack';
 
 // eslint-disable-next-line import/prefer-default-export
-export const installPackage = urlOrFilePath => async dispatch => {
-    usageData.sendUsageData(
-        EventAction.INSTALL_TOOLCHAIN_FROM_PATH,
-        `${urlOrFilePath}`
-    );
-    const match = /ncs-toolchain-(v?.+?)([-_]\d{8}-[^.]+).[zip|dmg|snap]/.exec(
-        urlOrFilePath
-    );
-    if (!match) {
-        const errorMsg = 'Filename is not recognized as a toolchain package.';
-        dispatch(showErrorDialog(errorMsg));
-        usageData.sendErrorReport(errorMsg);
-        return;
-    }
-
-    try {
-        const version = match[1];
-        const toolchainDir = path.resolve(installDir(), version, 'toolchain');
-
-        await dispatch(ensureCleanTargetDir(toolchainDir));
-
-        fse.mkdirpSync(toolchainDir);
-
-        dispatch(
-            addLocallyExistingEnvironment(version, toolchainDir, false, false)
+export const installPackage =
+    (urlOrFilePath: string) => async (dispatch: Dispatch) => {
+        usageData.sendUsageData(
+            EventAction.INSTALL_TOOLCHAIN_FROM_PATH,
+            `${urlOrFilePath}`
         );
-        dispatch(startInstallToolchain(version));
+        const match =
+            /ncs-toolchain-(v?.+?)([-_]\d{8}-[^.]+).[zip|dmg|snap]/.exec(
+                urlOrFilePath
+            );
+        if (!match) {
+            const errorMsg =
+                'Filename is not recognized as a toolchain package.';
+            dispatch(showErrorDialog(errorMsg));
+            usageData.sendErrorReport(errorMsg);
+            return;
+        }
 
-        const filePath = fse.existsSync(urlOrFilePath)
-            ? urlOrFilePath
-            : await dispatch(
-                  downloadToolchain(version, { uri: urlOrFilePath })
-              );
+        try {
+            const version = match[1];
+            const toolchainDir = path.resolve(
+                installDir(),
+                version,
+                'toolchain'
+            );
 
-        await dispatch(unpack(version, filePath, toolchainDir));
-        updateConfigFile(toolchainDir);
-        dispatch(finishInstallToolchain(version, toolchainDir));
-        await dispatch(cloneNcs(version, toolchainDir, false));
-    } catch (error) {
-        dispatch(showErrorDialog(`${error.message || error}`));
-        usageData.sendErrorReport(error.message || error);
-    }
-};
+            await dispatch(ensureCleanTargetDir(toolchainDir));
+
+            fse.mkdirpSync(toolchainDir);
+
+            dispatch(
+                addLocallyExistingEnvironment(
+                    version,
+                    toolchainDir,
+                    false,
+                    false
+                )
+            );
+            dispatch(startInstallToolchain(version));
+
+            const filePath = fse.existsSync(urlOrFilePath)
+                ? urlOrFilePath
+                : await dispatch(
+                      downloadToolchain(version, { uri: urlOrFilePath })
+                  );
+
+            await dispatch(unpack(version, filePath, toolchainDir));
+            updateConfigFile(toolchainDir);
+            dispatch(finishInstallToolchain(version, toolchainDir));
+            await dispatch(cloneNcs(version, toolchainDir, false));
+        } catch (error) {
+            dispatch(showErrorDialog(`${error.message || error}`));
+            usageData.sendErrorReport(error.message || error);
+        }
+    };
