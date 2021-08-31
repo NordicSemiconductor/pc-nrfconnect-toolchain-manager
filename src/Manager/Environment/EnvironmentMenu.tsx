@@ -38,12 +38,13 @@ import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { useDispatch } from 'react-redux';
-import { exec, execSync } from 'child_process';
+import { exec, ExecException, execSync } from 'child_process';
 import { remote, shell } from 'electron';
 import { readdirSync } from 'fs';
 import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
+import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import { showConfirmRemoveDialog } from '../managerReducer';
 import { cloneNcs } from './effects/cloneNcs';
@@ -57,16 +58,20 @@ import {
 
 import './style.scss';
 
-const execCallback = (error, stdout, stderr) => {
+const execCallback = (
+    error: ExecException | null,
+    stdout: string,
+    stderr: string
+) => {
     logger.info('Terminal has closed');
-    if (error) usageData.sendErrorReport(error);
+    if (error) usageData.sendErrorReport(error.message);
     if (stderr) usageData.sendErrorReport(stderr);
     if (stdout) logger.debug(stdout);
 };
 
 const { exec: remoteExec } = remote.require('child_process');
 
-const openBash = directory => {
+const openBash = (directory: string) => {
     logger.info('Open bash');
     usageData.sendUsageData(
         EventAction.OPEN_BASH,
@@ -75,7 +80,7 @@ const openBash = directory => {
     exec(`"${path.resolve(directory, 'git-bash.exe')}"`, execCallback);
 };
 
-const openCmd = directory => {
+const openCmd = (directory: string) => {
     logger.info('Open command prompt');
     usageData.sendUsageData(
         EventAction.OPEN_CMD,
@@ -88,7 +93,7 @@ const openCmd = directory => {
 };
 
 const openTerminal = {
-    darwin: toolchainDir => {
+    darwin: (toolchainDir: string) => {
         logger.info('Open terminal');
         usageData.sendUsageData(
             EventAction.OPEN_TERMINAL,
@@ -113,7 +118,7 @@ END
             execCallback
         );
     },
-    linux: toolchainDir => {
+    linux: (toolchainDir: string) => {
         logger.info('Open terminal');
         usageData.sendUsageData(
             EventAction.OPEN_TERMINAL,
@@ -142,7 +147,7 @@ END
     },
 };
 
-const openDirectory = directory => {
+const openDirectory = (directory: string) => {
     logger.info(`Open directory ${directory}`);
     usageData.sendUsageData(
         EventAction.OPEN_DIR,
@@ -151,7 +156,8 @@ const openDirectory = directory => {
     shell.openItem(directory);
 };
 
-const EnvironmentMenu = ({ environment }) => {
+type EnvironmentMenuProps = { environment: Environment };
+const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
     const dispatch = useDispatch();
     const toolchainDir = getToolchainDir(environment);
     const version = getVersion(environment);
@@ -159,6 +165,7 @@ const EnvironmentMenu = ({ environment }) => {
 
     return (
         <DropdownButton
+            id={`environment-${environment.version}`}
             className="ml-2"
             variant="secondary"
             title=""
@@ -178,6 +185,7 @@ const EnvironmentMenu = ({ environment }) => {
             {process.platform !== 'win32' && (
                 <Dropdown.Item
                     onClick={() =>
+                        /* @ts-ignore */
                         openTerminal[platform](toolchainDir, version)
                     }
                 >

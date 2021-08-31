@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,38 +34,20 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, { FC } from 'react';
+import Card from 'react-bootstrap/Card';
+import { arrayOf, node } from 'prop-types';
 
-import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
-import Button from './Button';
-import { install } from './effects/installEnvironment';
-import environmentPropType from './environmentPropType';
-import { isOnlyAvailable, version } from './environmentReducer';
+import './nrfCard.scss';
 
-const Install = ({ environment }) => {
-    const dispatch = useDispatch();
-    const { platform } = process;
-    const onClick = {
-        darwin: () => dispatch(install(environment, false)),
-        linux: () =>
-            dispatch(showConfirmInstallDirDialog(version(environment))),
-        win32: () =>
-            dispatch(showConfirmInstallDirDialog(version(environment))),
-    };
+const NrfCard: FC = ({ children }) => (
+    <Card body className="nrf-card">
+        {children}
+    </Card>
+);
 
-    if (!isOnlyAvailable(environment)) return null;
-
-    return (
-        <Button
-            icon="x-mdi-briefcase-download-outline"
-            onClick={onClick[platform]}
-            label="Install"
-            variant="secondary"
-        />
-    );
+NrfCard.propTypes = {
+    children: arrayOf(node).isRequired,
 };
 
-Install.propTypes = { environment: environmentPropType.isRequired };
-
-export default Install;
+export default NrfCard;

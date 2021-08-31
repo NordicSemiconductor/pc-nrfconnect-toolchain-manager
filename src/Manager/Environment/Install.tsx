@@ -35,52 +35,45 @@
  */
 
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
-import {
-    hideReduxConfirmDialogAction,
-    reduxConfirmDialogSelector,
-} from './reduxConfirmDialogReducer';
+import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
+import { Environment } from '../../state';
+import Button from './Button';
+import { install } from './effects/installEnvironment';
+import environmentPropType from './environmentPropType';
+import { isOnlyAvailable, version } from './environmentReducer';
 
-export default () => {
+type Props = { environment: Environment };
+
+const Install = ({ environment }: Props) => {
     const dispatch = useDispatch();
-    const {
-        title,
-        content,
-        callback,
-        confirmLabel,
-        cancelLabel,
-        onOptional,
-        optionalLabel,
-    } = useSelector(reduxConfirmDialogSelector);
+    const { platform } = process;
+    const onClick = (() => {
+        switch (platform) {
+            case 'darwin':
+                return () => dispatch(install(environment, false));
+            case 'linux':
+                return () =>
+                    dispatch(showConfirmInstallDirDialog(version(environment)));
+            case 'win32':
+                return () =>
+                    dispatch(showConfirmInstallDirDialog(version(environment)));
+        }
+    })();
+
+    if (!isOnlyAvailable(environment)) return null;
 
     return (
-        <ConfirmationDialog
-            isVisible={!!callback}
-            title={title}
-            onCancel={() => {
-                dispatch(hideReduxConfirmDialogAction());
-                callback(true);
-            }}
-            onConfirm={() => {
-                dispatch(hideReduxConfirmDialogAction());
-                callback();
-            }}
-            confirmLabel={confirmLabel}
-            cancelLabel={cancelLabel}
-            onOptional={
-                onOptional
-                    ? () => {
-                          dispatch(hideReduxConfirmDialogAction());
-                          onOptional();
-                      }
-                    : undefined
-            }
-            optionalLabel={optionalLabel}
-        >
-            <ReactMarkdown>{content}</ReactMarkdown>
-        </ConfirmationDialog>
+        <Button
+            icon="x-mdi-briefcase-download-outline"
+            onClick={onClick}
+            label="Install"
+            variant="secondary"
+        />
     );
 };
+
+Install.propTypes = { environment: environmentPropType.isRequired };
+
+export default Install;

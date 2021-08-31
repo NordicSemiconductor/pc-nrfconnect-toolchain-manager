@@ -34,7 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { execSync } from 'child_process';
 import { string } from 'prop-types';
@@ -43,7 +43,7 @@ const isLinux = process.platform === 'linux';
 
 export const enableLinux = false;
 
-export const OnlineDocs = ({ label }) => (
+const OnlineDocs: FC<{ label: string }> = ({ label }) => (
     <a
         target="_blank"
         rel="noopener noreferrer"

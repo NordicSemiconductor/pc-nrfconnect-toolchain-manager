@@ -35,32 +35,52 @@
  */
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import ReactMarkdown from 'react-markdown';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { selectEnvironment, showFirstSteps } from '../managerReducer';
-import Button from './Button';
-import environmentPropType from './environmentPropType';
-import { isInstalled, isOnlyAvailable, version } from './environmentReducer';
+import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import {
+    hideReduxConfirmDialogAction,
+    reduxConfirmDialogSelector,
+} from './reduxConfirmDialogReducer';
 
-const ShowFirstSteps = ({ environment }) => {
+export default () => {
     const dispatch = useDispatch();
-    if (isOnlyAvailable(environment)) return null;
+    const {
+        title,
+        content,
+        callback,
+        confirmLabel,
+        cancelLabel,
+        onOptional,
+        optionalLabel,
+    } = useSelector(reduxConfirmDialogSelector);
 
     return (
-        <Button
-            icon="x-mdi-dog-service"
-            onClick={() => {
-                dispatch(selectEnvironment(version(environment)));
-                dispatch(showFirstSteps());
+        <ConfirmationDialog
+            isVisible={!!callback}
+            title={title ?? ''}
+            onCancel={() => {
+                dispatch(hideReduxConfirmDialogAction());
+                callback ? callback(true) : undefined;
             }}
-            label="First steps to build"
-            title="Show how to build a sample project"
-            variant="secondary"
-            disabled={!isInstalled(environment)}
-        />
+            onConfirm={() => {
+                dispatch(hideReduxConfirmDialogAction());
+                callback ? callback(false) : undefined;
+            }}
+            confirmLabel={confirmLabel}
+            cancelLabel={cancelLabel}
+            onOptional={
+                onOptional
+                    ? () => {
+                          dispatch(hideReduxConfirmDialogAction());
+                          onOptional(false);
+                      }
+                    : undefined
+            }
+            optionalLabel={optionalLabel}
+        >
+            <ReactMarkdown>{content}</ReactMarkdown>
+        </ConfirmationDialog>
     );
 };
-
-ShowFirstSteps.propTypes = { environment: environmentPropType.isRequired };
-
-export default ShowFirstSteps;

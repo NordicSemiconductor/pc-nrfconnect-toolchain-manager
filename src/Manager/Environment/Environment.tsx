@@ -35,18 +35,50 @@
  */
 
 import React from 'react';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
+import NrfCard from '../../NrfCard/NrfCard';
+import { Environment as Model } from '../../state';
+import EnvironmentMenu from './EnvironmentMenu';
 import environmentPropType from './environmentPropType';
+import Install from './Install';
+import Name from './Name';
+import OpenIde from './OpenIde';
+import OpenVsCode from './OpenVsCode';
+import ProgressBar from './ProgressBar';
+import ProgressLabel from './ProgressLabel';
+import ShowFirstSteps from './ShowFirstSteps';
 
 import './style.scss';
 
-const Name = ({ environment: { version } }) => (
-    <Row noGutters className="toolchain-item-info h4 mb-0 pt-3">
-        nRF Connect SDK {version}
-    </Row>
+type Props = { environment: Model };
+
+const Environment = ({ environment }: Props) => (
+    <NrfCard>
+        <Row noGutters>
+            <Col>
+                <Name environment={environment} />
+                <ProgressLabel environment={environment} />
+            </Col>
+            <Col
+                as={ButtonToolbar}
+                /* @ts-ignore */
+                xs="auto ml-auto"
+                className="d-flex align-items-center my-3 pl-3 wide-btns"
+            >
+                <ShowFirstSteps environment={environment} />
+                <Install environment={environment} />
+                <OpenIde environment={environment} />
+                <OpenVsCode environment={environment} />
+                <EnvironmentMenu environment={environment} />
+            </Col>
+        </Row>
+        <ProgressBar environment={environment} />
+    </NrfCard>
 );
 
-Name.propTypes = { environment: environmentPropType.isRequired };
+Environment.propTypes = { environment: environmentPropType.isRequired };
 
-export default Name;
+export default Environment;

@@ -114,7 +114,7 @@ export const hideConfirmRemoveDialog = () => ({
 });
 
 const SHOW_INSTALL_PACKAGE_DIALOG = 'SHOW_INSTALL_PACKAGE_DIALOG';
-export const showInstallPackageDialog = (dndPackage = null) => ({
+export const showInstallPackageDialog = (dndPackage: string | null = null) => ({
     type: SHOW_INSTALL_PACKAGE_DIALOG,
     dndPackage,
 });

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,20 +34,17 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import Card from 'react-bootstrap/Card';
-import { arrayOf, node } from 'prop-types';
+import React, { FC } from 'react';
+import Row from 'react-bootstrap/Row';
 
-import './nrfCard.scss';
+import { Environment } from '../../state';
 
-const NrfCard = ({ children }) => (
-    <Card body className="nrf-card">
-        {children}
-    </Card>
+import './style.scss';
+
+const Name: FC<{ environment: Environment }> = ({ environment }) => (
+    <Row noGutters className="toolchain-item-info h4 mb-0 pt-3">
+        nRF Connect SDK {environment.version}
+    </Row>
 );
 
-NrfCard.propTypes = {
-    children: arrayOf(node).isRequired,
-};
-
-export default NrfCard;
+export default Name;

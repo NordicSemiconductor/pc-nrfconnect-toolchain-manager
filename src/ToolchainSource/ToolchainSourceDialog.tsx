@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,47 +34,49 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
+import React, { useState } from 'react';
+import Form from 'react-bootstrap/Form';
+import { useDispatch, useSelector } from 'react-redux';
 
-import NrfCard from '../../NrfCard/NrfCard';
-import EnvironmentMenu from './EnvironmentMenu';
-import environmentPropType from './environmentPropType';
-import Install from './Install';
-import Name from './Name';
-import OpenIde from './OpenIde';
-import OpenVsCode from './OpenVsCode';
-import ProgressBar from './ProgressBar';
-import ProgressLabel from './ProgressLabel';
-import ShowFirstSteps from './ShowFirstSteps';
+import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import initEnvironments from '../Manager/initEnvironments';
+import {
+    hideSetToolchainSourceDialog,
+    isDialogVisible,
+    setToolchainSource,
+    toolchainRootUrl,
+} from './toolchainSourceReducer';
 
-import './style.scss';
+export default () => {
+    const dispatch = useDispatch();
+    const isVisible = useSelector(isDialogVisible);
+    const savedUrl = useSelector(toolchainRootUrl);
+    const [url, setUrl] = useState(savedUrl);
 
-const Environment = ({ environment }) => (
-    <NrfCard>
-        <Row noGutters>
-            <Col>
-                <Name environment={environment} />
-                <ProgressLabel environment={environment} />
-            </Col>
-            <Col
-                as={ButtonToolbar}
-                xs="auto ml-auto"
-                className="d-flex align-items-center my-3 pl-3 wide-btns"
-            >
-                <ShowFirstSteps environment={environment} />
-                <Install environment={environment} />
-                <OpenIde environment={environment} />
-                <OpenVsCode environment={environment} />
-                <EnvironmentMenu environment={environment} />
-            </Col>
-        </Row>
-        <ProgressBar environment={environment} />
-    </NrfCard>
-);
+    const onConfirm = () => {
+        dispatch(setToolchainSource(url));
+        dispatch(hideSetToolchainSourceDialog());
+        initEnvironments(dispatch);
+    };
 
-Environment.propTypes = { environment: environmentPropType.isRequired };
-
-export default Environment;
+    return (
+        <ConfirmationDialog
+            isVisible={isVisible}
+            title="Toolchain source URL"
+            onConfirm={onConfirm}
+            onCancel={() => dispatch(hideSetToolchainSourceDialog())}
+        >
+            <Form.Group controlId="toolchainSourceUrl">
+                <Form.Label>Specify toolchain source URL:</Form.Label>
+                <Form.Control
+                    type="text"
+                    value={url}
+                    onChange={({ target }) => setUrl(target.value)}
+                    onKeyPress={(evt: React.KeyboardEvent) =>
+                        evt.key === 'Enter' && onConfirm()
+                    }
+                />
+            </Form.Group>
+        </ConfirmationDialog>
+    );
+};

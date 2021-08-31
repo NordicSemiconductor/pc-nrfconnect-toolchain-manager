@@ -34,47 +34,35 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React, { useState } from 'react';
-import Form from 'react-bootstrap/Form';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 
-import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
-import initEnvironments from '../Manager/initEnvironments';
-import {
-    hideSetToolchainSourceDialog,
-    isDialogVisible,
-    setToolchainSource,
-    toolchainRootUrl,
-} from './toolchainSourceReducer';
+import { Environment } from '../../state';
+import { selectEnvironment, showFirstSteps } from '../managerReducer';
+import Button from './Button';
+import environmentPropType from './environmentPropType';
+import { isInstalled, isOnlyAvailable, version } from './environmentReducer';
 
-export default () => {
+type Props = { environment: Environment };
+const ShowFirstSteps = ({ environment }: Props) => {
     const dispatch = useDispatch();
-    const isVisible = useSelector(isDialogVisible);
-    const savedUrl = useSelector(toolchainRootUrl);
-    const [url, setUrl] = useState(savedUrl);
-
-    const onConfirm = () => {
-        dispatch(setToolchainSource(url));
-        dispatch(hideSetToolchainSourceDialog());
-        initEnvironments(dispatch);
-    };
+    if (isOnlyAvailable(environment)) return null;
 
     return (
-        <ConfirmationDialog
-            isVisible={isVisible}
-            title="Toolchain source URL"
-            onConfirm={onConfirm}
-            onCancel={() => dispatch(hideSetToolchainSourceDialog())}
-        >
-            <Form.Group controlId="toolchainSourceUrl">
-                <Form.Label>Specify toolchain source URL:</Form.Label>
-                <Form.Control
-                    type="text"
-                    value={url}
-                    onChange={({ target }) => setUrl(target.value)}
-                    onKeyPress={evt => evt.charCode === 13 && onConfirm()}
-                />
-            </Form.Group>
-        </ConfirmationDialog>
+        <Button
+            icon="x-mdi-dog-service"
+            onClick={() => {
+                dispatch(selectEnvironment(version(environment)));
+                dispatch(showFirstSteps());
+            }}
+            label="First steps to build"
+            title="Show how to build a sample project"
+            variant="secondary"
+            disabled={!isInstalled(environment)}
+        />
     );
 };
+
+ShowFirstSteps.propTypes = { environment: environmentPropType.isRequired };
+
+export default ShowFirstSteps;

@@ -84,6 +84,7 @@ export default () => {
                 <Row className="settings-info mt-4">
                     <Col>
                         <Form.Group controlId="toggleMaster">
+                            {/* @ts-ignore Typing not implemented in this old version of react-bootstrap */}
                             <Form.Switch
                                 defaultChecked={masterVisible}
                                 onChange={() =>
