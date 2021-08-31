@@ -61,7 +61,7 @@ export const getVsCodeStatus = () => {
     }
 
     const hasRequiredExtensions = REQUIRED_EXTENSIONS.every(extension =>
-        extensions.includes(extension)
+        extensions?.includes(extension)
     );
 
     return hasRequiredExtensions
@@ -92,8 +92,14 @@ export const listInstalledExtensions = () => {
     });
 
     if (error || status !== 0) {
-        return null;
+        return undefined;
     }
 
     return stdout.trim().split('\n');
 };
+
+export function openVsCode() {
+    spawnSync('code', {
+        shell: true,
+    });
+}

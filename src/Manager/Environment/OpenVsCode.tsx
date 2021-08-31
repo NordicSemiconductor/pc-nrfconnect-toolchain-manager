@@ -39,12 +39,17 @@ import { useDispatch } from 'react-redux';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 
+import checkInstalled from '../../../resources/check-circle-installed.svg';
+import checkNotInstalled from '../../../resources/check-circle-not-installed.svg';
 import { showReduxConfirmDialogAction } from '../../ReduxConfirmDialog/reduxConfirmDialogReducer';
 import { Environment, RootState } from '../../state';
 import {
     getVsCodeStatus,
     installExtensions,
     listInstalledExtensions,
+    openVsCode,
+    RECOMENDED_EXTENSIONS,
+    REQUIRED_EXTENSIONS,
     VsCodeStatus,
 } from '../vscode';
 import Button from './Button';
@@ -53,26 +58,21 @@ import { isInProgress } from './environmentReducer';
 
 export type Dispatch = ThunkDispatch<RootState, null, AnyAction>;
 
-function cb(cancelled: boolean) {
+function cancelCheckCallback(cancelled: boolean, func: () => void) {
     return (dispatch: Dispatch) => {
-        if (!cancelled) {
-            console.log('Confirmed');
-            dispatch(showVsCodeDialog());
-        }
+        if (!cancelled) dispatch(func);
     };
 }
 
-function installVsCodeExtensions(cancelled: boolean) {
+function installVsCodeExtensions() {
     return (dispatch: Dispatch) => {
-        if (cancelled) return;
-
         installExtensions();
 
         dispatch(
             showReduxConfirmDialogAction({
                 title: 'Opening VS Code',
                 content: 'All extensions installed succesfully.',
-                callback: ret => openVsCode(ret),
+                callback: ret => dispatch(cancelCheckCallback(ret, openVsCode)),
                 confirmLabel: 'Open VS Code',
                 cancelLabel: 'Cancel',
             })
@@ -80,28 +80,41 @@ function installVsCodeExtensions(cancelled: boolean) {
     };
 }
 
+function extensionsToString(expected: string[], installed?: string[]) {
+    return expected
+        .map(e => {
+            if (installed?.includes(e))
+                return `![Installed](${checkInstalled}) ${e}`;
+            return `![Not installed](${checkNotInstalled}) ${e}`;
+        })
+        .join('\n\n');
+}
+
 function showInstallVsCodeExtensions() {
     return (dispatch: Dispatch) => {
+        const extensions = listInstalledExtensions();
+
         dispatch(
             showReduxConfirmDialogAction({
                 title: 'Opening VS Code',
-                content: `For developing nRF applications with VS Code we recommend using the following extensions:\n\n${listInstalledExtensions()
-                    ?.toString()
-                    .replace(/,/g, '\n\n')}`,
-                callback: ret => dispatch(installVsCodeExtensions(ret)),
+                content: `For developing nRF applications with VS Code we recommend using the following extensions:\n\n**Required**\n\n${extensionsToString(
+                    REQUIRED_EXTENSIONS,
+                    extensions
+                )}\n\n**Recommended**\n\n${extensionsToString(
+                    RECOMENDED_EXTENSIONS,
+                    extensions
+                )}`,
+                callback: ret =>
+                    dispatch(cancelCheckCallback(ret, installVsCodeExtensions)),
                 confirmLabel: 'Install all missing extensions',
                 cancelLabel: 'Cancel',
-                onOptional: ret => openVsCode(ret),
+                onOptional: cancelled => {
+                    if (!cancelled) openVsCode();
+                },
                 optionalLabel: 'Open anyway',
             })
         );
     };
-}
-
-function openVsCode(cancelled?: boolean) {
-    if (cancelled) return;
-
-    console.log('Open VS Code');
 }
 
 function showInstallVsCode() {
@@ -117,12 +130,13 @@ function showInstallVsCode() {
         dispatch(
             showReduxConfirmDialogAction({
                 title: 'Opening VS Code',
-                content: `VS Code was not detected on your system.\n\nInstall VS Code and try again: \n${installLink}\n\n ${
+                content: `VS Code was not detected on your system.\n\n[Install VS Code](${installLink}) and try again.\n\n ${
                     process.platform === 'darwin'
-                        ? 'On macOS please make sure that you also follow the instructions for *Launching from the command line*: https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line'
+                        ? 'On macOS please make sure that you also follow the instructions for [Launching from the command line](https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line).'
                         : ''
                 }`,
-                callback: ret => dispatch(cb(ret)),
+                callback: ret =>
+                    dispatch(cancelCheckCallback(ret, showVsCodeDialog)),
                 confirmLabel: 'OK, I installed VS Code',
                 cancelLabel: 'Cancel',
             })
@@ -149,7 +163,7 @@ const OpenVsCode = ({ environment }: { environment: Environment }) => {
             title="Open Visual Studio Code"
             disabled={isInProgress(environment)}
             variant="primary"
-            onClick={() => dispatch(showVsCodeDialog())}
+            onClick={() => dispatch(showInstallVsCodeExtensions())}
         />
     );
 };
