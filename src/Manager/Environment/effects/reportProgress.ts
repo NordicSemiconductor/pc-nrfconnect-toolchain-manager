@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,41 +34,24 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
+import { Dispatch, RootState } from '../../../state';
+import { getEnvironment } from '../../managerReducer';
+import { progress, setProgress } from '../environmentReducer';
 
-import { ConfirmDialogState, RootState } from '../state';
+export const DOWNLOAD = 0;
+export const UNPACK = 50;
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
+export const reportProgress =
+    (version: string, currentValue: number, maxValue: number, half: number) =>
+    (dispatch: Dispatch, getState: () => RootState) => {
+        const prevProgress = progress(getEnvironment(getState(), version));
+        const newProgress = Math.min(
+            100,
+            Math.round((currentValue / maxValue) * 50) + half
+        );
 
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
-});
-
-const initialState: ConfirmDialogState = {};
-
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
-    switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
-        default:
-            return state;
-    }
-};
-
-export const reduxConfirmDialogSelector = ({ app }: RootState) =>
-    app.reduxConfirmDialog;
-
-export default reduxConfirmDialogReducer;
+        if (newProgress !== prevProgress) {
+            const stage = half === DOWNLOAD ? 'Downloading' : 'Installing';
+            dispatch(setProgress(version, stage, newProgress));
+        }
+    };

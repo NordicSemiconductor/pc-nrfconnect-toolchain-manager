@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,41 +34,65 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
+import React, { FC } from 'react';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { bool, func, string } from 'prop-types';
 
-import { ConfirmDialogState, RootState } from '../state';
+const ConfirmationDialog: FC<Props> = ({
+    title,
+    children,
+    isVisible,
+    onCancel = null,
+    onConfirm,
+    onOptional = null,
+    confirmLabel = 'OK',
+    cancelLabel = 'Cancel',
+    optionalLabel = null,
+}) => (
+    <Modal show={isVisible} onHide={onCancel || onConfirm} backdrop>
+        <Modal.Header closeButton={false}>
+            <Modal.Title>{title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{children}</Modal.Body>
+        <Modal.Footer>
+            {onOptional && (
+                <Button variant="outline-primary" onClick={onOptional}>
+                    {optionalLabel}
+                </Button>
+            )}
+            <Button variant="primary" onClick={onConfirm}>
+                {confirmLabel}
+            </Button>
+            {onCancel && (
+                <Button variant="outline-primary" onClick={onCancel}>
+                    {cancelLabel}
+                </Button>
+            )}
+        </Modal.Footer>
+    </Modal>
+);
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
-
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
-});
-
-const initialState: ConfirmDialogState = {};
-
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
-    switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
-        default:
-            return state;
-    }
+type Props = {
+    title: string;
+    isVisible: boolean;
+    onCancel?: () => void;
+    onConfirm: () => void;
+    onOptional?: () => void;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    optionalLabel?: string;
 };
 
-export const reduxConfirmDialogSelector = ({ app }: RootState) =>
-    app.reduxConfirmDialog;
+ConfirmationDialog.propTypes = {
+    title: string.isRequired,
+    isVisible: bool.isRequired,
+    onConfirm: func.isRequired,
+    onCancel: func,
+    onOptional: func,
+    confirmLabel: string,
+    cancelLabel: string,
+    optionalLabel: string,
+};
 
-export default reduxConfirmDialogReducer;
+export default ConfirmationDialog;

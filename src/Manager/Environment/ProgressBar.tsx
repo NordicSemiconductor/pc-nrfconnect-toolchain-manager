@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,41 +34,48 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
+import React from 'react';
+import BootstrapProgressBar from 'react-bootstrap/ProgressBar';
 
-import { ConfirmDialogState, RootState } from '../state';
+import { Environment } from '../../state';
+import environmentPropType from './environmentPropType';
+import {
+    isCloningSdk,
+    isInProgress,
+    isInstalled,
+    isInstallingToolchain,
+    isRemoving,
+    progress,
+} from './environmentReducer';
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
+import './style.scss';
 
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
-});
-
-const initialState: ConfirmDialogState = {};
-
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
-    switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
+const className = (env: Environment) => {
+    switch (true) {
+        case isRemoving(env):
+            return 'removing';
+        case isInstallingToolchain(env):
+            return 'installing';
+        case isCloningSdk(env):
+            return 'installing';
+        case isInstalled(env):
+            return 'installed';
         default:
-            return state;
+            return 'available';
     }
 };
 
-export const reduxConfirmDialogSelector = ({ app }: RootState) =>
-    app.reduxConfirmDialog;
+type Props = { environment: Environment };
 
-export default reduxConfirmDialogReducer;
+const ProgressBar = ({ environment }: Props) => (
+    <BootstrapProgressBar
+        now={progress(environment)}
+        striped={isInProgress(environment)}
+        animated={isInProgress(environment)}
+        className={className(environment)}
+    />
+);
+
+ProgressBar.propTypes = { environment: environmentPropType.isRequired };
+
+export default ProgressBar;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,41 +34,65 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
+import React, { FC, useEffect, useState } from 'react';
+import Alert from 'react-bootstrap/Alert';
+import { execSync } from 'child_process';
+import { string } from 'prop-types';
 
-import { ConfirmDialogState, RootState } from '../state';
+const isLinux = process.platform === 'linux';
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
+export const enableLinux = false;
 
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
-});
+const OnlineDocs: FC<{ label: string }> = ({ label }) => (
+    <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_installing.html"
+    >
+        {label}
+    </a>
+);
 
-const initialState: ConfirmDialogState = {};
-
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
-    switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
-        default:
-            return state;
-    }
+OnlineDocs.propTypes = {
+    label: string.isRequired,
 };
 
-export const reduxConfirmDialogSelector = ({ app }: RootState) =>
-    app.reduxConfirmDialog;
+export default () => {
+    if (!isLinux) return null;
 
-export default reduxConfirmDialogReducer;
+    const [isSnapAvailable, setSnapAvailable] = useState(true);
+
+    useEffect(() => {
+        if (!enableLinux || !isLinux) return;
+        try {
+            execSync('which snap');
+        } catch (err) {
+            setSnapAvailable(false);
+        }
+    }, []);
+
+    return (
+        <>
+            <Alert variant="warning">
+                <b>Linux is currently not supported by this app.</b>
+                <OnlineDocs label="documentation" />.
+            </Alert>
+            {!isSnapAvailable && (
+                <Alert variant="danger">
+                    Linux support depends on <b>snap</b> which seems
+                    unavailable, please install the package.
+                    <br />
+                    For more information please follow the manual for your{' '}
+                    <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://snapcraft.io/docs/installing-snapd"
+                    >
+                        distribution
+                    </a>
+                    .
+                </Alert>
+            )}
+        </>
+    );
+};

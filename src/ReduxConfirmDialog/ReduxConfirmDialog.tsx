@@ -34,41 +34,53 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { ConfirmDialogState, RootState } from '../state';
+import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import {
+    hideReduxConfirmDialogAction,
+    reduxConfirmDialogSelector,
+} from './reduxConfirmDialogReducer';
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
+export default () => {
+    const dispatch = useDispatch();
+    const {
+        title,
+        content,
+        callback,
+        confirmLabel,
+        cancelLabel,
+        onOptional,
+        optionalLabel,
+    } = useSelector(reduxConfirmDialogSelector);
 
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
-});
-
-const initialState: ConfirmDialogState = {};
-
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
-    switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
-        default:
-            return state;
-    }
+    return (
+        <ConfirmationDialog
+            isVisible={!!callback}
+            title={title ?? ''}
+            onCancel={() => {
+                dispatch(hideReduxConfirmDialogAction());
+                callback ? callback(true) : undefined;
+            }}
+            onConfirm={() => {
+                dispatch(hideReduxConfirmDialogAction());
+                callback ? callback(false) : undefined;
+            }}
+            confirmLabel={confirmLabel}
+            cancelLabel={cancelLabel}
+            onOptional={
+                onOptional
+                    ? () => {
+                          dispatch(hideReduxConfirmDialogAction());
+                          onOptional(false);
+                      }
+                    : undefined
+            }
+            optionalLabel={optionalLabel}
+        >
+            <ReactMarkdown>{content}</ReactMarkdown>
+        </ConfirmationDialog>
+    );
 };
-
-export const reduxConfirmDialogSelector = ({ app }: RootState) =>
-    app.reduxConfirmDialog;
-
-export default reduxConfirmDialogReducer;

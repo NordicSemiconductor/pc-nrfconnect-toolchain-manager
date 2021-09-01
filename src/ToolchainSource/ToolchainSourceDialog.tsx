@@ -34,41 +34,49 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
+import React, { useState } from 'react';
+import Form from 'react-bootstrap/Form';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { ConfirmDialogState, RootState } from '../state';
+import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
+import initEnvironments from '../Manager/initEnvironments';
+import {
+    hideSetToolchainSourceDialog,
+    isDialogVisible,
+    setToolchainSource,
+    toolchainRootUrl,
+} from './toolchainSourceReducer';
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
+export default () => {
+    const dispatch = useDispatch();
+    const isVisible = useSelector(isDialogVisible);
+    const savedUrl = useSelector(toolchainRootUrl);
+    const [url, setUrl] = useState(savedUrl);
 
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
-});
+    const onConfirm = () => {
+        dispatch(setToolchainSource(url));
+        dispatch(hideSetToolchainSourceDialog());
+        initEnvironments(dispatch);
+    };
 
-const initialState: ConfirmDialogState = {};
-
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
-    switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
-        default:
-            return state;
-    }
+    return (
+        <ConfirmationDialog
+            isVisible={isVisible}
+            title="Toolchain source URL"
+            onConfirm={onConfirm}
+            onCancel={() => dispatch(hideSetToolchainSourceDialog())}
+        >
+            <Form.Group controlId="toolchainSourceUrl">
+                <Form.Label>Specify toolchain source URL:</Form.Label>
+                <Form.Control
+                    type="text"
+                    value={url}
+                    onChange={({ target }) => setUrl(target.value)}
+                    onKeyPress={(evt: React.KeyboardEvent) =>
+                        evt.key === 'Enter' && onConfirm()
+                    }
+                />
+            </Form.Group>
+        </ConfirmationDialog>
+    );
 };
-
-export const reduxConfirmDialogSelector = ({ app }: RootState) =>
-    app.reduxConfirmDialog;
-
-export default reduxConfirmDialogReducer;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2017, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,41 +34,50 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
+import { AnyAction } from 'redux';
 
-import { ConfirmDialogState, RootState } from '../state';
+import { setToolchainIndexUrl, toolchainIndexUrl } from '../persistentStore';
+import { RootState } from '../state';
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
-
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
+const SET_TOOLCHAIN_SOURCE = 'SET_TOOLCHAIN_SOURCE';
+export const setToolchainSource = (toolchainRootUrl: string) => ({
+    type: SET_TOOLCHAIN_SOURCE,
+    toolchainRootUrl,
 });
 
-const initialState: ConfirmDialogState = {};
+const SHOW_SET_TOOLCHAIN_SOURCE_DIALOG = 'SHOW_SET_TOOLCHAIN_SOURCE_DIALOG';
+export const showSetToolchainSourceDialog = () => ({
+    type: SHOW_SET_TOOLCHAIN_SOURCE_DIALOG,
+    isDialogVisible: true,
+});
 
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
+const HIDE_SET_TOOLCHAIN_SOURCE_DIALOG = 'HIDE_SET_TOOLCHAIN_SOURCE_DIALOG';
+export const hideSetToolchainSourceDialog = () => ({
+    type: HIDE_SET_TOOLCHAIN_SOURCE_DIALOG,
+    isDialogVisible: false,
+});
+
+const initialState = () => ({
+    toolchainRootUrl: toolchainIndexUrl(),
+    isDialogVisible: false,
+});
+
+export default (state = initialState(), { type, ...action }: AnyAction) => {
     switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
+        case SET_TOOLCHAIN_SOURCE:
+            setToolchainIndexUrl(action.toolchainRootUrl);
+        case SHOW_SET_TOOLCHAIN_SOURCE_DIALOG: // eslint-disable-line no-fallthrough
+        case HIDE_SET_TOOLCHAIN_SOURCE_DIALOG:
+            return {
+                ...state,
+                ...action,
+            };
         default:
             return state;
     }
 };
 
-export const reduxConfirmDialogSelector = ({ app }: RootState) =>
-    app.reduxConfirmDialog;
-
-export default reduxConfirmDialogReducer;
+export const toolchainRootUrl = ({ app }: RootState) =>
+    app.toolchainSource.toolchainRootUrl;
+export const isDialogVisible = ({ app }: RootState) =>
+    app.toolchainSource.isDialogVisible;

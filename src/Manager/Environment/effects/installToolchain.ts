@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,41 +34,36 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
+import fse from 'fs-extra';
+import { usageData } from 'pc-nrfconnect-shared';
 
-import { ConfirmDialogState, RootState } from '../state';
+import { showErrorDialog } from '../../../launcherActions';
+import { Dispatch, Toolchain } from '../../../state';
+import {
+    finishInstallToolchain,
+    startInstallToolchain,
+} from '../environmentReducer';
+import { updateConfigFile } from '../segger';
+import { downloadToolchain } from './downloadToolchain';
+import { unpack } from './unpack';
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
+// eslint-disable-next-line import/prefer-default-export
+export const installToolchain =
+    (version: string, toolchain: Toolchain, toolchainDir: string) =>
+    async (dispatch: Dispatch) => {
+        dispatch(startInstallToolchain(version));
 
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
-});
+        try {
+            fse.mkdirpSync(toolchainDir);
+            const packageLocation = await dispatch(
+                downloadToolchain(version, toolchain)
+            );
+            await dispatch(unpack(version, packageLocation, toolchainDir));
+            updateConfigFile(toolchainDir);
+        } catch (error) {
+            dispatch(showErrorDialog(`${error.message || error}`));
+            usageData.sendErrorReport(error.message || error);
+        }
 
-const initialState: ConfirmDialogState = {};
-
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
-    switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
-        default:
-            return state;
-    }
-};
-
-export const reduxConfirmDialogSelector = ({ app }: RootState) =>
-    app.reduxConfirmDialog;
-
-export default reduxConfirmDialogReducer;
+        dispatch(finishInstallToolchain(version, toolchainDir));
+    };

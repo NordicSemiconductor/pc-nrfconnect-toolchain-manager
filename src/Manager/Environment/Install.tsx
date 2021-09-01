@@ -34,41 +34,46 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 
-import { ConfirmDialogState, RootState } from '../state';
+import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
+import { Environment } from '../../state';
+import Button from './Button';
+import { install } from './effects/installEnvironment';
+import environmentPropType from './environmentPropType';
+import { isOnlyAvailable, version } from './environmentReducer';
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
+type Props = { environment: Environment };
 
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
-});
+const Install = ({ environment }: Props) => {
+    const dispatch = useDispatch();
+    const { platform } = process;
+    const onClick = (() => {
+        switch (platform) {
+            case 'darwin':
+                return () => dispatch(install(environment, false));
+            case 'linux':
+                return () =>
+                    dispatch(showConfirmInstallDirDialog(version(environment)));
+            case 'win32':
+                return () =>
+                    dispatch(showConfirmInstallDirDialog(version(environment)));
+        }
+    })();
 
-const initialState: ConfirmDialogState = {};
+    if (!isOnlyAvailable(environment)) return null;
 
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
-    switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
-        default:
-            return state;
-    }
+    return (
+        <Button
+            icon="x-mdi-briefcase-download-outline"
+            onClick={onClick}
+            label="Install"
+            variant="secondary"
+        />
+    );
 };
 
-export const reduxConfirmDialogSelector = ({ app }: RootState) =>
-    app.reduxConfirmDialog;
+Install.propTypes = { environment: environmentPropType.isRequired };
 
-export default reduxConfirmDialogReducer;
+export default Install;

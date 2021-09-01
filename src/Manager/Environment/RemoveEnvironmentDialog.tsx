@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,41 +34,35 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { ConfirmDialogState, RootState } from '../state';
+import ConfirmationDialog from '../../ConfirmationDialog/ConfirmationDialog';
+import {
+    environmentToRemove,
+    hideConfirmRemoveDialog,
+    isRemoveDirDialogVisible,
+} from '../managerReducer';
+import { removeEnvironment } from './effects/removeEnvironment';
+import { version } from './environmentReducer';
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
+export default () => {
+    const dispatch = useDispatch();
+    const isVisible = useSelector(isRemoveDirDialogVisible);
+    const environment = useSelector(environmentToRemove) || {};
 
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
-});
-
-const initialState: ConfirmDialogState = {};
-
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
-    switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
-        default:
-            return state;
-    }
+    return (
+        <ConfirmationDialog
+            isVisible={isVisible}
+            title="Remove environment"
+            onCancel={() => dispatch(hideConfirmRemoveDialog())}
+            onConfirm={() => {
+                dispatch(hideConfirmRemoveDialog());
+                dispatch(removeEnvironment(environment));
+            }}
+        >
+            Are you sure to remove <code>{version(environment)}</code>{' '}
+            environment?
+        </ConfirmationDialog>
+    );
 };
-
-export const reduxConfirmDialogSelector = ({ app }: RootState) =>
-    app.reduxConfirmDialog;
-
-export default reduxConfirmDialogReducer;

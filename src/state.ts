@@ -1,9 +1,12 @@
 import { NrfConnectState } from 'pc-nrfconnect-shared';
+import { AnyAction } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 
 export type Toolchain = {
     version: string;
     name: string;
     sha512: string;
+    uri?: string;
 };
 
 export type ToolchainSource = {
@@ -13,25 +16,39 @@ export type ToolchainSource = {
 
 export type Environment = {
     version: string;
-    toolchainDir?: string;
+    toolchainDir: string;
     isWestPresent?: boolean;
     isInstalled?: boolean;
-    toolchains?: Toolchain[];
+    toolchains: Toolchain[];
     isInstallingToolchain?: boolean;
     isCloningSdk?: boolean;
     isRemoving?: boolean;
     progress?: number;
     stage?: 'Downloading' | 'Installing';
 };
+export type Environments = {
+    [key: string]: Environment;
+};
 
-export type ConfirmDialogAction = {
-    callback: (isCancelled: boolean) => void;
+export type ConfirmDialogState = {
+    callback?: (isCancelled: boolean) => void;
     title?: string;
     content?: string;
     confirmLabel?: string;
     cancelLabel?: string;
     onOptional?: (isCancelled: boolean) => void;
     optionalLabel?: string;
+};
+
+export type Manager = {
+    environments: Environments;
+    dndPackage: string | null;
+    isRemoveDirDialogVisible: boolean;
+    isInstallPackageDialogVisible: boolean;
+    isMasterVisible: boolean;
+    isShowingFirstSteps: boolean;
+    versionToRemove: string;
+    selectedVersion?: string;
 };
 
 export type AppState = {
@@ -42,22 +59,12 @@ export type AppState = {
         currentDir: string;
         isDialogVisible: boolean;
         dialogFlavour: null;
-        versionToInstall: null;
+        versionToInstall: string;
     };
-    manager: {
-        environments: {
-            [key: string]: Environment | undefined;
-        };
-        dndPackage: null;
-        isRemoveDirDialogVisible: boolean;
-        isInstallPackageDialogVisible: boolean;
-        isMasterVisible: boolean;
-        isShowingFirstSteps: boolean;
-        versionToRemove: string;
-        selectedVersion: string;
-    };
+    manager: Manager;
     toolchainSource: ToolchainSource;
-    reduxConfirmDialog: ConfirmDialogAction;
+    reduxConfirmDialog: ConfirmDialogState;
 };
 
 export type RootState = NrfConnectState<AppState>;
+export type Dispatch = ThunkDispatch<RootState, null, AnyAction>;

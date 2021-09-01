@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,41 +34,51 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
+import React from 'react';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
-import { ConfirmDialogState, RootState } from '../state';
+import NrfCard from '../../NrfCard/NrfCard';
+import { Environment as Model } from '../../state';
+import EnvironmentMenu from './EnvironmentMenu';
+import environmentPropType from './environmentPropType';
+import Install from './Install';
+import Name from './Name';
+import OpenIde from './OpenIde';
+import OpenVsCode from './OpenVsCode';
+import ProgressBar from './ProgressBar';
+import ProgressLabel from './ProgressLabel';
+import ShowFirstSteps from './ShowFirstSteps';
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
+import './style.scss';
 
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
-});
+type Props = { environment: Model };
 
-const initialState: ConfirmDialogState = {};
+const Environment = ({ environment }: Props) => (
+    <NrfCard>
+        <Row noGutters>
+            <Col>
+                <Name environment={environment} />
+                <ProgressLabel environment={environment} />
+            </Col>
+            <Col
+                as={ButtonToolbar}
+                /* @ts-ignore */
+                xs="auto ml-auto"
+                className="d-flex align-items-center my-3 pl-3 wide-btns"
+            >
+                <ShowFirstSteps environment={environment} />
+                <Install environment={environment} />
+                <OpenIde environment={environment} />
+                <OpenVsCode environment={environment} />
+                <EnvironmentMenu environment={environment} />
+            </Col>
+        </Row>
+        <ProgressBar environment={environment} />
+    </NrfCard>
+);
 
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
-    switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
-        default:
-            return state;
-    }
-};
+Environment.propTypes = { environment: environmentPropType.isRequired };
 
-export const reduxConfirmDialogSelector = ({ app }: RootState) =>
-    app.reduxConfirmDialog;
-
-export default reduxConfirmDialogReducer;
+export default Environment;
