@@ -34,7 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { spawnSync } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 
 export const REQUIRED_EXTENSIONS = [
     'nordic-semiconductor.nrf-connect',
@@ -53,8 +53,8 @@ export enum VsCodeStatus {
     NOT_INSTALLED,
 }
 
-export const getVsCodeStatus = () => {
-    const extensions = listInstalledExtensions();
+export const getVsCodeStatus = async () => {
+    const extensions = await listInstalledExtensions();
 
     if (extensions === null) {
         return VsCodeStatus.NOT_INSTALLED;
@@ -69,8 +69,8 @@ export const getVsCodeStatus = () => {
         : VsCodeStatus.EXTENSIONS_MISSING;
 };
 
-export const installExtensions = () => {
-    const existing = listInstalledExtensions();
+export const installExtensions = async () => {
+    const existing = await listInstalledExtensions();
     const missing = [...REQUIRED_EXTENSIONS, ...RECOMENDED_EXTENSIONS].filter(
         identifier => !existing?.includes(identifier)
     );
@@ -85,21 +85,27 @@ const installExtension = (identifier: string) => {
     }).status;
 };
 
-export const listInstalledExtensions = () => {
-    const { stdout, status, error } = spawnSync('code', ['--list-extensions'], {
-        shell: true,
-        encoding: 'utf-8',
+export const listInstalledExtensions = async () => {
+    return new Promise<string[]>((resolve, reject) => {
+        console.log('Hello from new %clistExtensions', 'color: green');
+        const proc = spawn('code', ['--list-extensions'], {
+            shell: true,
+        });
+        let stdout = '';
+        // eslint-disable-next-line no-return-assign
+        proc.stdout.on('data', data => (stdout += data));
+
+        proc.on('close', (code, signal) => {
+            if (code === 0 && signal === null) {
+                return resolve(stdout.trim().split('\n'));
+            }
+            return reject();
+        });
     });
-
-    if (error || status !== 0) {
-        return undefined;
-    }
-
-    return stdout.trim().split('\n');
 };
 
-export function openVsCode() {
+export const openVsCode = () => {
     spawnSync('code', {
         shell: true,
     });
-}
+};
