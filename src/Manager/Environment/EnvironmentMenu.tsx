@@ -101,7 +101,7 @@ const openTerminal = {
         );
         const gitversion = readdirSync(`${toolchainDir}/Cellar/git`).pop();
         const env = [
-            `export PATH=${toolchainDir}/bin:$PATH`,
+            `export PATH=${toolchainDir}/bin:/usr/local/bin:$PATH`,
             `export GIT_EXEC_PATH=${toolchainDir}/Cellar/git/${gitversion}/libexec/git-core`,
             'export ZEPHYR_TOOLCHAIN_VARIANT=gnuarmemb',
             `export GNUARMEMB_TOOLCHAIN_PATH=${toolchainDir}`,
