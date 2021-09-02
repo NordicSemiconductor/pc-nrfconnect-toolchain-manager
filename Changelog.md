@@ -1,3 +1,7 @@
+## 0.9.4 - 2021-09-03
+### Fixed
+- On macOS the terminal was missing `/usr/local/bin` in the `PATH`.
+
 ## 0.9.3 - 2021-07-04
 ### Removed
 - Experimental banner for Mac.
