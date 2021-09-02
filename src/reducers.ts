@@ -36,7 +36,7 @@
 
 import { combineReducers } from 'redux';
 
-import firstInstall from './FirstInstall/firstInstallReducer';
+import { reducer as firstInstall } from './FirstInstall/firstInstallReducer';
 import installDir from './InstallDir/installDirReducer';
 import manager from './Manager/managerReducer';
 import reduxConfirmDialog from './ReduxConfirmDialog/reduxConfirmDialogReducer';

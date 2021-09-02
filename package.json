@@ -33,6 +33,7 @@
     "clean-modules": "rimraf \"node_modules/!(rimraf|.bin)\""
   },
   "devDependencies": {
+    "@reduxjs/toolkit": "1.6.1",
     "@types/fs-extra": "^9.0.12",
     "@types/react-redux": "^7.1.18",
     "@types/semver": "^7.3.8",
