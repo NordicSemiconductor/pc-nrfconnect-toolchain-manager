@@ -34,7 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { ConfirmDialogState, RootState } from '../state';
 
@@ -44,7 +44,10 @@ const slice = createSlice({
     name: 'reduxConfirmDialog',
     initialState,
     reducers: {
-        showReduxConfirmDialogAction: (state, action) => {
+        showReduxConfirmDialogAction: (
+            state,
+            action: PayloadAction<ConfirmDialogState>
+        ) => {
             state = { ...state, ...action };
         },
         hideReduxConfirmDialogAction: state => {
