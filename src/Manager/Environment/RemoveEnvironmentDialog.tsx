@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2021, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,78 +34,35 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { spawnSync } from 'child_process';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-export const REQUIRED_EXTENSIONS = [
-    'nordic-semiconductor.nrf-connect',
-    'marus25.cortex-debug',
-];
-export const RECOMENDED_EXTENSIONS = [
-    'nordic-semiconductor.nrf-terminal',
-    'luveti.kconfig',
-    'plorefice.devicetree',
-    'ms-vscode.cpptools',
-];
+import ConfirmationDialog from '../../ConfirmationDialog/ConfirmationDialog';
+import {
+    environmentToRemove,
+    hideConfirmRemoveDialog,
+    isRemoveDirDialogVisible,
+} from '../managerReducer';
+import { removeEnvironment } from './effects/removeEnvironment';
+import { version } from './environmentReducer';
 
-export enum VsCodeStatus {
-    INSTALLED,
-    EXTENSIONS_MISSING,
-    NOT_INSTALLED,
-}
+export default () => {
+    const dispatch = useDispatch();
+    const isVisible = useSelector(isRemoveDirDialogVisible);
+    const environment = useSelector(environmentToRemove) || {};
 
-export const getVsCodeStatus = () => {
-    const extensions = listInstalledExtensions();
-
-    if (extensions === null) {
-        return VsCodeStatus.NOT_INSTALLED;
-    }
-
-    const hasRequiredExtensions = REQUIRED_EXTENSIONS.every(extension =>
-        extensions?.includes(extension)
+    return (
+        <ConfirmationDialog
+            isVisible={isVisible}
+            title="Remove environment"
+            onCancel={() => dispatch(hideConfirmRemoveDialog())}
+            onConfirm={() => {
+                dispatch(hideConfirmRemoveDialog());
+                dispatch(removeEnvironment(environment));
+            }}
+        >
+            Are you sure to remove <code>{version(environment)}</code>{' '}
+            environment?
+        </ConfirmationDialog>
     );
-
-    return hasRequiredExtensions
-        ? VsCodeStatus.INSTALLED
-        : VsCodeStatus.EXTENSIONS_MISSING;
-};
-
-export const installExtensions = () => {
-    const existing = listInstalledExtensions();
-    const missing = [...REQUIRED_EXTENSIONS, ...RECOMENDED_EXTENSIONS].filter(
-        identifier => !existing?.includes(identifier)
-    );
-    return missing.map(extension => installExtension(extension));
-};
-
-const installExtension = (identifier: string) => {
-    const pathOrIdentifier = identifier;
-
-    const { status } = spawnSync(
-        'code',
-        ['--install-extension', pathOrIdentifier],
-        {
-            shell: true,
-        }
-    );
-
-    return { identifier, success: status === 0 };
-};
-
-export const listInstalledExtensions = () => {
-    const { stdout, status, error } = spawnSync('code', ['--list-extensions'], {
-        shell: true,
-        encoding: 'utf-8',
-    });
-
-    if (error || status !== 0) {
-        return undefined;
-    }
-
-    return stdout.trim().split('\n');
-};
-
-export const openVsCode = () => {
-    spawnSync('code', {
-        shell: true,
-    });
 };

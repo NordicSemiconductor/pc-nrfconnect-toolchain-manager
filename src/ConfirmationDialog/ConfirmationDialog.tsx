@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2021, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,78 +34,65 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { spawnSync } from 'child_process';
+import React, { FC } from 'react';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { bool, func, string } from 'prop-types';
 
-export const REQUIRED_EXTENSIONS = [
-    'nordic-semiconductor.nrf-connect',
-    'marus25.cortex-debug',
-];
-export const RECOMENDED_EXTENSIONS = [
-    'nordic-semiconductor.nrf-terminal',
-    'luveti.kconfig',
-    'plorefice.devicetree',
-    'ms-vscode.cpptools',
-];
+const ConfirmationDialog: FC<Props> = ({
+    title,
+    children,
+    isVisible,
+    onCancel = null,
+    onConfirm,
+    onOptional = null,
+    confirmLabel = 'OK',
+    cancelLabel = 'Cancel',
+    optionalLabel = null,
+}) => (
+    <Modal show={isVisible} onHide={onCancel || onConfirm} backdrop>
+        <Modal.Header closeButton={false}>
+            <Modal.Title>{title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{children}</Modal.Body>
+        <Modal.Footer>
+            {onOptional && (
+                <Button variant="outline-primary" onClick={onOptional}>
+                    {optionalLabel}
+                </Button>
+            )}
+            <Button variant="primary" onClick={onConfirm}>
+                {confirmLabel}
+            </Button>
+            {onCancel && (
+                <Button variant="outline-primary" onClick={onCancel}>
+                    {cancelLabel}
+                </Button>
+            )}
+        </Modal.Footer>
+    </Modal>
+);
 
-export enum VsCodeStatus {
-    INSTALLED,
-    EXTENSIONS_MISSING,
-    NOT_INSTALLED,
-}
-
-export const getVsCodeStatus = () => {
-    const extensions = listInstalledExtensions();
-
-    if (extensions === null) {
-        return VsCodeStatus.NOT_INSTALLED;
-    }
-
-    const hasRequiredExtensions = REQUIRED_EXTENSIONS.every(extension =>
-        extensions?.includes(extension)
-    );
-
-    return hasRequiredExtensions
-        ? VsCodeStatus.INSTALLED
-        : VsCodeStatus.EXTENSIONS_MISSING;
+type Props = {
+    title: string;
+    isVisible: boolean;
+    onCancel?: () => void;
+    onConfirm: () => void;
+    onOptional?: () => void;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    optionalLabel?: string;
 };
 
-export const installExtensions = () => {
-    const existing = listInstalledExtensions();
-    const missing = [...REQUIRED_EXTENSIONS, ...RECOMENDED_EXTENSIONS].filter(
-        identifier => !existing?.includes(identifier)
-    );
-    return missing.map(extension => installExtension(extension));
+ConfirmationDialog.propTypes = {
+    title: string.isRequired,
+    isVisible: bool.isRequired,
+    onConfirm: func.isRequired,
+    onCancel: func,
+    onOptional: func,
+    confirmLabel: string,
+    cancelLabel: string,
+    optionalLabel: string,
 };
 
-const installExtension = (identifier: string) => {
-    const pathOrIdentifier = identifier;
-
-    const { status } = spawnSync(
-        'code',
-        ['--install-extension', pathOrIdentifier],
-        {
-            shell: true,
-        }
-    );
-
-    return { identifier, success: status === 0 };
-};
-
-export const listInstalledExtensions = () => {
-    const { stdout, status, error } = spawnSync('code', ['--list-extensions'], {
-        shell: true,
-        encoding: 'utf-8',
-    });
-
-    if (error || status !== 0) {
-        return undefined;
-    }
-
-    return stdout.trim().split('\n');
-};
-
-export const openVsCode = () => {
-    spawnSync('code', {
-        shell: true,
-    });
-};
+export default ConfirmationDialog;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2021, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,78 +34,46 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { spawnSync } from 'child_process';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 
-export const REQUIRED_EXTENSIONS = [
-    'nordic-semiconductor.nrf-connect',
-    'marus25.cortex-debug',
-];
-export const RECOMENDED_EXTENSIONS = [
-    'nordic-semiconductor.nrf-terminal',
-    'luveti.kconfig',
-    'plorefice.devicetree',
-    'ms-vscode.cpptools',
-];
+import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
+import { Environment } from '../../state';
+import Button from './Button';
+import { install } from './effects/installEnvironment';
+import environmentPropType from './environmentPropType';
+import { isOnlyAvailable, version } from './environmentReducer';
 
-export enum VsCodeStatus {
-    INSTALLED,
-    EXTENSIONS_MISSING,
-    NOT_INSTALLED,
-}
+type Props = { environment: Environment };
 
-export const getVsCodeStatus = () => {
-    const extensions = listInstalledExtensions();
-
-    if (extensions === null) {
-        return VsCodeStatus.NOT_INSTALLED;
-    }
-
-    const hasRequiredExtensions = REQUIRED_EXTENSIONS.every(extension =>
-        extensions?.includes(extension)
-    );
-
-    return hasRequiredExtensions
-        ? VsCodeStatus.INSTALLED
-        : VsCodeStatus.EXTENSIONS_MISSING;
-};
-
-export const installExtensions = () => {
-    const existing = listInstalledExtensions();
-    const missing = [...REQUIRED_EXTENSIONS, ...RECOMENDED_EXTENSIONS].filter(
-        identifier => !existing?.includes(identifier)
-    );
-    return missing.map(extension => installExtension(extension));
-};
-
-const installExtension = (identifier: string) => {
-    const pathOrIdentifier = identifier;
-
-    const { status } = spawnSync(
-        'code',
-        ['--install-extension', pathOrIdentifier],
-        {
-            shell: true,
+const Install = ({ environment }: Props) => {
+    const dispatch = useDispatch();
+    const { platform } = process;
+    const onClick = (() => {
+        switch (platform) {
+            case 'darwin':
+                return () => dispatch(install(environment, false));
+            case 'linux':
+                return () =>
+                    dispatch(showConfirmInstallDirDialog(version(environment)));
+            case 'win32':
+                return () =>
+                    dispatch(showConfirmInstallDirDialog(version(environment)));
         }
+    })();
+
+    if (!isOnlyAvailable(environment)) return null;
+
+    return (
+        <Button
+            icon="x-mdi-briefcase-download-outline"
+            onClick={onClick}
+            label="Install"
+            variant="secondary"
+        />
     );
-
-    return { identifier, success: status === 0 };
 };
 
-export const listInstalledExtensions = () => {
-    const { stdout, status, error } = spawnSync('code', ['--list-extensions'], {
-        shell: true,
-        encoding: 'utf-8',
-    });
+Install.propTypes = { environment: environmentPropType.isRequired };
 
-    if (error || status !== 0) {
-        return undefined;
-    }
-
-    return stdout.trim().split('\n');
-};
-
-export const openVsCode = () => {
-    spawnSync('code', {
-        shell: true,
-    });
-};
+export default Install;

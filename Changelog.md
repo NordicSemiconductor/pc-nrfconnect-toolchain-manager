@@ -1,3 +1,8 @@
+## Version 0.9.4
+### New
+- Added button to launch environment from visual studio code
+
+
 ## Version 0.9.3
 ### Updated
 - Removed experimental banner for Mac

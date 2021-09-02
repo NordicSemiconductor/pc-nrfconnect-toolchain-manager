@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2021, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2020, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,78 +34,35 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { spawnSync } from 'child_process';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 
-export const REQUIRED_EXTENSIONS = [
-    'nordic-semiconductor.nrf-connect',
-    'marus25.cortex-debug',
-];
-export const RECOMENDED_EXTENSIONS = [
-    'nordic-semiconductor.nrf-terminal',
-    'luveti.kconfig',
-    'plorefice.devicetree',
-    'ms-vscode.cpptools',
-];
+import { Environment } from '../../state';
+import { selectEnvironment, showFirstSteps } from '../managerReducer';
+import Button from './Button';
+import environmentPropType from './environmentPropType';
+import { isInstalled, isOnlyAvailable, version } from './environmentReducer';
 
-export enum VsCodeStatus {
-    INSTALLED,
-    EXTENSIONS_MISSING,
-    NOT_INSTALLED,
-}
+type Props = { environment: Environment };
+const ShowFirstSteps = ({ environment }: Props) => {
+    const dispatch = useDispatch();
+    if (isOnlyAvailable(environment)) return null;
 
-export const getVsCodeStatus = () => {
-    const extensions = listInstalledExtensions();
-
-    if (extensions === null) {
-        return VsCodeStatus.NOT_INSTALLED;
-    }
-
-    const hasRequiredExtensions = REQUIRED_EXTENSIONS.every(extension =>
-        extensions?.includes(extension)
+    return (
+        <Button
+            icon="x-mdi-dog-service"
+            onClick={() => {
+                dispatch(selectEnvironment(version(environment)));
+                dispatch(showFirstSteps());
+            }}
+            label="First steps to build"
+            title="Show how to build a sample project"
+            variant="secondary"
+            disabled={!isInstalled(environment)}
+        />
     );
-
-    return hasRequiredExtensions
-        ? VsCodeStatus.INSTALLED
-        : VsCodeStatus.EXTENSIONS_MISSING;
 };
 
-export const installExtensions = () => {
-    const existing = listInstalledExtensions();
-    const missing = [...REQUIRED_EXTENSIONS, ...RECOMENDED_EXTENSIONS].filter(
-        identifier => !existing?.includes(identifier)
-    );
-    return missing.map(extension => installExtension(extension));
-};
+ShowFirstSteps.propTypes = { environment: environmentPropType.isRequired };
 
-const installExtension = (identifier: string) => {
-    const pathOrIdentifier = identifier;
-
-    const { status } = spawnSync(
-        'code',
-        ['--install-extension', pathOrIdentifier],
-        {
-            shell: true,
-        }
-    );
-
-    return { identifier, success: status === 0 };
-};
-
-export const listInstalledExtensions = () => {
-    const { stdout, status, error } = spawnSync('code', ['--list-extensions'], {
-        shell: true,
-        encoding: 'utf-8',
-    });
-
-    if (error || status !== 0) {
-        return undefined;
-    }
-
-    return stdout.trim().split('\n');
-};
-
-export const openVsCode = () => {
-    spawnSync('code', {
-        shell: true,
-    });
-};
+export default ShowFirstSteps;

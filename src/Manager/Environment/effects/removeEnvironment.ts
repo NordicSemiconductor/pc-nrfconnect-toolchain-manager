@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2021, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,78 +34,31 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { spawnSync } from 'child_process';
+import path from 'path';
+import { logger, usageData } from 'pc-nrfconnect-shared';
 
-export const REQUIRED_EXTENSIONS = [
-    'nordic-semiconductor.nrf-connect',
-    'marus25.cortex-debug',
-];
-export const RECOMENDED_EXTENSIONS = [
-    'nordic-semiconductor.nrf-terminal',
-    'luveti.kconfig',
-    'plorefice.devicetree',
-    'ms-vscode.cpptools',
-];
+import { Dispatch, Environment } from '../../../state';
+import EventAction from '../../../usageDataActions';
+import {
+    finishRemoving,
+    removeEnvironmentReducer,
+    startRemoving,
+} from '../environmentReducer';
+import { removeDir } from './removeDir';
 
-export enum VsCodeStatus {
-    INSTALLED,
-    EXTENSIONS_MISSING,
-    NOT_INSTALLED,
-}
+// eslint-disable-next-line import/prefer-default-export
+export const removeEnvironment =
+    ({ toolchainDir, version }: Environment) =>
+    async (dispatch: Dispatch) => {
+        logger.info(`Removing ${version} at ${toolchainDir}`);
+        usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
 
-export const getVsCodeStatus = () => {
-    const extensions = listInstalledExtensions();
+        dispatch(startRemoving(version));
 
-    if (extensions === null) {
-        return VsCodeStatus.NOT_INSTALLED;
-    }
-
-    const hasRequiredExtensions = REQUIRED_EXTENSIONS.every(extension =>
-        extensions?.includes(extension)
-    );
-
-    return hasRequiredExtensions
-        ? VsCodeStatus.INSTALLED
-        : VsCodeStatus.EXTENSIONS_MISSING;
-};
-
-export const installExtensions = () => {
-    const existing = listInstalledExtensions();
-    const missing = [...REQUIRED_EXTENSIONS, ...RECOMENDED_EXTENSIONS].filter(
-        identifier => !existing?.includes(identifier)
-    );
-    return missing.map(extension => installExtension(extension));
-};
-
-const installExtension = (identifier: string) => {
-    const pathOrIdentifier = identifier;
-
-    const { status } = spawnSync(
-        'code',
-        ['--install-extension', pathOrIdentifier],
-        {
-            shell: true,
+        if (await dispatch(removeDir(path.dirname(toolchainDir ?? '')))) {
+            logger.info(`Finished removing ${version} at ${toolchainDir}`);
+            dispatch(removeEnvironmentReducer(version));
         }
-    );
 
-    return { identifier, success: status === 0 };
-};
-
-export const listInstalledExtensions = () => {
-    const { stdout, status, error } = spawnSync('code', ['--list-extensions'], {
-        shell: true,
-        encoding: 'utf-8',
-    });
-
-    if (error || status !== 0) {
-        return undefined;
-    }
-
-    return stdout.trim().split('\n');
-};
-
-export const openVsCode = () => {
-    spawnSync('code', {
-        shell: true,
-    });
-};
+        dispatch(finishRemoving(version));
+    };
