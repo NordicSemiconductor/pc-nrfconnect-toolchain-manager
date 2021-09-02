@@ -35,40 +35,35 @@
  */
 
 import { Reducer } from 'react';
+import { createSlice } from '@reduxjs/toolkit';
 
 import { ConfirmDialogState, RootState } from '../state';
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
-
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
-});
-
 const initialState: ConfirmDialogState = {};
 
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
-    switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
-        default:
-            return state;
-    }
-};
+const slice = createSlice({
+    name: 'firstInstall',
+    initialState,
+    reducers: {
+        showReduxConfirmDialogAction: (state, action) => {
+            state = { ...state, ...action };
+        },
+        hideReduxConfirmDialogAction: state => {
+            state.callback = undefined;
+            state.title = undefined;
+            state.content = undefined;
+            state.confirmLabel = undefined;
+            state.cancelLabel = undefined;
+            state.onOptional = undefined;
+            state.optionalLabel = undefined;
+        },
+    },
+});
+
+export const {
+    reducer,
+    actions: { hideReduxConfirmDialogAction, showReduxConfirmDialogAction },
+} = slice;
 
 export const reduxConfirmDialogSelector = ({ app }: RootState) =>
     app.reduxConfirmDialog;
-
-export default reduxConfirmDialogReducer;
