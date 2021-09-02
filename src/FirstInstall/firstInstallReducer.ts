@@ -48,7 +48,6 @@ const slice = createSlice({
     initialState,
     reducers: {
         showFirstInstallDialog: state => {
-            console.log('showFirstInstallDialog');
             state.isDialogVisible = true;
         },
         hideFirstInstallDialog: state => {
