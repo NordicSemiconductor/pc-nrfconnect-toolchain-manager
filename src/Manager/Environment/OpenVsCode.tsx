@@ -54,26 +54,38 @@ import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { isInProgress } from './environmentReducer';
 
-function cancelCheckCallback(cancelled: boolean, func: () => void) {
+function cancelCheckCallback(
+    cancelled: boolean,
+    func: (dispatch: Dispatch) => void
+) {
     return (dispatch: Dispatch) => {
         if (!cancelled) dispatch(func);
     };
 }
 
-function installVsCodeExtensions() {
-    return (dispatch: Dispatch) => {
-        installExtensions();
+function installVsCodeExtensions(dispatch: Dispatch) {
+    const status = installExtensions();
+    const failed = status.filter(extension => extension.success);
+    const succeded = failed.length === 0;
 
-        dispatch(
-            showReduxConfirmDialogAction({
-                title: 'Opening VS Code',
-                content: 'All extensions installed succesfully.',
-                callback: ret => dispatch(cancelCheckCallback(ret, openVsCode)),
-                confirmLabel: 'Open VS Code',
-                cancelLabel: 'Cancel',
-            })
-        );
-    };
+    const content = succeded
+        ? 'All extensions installed succesfully.'
+        : `Not all extensions installed. Missing ${failed
+              .map(f => f.identifier)
+              .join(', ')}.`;
+
+    const confirmLabel = succeded ? 'Open VS Code' : 'Open VS Code anyway';
+
+    dispatch(
+        showReduxConfirmDialogAction({
+            title: 'Opening VS Code',
+            content,
+            callback: cancelled =>
+                dispatch(cancelCheckCallback(cancelled, openVsCode)),
+            confirmLabel,
+            cancelLabel: 'Cancel',
+        })
+    );
 }
 
 function extensionsToString(expected: string[], installed?: string[]) {
@@ -100,8 +112,10 @@ function showInstallVsCodeExtensions() {
                     RECOMENDED_EXTENSIONS,
                     extensions
                 )}`,
-                callback: ret =>
-                    dispatch(cancelCheckCallback(ret, installVsCodeExtensions)),
+                callback: cancelled =>
+                    dispatch(
+                        cancelCheckCallback(cancelled, installVsCodeExtensions)
+                    ),
                 confirmLabel: 'Install all missing extensions',
                 cancelLabel: 'Cancel',
                 onOptional: cancelled => {
@@ -131,8 +145,8 @@ function showInstallVsCode() {
                         ? 'On macOS please make sure that you also follow the instructions for [Launching from the command line](https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line).'
                         : ''
                 }`,
-                callback: ret =>
-                    dispatch(cancelCheckCallback(ret, showVsCodeDialog)),
+                callback: cancelled =>
+                    dispatch(cancelCheckCallback(cancelled, showVsCodeDialog)),
                 confirmLabel: 'OK, I installed VS Code',
                 cancelLabel: 'Cancel',
             })
@@ -142,11 +156,13 @@ function showInstallVsCode() {
 
 function showVsCodeDialog() {
     return (dispatch: Dispatch) => {
-        const ret = getVsCodeStatus();
-        if (ret === VsCodeStatus.NOT_INSTALLED) dispatch(showInstallVsCode());
-        else if (ret === VsCodeStatus.EXTENSIONS_MISSING)
+        const status = getVsCodeStatus();
+
+        if (status === VsCodeStatus.NOT_INSTALLED)
+            dispatch(showInstallVsCode());
+        else if (status === VsCodeStatus.EXTENSIONS_MISSING)
             dispatch(showInstallVsCodeExtensions());
-        else if (ret === VsCodeStatus.INSTALLED) openVsCode();
+        else if (status === VsCodeStatus.INSTALLED) openVsCode();
     };
 }
 

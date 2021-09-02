@@ -74,15 +74,21 @@ export const installExtensions = () => {
     const missing = [...REQUIRED_EXTENSIONS, ...RECOMENDED_EXTENSIONS].filter(
         identifier => !existing?.includes(identifier)
     );
-    missing.forEach(extension => installExtension(extension));
+    return missing.map(extension => installExtension(extension));
 };
 
 const installExtension = (identifier: string) => {
     const pathOrIdentifier = identifier;
 
-    return spawnSync('code', ['--install-extension', pathOrIdentifier], {
-        shell: true,
-    }).status;
+    const { status } = spawnSync(
+        'code',
+        ['--install-extension', pathOrIdentifier],
+        {
+            shell: true,
+        }
+    );
+
+    return { identifier, success: status === 0 };
 };
 
 export const listInstalledExtensions = () => {
@@ -98,8 +104,8 @@ export const listInstalledExtensions = () => {
     return stdout.trim().split('\n');
 };
 
-export function openVsCode() {
+export const openVsCode = () => {
     spawnSync('code', {
         shell: true,
     });
-}
+};
