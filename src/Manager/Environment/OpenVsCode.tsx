@@ -175,7 +175,7 @@ const OpenVsCode = ({ environment }: { environment: Environment }) => {
             title="Open Visual Studio Code"
             disabled={isInProgress(environment)}
             variant="primary"
-            onClick={() => dispatch(showInstallVsCodeExtensions())}
+            onClick={() => dispatch(showVsCodeDialog())}
         />
     );
 };
