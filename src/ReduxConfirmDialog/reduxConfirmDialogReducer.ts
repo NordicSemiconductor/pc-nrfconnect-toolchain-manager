@@ -34,7 +34,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { ConfirmDialogState, RootState } from '../state';
@@ -42,7 +41,7 @@ import { ConfirmDialogState, RootState } from '../state';
 const initialState: ConfirmDialogState = {};
 
 const slice = createSlice({
-    name: 'firstInstall',
+    name: 'reduxConfirmDialog',
     initialState,
     reducers: {
         showReduxConfirmDialogAction: (state, action) => {
