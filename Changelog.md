@@ -1,7 +1,10 @@
-## Version 0.9.4
-### New
-- Added button to launch environment from visual studio code
+## Unreleased
+### Added
+- Launch VS Code for an environment.
 
+## 0.9.4 - 2021-09-03
+### Fixed
+- On macOS the terminal was missing `/usr/local/bin` in the `PATH`.
 
 ## Version 0.9.3
 ### Updated
