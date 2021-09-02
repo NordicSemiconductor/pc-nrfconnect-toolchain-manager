@@ -47,7 +47,9 @@ import {
 } from '../InstallDir/installDirReducer';
 import {
     isMasterVisible,
+    isVsCodeVisible,
     showMasterEnvironment,
+    showVsCode,
 } from '../Manager/managerReducer';
 import NrfCard from '../NrfCard/NrfCard';
 import {
@@ -60,6 +62,7 @@ export default () => {
     const installDir = useSelector(currentInstallDir);
     const disabled = process.platform === 'darwin';
     const masterVisible = useSelector(isMasterVisible);
+    const vsCodeVisible = useSelector(isVsCodeVisible);
     const toolchainUrl = useSelector(toolchainRootUrl);
 
     return (
@@ -98,6 +101,25 @@ export default () => {
                                 Note that the unstable environment is not
                                 regularly updated, and its toolchain is likely
                                 not well tested.
+                            </Form.Text>
+                        </Form.Group>
+                    </Col>
+                </Row>
+
+                <Row className="settings-info mt-4">
+                    <Col>
+                        <Form.Group controlId="toggleVsCode">
+                            {/* @ts-ignore Typing not implemented in this old version of react-bootstrap */}
+                            <Form.Switch
+                                defaultChecked={vsCodeVisible}
+                                onChange={() =>
+                                    dispatch(showVsCode(!vsCodeVisible))
+                                }
+                                label="Show Vs Code button on environments"
+                            />
+                            <Form.Text className="text-muted">
+                                Experimental feature. Will be released with the
+                                new vscode extension.
                             </Form.Text>
                         </Form.Group>
                     </Col>

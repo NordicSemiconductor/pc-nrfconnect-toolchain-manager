@@ -39,7 +39,9 @@ import semver from 'semver';
 
 import {
     persistedShowMaster,
+    persistedShowVsCode,
     setPersistedShowMaster,
+    setPersistedShowVsCode,
 } from '../persistentStore';
 import {
     Environment,
@@ -130,6 +132,12 @@ export const showMasterEnvironment = (visible: boolean) => ({
     show: !!visible,
 });
 
+const SHOW_VSCODE = 'SHOW_VSCODE';
+export const showVsCode = (visible: boolean) => ({
+    type: SHOW_VSCODE,
+    show: !!visible,
+});
+
 const SHOW_FIRST_STEPS = 'SHOW_FIRST_STEPS';
 export const showFirstSteps = () => ({
     type: SHOW_FIRST_STEPS,
@@ -205,6 +213,9 @@ const managerReducer = (state: Manager, action: AnyAction) => {
         case SHOW_MASTER:
             setPersistedShowMaster(!!action.show);
             return { ...state, isMasterVisible: !!action.show };
+        case SHOW_VSCODE:
+            setPersistedShowVsCode(!!action.show);
+            return { ...state, isVsCodeVisible: !!action.show };
         case SELECT_ENVIRONMENT:
             return { ...state, selectedVersion: action.selectedVersion };
         case SHOW_FIRST_STEPS:
@@ -238,6 +249,7 @@ const initialState = (): Manager => ({
     isRemoveDirDialogVisible: false,
     isInstallPackageDialogVisible: false,
     isMasterVisible: persistedShowMaster(),
+    isVsCodeVisible: persistedShowVsCode(),
     isShowingFirstSteps: false,
     dndPackage: null,
     versionToRemove: '',
@@ -274,6 +286,9 @@ export const environmentsByVersion = ({ app }: RootState) =>
 
 export const isMasterVisible = ({ app }: RootState) =>
     app.manager.isMasterVisible;
+
+export const isVsCodeVisible = ({ app }: RootState) =>
+    app.manager.isVsCodeVisible;
 
 export const dndPackage = ({ app }: RootState) => app.manager.dndPackage;
 

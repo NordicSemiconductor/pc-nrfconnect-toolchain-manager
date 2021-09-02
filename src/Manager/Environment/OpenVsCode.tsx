@@ -35,12 +35,13 @@
  */
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import checkInstalled from '../../../resources/check-circle-installed.svg';
 import checkNotInstalled from '../../../resources/check-circle-not-installed.svg';
 import { showReduxConfirmDialogAction } from '../../ReduxConfirmDialog/reduxConfirmDialogReducer';
 import { Dispatch, Environment } from '../../state';
+import { isVsCodeVisible } from '../managerReducer';
 import {
     getVsCodeStatus,
     installExtensions,
@@ -168,6 +169,10 @@ function showVsCodeDialog() {
 
 const OpenVsCode = ({ environment }: { environment: Environment }) => {
     const dispatch = useDispatch();
+
+    const isEnabled = useSelector(isVsCodeVisible);
+    if (!isEnabled) return <></>;
+
     return (
         <Button
             icon="x-mdi-rocket"

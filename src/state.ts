@@ -46,6 +46,7 @@ export type Manager = {
     isRemoveDirDialogVisible: boolean;
     isInstallPackageDialogVisible: boolean;
     isMasterVisible: boolean;
+    isVsCodeVisible: boolean;
     isShowingFirstSteps: boolean;
     versionToRemove: string;
     selectedVersion?: string;

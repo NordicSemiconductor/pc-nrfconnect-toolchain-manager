@@ -93,3 +93,8 @@ export const persistedShowMaster = () =>
     store<boolean>().get('showMaster', false);
 export const setPersistedShowMaster = (visible: boolean) =>
     store().set('showMaster', visible);
+
+export const persistedShowVsCode = () =>
+    store<boolean>().get('showVsCode', false);
+export const setPersistedShowVsCode = (visible: boolean) =>
+    store().set('showVsCode', visible);
