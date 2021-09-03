@@ -49,7 +49,7 @@ import {
     isConfirmDirFlavour,
     isDialogVisible,
     setInstallDir,
-} from './installDirReducer';
+} from './installDirSlice';
 
 const selectInstallDir = async (
     dispatch: Dispatch,

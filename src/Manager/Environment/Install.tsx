@@ -37,7 +37,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { showConfirmInstallDirDialog } from '../../InstallDir/installDirReducer';
+import { showConfirmInstallDirDialog } from '../../InstallDir/installDirSlice';
 import { Environment } from '../../state';
 import Button from './Button';
 import { install } from './effects/installEnvironment';

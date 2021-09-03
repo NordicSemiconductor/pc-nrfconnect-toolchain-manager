@@ -2,10 +2,10 @@ import { NrfConnectState } from 'pc-nrfconnect-shared';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 
-import { FirstInstallState } from './FirstInstall/firstInstallReducer';
-import { InstallDirectoryState } from './InstallDir/installDirReducer';
-import { ConfirmDialogState } from './ReduxConfirmDialog/reduxConfirmDialogReducer';
-import { ToolChainSourceState as ToolchainSourceState } from './ToolchainSource/toolchainSourceReducer';
+import { FirstInstallState } from './FirstInstall/firstInstallSlice';
+import { InstallDirectoryState } from './InstallDir/installDirSlice';
+import { ConfirmDialogState } from './ReduxConfirmDialog/reduxConfirmDialogSlice';
+import { ToolChainSourceState as ToolchainSourceState } from './ToolchainSource/toolchainSourceSlice';
 
 export type Toolchain = {
     version: string;
