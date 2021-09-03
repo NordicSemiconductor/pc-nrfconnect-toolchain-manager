@@ -55,7 +55,7 @@ const ShowFirstSteps = ({ environment }: Props) => {
                 dispatch(selectEnvironment(version(environment)));
                 dispatch(showFirstSteps());
             }}
-            label="First steps to build"
+            label="First steps"
             title="Show how to build a sample project"
             variant="secondary"
             disabled={!isInstalled(environment)}

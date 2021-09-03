@@ -74,8 +74,8 @@ export default () => {
     return (
         <>
             <Alert variant="warning">
-                <b>Linux is currently not supported by this app.</b>
-                <OnlineDocs label="documentation" />.
+                <b>Linux is currently not supported by this app. </b>
+                <OnlineDocs label="Installation instructions for Linux" />
             </Alert>
             {!isSnapAvailable && (
                 <Alert variant="danger">
