@@ -46,12 +46,13 @@ import { RootState } from '../state';
 const CONFIRM_DIR = Symbol('Confirm the install directory');
 const SET_DIR = Symbol('Set the install directory');
 
-type InstallDirectoryState = {
+export type InstallDirectoryState = {
     currentDir: string;
     isDialogVisible: boolean;
     dialogFlavour?: symbol;
     versionToInstall?: string;
 };
+
 const initialState: InstallDirectoryState = {
     currentDir: persistedInstallDir(),
     isDialogVisible: false,
@@ -100,4 +101,4 @@ export const isDialogVisible = (state: RootState) =>
 export const isConfirmDirFlavour = (state: RootState) =>
     state.app.installDir.dialogFlavour === CONFIRM_DIR;
 export const environmentToInstall = (state: RootState) =>
-    getEnvironment(state, state.app.installDir.versionToInstall);
+    getEnvironment(state, state.app.installDir.versionToInstall ?? '');

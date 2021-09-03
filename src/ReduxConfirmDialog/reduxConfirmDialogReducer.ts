@@ -36,7 +36,17 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { ConfirmDialogState, RootState } from '../state';
+import { RootState } from '../state';
+
+export type ConfirmDialogState = {
+    callback?: (isCancelled: boolean) => void;
+    title?: string;
+    content?: string;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    onOptional?: (isCancelled: boolean) => void;
+    optionalLabel?: string;
+};
 
 const initialState: ConfirmDialogState = {};
 
@@ -47,18 +57,8 @@ const slice = createSlice({
         showReduxConfirmDialogAction: (
             state,
             action: PayloadAction<ConfirmDialogState>
-        ) => {
-            state = { ...state, ...action };
-        },
-        hideReduxConfirmDialogAction: state => {
-            state.callback = undefined;
-            state.title = undefined;
-            state.content = undefined;
-            state.confirmLabel = undefined;
-            state.cancelLabel = undefined;
-            state.onOptional = undefined;
-            state.optionalLabel = undefined;
-        },
+        ) => ({ ...state, ...action.payload }),
+        hideReduxConfirmDialogAction: () => initialState,
     },
 });
 

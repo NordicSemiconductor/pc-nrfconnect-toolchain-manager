@@ -38,7 +38,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../state';
 
-type FirstInstallState = { isDialogVisible: boolean };
+export type FirstInstallState = { isDialogVisible: boolean };
 const initialState: FirstInstallState = {
     isDialogVisible: false,
 };

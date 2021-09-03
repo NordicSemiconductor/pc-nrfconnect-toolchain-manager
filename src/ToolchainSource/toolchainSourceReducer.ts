@@ -39,11 +39,11 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { toolchainIndexUrl } from '../persistentStore';
 import { RootState } from '../state';
 
-type State = {
+export type ToolChainSourceState = {
     toolchainRootUrl: string;
     isDialogVisible: boolean;
 };
-const initialState: State = {
+const initialState: ToolChainSourceState = {
     toolchainRootUrl: toolchainIndexUrl(),
     isDialogVisible: false,
 };
