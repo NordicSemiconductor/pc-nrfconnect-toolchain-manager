@@ -101,7 +101,7 @@ export default () => {
     const showingFirstSteps = useSelector(isShowingFirstSteps);
 
     if (showingFirstSteps) {
-        logger.info('Show first intall instructions');
+        logger.info('Show first install instructions');
         usageData.sendUsageData(
             EventAction.SHOW_FIRST_INSTALL_INSTRUCTIONS,
             `${process.platform}; ${process.arch}`
