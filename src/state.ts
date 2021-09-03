@@ -2,16 +2,16 @@ import { NrfConnectState } from 'pc-nrfconnect-shared';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 
+import { FirstInstallState } from './FirstInstall/firstInstallReducer';
+import { InstallDirectoryState } from './InstallDir/installDirReducer';
+import { ConfirmDialogState } from './ReduxConfirmDialog/reduxConfirmDialogReducer';
+import { ToolChainSourceState as ToolchainSourceState } from './ToolchainSource/toolchainSourceReducer';
+
 export type Toolchain = {
     version: string;
     name: string;
     sha512: string;
     uri?: string;
-};
-
-export type ToolchainSource = {
-    toolchainRootUrl: string;
-    isDialogVisible: boolean;
 };
 
 export type Environment = {
@@ -30,16 +30,6 @@ export type Environments = {
     [key: string]: Environment;
 };
 
-export type ConfirmDialogState = {
-    callback?: (isCancelled: boolean) => void;
-    title?: string;
-    content?: string;
-    confirmLabel?: string;
-    cancelLabel?: string;
-    onOptional?: (isCancelled: boolean) => void;
-    optionalLabel?: string;
-};
-
 export type Manager = {
     environments: Environments;
     dndPackage: string | null;
@@ -53,17 +43,10 @@ export type Manager = {
 };
 
 export type AppState = {
-    firstInstall: {
-        isDialogVisible: boolean;
-    };
-    installDir: {
-        currentDir: string;
-        isDialogVisible: boolean;
-        dialogFlavour: null;
-        versionToInstall: string;
-    };
+    firstInstall: FirstInstallState;
+    installDir: InstallDirectoryState;
     manager: Manager;
-    toolchainSource: ToolchainSource;
+    toolchainSource: ToolchainSourceState;
     reduxConfirmDialog: ConfirmDialogState;
 };
 

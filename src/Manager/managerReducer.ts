@@ -55,24 +55,6 @@ import environmentReducer, {
     REMOVE_ENVIRONMENT,
 } from './Environment/environmentReducer';
 
-const byVersion = (a: { version: string }, b: { version: string }) => {
-    try {
-        return -semver.compare(a.version, b.version);
-    } catch (_) {
-        switch (true) {
-            case a.version < b.version:
-                return -1;
-            case a.version > b.version:
-                return 1;
-            default:
-                return 0;
-        }
-    }
-};
-
-const sortedByVersion = <T extends { version: string }>(list: T[]): T[] =>
-    [...list].sort(byVersion);
-
 const SELECT_ENVIRONMENT = 'SELECT_ENVIRONMENT';
 export const selectEnvironment = (selectedVersion: string) => ({
     type: SELECT_ENVIRONMENT,
@@ -294,3 +276,21 @@ export const dndPackage = ({ app }: RootState) => app.manager.dndPackage;
 
 export const isShowingFirstSteps = ({ app }: RootState) =>
     app.manager.isShowingFirstSteps;
+
+const byVersion = (a: { version: string }, b: { version: string }) => {
+    try {
+        return -semver.compare(a.version, b.version);
+    } catch (_) {
+        switch (true) {
+            case a.version < b.version:
+                return -1;
+            case a.version > b.version:
+                return 1;
+            default:
+                return 0;
+        }
+    }
+};
+
+const sortedByVersion = <T extends { version: string }>(list: T[]): T[] =>
+    [...list].sort(byVersion);

@@ -34,40 +34,32 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { AnyAction } from 'redux';
+import { createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../state';
 
-const SHOW_FIRST_INSTALL_DIALOG = 'SHOW_FIRST_INSTALL_DIALOG';
-export const showFirstInstallDialog = () => ({
-    type: SHOW_FIRST_INSTALL_DIALOG,
-});
-
-const HIDE_FIRST_INSTALL_DIALOG = 'HIDE_FIRST_INSTALL_DIALOG';
-export const hideFirstInstallDialog = () => ({
-    type: HIDE_FIRST_INSTALL_DIALOG,
-});
-
-const initialState = {
+export type FirstInstallState = { isDialogVisible: boolean };
+const initialState: FirstInstallState = {
     isDialogVisible: false,
 };
 
-export default (state = initialState, action: AnyAction) => {
-    switch (action.type) {
-        case SHOW_FIRST_INSTALL_DIALOG:
-            return {
-                ...state,
-                isDialogVisible: true,
-            };
-        case HIDE_FIRST_INSTALL_DIALOG:
-            return {
-                ...state,
-                isDialogVisible: false,
-            };
-        default:
-            return state;
-    }
-};
+const slice = createSlice({
+    name: 'firstInstall',
+    initialState,
+    reducers: {
+        showFirstInstallDialog: state => {
+            state.isDialogVisible = true;
+        },
+        hideFirstInstallDialog: state => {
+            state.isDialogVisible = false;
+        },
+    },
+});
+
+export const {
+    reducer,
+    actions: { hideFirstInstallDialog, showFirstInstallDialog },
+} = slice;
 
 export const isDialogVisible = (state: RootState) =>
     state.app.firstInstall.isDialogVisible;

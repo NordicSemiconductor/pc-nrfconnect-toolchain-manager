@@ -34,48 +34,49 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { AnyAction } from 'redux';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { setToolchainIndexUrl, toolchainIndexUrl } from '../persistentStore';
+import { toolchainIndexUrl } from '../persistentStore';
 import { RootState } from '../state';
 
-const SET_TOOLCHAIN_SOURCE = 'SET_TOOLCHAIN_SOURCE';
-export const setToolchainSource = (toolchainRootUrl: string) => ({
-    type: SET_TOOLCHAIN_SOURCE,
-    toolchainRootUrl,
-});
-
-const SHOW_SET_TOOLCHAIN_SOURCE_DIALOG = 'SHOW_SET_TOOLCHAIN_SOURCE_DIALOG';
-export const showSetToolchainSourceDialog = () => ({
-    type: SHOW_SET_TOOLCHAIN_SOURCE_DIALOG,
-    isDialogVisible: true,
-});
-
-const HIDE_SET_TOOLCHAIN_SOURCE_DIALOG = 'HIDE_SET_TOOLCHAIN_SOURCE_DIALOG';
-export const hideSetToolchainSourceDialog = () => ({
-    type: HIDE_SET_TOOLCHAIN_SOURCE_DIALOG,
-    isDialogVisible: false,
-});
-
-const initialState = () => ({
+export type ToolChainSourceState = {
+    toolchainRootUrl: string;
+    isDialogVisible: boolean;
+};
+const initialState: ToolChainSourceState = {
     toolchainRootUrl: toolchainIndexUrl(),
     isDialogVisible: false,
+};
+
+const slice = createSlice({
+    name: 'toolchainSource',
+    initialState,
+    reducers: {
+        setToolchainSource: (
+            state,
+            toolchainRootUrl: PayloadAction<string>
+        ) => {
+            state.toolchainRootUrl = toolchainRootUrl.payload;
+        },
+
+        showSetToolchainSourceDialog: state => {
+            state.isDialogVisible = true;
+        },
+
+        hideSetToolchainSourceDialog: state => {
+            state.isDialogVisible = false;
+        },
+    },
 });
 
-export default (state = initialState(), { type, ...action }: AnyAction) => {
-    switch (type) {
-        case SET_TOOLCHAIN_SOURCE:
-            setToolchainIndexUrl(action.toolchainRootUrl);
-        case SHOW_SET_TOOLCHAIN_SOURCE_DIALOG: // eslint-disable-line no-fallthrough
-        case HIDE_SET_TOOLCHAIN_SOURCE_DIALOG:
-            return {
-                ...state,
-                ...action,
-            };
-        default:
-            return state;
-    }
-};
+export const {
+    reducer,
+    actions: {
+        setToolchainSource,
+        showSetToolchainSourceDialog,
+        hideSetToolchainSourceDialog,
+    },
+} = slice;
 
 export const toolchainRootUrl = ({ app }: RootState) =>
     app.toolchainSource.toolchainRootUrl;

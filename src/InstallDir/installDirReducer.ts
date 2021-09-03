@@ -34,7 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { AnyAction } from 'redux';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { getEnvironment } from '../Manager/managerReducer';
 import {
@@ -46,65 +46,53 @@ import { RootState } from '../state';
 const CONFIRM_DIR = Symbol('Confirm the install directory');
 const SET_DIR = Symbol('Set the install directory');
 
-const SET_INSTALL_DIR = 'SET_INSTALL_DIR';
-export const setInstallDir = (dir: string) => ({
-    type: SET_INSTALL_DIR,
-    dir,
-});
+export type InstallDirectoryState = {
+    currentDir: string;
+    isDialogVisible: boolean;
+    dialogFlavour?: symbol;
+    versionToInstall?: string;
+};
 
-const SHOW_CONFIRM_INSTALL_DIR_DIALOG = 'SHOW_CONFIRM_INSTALL_DIR_DIALOG';
-export const showConfirmInstallDirDialog = (versionToInstall: string) => ({
-    type: SHOW_CONFIRM_INSTALL_DIR_DIALOG,
-    versionToInstall,
-});
-
-const SHOW_SET_INSTALL_DIR_DIALOG = 'SHOW_SET_INSTALL_DIR_DIALOG';
-export const showSetInstallDirDialog = () => ({
-    type: SHOW_SET_INSTALL_DIR_DIALOG,
-});
-
-const HIDE_INSTALL_DIR_DIALOG = 'HIDE_INSTALL_DIR_DIALOG';
-export const hideInstallDirDialog = () => ({
-    type: HIDE_INSTALL_DIR_DIALOG,
-});
-
-const initialState = () => ({
+const initialState: InstallDirectoryState = {
     currentDir: persistedInstallDir(),
     isDialogVisible: false,
-    dialogFlavour: null,
-    versionToInstall: null,
+};
+
+const slice = createSlice({
+    name: 'installDir',
+    initialState,
+    reducers: {
+        setInstallDir: (state, directory: PayloadAction<string>) => {
+            setPersistedInstallDir(directory.payload);
+            state.currentDir = directory.payload;
+        },
+        showConfirmInstallDirDialog: (
+            state,
+            version: PayloadAction<string>
+        ) => {
+            state.isDialogVisible = true;
+            state.dialogFlavour = CONFIRM_DIR;
+            state.versionToInstall = version.payload;
+        },
+        showSetInstallDirDialog: state => {
+            state.isDialogVisible = true;
+            state.dialogFlavour = SET_DIR;
+        },
+        hideInstallDirDialog: state => {
+            state.isDialogVisible = false;
+        },
+    },
 });
 
-export default (state = initialState(), action: AnyAction) => {
-    switch (action.type) {
-        case SET_INSTALL_DIR:
-            setPersistedInstallDir(action.dir);
-            return {
-                ...state,
-                currentDir: action.dir,
-            };
-        case SHOW_CONFIRM_INSTALL_DIR_DIALOG:
-            return {
-                ...state,
-                isDialogVisible: true,
-                dialogFlavour: CONFIRM_DIR,
-                versionToInstall: action.versionToInstall,
-            };
-        case SHOW_SET_INSTALL_DIR_DIALOG:
-            return {
-                ...state,
-                isDialogVisible: true,
-                dialogFlavour: SET_DIR,
-            };
-        case HIDE_INSTALL_DIR_DIALOG:
-            return {
-                ...state,
-                isDialogVisible: false,
-            };
-        default:
-            return state;
-    }
-};
+export const {
+    reducer,
+    actions: {
+        hideInstallDirDialog,
+        setInstallDir,
+        showConfirmInstallDirDialog,
+        showSetInstallDirDialog,
+    },
+} = slice;
 
 export const currentInstallDir = (state: RootState) =>
     state.app.installDir.currentDir;
@@ -113,4 +101,4 @@ export const isDialogVisible = (state: RootState) =>
 export const isConfirmDirFlavour = (state: RootState) =>
     state.app.installDir.dialogFlavour === CONFIRM_DIR;
 export const environmentToInstall = (state: RootState) =>
-    getEnvironment(state, state.app.installDir.versionToInstall);
+    getEnvironment(state, state.app.installDir.versionToInstall ?? '');

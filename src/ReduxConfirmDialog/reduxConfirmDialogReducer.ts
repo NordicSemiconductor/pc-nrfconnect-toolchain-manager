@@ -34,41 +34,38 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Reducer } from 'react';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { ConfirmDialogState, RootState } from '../state';
+import { RootState } from '../state';
 
-type ACTIONS = 'SHOW_REDUX_CONFIRM_DIALOG' | 'HIDE_REDUX_CONFIRM_DIALOG';
-
-const SHOW_REDUX_CONFIRM_DIALOG = 'SHOW_REDUX_CONFIRM_DIALOG';
-export const showReduxConfirmDialogAction = ({
-    ...args
-}: ConfirmDialogState) => ({
-    type: SHOW_REDUX_CONFIRM_DIALOG,
-    ...args,
-});
-const HIDE_REDUX_CONFIRM_DIALOG = 'HIDE_REDUX_CONFIRM_DIALOG';
-export const hideReduxConfirmDialogAction = () => ({
-    type: HIDE_REDUX_CONFIRM_DIALOG,
-});
+export type ConfirmDialogState = {
+    callback?: (isCancelled: boolean) => void;
+    title?: string;
+    content?: string;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    onOptional?: (isCancelled: boolean) => void;
+    optionalLabel?: string;
+};
 
 const initialState: ConfirmDialogState = {};
 
-export const reduxConfirmDialogReducer: Reducer<
-    ConfirmDialogState,
-    { type: ACTIONS } & ConfirmDialogState
-> = (state = initialState, { type, ...action }) => {
-    switch (type) {
-        case SHOW_REDUX_CONFIRM_DIALOG:
-            return { ...state, ...action };
-        case HIDE_REDUX_CONFIRM_DIALOG:
-            return initialState;
-        default:
-            return state;
-    }
-};
+const slice = createSlice({
+    name: 'reduxConfirmDialog',
+    initialState,
+    reducers: {
+        showReduxConfirmDialogAction: (
+            state,
+            action: PayloadAction<ConfirmDialogState>
+        ) => ({ ...state, ...action.payload }),
+        hideReduxConfirmDialogAction: () => initialState,
+    },
+});
+
+export const {
+    reducer,
+    actions: { hideReduxConfirmDialogAction, showReduxConfirmDialogAction },
+} = slice;
 
 export const reduxConfirmDialogSelector = ({ app }: RootState) =>
     app.reduxConfirmDialog;
-
-export default reduxConfirmDialogReducer;
