@@ -273,7 +273,7 @@ const FirstInstallInstructions = () => {
                                                     based on your needs.
                                                 </li>
                                                 <li>
-                                                    Click <b>Generage Config</b>
+                                                    Click <b>Generate Config</b>
                                                 </li>
                                             </ol>
                                         </li>

@@ -7,9 +7,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import {
     persistedHideOlderEnvironments,
-    persistedShowVsCode,
+    persistedEnabledVsCode,
     setPersistedHideOlderEnvironments,
-    setPersistedShowVsCode,
+    setPersistedEnabledVsCode,
 } from '../persistentStore';
 import { RootState } from '../state';
 
@@ -19,7 +19,7 @@ export interface SettingsState {
 }
 
 const initialState: SettingsState = {
-    isVsCodeVisible: persistedShowVsCode(),
+    isVsCodeVisible: persistedEnabledVsCode(),
     isOlderEnvironmentsHidden: persistedHideOlderEnvironments(),
 };
 
@@ -27,8 +27,8 @@ const slice = createSlice({
     name: 'settings',
     initialState,
     reducers: {
-        showVsCode: (state, action: PayloadAction<boolean>) => {
-            setPersistedShowVsCode(action.payload);
+        enableVsCode: (state, action: PayloadAction<boolean>) => {
+            setPersistedEnabledVsCode(action.payload);
             state.isVsCodeVisible = action.payload;
         },
         showOlderEnvironments: (state, action: PayloadAction<boolean>) => {
@@ -40,10 +40,10 @@ const slice = createSlice({
 
 export const {
     reducer,
-    actions: { showVsCode, showOlderEnvironments },
+    actions: { enableVsCode, showOlderEnvironments },
 } = slice;
 
-export const isVsCodeVisible = ({ app: { settings } }: RootState) =>
+export const isVsCodeEnabled = ({ app: { settings } }: RootState) =>
     settings.isVsCodeVisible;
 
 export const isOlderEnvironmentsHidden = ({ app: { settings } }: RootState) =>

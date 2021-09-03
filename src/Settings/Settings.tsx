@@ -22,17 +22,17 @@ import {
     toolchainRootUrl,
 } from '../ToolchainSource/toolchainSourceSlice';
 import {
+    enableVsCode,
     isOlderEnvironmentsHidden,
-    isVsCodeVisible,
+    isVsCodeEnabled,
     showOlderEnvironments,
-    showVsCode,
 } from './settingsSlice';
 
 export default () => {
     const dispatch = useDispatch();
     const installDir = useSelector(currentInstallDir);
     const disabled = process.platform === 'darwin';
-    const vsCodeVisible = useSelector(isVsCodeVisible);
+    const vsCodeEnabled = useSelector(isVsCodeEnabled);
     const toolchainUrl = useSelector(toolchainRootUrl);
     const olderEnvironmentsHidden = useSelector(isOlderEnvironmentsHidden);
 
@@ -88,10 +88,10 @@ export default () => {
                         <Form.Group controlId="toggleVsCode">
                             <div className="d-flex">
                                 <Toggle
-                                    isToggled={vsCodeVisible}
+                                    isToggled={vsCodeEnabled}
                                     labelRight
                                     onToggle={() =>
-                                        dispatch(showVsCode(!vsCodeVisible))
+                                        dispatch(enableVsCode(!vsCodeEnabled))
                                     }
                                     label="Show Vs Code button on environments"
                                 />

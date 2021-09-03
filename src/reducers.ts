@@ -41,6 +41,7 @@ import manager from './Manager/managerSlice';
 import { reducer as reduxConfirmDialog } from './ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { reducer as settings } from './Settings/settingsSlice';
 import { reducer as toolchainSource } from './ToolchainSource/toolchainSourceSlice';
+import { reducer as vsCode } from './VsCodeDialog/vscodeSlice';
 
 const rootReducer = combineReducers({
     installDir,
@@ -48,6 +49,7 @@ const rootReducer = combineReducers({
     toolchainSource,
     reduxConfirmDialog,
     settings,
+    vsCode,
 });
 
 export default rootReducer;

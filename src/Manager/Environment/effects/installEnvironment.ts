@@ -40,10 +40,15 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 import showErrorDialog from '../../../launcherActions';
 import {
     persistedInstallDir as installDir,
+    persistedShowVsCodeDialogDuringInstall,
     setHasInstalledAnNcs,
 } from '../../../persistentStore';
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
+import {
+    setToolchainDir,
+    showVsCodeDialog,
+} from '../../../VsCodeDialog/vscodeSlice';
 import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
@@ -67,6 +72,11 @@ export const install =
         dispatch(selectEnvironment(version));
 
         setHasInstalledAnNcs();
+
+        if (persistedShowVsCodeDialogDuringInstall()) {
+            dispatch(setToolchainDir(undefined));
+            dispatch(showVsCodeDialog());
+        }
 
         try {
             if (toolchain === undefined) throw new Error('No toolchain found');

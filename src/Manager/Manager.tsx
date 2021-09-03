@@ -18,6 +18,7 @@ import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
 import { isOlderEnvironmentsHidden } from '../Settings/settingsSlice';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import EventAction from '../usageDataActions';
+import VsCodeDialog from '../VsCodeDialog/VsCodeDialog';
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
 import initEnvironments from './initEnvironments';
@@ -106,6 +107,7 @@ export default () => {
                     <ToolchainSourceDialog />
                     <InstallDirDialog />
                     <ReduxConfirmDialog />
+                    <VsCodeDialog />
                 </>
             )}
         </div>
