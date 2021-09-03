@@ -38,7 +38,7 @@ import { remote } from 'electron';
 import fs from 'fs';
 import path from 'path';
 
-import { showReduxConfirmDialogAction } from '../../../ReduxConfirmDialog/reduxConfirmDialogReducer';
+import { showReduxConfirmDialogAction } from '../../../ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { Dispatch } from '../../../state';
 import { removeDir } from './removeDir';
 

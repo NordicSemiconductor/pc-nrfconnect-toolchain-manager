@@ -37,7 +37,7 @@
 import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import { showFirstInstallDialog } from '../../../FirstInstall/firstInstallReducer';
+import { showFirstInstallDialog } from '../../../FirstInstall/firstInstallSlice';
 import { showErrorDialog } from '../../../launcherActions';
 import {
     isFirstInstall,

@@ -42,7 +42,7 @@ import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import {
     hideReduxConfirmDialogAction,
     reduxConfirmDialogSelector,
-} from './reduxConfirmDialogReducer';
+} from './reduxConfirmDialogSlice';
 
 export default () => {
     const dispatch = useDispatch();

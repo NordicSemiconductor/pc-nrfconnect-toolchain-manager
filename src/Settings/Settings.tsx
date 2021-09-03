@@ -44,7 +44,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     currentInstallDir,
     showSetInstallDirDialog,
-} from '../InstallDir/installDirReducer';
+} from '../InstallDir/installDirSlice';
 import {
     isMasterVisible,
     isVsCodeVisible,
@@ -55,7 +55,7 @@ import NrfCard from '../NrfCard/NrfCard';
 import {
     showSetToolchainSourceDialog,
     toolchainRootUrl,
-} from '../ToolchainSource/toolchainSourceReducer';
+} from '../ToolchainSource/toolchainSourceSlice';
 
 export default () => {
     const dispatch = useDispatch();

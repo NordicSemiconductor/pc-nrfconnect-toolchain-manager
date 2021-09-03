@@ -36,11 +36,11 @@
 
 import { combineReducers } from 'redux';
 
-import { reducer as firstInstall } from './FirstInstall/firstInstallReducer';
-import { reducer as installDir } from './InstallDir/installDirReducer';
+import { reducer as firstInstall } from './FirstInstall/firstInstallSlice';
+import { reducer as installDir } from './InstallDir/installDirSlice';
 import manager from './Manager/managerReducer';
-import { reducer as reduxConfirmDialog } from './ReduxConfirmDialog/reduxConfirmDialogReducer';
-import { reducer as toolchainSource } from './ToolchainSource/toolchainSourceReducer';
+import { reducer as reduxConfirmDialog } from './ReduxConfirmDialog/reduxConfirmDialogSlice';
+import { reducer as toolchainSource } from './ToolchainSource/toolchainSourceSlice';
 
 const rootReducer = combineReducers({
     firstInstall,

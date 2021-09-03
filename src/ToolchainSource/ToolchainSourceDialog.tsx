@@ -45,7 +45,7 @@ import {
     isDialogVisible,
     setToolchainSource,
     toolchainRootUrl,
-} from './toolchainSourceReducer';
+} from './toolchainSourceSlice';
 
 export default () => {
     const dispatch = useDispatch();

@@ -42,7 +42,7 @@ import Card from 'react-bootstrap/Card';
 import { useDispatch, useSelector } from 'react-redux';
 import { sep } from 'path';
 
-import { currentInstallDir } from '../InstallDir/installDirReducer';
+import { currentInstallDir } from '../InstallDir/installDirSlice';
 import { hideFirstSteps, selectedVersion } from '../Manager/managerReducer';
 
 const Ie = () => (

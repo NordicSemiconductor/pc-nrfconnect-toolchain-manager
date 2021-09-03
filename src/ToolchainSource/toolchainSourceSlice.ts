@@ -34,23 +34,37 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+import { toolchainIndexUrl } from '../persistentStore';
 import { RootState } from '../state';
 
-export type FirstInstallState = { isDialogVisible: boolean };
-const initialState: FirstInstallState = {
+export interface ToolChainSourceState {
+    toolchainRootUrl: string;
+    isDialogVisible: boolean;
+}
+
+const initialState: ToolChainSourceState = {
+    toolchainRootUrl: toolchainIndexUrl(),
     isDialogVisible: false,
 };
 
 const slice = createSlice({
-    name: 'firstInstall',
+    name: 'toolchainSource',
     initialState,
     reducers: {
-        showFirstInstallDialog: state => {
+        setToolchainSource: (
+            state,
+            toolchainRootUrl: PayloadAction<string>
+        ) => {
+            state.toolchainRootUrl = toolchainRootUrl.payload;
+        },
+
+        showSetToolchainSourceDialog: state => {
             state.isDialogVisible = true;
         },
-        hideFirstInstallDialog: state => {
+
+        hideSetToolchainSourceDialog: state => {
             state.isDialogVisible = false;
         },
     },
@@ -58,8 +72,14 @@ const slice = createSlice({
 
 export const {
     reducer,
-    actions: { hideFirstInstallDialog, showFirstInstallDialog },
+    actions: {
+        setToolchainSource,
+        showSetToolchainSourceDialog,
+        hideSetToolchainSourceDialog,
+    },
 } = slice;
 
-export const isDialogVisible = (state: RootState) =>
-    state.app.firstInstall.isDialogVisible;
+export const toolchainRootUrl = ({ app }: RootState) =>
+    app.toolchainSource.toolchainRootUrl;
+export const isDialogVisible = ({ app }: RootState) =>
+    app.toolchainSource.isDialogVisible;
