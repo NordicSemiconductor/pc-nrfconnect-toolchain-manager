@@ -38,7 +38,7 @@ import fse from 'fs-extra';
 import path from 'path';
 import { usageData } from 'pc-nrfconnect-shared';
 
-import { showErrorDialog } from '../../../launcherActions';
+import showErrorDialog from '../../../launcherActions';
 import { persistedInstallDir as installDir } from '../../../persistentStore';
 import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';

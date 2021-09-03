@@ -41,7 +41,7 @@ import fse from 'fs-extra';
 import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import { showErrorDialog } from '../../../launcherActions';
+import showErrorDialog from '../../../launcherActions';
 import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import {

@@ -37,7 +37,7 @@
 import fse from 'fs-extra';
 import { usageData } from 'pc-nrfconnect-shared';
 
-import { showErrorDialog } from '../../../launcherActions';
+import showErrorDialog from '../../../launcherActions';
 import { Dispatch, Toolchain } from '../../../state';
 import {
     finishInstallToolchain,

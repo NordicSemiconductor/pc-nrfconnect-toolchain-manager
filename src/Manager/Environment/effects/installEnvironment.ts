@@ -37,7 +37,7 @@
 import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import { showErrorDialog } from '../../../launcherActions';
+import showErrorDialog from '../../../launcherActions';
 import {
     persistedInstallDir as installDir,
     setHasInstalledAnNcs,
