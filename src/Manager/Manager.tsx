@@ -40,7 +40,6 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import FirstInstallDialog from '../FirstInstall/FirstInstallDialog';
 import FirstInstallInstructions from '../FirstInstall/FirstInstallInstructions';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
 import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
@@ -137,7 +136,6 @@ export default () => {
                             Install package from other source
                         </Button>
                     </ButtonToolbar>
-                    <FirstInstallDialog />
                     <RemoveEnvironmentDialog />
                     <InstallPackageDialog />
                     <ToolchainSourceDialog />

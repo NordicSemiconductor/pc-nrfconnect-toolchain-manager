@@ -37,10 +37,8 @@
 import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import { showFirstInstallDialog } from '../../../FirstInstall/firstInstallSlice';
 import { showErrorDialog } from '../../../launcherActions';
 import {
-    isFirstInstall,
     persistedInstallDir as installDir,
     setHasInstalledAnNcs,
 } from '../../../persistentStore';
@@ -67,10 +65,7 @@ export const install =
         );
 
         dispatch(selectEnvironment(version));
-        if (isFirstInstall()) {
-            logger.info(`Show first install dialog for toolchain ${version}`);
-            dispatch(showFirstInstallDialog());
-        }
+
         setHasInstalledAnNcs();
 
         try {
