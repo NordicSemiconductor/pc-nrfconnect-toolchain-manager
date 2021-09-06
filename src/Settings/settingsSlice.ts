@@ -6,9 +6,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import {
+    persistedHideOlderEnvironments,
     persistedShowMaster,
-    persistedShowOlderToolchains,
     persistedShowVsCode,
+    setPersistedHideOlderEnvironments,
     setPersistedShowMaster,
     setPersistedShowVsCode,
 } from '../persistentStore';
@@ -17,13 +18,13 @@ import { RootState } from '../state';
 export interface SettingsState {
     isMasterVisible: boolean;
     isVsCodeVisible: boolean;
-    showOlderToolchains: boolean;
+    isOlderEnvironmentsHidden: boolean;
 }
 
 const initialState: SettingsState = {
     isMasterVisible: persistedShowMaster(),
     isVsCodeVisible: persistedShowVsCode(),
-    showOlderToolchains: persistedShowOlderToolchains(),
+    isOlderEnvironmentsHidden: persistedHideOlderEnvironments(),
 };
 
 const slice = createSlice({
@@ -38,12 +39,16 @@ const slice = createSlice({
             setPersistedShowVsCode(action.payload);
             state.isVsCodeVisible = action.payload;
         },
+        showOlderEnvironments: (state, action: PayloadAction<boolean>) => {
+            setPersistedHideOlderEnvironments(action.payload);
+            state.isOlderEnvironmentsHidden = action.payload;
+        },
     },
 });
 
 export const {
     reducer,
-    actions: { showMasterEnvironment, showVsCode },
+    actions: { showMasterEnvironment, showVsCode, showOlderEnvironments },
 } = slice;
 
 export const isMasterVisible = ({ app: { settings } }: RootState) =>
@@ -52,5 +57,5 @@ export const isMasterVisible = ({ app: { settings } }: RootState) =>
 export const isVsCodeVisible = ({ app: { settings } }: RootState) =>
     settings.isVsCodeVisible;
 
-export const showOlderToolchains = ({ app: { settings } }: RootState) =>
-    settings.showOlderToolchains;
+export const isOlderEnvironmentsHidden = ({ app: { settings } }: RootState) =>
+    settings.isOlderEnvironmentsHidden;

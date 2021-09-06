@@ -53,8 +53,10 @@ import {
 } from '../ToolchainSource/toolchainSourceSlice';
 import {
     isMasterVisible,
+    isOlderEnvironmentsHidden,
     isVsCodeVisible,
     showMasterEnvironment,
+    showOlderEnvironments,
     showVsCode,
 } from './settingsSlice';
 
@@ -65,6 +67,7 @@ export default () => {
     const masterVisible = useSelector(isMasterVisible);
     const vsCodeVisible = useSelector(isVsCodeVisible);
     const toolchainUrl = useSelector(toolchainRootUrl);
+    const olderEnvironmentsHidden = useSelector(isOlderEnvironmentsHidden);
 
     return (
         <div>
@@ -106,6 +109,34 @@ export default () => {
                                 Note that the unstable environment is not
                                 regularly updated, and its toolchain is likely
                                 not well tested.
+                            </Form.Text>
+                        </Form.Group>
+                    </Col>
+                </Row>
+
+                <Row className="settings-info mt-4">
+                    <Col>
+                        <Form.Group controlId="showOlderEnvironments">
+                            <div className="d-flex">
+                                <Toggle
+                                    isToggled={olderEnvironmentsHidden}
+                                    labelRight
+                                    onToggle={() =>
+                                        dispatch(
+                                            showOlderEnvironments(
+                                                !olderEnvironmentsHidden
+                                            )
+                                        )
+                                    }
+                                    label="Hide old environments"
+                                />
+                            </div>
+
+                            <Form.Text className="text-muted">
+                                Show environments older than 2 minor versions.
+                                <br />
+                                Hide pre releases when final a more recent
+                                enviroment is released.
                             </Form.Text>
                         </Form.Group>
                     </Col>
