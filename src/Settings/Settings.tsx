@@ -40,6 +40,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import { useDispatch, useSelector } from 'react-redux';
+import { Toggle } from 'pc-nrfconnect-shared';
 
 import {
     currentInstallDir,
@@ -87,16 +88,20 @@ export default () => {
                 <Row className="settings-info mt-4">
                     <Col>
                         <Form.Group controlId="toggleMaster">
-                            {/* @ts-ignore Typing not implemented in this old version of react-bootstrap */}
-                            <Form.Switch
-                                defaultChecked={masterVisible}
-                                onChange={() =>
-                                    dispatch(
-                                        showMasterEnvironment(!masterVisible)
-                                    )
-                                }
-                                label="Show unstable (master branch) environment"
-                            />
+                            <div className="d-flex">
+                                <Toggle
+                                    isToggled={masterVisible}
+                                    labelRight
+                                    onToggle={() =>
+                                        dispatch(
+                                            showMasterEnvironment(
+                                                !masterVisible
+                                            )
+                                        )
+                                    }
+                                    label="Show unstable (master branch) environment"
+                                />
+                            </div>
                             <Form.Text className="text-muted">
                                 Note that the unstable environment is not
                                 regularly updated, and its toolchain is likely
@@ -109,14 +114,17 @@ export default () => {
                 <Row className="settings-info mt-4">
                     <Col>
                         <Form.Group controlId="toggleVsCode">
-                            {/* @ts-ignore Typing not implemented in this old version of react-bootstrap */}
-                            <Form.Switch
-                                defaultChecked={vsCodeVisible}
-                                onChange={() =>
-                                    dispatch(showVsCode(!vsCodeVisible))
-                                }
-                                label="Show Vs Code button on environments"
-                            />
+                            <div className="d-flex">
+                                <Toggle
+                                    isToggled={vsCodeVisible}
+                                    labelRight
+                                    onToggle={() =>
+                                        dispatch(showVsCode(!vsCodeVisible))
+                                    }
+                                    label="Show Vs Code button on environments"
+                                />
+                            </div>
+
                             <Form.Text className="text-muted">
                                 Experimental feature. Will be released with the
                                 new vscode extension.
