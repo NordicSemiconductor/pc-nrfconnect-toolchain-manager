@@ -46,7 +46,10 @@ import InstallDirDialog from '../InstallDir/InstallDirDialog';
 import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
 import NrfCard from '../NrfCard/NrfCard';
 import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
-import { isMasterVisible } from '../Settings/settingsSlice';
+import {
+    isMasterVisible,
+    isOlderEnvironmentsHidden,
+} from '../Settings/settingsSlice';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import EventAction from '../usageDataActions';
 import Environment from './Environment/Environment';
@@ -58,16 +61,24 @@ import {
     showInstallPackageDialog,
 } from './managerSlice';
 import PlatformInstructions, { enableLinux } from './PlatformInstructions';
+import hasMoreRecent from './versionFilter';
 
 const Environments = () => {
     const dispatch = useDispatch();
     useEffect(() => initEnvironments(dispatch), [dispatch]);
 
     const masterVisible = useSelector(isMasterVisible);
+    const hideOlder = useSelector(isOlderEnvironmentsHidden);
     const allEnvironments = useSelector(environmentsByVersion);
-    const environments = allEnvironments.filter(({ version, isInstalled }) =>
-        version === 'master' ? isInstalled || masterVisible : true
-    );
+    const allVersions = allEnvironments.map(environment => environment.version);
+    const environments = allEnvironments
+        .filter(({ version, isInstalled }) =>
+            version === 'master' ? isInstalled || masterVisible : true
+        )
+        .filter(
+            ({ version }) =>
+                hideOlder === false || hasMoreRecent(version, allVersions)
+        );
 
     if (environments.length === 0) {
         return (
