@@ -38,7 +38,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Environment } from '../../state';
-import { selectEnvironment, showFirstSteps } from '../managerReducer';
+import { selectEnvironment, showFirstSteps } from '../managerSlice';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { isInstalled, isOnlyAvailable, version } from './environmentReducer';

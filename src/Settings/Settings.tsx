@@ -51,7 +51,7 @@ import {
     isVsCodeVisible,
     showMasterEnvironment,
     showVsCode,
-} from '../Manager/managerReducer';
+} from '../Manager/managerSlice';
 import NrfCard from '../NrfCard/NrfCard';
 import {
     showSetToolchainSourceDialog,

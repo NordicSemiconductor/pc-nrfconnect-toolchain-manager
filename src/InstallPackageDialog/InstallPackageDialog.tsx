@@ -45,7 +45,7 @@ import {
     dndPackage,
     hideInstallPackageDialog,
     isInstallPackageDialogVisible,
-} from '../Manager/managerReducer';
+} from '../Manager/managerSlice';
 
 export default () => {
     const dispatch = useDispatch();

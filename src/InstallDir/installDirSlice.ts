@@ -36,7 +36,7 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { getEnvironment } from '../Manager/managerReducer';
+import { getEnvironment } from '../Manager/managerSlice';
 import {
     persistedInstallDir,
     setPersistedInstallDir,

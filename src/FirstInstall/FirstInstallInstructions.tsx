@@ -43,7 +43,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { sep } from 'path';
 
 import { currentInstallDir } from '../InstallDir/installDirSlice';
-import { hideFirstSteps, selectedVersion } from '../Manager/managerReducer';
+import { hideFirstSteps, selectedVersion } from '../Manager/managerSlice';
 
 const Ie = () => (
     <>

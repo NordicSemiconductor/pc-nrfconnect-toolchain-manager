@@ -41,7 +41,7 @@ import checkInstalled from '../../../resources/check-circle-installed.svg';
 import checkNotInstalled from '../../../resources/check-circle-not-installed.svg';
 import { showReduxConfirmDialogAction } from '../../ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { Dispatch, Environment } from '../../state';
-import { isVsCodeVisible } from '../managerReducer';
+import { isVsCodeVisible } from '../managerSlice';
 import {
     getVsCodeStatus,
     installExtensions,

@@ -42,7 +42,7 @@ import {
     environmentToRemove,
     hideConfirmRemoveDialog,
     isRemoveDirDialogVisible,
-} from '../managerReducer';
+} from '../managerSlice';
 import { removeEnvironment } from './effects/removeEnvironment';
 import { version } from './environmentReducer';
 

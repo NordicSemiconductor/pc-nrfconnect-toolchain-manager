@@ -34,6 +34,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AnyAction } from 'redux';
 import semver from 'semver';
 
@@ -53,82 +54,8 @@ import {
 import environmentReducer, {
     canBeDownloaded,
     REMOVE_ENVIRONMENT,
+    removeEnvironmentReducer,
 } from './Environment/environmentReducer';
-
-const SELECT_ENVIRONMENT = 'SELECT_ENVIRONMENT';
-export const selectEnvironment = (selectedVersion: string) => ({
-    type: SELECT_ENVIRONMENT,
-    selectedVersion,
-});
-
-const ADD_ENVIRONMENT = 'ADD_ENVIRONMENT';
-export const addEnvironment = (environment: Environment) => ({
-    type: ADD_ENVIRONMENT,
-    environment,
-});
-export const addLocallyExistingEnvironment = (
-    version: string,
-    toolchainDir: string,
-    isWestPresent: boolean,
-    isInstalled = true
-) => ({
-    type: ADD_ENVIRONMENT,
-    environment: {
-        version,
-        toolchainDir,
-        isWestPresent,
-        isInstalled,
-    },
-});
-
-const CLEAR_ENVIRONMENTS = 'CLEAR_ENVIRONMENTS';
-export const clearEnvironments = () => ({
-    type: CLEAR_ENVIRONMENTS,
-});
-
-const SHOW_CONFIRM_REMOVE_DIALOG = 'SHOW_CONFIRM_REMOVE_DIALOG';
-export const showConfirmRemoveDialog = (version: string) => ({
-    type: SHOW_CONFIRM_REMOVE_DIALOG,
-    version,
-});
-
-const HIDE_CONFIRM_REMOVE_DIALOG = 'HIDE_CONFIRM_REMOVE_DIALOG';
-export const hideConfirmRemoveDialog = () => ({
-    type: HIDE_CONFIRM_REMOVE_DIALOG,
-});
-
-const SHOW_INSTALL_PACKAGE_DIALOG = 'SHOW_INSTALL_PACKAGE_DIALOG';
-export const showInstallPackageDialog = (dndPackage: string | null = null) => ({
-    type: SHOW_INSTALL_PACKAGE_DIALOG,
-    dndPackage,
-});
-
-const HIDE_INSTALL_PACKAGE_DIALOG = 'HIDE_INSTALL_PACKAGE_DIALOG';
-export const hideInstallPackageDialog = () => ({
-    type: HIDE_INSTALL_PACKAGE_DIALOG,
-});
-
-const SHOW_MASTER = 'SHOW_MASTER';
-export const showMasterEnvironment = (visible: boolean) => ({
-    type: SHOW_MASTER,
-    show: !!visible,
-});
-
-const SHOW_VSCODE = 'SHOW_VSCODE';
-export const showVsCode = (visible: boolean) => ({
-    type: SHOW_VSCODE,
-    show: !!visible,
-});
-
-const SHOW_FIRST_STEPS = 'SHOW_FIRST_STEPS';
-export const showFirstSteps = () => ({
-    type: SHOW_FIRST_STEPS,
-});
-
-const HIDE_FIRST_STEPS = 'HIDE_FIRST_STEPS';
-export const hideFirstSteps = () => ({
-    type: HIDE_FIRST_STEPS,
-});
 
 const append = (environments: Environments, environment: Environment) => ({
     ...environments,
@@ -151,62 +78,8 @@ const remove = (environments: Environments, version: string) => {
 
     const newEnvironments = { ...environments };
     delete newEnvironments[version];
-    return newEnvironments;
-};
 
-const managerReducer = (state: Manager, action: AnyAction) => {
-    switch (action.type) {
-        case ADD_ENVIRONMENT:
-            return {
-                ...state,
-                environments: append(state.environments, action.environment),
-            };
-        case CLEAR_ENVIRONMENTS:
-            return { ...state, environments: {} };
-        case REMOVE_ENVIRONMENT:
-            return {
-                ...state,
-                environments: remove(state.environments, action.version),
-            };
-        case SHOW_CONFIRM_REMOVE_DIALOG:
-            return {
-                ...state,
-                isRemoveDirDialogVisible: true,
-                versionToRemove: action.version,
-            };
-        case HIDE_CONFIRM_REMOVE_DIALOG:
-            return {
-                ...state,
-                isRemoveDirDialogVisible: false,
-                versionToRemove: null,
-            };
-        case SHOW_INSTALL_PACKAGE_DIALOG:
-            return {
-                ...state,
-                dndPackage: action.dndPackage,
-                isInstallPackageDialogVisible: true,
-            };
-        case HIDE_INSTALL_PACKAGE_DIALOG:
-            return {
-                ...state,
-                dndPackage: null,
-                isInstallPackageDialogVisible: false,
-            };
-        case SHOW_MASTER:
-            setPersistedShowMaster(!!action.show);
-            return { ...state, isMasterVisible: !!action.show };
-        case SHOW_VSCODE:
-            setPersistedShowVsCode(!!action.show);
-            return { ...state, isVsCodeVisible: !!action.show };
-        case SELECT_ENVIRONMENT:
-            return { ...state, selectedVersion: action.selectedVersion };
-        case SHOW_FIRST_STEPS:
-            return { ...state, isShowingFirstSteps: true };
-        case HIDE_FIRST_STEPS:
-            return { ...state, isShowingFirstSteps: false };
-        default:
-            return state;
-    }
+    return newEnvironments;
 };
 
 const maybeCallEnvironmentReducer = (state: Manager, action: AnyAction) => {
@@ -237,12 +110,98 @@ const initialState = (): Manager => ({
     versionToRemove: '',
 });
 
+const managerSlice = createSlice({
+    name: 'manager',
+    initialState: initialState(),
+    reducers: {
+        clearEnvironments: state => {
+            state.environments = {};
+        },
+        showConfirmRemoveDialog: (state, action: PayloadAction<string>) => {
+            state.isRemoveDirDialogVisible = true;
+            state.versionToRemove = action.payload;
+        },
+        hideConfirmRemoveDialog: state => {
+            state.isRemoveDirDialogVisible = false;
+            state.versionToRemove = '';
+        },
+        showInstallPackageDialog: (state, action: PayloadAction<string>) => {
+            state.dndPackage = action.payload;
+            state.isInstallPackageDialogVisible = true;
+        },
+        hideInstallPackageDialog: state => {
+            state.dndPackage = null;
+            state.isInstallPackageDialogVisible = false;
+        },
+        showMasterEnvironment: (state, action: PayloadAction<boolean>) => {
+            setPersistedShowMaster(action.payload);
+            state.isMasterVisible = action.payload;
+        },
+        showVsCode: (state, action: PayloadAction<boolean>) => {
+            setPersistedShowVsCode(action.payload);
+            state.isVsCodeVisible = action.payload;
+        },
+        showFirstSteps: state => {
+            state.isShowingFirstSteps = true;
+        },
+        hideFirstSteps: state => {
+            state.isShowingFirstSteps = false;
+        },
+        selectEnvironment: (state, action) => {
+            state.selectedVersion = action.payload;
+        },
+        addEnvironment: (state, action: PayloadAction<Environment>) => {
+            state.environments = append(state.environments, action.payload);
+        },
+        addLocallyExistingEnvironment: (
+            state,
+            action: PayloadAction<{
+                version: string;
+                toolchainDir: string;
+                isWestPresent: boolean;
+                isInstalled: boolean;
+            }>
+        ) => {
+            const environment: Environment = {
+                ...action.payload,
+                toolchains: [],
+            };
+            state.environments = append(state.environments, environment);
+        },
+    },
+    extraReducers: {
+        [REMOVE_ENVIRONMENT]: (
+            state,
+            action: ReturnType<typeof removeEnvironmentReducer>
+        ) => {
+            state.environments = remove(state.environments, action.version);
+        },
+    },
+});
+
+export const {
+    actions: {
+        clearEnvironments,
+        hideConfirmRemoveDialog,
+        hideFirstSteps,
+        hideInstallPackageDialog,
+        showConfirmRemoveDialog,
+        showFirstSteps,
+        showInstallPackageDialog,
+        showMasterEnvironment,
+        showVsCode,
+        selectEnvironment,
+        addEnvironment,
+        addLocallyExistingEnvironment,
+    },
+} = managerSlice;
+
 export default (state = initialState(), action: AnyAction) => {
     const stateAfterEnvironmentReducer = maybeCallEnvironmentReducer(
         state,
         action
     );
-    return managerReducer(stateAfterEnvironmentReducer, action);
+    return managerSlice.reducer(stateAfterEnvironmentReducer, action);
 };
 
 export const getLatestToolchain = (toolchains: Toolchain[]) =>

@@ -56,7 +56,7 @@ import {
     isMasterVisible,
     isShowingFirstSteps,
     showInstallPackageDialog,
-} from './managerReducer';
+} from './managerSlice';
 import PlatformInstructions, { enableLinux } from './PlatformInstructions';
 
 const Environments = () => {
