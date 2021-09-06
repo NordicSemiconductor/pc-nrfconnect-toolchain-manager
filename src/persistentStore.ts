@@ -98,3 +98,8 @@ export const persistedShowVsCode = () =>
     store<boolean>().get('showVsCode', false);
 export const setPersistedShowVsCode = (visible: boolean) =>
     store().set('showVsCode', visible);
+
+export const persistedShowOlderToolchains = () =>
+    store<boolean>().get('olderToolchainsVisible', true);
+export const setPersistedShowOlderToolchains = (visible: boolean) =>
+    store().set('olderToolchainsVisible', visible);

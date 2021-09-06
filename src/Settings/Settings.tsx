@@ -46,17 +46,17 @@ import {
     currentInstallDir,
     showSetInstallDirDialog,
 } from '../InstallDir/installDirSlice';
-import {
-    isMasterVisible,
-    isVsCodeVisible,
-    showMasterEnvironment,
-    showVsCode,
-} from '../Manager/managerSlice';
 import NrfCard from '../NrfCard/NrfCard';
 import {
     showSetToolchainSourceDialog,
     toolchainRootUrl,
 } from '../ToolchainSource/toolchainSourceSlice';
+import {
+    isMasterVisible,
+    isVsCodeVisible,
+    showMasterEnvironment,
+    showVsCode,
+} from './settingsSlice';
 
 export default () => {
     const dispatch = useDispatch();

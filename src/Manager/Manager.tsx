@@ -46,6 +46,7 @@ import InstallDirDialog from '../InstallDir/InstallDirDialog';
 import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
 import NrfCard from '../NrfCard/NrfCard';
 import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
+import { isMasterVisible } from '../Settings/settingsSlice';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import EventAction from '../usageDataActions';
 import Environment from './Environment/Environment';
@@ -53,7 +54,6 @@ import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
 import initEnvironments from './initEnvironments';
 import {
     environmentsByVersion,
-    isMasterVisible,
     isShowingFirstSteps,
     showInstallPackageDialog,
 } from './managerSlice';
@@ -132,7 +132,9 @@ export default () => {
                         <Button
                             variant="link"
                             className="mdi x-mdi-briefcase-plus-outline pr-0 pt-0"
-                            onClick={() => dispatch(showInstallPackageDialog())}
+                            onClick={() =>
+                                dispatch(showInstallPackageDialog(''))
+                            }
                         >
                             Install package from other source
                         </Button>

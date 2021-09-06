@@ -40,6 +40,7 @@ import { reducer as firstInstall } from './FirstInstall/firstInstallSlice';
 import { reducer as installDir } from './InstallDir/installDirSlice';
 import manager from './Manager/managerSlice';
 import { reducer as reduxConfirmDialog } from './ReduxConfirmDialog/reduxConfirmDialogSlice';
+import { reducer as settings } from './Settings/settingsSlice';
 import { reducer as toolchainSource } from './ToolchainSource/toolchainSourceSlice';
 
 const rootReducer = combineReducers({
@@ -48,6 +49,7 @@ const rootReducer = combineReducers({
     manager,
     toolchainSource,
     reduxConfirmDialog,
+    settings,
 });
 
 export default rootReducer;

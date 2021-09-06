@@ -41,7 +41,7 @@ import {
     addEnvironment,
     environmentsByVersion,
     getLatestToolchain,
-} from './managerReducer';
+} from './managerSlice';
 
 const older = {
     version: '20200217',

@@ -39,12 +39,6 @@ import { AnyAction } from 'redux';
 import semver from 'semver';
 
 import {
-    persistedShowMaster,
-    persistedShowVsCode,
-    setPersistedShowMaster,
-    setPersistedShowVsCode,
-} from '../persistentStore';
-import {
     Environment,
     Environments,
     Manager,
@@ -103,8 +97,6 @@ const initialState = (): Manager => ({
     environments: {},
     isRemoveDirDialogVisible: false,
     isInstallPackageDialogVisible: false,
-    isMasterVisible: persistedShowMaster(),
-    isVsCodeVisible: persistedShowVsCode(),
     isShowingFirstSteps: false,
     dndPackage: null,
     versionToRemove: '',
@@ -132,14 +124,6 @@ const managerSlice = createSlice({
         hideInstallPackageDialog: state => {
             state.dndPackage = null;
             state.isInstallPackageDialogVisible = false;
-        },
-        showMasterEnvironment: (state, action: PayloadAction<boolean>) => {
-            setPersistedShowMaster(action.payload);
-            state.isMasterVisible = action.payload;
-        },
-        showVsCode: (state, action: PayloadAction<boolean>) => {
-            setPersistedShowVsCode(action.payload);
-            state.isVsCodeVisible = action.payload;
         },
         showFirstSteps: state => {
             state.isShowingFirstSteps = true;
@@ -188,8 +172,6 @@ export const {
         showConfirmRemoveDialog,
         showFirstSteps,
         showInstallPackageDialog,
-        showMasterEnvironment,
-        showVsCode,
         selectEnvironment,
         addEnvironment,
         addLocallyExistingEnvironment,
@@ -224,12 +206,6 @@ export const selectedVersion = ({ app }: RootState) =>
 
 export const environmentsByVersion = ({ app }: RootState) =>
     sortedByVersion(Object.values(app.manager.environments));
-
-export const isMasterVisible = ({ app }: RootState) =>
-    app.manager.isMasterVisible;
-
-export const isVsCodeVisible = ({ app }: RootState) =>
-    app.manager.isVsCodeVisible;
 
 export const dndPackage = ({ app }: RootState) => app.manager.dndPackage;
 
