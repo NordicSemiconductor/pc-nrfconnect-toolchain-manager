@@ -41,7 +41,7 @@ import { Environment } from '../../state';
 import { selectEnvironment, showFirstSteps } from '../managerReducer';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
-import { isInstalled, isOnlyAvailable, version } from './environmentReducer';
+import { isOnlyAvailable, version } from './environmentReducer';
 
 type Props = { environment: Environment };
 const ShowFirstSteps = ({ environment }: Props) => {
@@ -58,7 +58,6 @@ const ShowFirstSteps = ({ environment }: Props) => {
             label="First steps"
             title="Show how to build a sample project"
             variant="secondary"
-            disabled={!isInstalled(environment)}
         />
     );
 };
