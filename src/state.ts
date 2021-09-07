@@ -2,7 +2,6 @@ import { NrfConnectState } from 'pc-nrfconnect-shared';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 
-import { FirstInstallState } from './FirstInstall/firstInstallSlice';
 import { InstallDirectoryState } from './InstallDir/installDirSlice';
 import { ConfirmDialogState } from './ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { ToolChainSourceState as ToolchainSourceState } from './ToolchainSource/toolchainSourceSlice';
@@ -43,7 +42,6 @@ export type Manager = {
 };
 
 export type AppState = {
-    firstInstall: FirstInstallState;
     installDir: InstallDirectoryState;
     manager: Manager;
     toolchainSource: ToolchainSourceState;

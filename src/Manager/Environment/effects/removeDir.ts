@@ -38,7 +38,7 @@ import fse from 'fs-extra';
 import path from 'path';
 import { usageData } from 'pc-nrfconnect-shared';
 
-import { showErrorDialog } from '../../../launcherActions';
+import showErrorDialog from '../../../launcherActions';
 import { Dispatch } from '../../../state';
 
 // eslint-disable-next-line import/prefer-default-export

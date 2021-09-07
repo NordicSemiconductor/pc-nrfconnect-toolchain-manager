@@ -38,11 +38,9 @@
 // pc-nrfconnect-shared, so we instead of defining them here, we really should import
 // them from there. But before we can correct this, we need to upgrade to a new version.
 
-export const gotoPage = (id: number) => ({
-    type: 'NAV_MENU_ITEM_SELECTED',
-    id,
-});
-export const showErrorDialog = (message: string) => ({
+const showErrorDialog = (message: string) => ({
     type: 'ERROR_DIALOG_SHOW',
     message,
 });
+
+export default showErrorDialog;
