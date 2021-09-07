@@ -34,35 +34,45 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import hasMoreRecent from './versionFilter';
+import { filterEnvironments } from './versionFilter';
+
+const filter = (versions: string[]) =>
+    filterEnvironments(versions.map(version => ({ version })));
 
 describe('patch versions filtered when there is a gap of 2', () => {
     it('keep patch versions close enough to newest version', () => {
-        const versions = ['1.2.3'];
-        const isFiltered = hasMoreRecent('1.2.2', versions);
-        expect(isFiltered).toBeFalsy();
+        const versions = ['1.2.2', '1.2.3'];
+        const filtered = filter(versions);
+        expect(filtered.length).toBe(2);
     });
 
     it('discard patch versions too far away from newest version', () => {
-        const versions = ['1.2.7'];
-        const isFiltered = hasMoreRecent('1.2.3', versions);
-        expect(isFiltered).toBeTruthy();
+        const versions = ['1.2.7', '1.2.3'];
+        const filtered = filter(versions);
+        expect(filtered.length).toBe(2);
     });
 
     it('ignore minor versions above checked version', () => {
-        const versions = ['1.2.3', '1.3.9'];
-        const isFiltered = hasMoreRecent('1.2.2', versions);
-        expect(isFiltered).toBeFalsy();
+        const versions = ['1.3.7', '1.2.3'];
+        const filtered = filter(versions);
+        expect(filtered.length).toBe(2);
     });
 
-    it('check sample input from trello', () => {
-        // const sampleInput =
-        //     '1.4.0, 1.4.1, 1.4.2, 1.5.0, 1.6.0, 1.6.1, 2.0.1-rc1, 2.0.1, 2.0.0, 2.0.99-dev1, 2.1.0';
-        // const sampleExpected = '1.6.0, 1.6.1, 2.0.1, 2.0.0, 2.1.0';
-        // const versions = sampleInput.split(', ');
-        // const filtered = versions.filter(
-        //     version => !hasMoreRecent(version, versions)
-        // );
-        // expect(filtered.join(', ')).toEqual(sampleExpected);
+    it('filter old versions and old pre-releases', () => {
+        const sampleInput =
+            '1.4.0, 1.4.1, 1.4.2, 1.5.0, 1.6.0, 1.6.1, 2.0.1-rc1, 2.0.1, 2.0.0, 2.1.0';
+        const sampleExpected = '1.6.0, 1.6.1, 2.0.1, 2.0.0, 2.1.0';
+        const versions = sampleInput.split(', ');
+        const filtered = filter(versions);
+        expect(filtered.map(v => v.version).join(', ')).toEqual(sampleExpected);
+    });
+
+    it('filter old versions and keep new pre-releases', () => {
+        const sampleInput =
+            '1.4.0, 1.4.1, 1.4.2, 1.5.0, 1.6.0, 1.6.1, 2.0.1-rc1, 2.0.1, 2.0.0, 2.0.99-dev1, 2.1.0';
+        const sampleExpected = '1.6.0, 1.6.1, 2.0.1, 2.0.0, 2.0.99-dev1, 2.1.0';
+        const versions = sampleInput.split(', ');
+        const filtered = filter(versions);
+        expect(filtered.map(v => v.version).join(', ')).toEqual(sampleExpected);
     });
 });

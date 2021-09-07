@@ -1,22 +1,54 @@
 import semver from 'semver';
 
-export const hasMoreRecent = (version: string, versions: string[]): boolean => {
-    const anydistancetoogreat = versions.some(v =>
-        distanceTooGreat(v, version)
+export const filterEnvironments = <T extends { version: string }>(
+    environments: T[]
+): T[] => {
+    const versions = sortedByVersion(environments).map(
+        environment => environment.version
     );
-    return anydistancetoogreat;
+
+    const minorsToInclude = [
+        ...versions.reduce(
+            (set, version) => set.add(hash(version)),
+            new Set<string>()
+        ),
+    ].slice(0, 3);
+
+    return environments.filter(
+        environment =>
+            filterPrerelease(environment.version, versions) &&
+            minorsToInclude.some(minor => minor === hash(environment.version))
+    );
 };
 
-const distanceTooGreat = (version: string, bigVersions: string): boolean => {
-    switch (semver.diff(version, bigVersions)) {
-        case 'patch':
-            return semver.patch(version) - semver.patch(bigVersions) > 1;
+const hash = (version: string) =>
+    `${semver.major(version)}.${semver.minor(version)}`;
 
-        case 'minor':
-            return semver.minor(version) - semver.minor(bigVersions) > 1;
-        default:
-            return false;
+const filterPrerelease = (version: string, versions: string[]) => {
+    const isPrerelease = (semver.prerelease(version)?.length ?? 0) > 0 ?? false;
+
+    const hasRelease = versions.some(
+        v => semver.diff(v, version) === 'prerelease'
+    );
+
+    return !isPrerelease || !hasRelease;
+};
+
+export const sortedByVersion = <T extends { version: string }>(
+    list: T[]
+): T[] => [...list].sort(byVersion);
+
+const byVersion = (a: { version: string }, b: { version: string }) => {
+    try {
+        return -semver.compare(a.version, b.version);
+    } catch (_) {
+        switch (true) {
+            case a.version < b.version:
+                return -1;
+            case a.version > b.version:
+                return 1;
+            default:
+                return 0;
+        }
     }
 };
-
-export default hasMoreRecent;

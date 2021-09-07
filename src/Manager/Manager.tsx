@@ -61,24 +61,24 @@ import {
     showInstallPackageDialog,
 } from './managerSlice';
 import PlatformInstructions, { enableLinux } from './PlatformInstructions';
-import hasMoreRecent from './versionFilter';
+import { filterEnvironments } from './versionFilter';
 
 const Environments = () => {
     const dispatch = useDispatch();
     useEffect(() => initEnvironments(dispatch), [dispatch]);
 
     const masterVisible = useSelector(isMasterVisible);
-    const hideOlder = useSelector(isOlderEnvironmentsHidden);
+    const hideOlderAndPreRelease = useSelector(isOlderEnvironmentsHidden);
     const allEnvironments = useSelector(environmentsByVersion);
-    const allVersions = allEnvironments.map(environment => environment.version);
-    const environments = allEnvironments
-        .filter(({ version, isInstalled }) =>
+
+    const filteredEnvironments = hideOlderAndPreRelease
+        ? filterEnvironments(allEnvironments)
+        : allEnvironments;
+
+    const environments = filteredEnvironments.filter(
+        ({ version, isInstalled }) =>
             version === 'master' ? isInstalled || masterVisible : true
-        )
-        .filter(
-            ({ version }) =>
-                hideOlder === false || hasMoreRecent(version, allVersions)
-        );
+    );
 
     if (environments.length === 0) {
         return (
