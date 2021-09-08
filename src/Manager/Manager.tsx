@@ -59,9 +59,6 @@ import {
 import PlatformInstructions, { enableLinux } from './PlatformInstructions';
 
 const Environments = () => {
-    const dispatch = useDispatch();
-    useEffect(() => initEnvironments(dispatch), [dispatch]);
-
     const masterVisible = useSelector(isMasterVisible);
     const allEnvironments = useSelector(environmentsByVersion);
     const environments = allEnvironments.filter(({ version, isInstalled }) =>
@@ -97,6 +94,7 @@ const Environments = () => {
 
 export default () => {
     const dispatch = useDispatch();
+    useEffect(() => initEnvironments(dispatch), [dispatch]);
     const showingFirstSteps = useSelector(isShowingFirstSteps);
 
     if (showingFirstSteps) {
