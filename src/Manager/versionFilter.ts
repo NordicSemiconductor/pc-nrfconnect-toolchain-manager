@@ -6,31 +6,37 @@
 
 import semver from 'semver';
 
-export const filterEnvironments = <T extends { version: string }>(
-    environments: T[]
-): T[] => {
+import { Environment } from '../state';
+
+export const filterEnvironments = (
+    environments: Environment[]
+): Environment[] => {
     const versions = sortedByVersion(environments).map(
         environment => environment.version
     );
 
-    const minorsToInclude = [
+    const newestMinors = [
         ...versions.reduce(
             (set, version) => set.add(hash(version)),
             new Set<string>()
         ),
     ].slice(0, 3);
 
+    const isInNewestMinors = (minors: string[], environment: Environment) =>
+        minors.some(minor => minor === hash(environment.version));
+
     return environments.filter(
         environment =>
-            filterPrerelease(environment.version, versions) &&
-            minorsToInclude.some(minor => minor === hash(environment.version))
+            (isReleasedOrPreRelease(environment.version, versions) &&
+                isInNewestMinors(newestMinors, environment)) ||
+            environment.isInstalled
     );
 };
 
 const hash = (version: string) =>
     `${semver.major(version)}.${semver.minor(version)}`;
 
-const filterPrerelease = (version: string, versions: string[]) => {
+const isReleasedOrPreRelease = (version: string, versions: string[]) => {
     const isPrerelease = (semver.prerelease(version)?.length ?? 0) > 0 ?? false;
 
     const hasRelease = versions.some(
