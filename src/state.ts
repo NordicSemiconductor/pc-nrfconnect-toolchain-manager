@@ -4,6 +4,7 @@ import { ThunkDispatch } from 'redux-thunk';
 
 import { InstallDirectoryState } from './InstallDir/installDirSlice';
 import { ConfirmDialogState } from './ReduxConfirmDialog/reduxConfirmDialogSlice';
+import { SettingsState } from './Settings/settingsSlice';
 import { ToolChainSourceState as ToolchainSourceState } from './ToolchainSource/toolchainSourceSlice';
 
 export type Toolchain = {
@@ -34,8 +35,6 @@ export type Manager = {
     dndPackage: string | null;
     isRemoveDirDialogVisible: boolean;
     isInstallPackageDialogVisible: boolean;
-    isMasterVisible: boolean;
-    isVsCodeVisible: boolean;
     isShowingFirstSteps: boolean;
     versionToRemove: string;
     selectedVersion?: string;
@@ -46,6 +45,7 @@ export type AppState = {
     manager: Manager;
     toolchainSource: ToolchainSourceState;
     reduxConfirmDialog: ConfirmDialogState;
+    settings: SettingsState;
 };
 
 export type RootState = NrfConnectState<AppState>;

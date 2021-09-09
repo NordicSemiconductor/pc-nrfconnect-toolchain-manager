@@ -42,7 +42,7 @@ import showErrorDialog from '../../../launcherActions';
 import { persistedInstallDir as installDir } from '../../../persistentStore';
 import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';
-import { addLocallyExistingEnvironment } from '../../managerReducer';
+import { addLocallyExistingEnvironment } from '../../managerSlice';
 import {
     finishInstallToolchain,
     startInstallToolchain,
@@ -85,12 +85,12 @@ export const installPackage =
             fse.mkdirpSync(toolchainDir);
 
             dispatch(
-                addLocallyExistingEnvironment(
+                addLocallyExistingEnvironment({
                     version,
                     toolchainDir,
-                    false,
-                    false
-                )
+                    isInstalled: false,
+                    isWestPresent: false,
+                })
             );
             dispatch(startInstallToolchain(version));
 

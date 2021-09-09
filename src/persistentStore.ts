@@ -98,3 +98,8 @@ export const persistedShowVsCode = () =>
     store<boolean>().get('showVsCode', false);
 export const setPersistedShowVsCode = (visible: boolean) =>
     store().set('showVsCode', visible);
+
+export const persistedHideOlderEnvironments = () =>
+    store<boolean>().get('hideOlderEnvironments', true);
+export const setPersistedHideOlderEnvironments = (visible: boolean) =>
+    store().set('hideOlderEnvironments', visible);

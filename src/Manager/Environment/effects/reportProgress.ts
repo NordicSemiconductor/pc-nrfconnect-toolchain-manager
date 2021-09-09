@@ -35,7 +35,7 @@
  */
 
 import { Dispatch, RootState } from '../../../state';
-import { getEnvironment } from '../../managerReducer';
+import { getEnvironment } from '../../managerSlice';
 import { progress, setProgress } from '../environmentReducer';
 
 export const DOWNLOAD = 0;

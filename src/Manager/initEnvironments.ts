@@ -52,7 +52,7 @@ import {
     addEnvironment,
     addLocallyExistingEnvironment,
     clearEnvironments,
-} from './managerReducer';
+} from './managerSlice';
 
 const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
     try {
@@ -79,11 +79,12 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
                     }`
                 );
                 dispatch(
-                    addLocallyExistingEnvironment(
+                    addLocallyExistingEnvironment({
                         version,
                         toolchainDir,
-                        westPresent
-                    )
+                        isWestPresent: westPresent,
+                        isInstalled: true,
+                    })
                 );
             });
     } catch (e) {

@@ -44,7 +44,7 @@ import {
 } from '../../../persistentStore';
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
-import { getLatestToolchain, selectEnvironment } from '../../managerReducer';
+import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { installToolchain } from './installToolchain';
