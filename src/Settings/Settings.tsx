@@ -22,10 +22,8 @@ import {
     toolchainRootUrl,
 } from '../ToolchainSource/toolchainSourceSlice';
 import {
-    isMasterVisible,
     isOlderEnvironmentsHidden,
     isVsCodeVisible,
-    showMasterEnvironment,
     showOlderEnvironments,
     showVsCode,
 } from './settingsSlice';
@@ -34,7 +32,6 @@ export default () => {
     const dispatch = useDispatch();
     const installDir = useSelector(currentInstallDir);
     const disabled = process.platform === 'darwin';
-    const masterVisible = useSelector(isMasterVisible);
     const vsCodeVisible = useSelector(isVsCodeVisible);
     const toolchainUrl = useSelector(toolchainRootUrl);
     const olderEnvironmentsHidden = useSelector(isOlderEnvironmentsHidden);
@@ -55,32 +52,6 @@ export default () => {
                         >
                             Select directory
                         </Button>
-                    </Col>
-                </Row>
-
-                <Row className="settings-info mt-4">
-                    <Col>
-                        <Form.Group controlId="toggleMaster">
-                            <div className="d-flex">
-                                <Toggle
-                                    isToggled={masterVisible}
-                                    labelRight
-                                    onToggle={() =>
-                                        dispatch(
-                                            showMasterEnvironment(
-                                                !masterVisible
-                                            )
-                                        )
-                                    }
-                                    label="Show unstable (master branch) environment"
-                                />
-                            </div>
-                            <Form.Text className="text-muted">
-                                Note that the unstable environment is not
-                                regularly updated, and its toolchain is likely
-                                not well tested.
-                            </Form.Text>
-                        </Form.Group>
                     </Col>
                 </Row>
 

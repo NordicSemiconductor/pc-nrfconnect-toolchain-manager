@@ -15,10 +15,7 @@ import InstallDirDialog from '../InstallDir/InstallDirDialog';
 import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
 import NrfCard from '../NrfCard/NrfCard';
 import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
-import {
-    isMasterVisible,
-    isOlderEnvironmentsHidden,
-} from '../Settings/settingsSlice';
+import { isOlderEnvironmentsHidden } from '../Settings/settingsSlice';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import EventAction from '../usageDataActions';
 import Environment from './Environment/Environment';
@@ -33,30 +30,17 @@ import PlatformInstructions, { enableLinux } from './PlatformInstructions';
 import { filterEnvironments } from './versionFilter';
 
 const Environments = () => {
-    const masterVisible = useSelector(isMasterVisible);
     const hideOlderAndPreRelease = useSelector(isOlderEnvironmentsHidden);
     const allEnvironments = useSelector(environmentsByVersion);
 
-    const filteredEnvironments = hideOlderAndPreRelease
+    const environments = hideOlderAndPreRelease
         ? filterEnvironments(allEnvironments)
         : allEnvironments;
-
-    const environments = filteredEnvironments.filter(
-        ({ version, isInstalled }) =>
-            version === 'master' ? isInstalled || masterVisible : true
-    );
 
     if (environments.length === 0) {
         return (
             <NrfCard>
                 <p>There are no environments available for installation.</p>
-                {allEnvironments.length > 0 && !masterVisible && (
-                    <p>
-                        You can enable unstable environments under{' '}
-                        <span className="mdi mdi-settings" />
-                        Settings.
-                    </p>
-                )}
             </NrfCard>
         );
     }
