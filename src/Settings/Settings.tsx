@@ -103,11 +103,10 @@ export default () => {
                             </div>
 
                             <Form.Text className="text-muted">
-                                Environments older than 3 minor versions are
-                                likely not interesting.
+                                Hide environments older than 3 minor versions.
                                 <br />
-                                Hide pre releases when final a more recent
-                                enviroment is released.
+                                Hide pre-releases when a corresponding release
+                                is official.
                             </Form.Text>
                         </Form.Group>
                     </Col>
