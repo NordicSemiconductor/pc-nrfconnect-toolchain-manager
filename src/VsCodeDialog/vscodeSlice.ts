@@ -113,7 +113,7 @@ export const isDialogVisible = ({ app: { vsCode } }: RootState) =>
 export const getToolchainDir = ({ app: { vsCode } }: RootState) =>
     vsCode.toolchainDir;
 
-export const showVsCodeDialog = () => async (dispatch: Dispatch) =>
+export const showVsCodeDialog = () => (dispatch: Dispatch) =>
     dispatch(getVsCodeStatus()).then(status => {
         dispatch(setVsCodeStatus(status));
         if (status !== VsCodeStatus.INSTALLED)
