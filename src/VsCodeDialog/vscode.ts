@@ -38,13 +38,10 @@ import { spawn } from 'child_process';
 
 import { Dispatch, RootState } from '../state';
 import {
-    allVsCodeExtensionsInstalled,
     installedExtension,
     installExtensionFailed,
-    nrfjprogInstalled,
     setVsCodeExtensions,
     setVsCodeNrfjprogInstalled,
-    setVsCodeStatus,
     startInstallingExtension,
     VsCodeExtension,
     vsCodeExtensions,
@@ -97,24 +94,11 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
 };
 
 export const installExtensions =
-    () => async (dispatch: Dispatch, getState: () => RootState) => {
-        const installPromises = vsCodeExtensions(getState()).map(extension => {
+    () => (dispatch: Dispatch, getState: () => RootState) =>
+        vsCodeExtensions(getState()).forEach(extension => {
             if (extension.selected)
-                return dispatch(installExtension(extension.identifier));
-            return Promise.resolve();
+                dispatch(installExtension(extension.identifier));
         });
-
-        await Promise.allSettled(installPromises);
-
-        if (
-            allVsCodeExtensionsInstalled(getState()) &&
-            nrfjprogInstalled(getState())
-        ) {
-            dispatch(setVsCodeStatus(VsCodeStatus.INSTALLED));
-            return Promise.resolve();
-        }
-        return Promise.reject();
-    };
 
 const installExtension = (identifier: string) => async (dispatch: Dispatch) => {
     try {

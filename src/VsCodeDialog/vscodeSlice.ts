@@ -110,8 +110,6 @@ export const nrfjprogInstalled = ({ app: { vsCode } }: RootState) =>
     vsCode.nrfjprogInstalled;
 export const isDialogVisible = ({ app: { vsCode } }: RootState) =>
     vsCode.isDialogVisible;
-export const allVsCodeExtensionsInstalled = ({ app: { vsCode } }: RootState) =>
-    vsCode.extensions.every(e => e.state === VsCodeExtensionState.INSTALLED);
 export const getToolchainDir = ({ app: { vsCode } }: RootState) =>
     vsCode.toolchainDir;
 

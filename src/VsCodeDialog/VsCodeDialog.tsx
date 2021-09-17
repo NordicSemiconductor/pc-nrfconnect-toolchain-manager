@@ -98,17 +98,18 @@ export const VsCodeDialog = () => {
                             <OpenAnywayButton
                                 handleClose={handleClose}
                                 toolchainDir={toolchainDir}
+                                extensions={extensions}
                             />
                         )}
                         <InstallMissingButton
                             disabled={
                                 !extensions.some(
                                     e =>
+                                        e.selected &&
                                         e.state !==
-                                        VsCodeExtensionState.INSTALLED
+                                            VsCodeExtensionState.INSTALLED
                                 )
                             }
-                            toolchainDir={toolchainDir}
                         />
                     </>
                 )}
@@ -137,26 +138,13 @@ const CloseButton = ({ handleClose }: { handleClose: () => void }) => (
     <Button icon="" label="Close" onClick={handleClose} variant="primary" />
 );
 
-const InstallMissingButton = ({
-    disabled,
-    toolchainDir,
-}: {
-    disabled: boolean;
-    toolchainDir?: string;
-}) => {
+const InstallMissingButton = ({ disabled }: { disabled: boolean }) => {
     const dispatch = useDispatch();
     return (
         <Button
             icon=""
             label="Install selected extensions"
-            onClick={() =>
-                dispatch(installExtensions())
-                    .then(() => {
-                        dispatch(hideVsCodeDialog());
-                        if (toolchainDir) openVsCode(toolchainDir);
-                    })
-                    .catch(() => {})
-            }
+            onClick={() => dispatch(installExtensions())}
             variant="primary"
             disabled={disabled}
         />
@@ -166,13 +154,19 @@ const InstallMissingButton = ({
 const OpenAnywayButton = ({
     handleClose,
     toolchainDir,
+    extensions,
 }: {
     handleClose: () => void;
     toolchainDir?: string;
+    extensions: VsCodeExtension[];
 }) => (
     <Button
         icon=""
-        label="Open VS Code anyway"
+        label={
+            allExtensionsInstalledSucessfully(extensions)
+                ? 'Open VS Code'
+                : 'Open VS Code anyway'
+        }
         onClick={() => {
             if (toolchainDir) openVsCode(toolchainDir);
             handleClose();
@@ -246,6 +240,8 @@ const ExtensionsMissing = ({
     const failedInstall = extensions.some(
         e => e.state === VsCodeExtensionState.FAILED
     );
+    const allInstalledSuccessfully =
+        allExtensionsInstalledSucessfully(extensions);
 
     return (
         <>
@@ -271,7 +267,7 @@ const ExtensionsMissing = ({
                     To use the nRF Connect extension for VS Code, you need to{' '}
                     <a href="https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools">
                         install nRF Command Line Tools
-                    </a>
+                    </a>{' '}
                     <img
                         src={extensionNotInstalled}
                         alt="Not installed"
@@ -297,9 +293,20 @@ const ExtensionsMissing = ({
                     </i>
                 </>
             )}
+            {allInstalledSuccessfully && (
+                <>
+                    <br />
+                    <i>All selected extensions are installed.</i>
+                </>
+            )}
         </>
     );
 };
+
+const allExtensionsInstalledSucessfully = (extensions: VsCodeExtension[]) =>
+    extensions.every(e =>
+        e.selected ? e.state === VsCodeExtensionState.INSTALLED : true
+    );
 
 const installLink = () => {
     if (process.platform === 'win32') {
