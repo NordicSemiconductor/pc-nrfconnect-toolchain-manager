@@ -7,13 +7,13 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { isVsCodeEnabled } from '../../Settings/settingsSlice';
 import { Environment } from '../../state';
 import { openVsCode, VsCodeStatus } from '../../VsCodeDialog/vscode';
 import {
     setToolchainDir,
     showVsCodeDialog,
 } from '../../VsCodeDialog/vscodeSlice';
-import { isVsCodeEnabled } from '../managerReducer';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { isInProgress, isInstalled } from './environmentReducer';

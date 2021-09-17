@@ -15,7 +15,7 @@ import extensionInstalled from '../../resources/extension-installed.svg';
 import extensionNotInstalled from '../../resources/extension-not-installed.svg';
 import Button from '../Manager/Environment/Button';
 import { isInProgress } from '../Manager/Environment/environmentReducer';
-import { isVsCodeEnabled } from '../Manager/managerReducer';
+import { isVsCodeEnabled } from '../Settings/settingsSlice';
 import { installExtensions, openVsCode, VsCodeStatus } from './vscode';
 import {
     deselectExtension,
