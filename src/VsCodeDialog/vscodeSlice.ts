@@ -57,29 +57,37 @@ const slice = createSlice({
             state.extensions = action.payload;
         },
         startInstallingExtension(state, action) {
-            state.extensions.find(e => e.identifier === action.payload)!.state =
-                VsCodeExtensionState.INSTALLING;
+            const extension = state.extensions.find(
+                e => e.identifier === action.payload
+            );
+            if (extension) extension.state = VsCodeExtensionState.INSTALLING;
         },
         installedExtension(state, action) {
-            state.extensions.find(e => e.identifier === action.payload)!.state =
-                VsCodeExtensionState.INSTALLED;
+            const extension = state.extensions.find(
+                e => e.identifier === action.payload
+            );
+            if (extension) extension.state = VsCodeExtensionState.INSTALLED;
         },
         setVsCodeNrfjprogInstalled(state, action) {
             state.nrfjprogInstalled = action.payload;
         },
         installExtensionFailed(state, action) {
-            state.extensions.find(e => e.identifier === action.payload)!.state =
-                VsCodeExtensionState.FAILED;
+            const extension = state.extensions.find(
+                e => e.identifier === action.payload
+            );
+            if (extension) extension.state = VsCodeExtensionState.FAILED;
         },
         selectExtension(state, action) {
-            state.extensions.find(
+            const extension = state.extensions.find(
                 e => e.identifier === action.payload
-            )!.selected = true;
+            );
+            if (extension) extension.selected = true;
         },
         deselectExtension(state, action) {
-            state.extensions.find(
+            const extension = state.extensions.find(
                 e => e.identifier === action.payload
-            )!.selected = false;
+            );
+            if (extension) extension.selected = false;
         },
         setToolchainDir(state, action) {
             state.toolchainDir = action.payload;
