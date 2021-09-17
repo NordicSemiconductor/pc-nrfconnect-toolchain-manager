@@ -163,7 +163,9 @@ const OpenAnywayButton = ({
     <Button
         icon=""
         label={
-            allExtensionsInstalledSucessfully(extensions)
+            extensions.every(e =>
+                e.selected ? e.state === VsCodeExtensionState.INSTALLED : true
+            )
                 ? 'Open VS Code'
                 : 'Open VS Code anyway'
         }
@@ -240,8 +242,6 @@ const ExtensionsMissing = ({
     const failedInstall = extensions.some(
         e => e.state === VsCodeExtensionState.FAILED
     );
-    const allInstalledSuccessfully =
-        allExtensionsInstalledSucessfully(extensions);
 
     return (
         <>
@@ -293,20 +293,9 @@ const ExtensionsMissing = ({
                     </i>
                 </>
             )}
-            {allInstalledSuccessfully && (
-                <>
-                    <br />
-                    <i>All selected extensions are installed.</i>
-                </>
-            )}
         </>
     );
 };
-
-const allExtensionsInstalledSucessfully = (extensions: VsCodeExtension[]) =>
-    extensions.every(e =>
-        e.selected ? e.state === VsCodeExtensionState.INSTALLED : true
-    );
 
 const installLink = () => {
     if (process.platform === 'win32') {
