@@ -47,4 +47,12 @@ describe('filter versions to keep last 3 minor versions and installed environmen
         const filtered = filter(versions);
         expect(filtered.map(v => v.version).join(', ')).toEqual(sampleExpected);
     });
+
+    it('do not filter non-semver versions', () => {
+        const versions = ['1.2.2', '1.2.3', 'master'];
+        const environments = versions.map(mapToEnvironment);
+
+        const filtered = filterEnvironments(environments);
+        expect(filtered.length).toBe(3);
+    });
 });

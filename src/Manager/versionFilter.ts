@@ -34,13 +34,16 @@ export const filterEnvironments = (
 };
 
 const hash = (version: string) =>
-    `${semver.major(version)}.${semver.minor(version)}`;
+    semver.valid(version)
+        ? `${semver.major(version)}.${semver.minor(version)}`
+        : version;
 
 const isReleasedOrPreRelease = (version: string, versions: string[]) => {
+    if (semver.valid(version) === null) return true;
     const isPrerelease = (semver.prerelease(version)?.length ?? 0) > 0 ?? false;
 
     const hasRelease = versions.some(
-        v => semver.diff(v, version) === 'prerelease'
+        v => semver.valid(v) && semver.diff(v, version) === 'prerelease'
     );
 
     return !isPrerelease || !hasRelease;
