@@ -117,7 +117,6 @@ export const listInstalledExtensions = async (): Promise<VsCodeExtension[]> => {
     return EXTENSIONS.map(extension => ({
         identifier: extension.id,
         name: extension.name,
-        installed: installedExtensions.includes(extension.id),
         required: extension.required,
         state: installedExtensions.includes(extension.id)
             ? VsCodeExtensionState.INSTALLED
