@@ -123,15 +123,15 @@ export const VsCodeDialog = () => {
 const getTitle = (status: VsCodeStatus) => {
     switch (status) {
         case VsCodeStatus.NOT_CHECKED:
-            return 'Checking for Vs Code';
+            return 'Checking for VS Code';
         case VsCodeStatus.NOT_INSTALLED:
-            return 'Vs Code is not installed';
+            return 'VS Code is not installed';
         case VsCodeStatus.INSTALLED:
-            return 'Vs Code';
+            return 'VS Code';
         case VsCodeStatus.MISSING_TOOLS:
             return 'Missing Vs Code extensions';
         default:
-            return 'Vs Code';
+            return 'VS Code';
     }
 };
 
