@@ -38,6 +38,7 @@ import { spawn } from 'child_process';
 
 import { Dispatch, RootState } from '../state';
 import {
+    deselectExtension,
     installedExtension,
     installExtensionFailed,
     setVsCodeExtensions,
@@ -104,6 +105,7 @@ const installExtension = (identifier: string) => async (dispatch: Dispatch) => {
     try {
         dispatch(startInstallingExtension(identifier));
         await spawnAsync(['--install-extension', identifier]);
+        dispatch(deselectExtension(identifier));
         dispatch(installedExtension(identifier));
     } catch {
         dispatch(installExtensionFailed(identifier));
