@@ -69,13 +69,18 @@ const EXTENSIONS = [
     { required: false, id: 'ms-vscode.cpptools', name: 'C/C++' },
 ];
 
-export const showVsCodeDialog = () => (dispatch: Dispatch) =>
-    dispatch(getVsCodeStatus()).then(status => {
-        dispatch(setVsCodeStatus(status));
-        if (status !== VsCodeStatus.INSTALLED)
-            dispatch(setVsCodeDialogVisible());
-        return Promise.resolve(status);
-    });
+export const showVsCodeDialog =
+    (triggerOnlyOn?: VsCodeStatus) => (dispatch: Dispatch) =>
+        dispatch(getVsCodeStatus()).then(status => {
+            dispatch(setVsCodeStatus(status));
+            if (
+                triggerOnlyOn
+                    ? status === triggerOnlyOn
+                    : status !== VsCodeStatus.INSTALLED
+            )
+                dispatch(setVsCodeDialogVisible());
+            return Promise.resolve(status);
+        });
 
 export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
     try {

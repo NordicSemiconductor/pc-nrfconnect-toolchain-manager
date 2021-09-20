@@ -47,7 +47,10 @@ import {
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { showVsCodeDialog } from '../../../VsCodeDialog/vscode';
-import { setToolchainDir } from '../../../VsCodeDialog/vscodeSlice';
+import {
+    setToolchainDir,
+    VsCodeStatus,
+} from '../../../VsCodeDialog/vscodeSlice';
 import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
@@ -74,7 +77,7 @@ export const install =
 
         if (persistedShowVsCodeDialogDuringInstall()) {
             dispatch(setToolchainDir(undefined));
-            dispatch(showVsCodeDialog());
+            dispatch(showVsCodeDialog(VsCodeStatus.NOT_INSTALLED));
             setPersistedShowVsCodeDialogDuringInstall(false);
         }
 
