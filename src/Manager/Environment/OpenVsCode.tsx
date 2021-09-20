@@ -10,11 +10,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { isVsCodeEnabled } from '../../Settings/settingsSlice';
 import { Environment } from '../../state';
 import { TDispatch } from '../../thunk';
-import { openVsCode, VsCodeStatus } from '../../VsCodeDialog/vscode';
-import {
-    setToolchainDir,
-    showVsCodeDialog,
-} from '../../VsCodeDialog/vscodeSlice';
+import { openVsCode, showVsCodeDialog } from '../../VsCodeDialog/vscode';
+import { setToolchainDir, VsCodeStatus } from '../../VsCodeDialog/vscodeSlice';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { isInProgress, isInstalled } from './environmentReducer';

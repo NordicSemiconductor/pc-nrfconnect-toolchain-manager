@@ -41,12 +41,15 @@ import {
     deselectExtension,
     installedExtension,
     installExtensionFailed,
+    setVsCodeDialogVisible,
     setVsCodeExtensions,
     setVsCodeNrfjprogInstalled,
+    setVsCodeStatus,
     startInstallingExtension,
     VsCodeExtension,
     vsCodeExtensions,
     VsCodeExtensionState,
+    VsCodeStatus,
 } from './vscodeSlice';
 
 const EXTENSIONS = [
@@ -66,12 +69,13 @@ const EXTENSIONS = [
     { required: false, id: 'ms-vscode.cpptools', name: 'C/C++' },
 ];
 
-export enum VsCodeStatus {
-    NOT_CHECKED,
-    INSTALLED,
-    NOT_INSTALLED,
-    MISSING_TOOLS,
-}
+export const showVsCodeDialog = () => (dispatch: Dispatch) =>
+    dispatch(getVsCodeStatus()).then(status => {
+        dispatch(setVsCodeStatus(status));
+        if (status !== VsCodeStatus.INSTALLED)
+            dispatch(setVsCodeDialogVisible());
+        return Promise.resolve(status);
+    });
 
 export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
     try {

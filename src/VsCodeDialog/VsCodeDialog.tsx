@@ -16,17 +16,18 @@ import extensionNotInstalled from '../../resources/extension-not-installed.svg';
 import Button from '../Manager/Environment/Button';
 import { isInProgress } from '../Manager/Environment/environmentReducer';
 import { isVsCodeEnabled } from '../Settings/settingsSlice';
-import { installExtensions, openVsCode, VsCodeStatus } from './vscode';
+import { installExtensions, openVsCode } from './vscode';
 import {
     deselectExtension,
     getToolchainDir,
-    hideVsCodeDialog,
     isDialogVisible,
     nrfjprogInstalled,
     selectExtension,
+    setVsCodeDialogHidden,
     VsCodeExtension,
     vsCodeExtensions,
     VsCodeExtensionState,
+    VsCodeStatus,
     vsCodeStatus,
 } from './vscodeSlice';
 
@@ -41,7 +42,7 @@ export const VsCodeDialog = () => {
 
     if (!enabled || !visible) return null;
 
-    const handleClose = () => dispatch(hideVsCodeDialog());
+    const handleClose = () => dispatch(setVsCodeDialogHidden());
 
     return (
         <Modal show onHide={handleClose} backdrop="static" size="lg">

@@ -6,8 +6,14 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { Dispatch, RootState } from '../state';
-import { getVsCodeStatus, VsCodeStatus } from './vscode';
+import { RootState } from '../state';
+
+export enum VsCodeStatus {
+    NOT_CHECKED,
+    INSTALLED,
+    NOT_INSTALLED,
+    MISSING_TOOLS,
+}
 
 export enum VsCodeExtensionState {
     INSTALLED,
@@ -44,10 +50,10 @@ const slice = createSlice({
     name: 'vsCode',
     initialState,
     reducers: {
-        showVsCodeDialog: state => {
+        setVsCodeDialogVisible: state => {
             state.isDialogVisible = true;
         },
-        hideVsCodeDialog: state => {
+        setVsCodeDialogHidden: state => {
             state.isDialogVisible = false;
         },
         setVsCodeStatus: (state, action) => {
@@ -98,13 +104,14 @@ const slice = createSlice({
 export const {
     reducer,
     actions: {
+        setVsCodeDialogVisible,
         setVsCodeStatus,
         setVsCodeExtensions,
         startInstallingExtension,
         installedExtension,
         installExtensionFailed,
         setVsCodeNrfjprogInstalled,
-        hideVsCodeDialog,
+        setVsCodeDialogHidden,
         selectExtension,
         deselectExtension,
         setToolchainDir,
@@ -120,11 +127,3 @@ export const isDialogVisible = ({ app: { vsCode } }: RootState) =>
     vsCode.isDialogVisible;
 export const getToolchainDir = ({ app: { vsCode } }: RootState) =>
     vsCode.toolchainDir;
-
-export const showVsCodeDialog = () => (dispatch: Dispatch) =>
-    dispatch(getVsCodeStatus()).then(status => {
-        dispatch(setVsCodeStatus(status));
-        if (status !== VsCodeStatus.INSTALLED)
-            dispatch(slice.actions.showVsCodeDialog());
-        return Promise.resolve(status);
-    });

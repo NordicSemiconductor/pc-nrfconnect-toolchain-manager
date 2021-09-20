@@ -46,10 +46,8 @@ import {
 } from '../../../persistentStore';
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
-import {
-    setToolchainDir,
-    showVsCodeDialog,
-} from '../../../VsCodeDialog/vscodeSlice';
+import { showVsCodeDialog } from '../../../VsCodeDialog/vscode';
+import { setToolchainDir } from '../../../VsCodeDialog/vscodeSlice';
 import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
