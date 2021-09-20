@@ -42,6 +42,7 @@ import {
     persistedInstallDir as installDir,
     persistedShowVsCodeDialogDuringInstall,
     setHasInstalledAnNcs,
+    setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
@@ -76,6 +77,7 @@ export const install =
         if (persistedShowVsCodeDialogDuringInstall()) {
             dispatch(setToolchainDir(undefined));
             dispatch(showVsCodeDialog());
+            setPersistedShowVsCodeDialogDuringInstall(false);
         }
 
         try {
