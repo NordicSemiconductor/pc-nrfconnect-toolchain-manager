@@ -99,6 +99,7 @@ export const VsCodeDialog = () => {
                                 handleClose={handleClose}
                                 toolchainDir={toolchainDir}
                                 extensions={extensions}
+                                nrfjprog={nrfjprog}
                             />
                         )}
                         <InstallMissingButton
@@ -155,17 +156,19 @@ const OpenAnywayButton = ({
     handleClose,
     toolchainDir,
     extensions,
+    nrfjprog,
 }: {
     handleClose: () => void;
     toolchainDir?: string;
     extensions: VsCodeExtension[];
+    nrfjprog: boolean;
 }) => (
     <Button
         icon=""
         label={
             extensions.every(e =>
-                e.selected ? e.state === VsCodeExtensionState.INSTALLED : true
-            )
+                e.required ? e.state === VsCodeExtensionState.INSTALLED : true
+            ) && nrfjprog
                 ? 'Open VS Code'
                 : 'Open VS Code anyway'
         }
