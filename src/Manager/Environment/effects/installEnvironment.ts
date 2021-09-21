@@ -44,13 +44,15 @@ import {
     setHasInstalledAnNcs,
     setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
+import { showReduxConfirmDialogAction } from '../../../ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
-import { showVsCodeDialog } from '../../../VsCodeDialog/vscode';
 import {
-    setToolchainDir,
-    VsCodeStatus,
-} from '../../../VsCodeDialog/vscodeSlice';
+    getVsCodeInstallLink,
+    getVsCodeStatus,
+    showVsCodeDialog,
+} from '../../../VsCodeDialog/vscode';
+import { VsCodeStatus } from '../../../VsCodeDialog/vscodeSlice';
 import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
@@ -76,8 +78,17 @@ export const install =
         setHasInstalledAnNcs();
 
         if (persistedShowVsCodeDialogDuringInstall()) {
-            dispatch(setToolchainDir(undefined));
-            dispatch(showVsCodeDialog(VsCodeStatus.NOT_INSTALLED));
+            dispatch(getVsCodeStatus()).then(status => {
+                if (status !== VsCodeStatus.INSTALLED)
+                    dispatch(
+                        dispatch(
+                            showReduxConfirmDialogAction({
+                                title: 'VS Code not installed',
+                                content: `While the toolchain is installing, we recommend you to [install VS Code](${getVsCodeInstallLink()})`,
+                            })
+                        )
+                    );
+            });
             setPersistedShowVsCodeDialogDuringInstall(false);
         }
 

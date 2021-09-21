@@ -69,18 +69,16 @@ const EXTENSIONS = [
     { required: false, id: 'ms-vscode.cpptools', name: 'C/C++' },
 ];
 
-export const showVsCodeDialog =
-    (triggerOnlyOn?: VsCodeStatus) => (dispatch: Dispatch) =>
-        dispatch(getVsCodeStatus()).then(status => {
-            dispatch(setVsCodeStatus(status));
-            if (
-                triggerOnlyOn
-                    ? status === triggerOnlyOn
-                    : status !== VsCodeStatus.INSTALLED
-            )
-                dispatch(setVsCodeDialogVisible());
-            return Promise.resolve(status);
-        });
+export const showVsCodeDialog = () => (dispatch: Dispatch) => {
+    dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
+    dispatch(setVsCodeDialogVisible());
+    return dispatch(getVsCodeStatus()).then(status => {
+        dispatch(setVsCodeStatus(status));
+        if (status !== VsCodeStatus.INSTALLED)
+            dispatch(setVsCodeDialogVisible());
+        return Promise.resolve(status);
+    });
+};
 
 export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
     try {
@@ -173,8 +171,20 @@ const spawnAsync = async (params: string[]) => {
     });
 };
 
-export const openVsCode = (toolchainDir: string) => {
-    spawn('code', ['-n', toolchainDir], {
+export const openVsCode = () => {
+    spawn('code', {
         shell: true,
     });
+};
+
+export const getVsCodeInstallLink = () => {
+    if (process.platform === 'win32') {
+        return 'https://code.visualstudio.com/docs/setup/windows';
+    }
+    if (process.platform === 'darwin') {
+        return 'https://code.visualstudio.com/docs/setup/mac';
+    }
+    if (process.platform === 'linux') {
+        return 'https://code.visualstudio.com/docs/setup/linux';
+    }
 };

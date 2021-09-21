@@ -16,10 +16,9 @@ import extensionNotInstalled from '../../resources/extension-not-installed.svg';
 import Button from '../Manager/Environment/Button';
 import { isInProgress } from '../Manager/Environment/environmentReducer';
 import { isVsCodeEnabled } from '../Settings/settingsSlice';
-import { installExtensions, openVsCode } from './vscode';
+import { getVsCodeInstallLink, installExtensions, openVsCode } from './vscode';
 import {
     deselectExtension,
-    getToolchainDir,
     isDialogVisible,
     nrfjprogInstalled,
     selectExtension,
@@ -38,7 +37,6 @@ export const VsCodeDialog = () => {
     const nrfjprog = useSelector(nrfjprogInstalled);
     const enabled = useSelector(isVsCodeEnabled);
     const visible = useSelector(isDialogVisible);
-    const toolchainDir = useSelector(getToolchainDir);
 
     if (!enabled || !visible) return null;
 
@@ -56,34 +54,16 @@ export const VsCodeDialog = () => {
                     'Checking if vscode is available on the system.'}
                 {status === VsCodeStatus.NOT_INSTALLED && (
                     <>
-                        {!toolchainDir ? (
-                            <>
-                                While the toolchain is installing, we recommend
-                                you to{' '}
-                                <a
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    href={installLink()}
-                                >
-                                    install VS Code
-                                </a>
-                                .
-                            </>
-                        ) : (
-                            <>
-                                VS Code was not detected on your system.
-                                <br />
-                                <a
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    href={installLink()}
-                                >
-                                    Install VS Code
-                                </a>{' '}
-                                and try again.
-                            </>
-                        )}
-
+                        VS Code was not detected on your system.
+                        <br />
+                        <a
+                            target="_blank"
+                            rel="noreferrer"
+                            href={getVsCodeInstallLink()}
+                        >
+                            Install VS Code
+                        </a>{' '}
+                        and try again.
                         {process.platform === 'darwin' && (
                             <>
                                 <br />
@@ -105,21 +85,17 @@ export const VsCodeDialog = () => {
                     <ExtensionsMissing
                         extensions={extensions}
                         nrfjprog={nrfjprog}
-                        toolchainDir={toolchainDir}
                     />
                 )}
             </Modal.Body>
             <Modal.Footer>
                 {status === VsCodeStatus.MISSING_TOOLS && (
                     <>
-                        {toolchainDir && (
-                            <OpenAnywayButton
-                                handleClose={handleClose}
-                                toolchainDir={toolchainDir}
-                                extensions={extensions}
-                                nrfjprog={nrfjprog}
-                            />
-                        )}
+                        <OpenAnywayButton
+                            handleClose={handleClose}
+                            extensions={extensions}
+                            nrfjprog={nrfjprog}
+                        />
                         <InstallMissingButton
                             disabled={
                                 !extensions.some(
@@ -172,12 +148,10 @@ const InstallMissingButton = ({ disabled }: { disabled: boolean }) => {
 
 const OpenAnywayButton = ({
     handleClose,
-    toolchainDir,
     extensions,
     nrfjprog,
 }: {
     handleClose: () => void;
-    toolchainDir?: string;
     extensions: VsCodeExtension[];
     nrfjprog: boolean;
 }) => (
@@ -191,7 +165,7 @@ const OpenAnywayButton = ({
                 : 'Open VS Code anyway'
         }
         onClick={() => {
-            if (toolchainDir) openVsCode(toolchainDir);
+            openVsCode();
             handleClose();
         }}
         variant="primary"
@@ -251,11 +225,9 @@ const ExtensionCheck = ({ extension }: { extension: VsCodeExtension }) => {
 const ExtensionsMissing = ({
     extensions,
     nrfjprog,
-    toolchainDir,
 }: {
     extensions: VsCodeExtension[];
     nrfjprog: boolean;
-    toolchainDir?: string;
 }) => {
     const required = extensions.filter(e => e.required);
     const recommended = extensions.filter(e => !e.required);
@@ -266,17 +238,8 @@ const ExtensionsMissing = ({
 
     return (
         <>
-            {!toolchainDir ? (
-                <>
-                    While the toolchain is installing, we recommend you to
-                    install the following Vs Code extensions:{' '}
-                </>
-            ) : (
-                <>
-                    For developing nRF applications with VS Code we recommend
-                    using the following extensions:
-                </>
-            )}
+            For developing nRF applications with VS Code we recommend using the
+            following extensions:
             <br />
             <strong>Required</strong>
             {required.map(extension => (
@@ -324,18 +287,6 @@ const ExtensionsMissing = ({
             )}
         </>
     );
-};
-
-const installLink = () => {
-    if (process.platform === 'win32') {
-        return 'https://code.visualstudio.com/docs/setup/windows';
-    }
-    if (process.platform === 'darwin') {
-        return 'https://code.visualstudio.com/docs/setup/mac';
-    }
-    if (process.platform === 'linux') {
-        return 'https://code.visualstudio.com/docs/setup/linux';
-    }
 };
 
 export default VsCodeDialog;

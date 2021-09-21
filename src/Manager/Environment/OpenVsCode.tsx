@@ -11,7 +11,10 @@ import { isVsCodeEnabled } from '../../Settings/settingsSlice';
 import { Environment } from '../../state';
 import { TDispatch } from '../../thunk';
 import { openVsCode, showVsCodeDialog } from '../../VsCodeDialog/vscode';
-import { setToolchainDir, VsCodeStatus } from '../../VsCodeDialog/vscodeSlice';
+import {
+    setVsCodeDialogHidden,
+    VsCodeStatus,
+} from '../../VsCodeDialog/vscodeSlice';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { isInProgress, isInstalled } from './environmentReducer';
@@ -29,10 +32,11 @@ export const OpenVsCode = ({ environment }: { environment: Environment }) => {
             variant="primary"
             disabled={isInProgress(environment)}
             onClick={() => {
-                dispatch(setToolchainDir(environment.toolchainDir));
                 dispatch(showVsCodeDialog()).then((status: VsCodeStatus) => {
-                    if (status === VsCodeStatus.INSTALLED)
-                        openVsCode(environment.toolchainDir);
+                    if (status === VsCodeStatus.INSTALLED) {
+                        dispatch(setVsCodeDialogHidden());
+                        openVsCode();
+                    }
                 });
             }}
         />

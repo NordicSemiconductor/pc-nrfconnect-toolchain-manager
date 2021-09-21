@@ -35,7 +35,6 @@ export interface VsCodeState {
     extensions: VsCodeExtension[];
     nrfjprogInstalled: boolean;
     isDialogVisible: boolean;
-    toolchainDir?: string;
 }
 
 const initialState: VsCodeState = {
@@ -43,7 +42,6 @@ const initialState: VsCodeState = {
     extensions: [],
     nrfjprogInstalled: false,
     isDialogVisible: false,
-    toolchainDir: undefined,
 };
 
 const slice = createSlice({
@@ -95,9 +93,6 @@ const slice = createSlice({
             );
             if (extension) extension.selected = false;
         },
-        setToolchainDir(state, action) {
-            state.toolchainDir = action.payload;
-        },
     },
 });
 
@@ -114,7 +109,6 @@ export const {
         setVsCodeDialogHidden,
         selectExtension,
         deselectExtension,
-        setToolchainDir,
     },
 } = slice;
 
@@ -125,5 +119,3 @@ export const nrfjprogInstalled = ({ app: { vsCode } }: RootState) =>
     vsCode.nrfjprogInstalled;
 export const isDialogVisible = ({ app: { vsCode } }: RootState) =>
     vsCode.isDialogVisible;
-export const getToolchainDir = ({ app: { vsCode } }: RootState) =>
-    vsCode.toolchainDir;
