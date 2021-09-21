@@ -100,7 +100,7 @@ export const setPersistedHideOlderEnvironments = (visible: boolean) =>
     store().set('hideOlderEnvironments', visible);
 
 export const persistedEnableVsCode = () =>
-    store<boolean>().get('enableVsCode', false);
+    store<boolean>().get('enableVsCode', true);
 export const setPersistedEnableVsCode = (visible: boolean) =>
     store().set('enableVsCode', visible);
 
