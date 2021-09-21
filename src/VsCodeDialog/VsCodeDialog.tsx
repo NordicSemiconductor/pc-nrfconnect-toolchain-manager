@@ -17,7 +17,7 @@ import Button from '../Manager/Environment/Button';
 import { isInProgress } from '../Manager/Environment/environmentReducer';
 import { isAnyToolchainInProgress } from '../Manager/managerSlice';
 import { isVsCodeEnabled } from '../Settings/settingsSlice';
-import { getVsCodeInstallLink, installExtensions, openVsCode } from './vscode';
+import { installExtensions, openVsCode } from './vscode';
 import {
     deselectExtension,
     isDialogVisible,
@@ -63,7 +63,7 @@ export const VsCodeDialog = () => {
                                 <a
                                     target="_blank"
                                     rel="noreferrer"
-                                    href={getVsCodeInstallLink()}
+                                    href={installLink()}
                                 >
                                     install VS Code
                                 </a>
@@ -76,7 +76,7 @@ export const VsCodeDialog = () => {
                                 <a
                                     target="_blank"
                                     rel="noreferrer"
-                                    href={getVsCodeInstallLink()}
+                                    href={installLink()}
                                 >
                                     Install VS Code
                                 </a>{' '}
@@ -306,6 +306,18 @@ const ExtensionsMissing = ({
             )}
         </>
     );
+};
+
+const installLink = () => {
+    if (process.platform === 'win32') {
+        return 'https://code.visualstudio.com/docs/setup/windows';
+    }
+    if (process.platform === 'darwin') {
+        return 'https://code.visualstudio.com/docs/setup/mac';
+    }
+    if (process.platform === 'linux') {
+        return 'https://code.visualstudio.com/docs/setup/linux';
+    }
 };
 
 export default VsCodeDialog;

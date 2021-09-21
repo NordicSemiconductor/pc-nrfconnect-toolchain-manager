@@ -189,15 +189,3 @@ const spawnAsync = async (params: string[]) => {
 export const openVsCode = () => {
     spawnAsync([]);
 };
-
-export const getVsCodeInstallLink = () => {
-    if (process.platform === 'win32') {
-        return 'https://code.visualstudio.com/docs/setup/windows';
-    }
-    if (process.platform === 'darwin') {
-        return 'https://code.visualstudio.com/docs/setup/mac';
-    }
-    if (process.platform === 'linux') {
-        return 'https://code.visualstudio.com/docs/setup/linux';
-    }
-};
