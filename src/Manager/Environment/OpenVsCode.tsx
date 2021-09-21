@@ -10,12 +10,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { isVsCodeEnabled } from '../../Settings/settingsSlice';
 import { Environment } from '../../state';
 import { TDispatch } from '../../thunk';
-import { openVsCode, showVsCodeDialog } from '../../VsCodeDialog/vscode';
-import {
-    setVsCodeDialogHidden,
-    VsCodeStatus,
-    vsCodeStatus,
-} from '../../VsCodeDialog/vscodeSlice';
+import { showVsCodeDialog } from '../../VsCodeDialog/vscode';
+import { VsCodeStatus, vsCodeStatus } from '../../VsCodeDialog/vscodeSlice';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { isInProgress, isInstalled } from './environmentReducer';
@@ -41,14 +37,7 @@ export const OpenVsCode = ({ environment }: { environment: Environment }) => {
             }
             variant="primary"
             disabled={isInProgress(environment)}
-            onClick={() => {
-                dispatch(showVsCodeDialog()).then((s: VsCodeStatus) => {
-                    if (s === VsCodeStatus.INSTALLED) {
-                        dispatch(setVsCodeDialogHidden());
-                        openVsCode();
-                    }
-                });
-            }}
+            onClick={() => dispatch(showVsCodeDialog(true))}
         />
     );
 };

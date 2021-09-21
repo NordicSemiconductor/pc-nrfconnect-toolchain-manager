@@ -42,6 +42,7 @@ import {
     deselectExtension,
     installedExtension,
     installExtensionFailed,
+    setVsCodeDialogHidden,
     setVsCodeDialogVisible,
     setVsCodeExtensions,
     setVsCodeNrfjprogInstalled,
@@ -70,15 +71,19 @@ const EXTENSIONS = [
     { required: false, id: 'ms-vscode.cpptools', name: 'C/C++' },
 ];
 
-export const showVsCodeDialog = () => (dispatch: Dispatch) => {
-    dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
-    dispatch(setVsCodeDialogVisible());
-    return dispatch(getVsCodeStatus()).then(status => {
-        if (status !== VsCodeStatus.INSTALLED)
-            dispatch(setVsCodeDialogVisible());
-        return Promise.resolve(status);
-    });
-};
+export const showVsCodeDialog =
+    (launchIfReady = false) =>
+    async (dispatch: Dispatch) => {
+        dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
+        dispatch(setVsCodeDialogVisible());
+
+        const status = await dispatch(getVsCodeStatus());
+
+        if (status === VsCodeStatus.INSTALLED && launchIfReady) {
+            dispatch(setVsCodeDialogHidden());
+            openVsCode();
+        }
+    };
 
 export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
     let status = VsCodeStatus.NOT_CHECKED;
@@ -96,7 +101,7 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
             !nrfjprog
         )
             status = VsCodeStatus.MISSING_TOOLS;
-        status = VsCodeStatus.INSTALLED;
+        else status = VsCodeStatus.INSTALLED;
     } catch {
         status = VsCodeStatus.NOT_INSTALLED;
     }
