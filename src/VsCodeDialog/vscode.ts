@@ -74,7 +74,6 @@ export const showVsCodeDialog = () => (dispatch: Dispatch) => {
     dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
     dispatch(setVsCodeDialogVisible());
     return dispatch(getVsCodeStatus()).then(status => {
-        dispatch(setVsCodeStatus(status));
         if (status !== VsCodeStatus.INSTALLED)
             dispatch(setVsCodeDialogVisible());
         return Promise.resolve(status);
@@ -82,6 +81,7 @@ export const showVsCodeDialog = () => (dispatch: Dispatch) => {
 };
 
 export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
+    let status = VsCodeStatus.NOT_CHECKED;
     try {
         const extensions = await listInstalledExtensions();
         dispatch(setVsCodeExtensions(extensions));
@@ -95,11 +95,13 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
             ) ||
             !nrfjprog
         )
-            return Promise.resolve(VsCodeStatus.MISSING_TOOLS);
-        return Promise.resolve(VsCodeStatus.INSTALLED);
+            status = VsCodeStatus.MISSING_TOOLS;
+        status = VsCodeStatus.INSTALLED;
     } catch {
-        return Promise.resolve(VsCodeStatus.NOT_INSTALLED);
+        status = VsCodeStatus.NOT_INSTALLED;
     }
+    dispatch(setVsCodeStatus(status));
+    return Promise.resolve(status);
 };
 
 export const installExtensions =
