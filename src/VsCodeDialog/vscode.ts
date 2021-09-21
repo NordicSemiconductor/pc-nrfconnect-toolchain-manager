@@ -34,7 +34,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { rejects } from 'assert';
 import { spawn } from 'child_process';
+import { remote } from 'electron';
 
 import { Dispatch, RootState } from '../state';
 import {
@@ -147,21 +149,33 @@ const getNrfjprogStatus = async () => {
     });
 };
 
+const pathEnvVariable = () => {
+    if (process.platform !== 'darwin') {
+        return remote.process.env.PATH;
+    }
+
+    return `/usr/local/bin:${remote.process.env.PATH}`;
+};
+
 const spawnAsync = async (params: string[]) => {
     return new Promise<string[]>((resolve, reject) => {
-        const process = spawn('code', params, {
+        const codeProcess = spawn('code', params, {
             shell: true,
+            env: {
+                ...process.env,
+                PATH: pathEnvVariable(),
+            },
         });
         let stdout = '';
         let stderr = '';
-        process.stdout.on('data', data => {
+        codeProcess.stdout.on('data', data => {
             stdout += data;
         });
-        process.stderr.on('data', data => {
+        codeProcess.stderr.on('data', data => {
             stderr += data;
         });
 
-        process.on('close', (code, signal) => {
+        codeProcess.on('close', (code, signal) => {
             if (code === 0 && signal === null) {
                 if (stderr) console.log(stderr);
                 return resolve(stdout.trim().split('\n'));
@@ -172,9 +186,7 @@ const spawnAsync = async (params: string[]) => {
 };
 
 export const openVsCode = () => {
-    spawn('code', {
-        shell: true,
-    });
+    spawnAsync([]);
 };
 
 export const getVsCodeInstallLink = () => {
