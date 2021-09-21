@@ -15,6 +15,7 @@ import extensionInstalled from '../../resources/extension-installed.svg';
 import extensionNotInstalled from '../../resources/extension-not-installed.svg';
 import Button from '../Manager/Environment/Button';
 import { isInProgress } from '../Manager/Environment/environmentReducer';
+import { isAnyToolchainInProgress } from '../Manager/managerSlice';
 import { isVsCodeEnabled } from '../Settings/settingsSlice';
 import { getVsCodeInstallLink, installExtensions, openVsCode } from './vscode';
 import {
@@ -37,6 +38,7 @@ export const VsCodeDialog = () => {
     const nrfjprog = useSelector(nrfjprogInstalled);
     const enabled = useSelector(isVsCodeEnabled);
     const visible = useSelector(isDialogVisible);
+    const toolchainInProgress = useSelector(isAnyToolchainInProgress);
 
     if (!enabled || !visible) return null;
 
@@ -54,16 +56,33 @@ export const VsCodeDialog = () => {
                     'Checking if vscode is available on the system.'}
                 {status === VsCodeStatus.NOT_INSTALLED && (
                     <>
-                        VS Code was not detected on your system.
-                        <br />
-                        <a
-                            target="_blank"
-                            rel="noreferrer"
-                            href={getVsCodeInstallLink()}
-                        >
-                            Install VS Code
-                        </a>{' '}
-                        and try again.
+                        {toolchainInProgress ? (
+                            <>
+                                While the toolchain is installing we recommend
+                                you to{' '}
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href={getVsCodeInstallLink()}
+                                >
+                                    install VS Code
+                                </a>
+                                .
+                            </>
+                        ) : (
+                            <>
+                                VS Code was not detected on your system.
+                                <br />
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href={getVsCodeInstallLink()}
+                                >
+                                    Install VS Code
+                                </a>{' '}
+                                and try again.
+                            </>
+                        )}
                         {process.platform === 'darwin' && (
                             <>
                                 <br />

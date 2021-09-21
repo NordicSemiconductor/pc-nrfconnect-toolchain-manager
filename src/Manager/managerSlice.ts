@@ -16,6 +16,7 @@ import {
 } from '../state';
 import environmentReducer, {
     canBeDownloaded,
+    isInProgress,
     REMOVE_ENVIRONMENT,
     removeEnvironmentReducer,
 } from './Environment/environmentReducer';
@@ -181,3 +182,6 @@ export const dndPackage = ({ app }: RootState) => app.manager.dndPackage;
 
 export const isShowingFirstSteps = ({ app }: RootState) =>
     app.manager.isShowingFirstSteps;
+
+export const isAnyToolchainInProgress = ({ app }: RootState) =>
+    Object.values(app.manager.environments).some(e => isInProgress(e));
