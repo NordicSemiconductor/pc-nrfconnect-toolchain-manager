@@ -16,8 +16,10 @@ import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
 import NrfCard from '../NrfCard/NrfCard';
 import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
 import { isOlderEnvironmentsHidden } from '../Settings/settingsSlice';
+import { TDispatch } from '../thunk';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import EventAction from '../usageDataActions';
+import { getVsCodeStatus } from '../VsCodeDialog/vscode';
 import VsCodeDialog from '../VsCodeDialog/VsCodeDialog';
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
@@ -59,8 +61,11 @@ const Environments = () => {
 };
 
 export default () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<TDispatch>();
     useEffect(() => initEnvironments(dispatch), [dispatch]);
+    useEffect(() => {
+        dispatch(getVsCodeStatus());
+    }, [dispatch]);
     const showingFirstSteps = useSelector(isShowingFirstSteps);
 
     if (showingFirstSteps) {
