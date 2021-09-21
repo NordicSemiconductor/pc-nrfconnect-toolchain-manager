@@ -60,14 +60,27 @@ export const VsCodeDialog = () => {
                             <>
                                 While the toolchain is installing, we recommend
                                 you to{' '}
-                                <a href={installLink()}>install VS Code</a>.
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href={installLink()}
+                                >
+                                    install VS Code
+                                </a>
+                                .
                             </>
                         ) : (
                             <>
                                 VS Code was not detected on your system.
                                 <br />
-                                <a href={installLink()}>Install VS Code</a> and
-                                try again.
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href={installLink()}
+                                >
+                                    Install VS Code
+                                </a>{' '}
+                                and try again.
                             </>
                         )}
 
@@ -76,7 +89,11 @@ export const VsCodeDialog = () => {
                                 <br />
                                 On macOS please make sure that you also follow
                                 the instructions for{' '}
-                                <a href="https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line">
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href="https://code.visualstudio.com/docs/setup/mac#_launching-from-the-command-line"
+                                >
                                     Launching from the command line
                                 </a>
                                 .
@@ -269,7 +286,11 @@ const ExtensionsMissing = ({
                 <>
                     <br />
                     To use the nRF Connect extension for VS Code, you need to{' '}
-                    <a href="https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools">
+                    <a
+                        target="_blank"
+                        rel="noreferrer"
+                        href="https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools"
+                    >
                         install nRF Command Line Tools
                     </a>{' '}
                     <img
@@ -291,7 +312,11 @@ const ExtensionsMissing = ({
                     <i>
                         Some extensions failed to install. Please try to install
                         them manually through the{' '}
-                        <a href="https://code.visualstudio.com/docs/editor/extension-marketplace">
+                        <a
+                            target="_blank"
+                            rel="noreferrer"
+                            href="https://code.visualstudio.com/docs/editor/extension-marketplace"
+                        >
                             VS Code Extension Marketplace
                         </a>
                     </i>
