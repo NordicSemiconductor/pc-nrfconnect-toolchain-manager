@@ -134,7 +134,7 @@ export const listInstalledExtensions = async (): Promise<VsCodeExtension[]> => {
 };
 
 const getNrfjprogStatus = async () => {
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<boolean>(resolve => {
         const spawnAsync = spawn('nrfjprog', {
             shell: true,
         });
@@ -143,7 +143,7 @@ const getNrfjprogStatus = async () => {
             if (code === 0 && signal === null) {
                 return resolve(true);
             }
-            return reject();
+            return resolve(false);
         });
     });
 };
