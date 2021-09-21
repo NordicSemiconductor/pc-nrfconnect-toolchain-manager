@@ -34,7 +34,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { rejects } from 'assert';
 import { spawn } from 'child_process';
 import { remote } from 'electron';
 
