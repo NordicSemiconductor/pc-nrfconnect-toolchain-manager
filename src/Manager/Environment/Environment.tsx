@@ -70,8 +70,8 @@ const Environment = ({ environment }: Props) => (
             >
                 <ShowFirstSteps environment={environment} />
                 <Install environment={environment} />
-                <OpenSegger environment={environment} />
                 <OpenVsCode environment={environment} />
+                <OpenSegger environment={environment} />
                 <EnvironmentMenu environment={environment} />
             </Col>
         </Row>
