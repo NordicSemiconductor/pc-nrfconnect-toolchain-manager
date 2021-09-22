@@ -191,6 +191,29 @@ const OpenAnywayButton = ({
     />
 );
 
+const ExtensionStateIcon = ({ state }: { state: VsCodeExtensionState }) => {
+    let src;
+    let alt;
+
+    switch (state) {
+        case VsCodeExtensionState.NOT_INSTALLED:
+            src = extensionNotInstalled;
+            alt = 'Not installed';
+            break;
+        case VsCodeExtensionState.FAILED:
+            src = extensionFailed;
+            alt = 'Failed to install';
+            break;
+        case VsCodeExtensionState.INSTALLED:
+            src = extensionInstalled;
+            alt = 'Installed';
+            break;
+        case VsCodeExtensionState.INSTALLING:
+            return <Spinner animation="border" role="status" size="sm" />;
+    }
+    return <img src={src} alt={alt} height="18px" width="18px" />;
+};
+
 const ExtensionCheck = ({ extension }: { extension: VsCodeExtension }) => {
     const dispatch = useDispatch();
     return (
@@ -210,33 +233,7 @@ const ExtensionCheck = ({ extension }: { extension: VsCodeExtension }) => {
                     else dispatch(deselectExtension(extension.identifier));
                 }}
             />
-            {extension.state === VsCodeExtensionState.INSTALLED && (
-                <img
-                    src={extensionInstalled}
-                    alt="Installed"
-                    height="18px"
-                    width="18px"
-                />
-            )}
-            {extension.state === VsCodeExtensionState.NOT_INSTALLED && (
-                <img
-                    src={extensionNotInstalled}
-                    alt="Not installed"
-                    height="18px"
-                    width="18px"
-                />
-            )}
-            {extension.state === VsCodeExtensionState.INSTALLING && (
-                <Spinner animation="border" role="status" size="sm" />
-            )}
-            {extension.state === VsCodeExtensionState.FAILED && (
-                <img
-                    src={extensionFailed}
-                    alt="Failed to install"
-                    height="18px"
-                    width="18px"
-                />
-            )}
+            <ExtensionStateIcon state={extension.state} />
         </>
     );
 };
@@ -275,11 +272,8 @@ const ExtensionsMissing = ({
                     >
                         install nRF Command Line Tools
                     </a>{' '}
-                    <img
-                        src={extensionNotInstalled}
-                        alt="Not installed"
-                        height="18px"
-                        width="18px"
+                    <ExtensionStateIcon
+                        state={VsCodeExtensionState.NOT_INSTALLED}
                     />
                 </>
             )}
