@@ -30,14 +30,14 @@ export const OpenVsCode = ({ environment }: { environment: Environment }) => {
         <Button
             icon="x-mdi-rocket"
             label={
-                status === VsCodeStatus.INSTALLED
-                    ? 'Open VS Code'
-                    : 'Install VS Code'
+                status === VsCodeStatus.NOT_INSTALLED
+                    ? 'Install VS Code'
+                    : 'Open VS Code'
             }
             title={
-                status === VsCodeStatus.INSTALLED
-                    ? 'Open Visual Studio Code'
-                    : 'Install Visual Studio Code'
+                status === VsCodeStatus.NOT_INSTALLED
+                    ? 'Install Visual Studio Code'
+                    : 'Open Visual Studio Code'
             }
             variant="primary"
             disabled={isInProgress(environment)}
