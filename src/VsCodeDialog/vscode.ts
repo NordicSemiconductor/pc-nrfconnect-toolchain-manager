@@ -92,7 +92,7 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
             !nrfjprog
         )
             status = VsCodeStatus.MISSING_TOOLS;
-        status = VsCodeStatus.INSTALLED;
+        else status = VsCodeStatus.INSTALLED;
     } catch {
         status = VsCodeStatus.NOT_INSTALLED;
     }
