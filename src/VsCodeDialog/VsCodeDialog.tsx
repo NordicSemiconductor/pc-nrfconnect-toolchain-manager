@@ -144,7 +144,7 @@ const getTitle = (status: VsCodeStatus) => {
         case VsCodeStatus.INSTALLED:
             return 'VS Code';
         case VsCodeStatus.MISSING_TOOLS:
-            return 'Missing Vs Code extensions';
+            return 'Missing VS Code extensions';
         default:
             return 'VS Code';
     }
@@ -274,19 +274,23 @@ const ExtensionsMissing = ({
             {!nrfjprog && (
                 <>
                     <br />
-                    To use the nRF Connect extension for VS Code, you need to{' '}
-                    <a
-                        target="_blank"
-                        rel="noreferrer"
-                        href="https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools"
-                    >
-                        install nRF Command Line Tools
-                    </a>{' '}
+                    <i>
+                        To use the nRF Connect extension for VS Code, you need
+                        to{' '}
+                        <a
+                            target="_blank"
+                            rel="noreferrer"
+                            href="https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools"
+                        >
+                            install nRF Command Line Tools
+                        </a>{' '}
+                    </i>
                     <ExtensionStateIcon
                         state={VsCodeExtensionState.NOT_INSTALLED}
                     />
                 </>
             )}
+            <br />
             <br />
             <strong>Recommended</strong>
             {recommended.map(extension => (
