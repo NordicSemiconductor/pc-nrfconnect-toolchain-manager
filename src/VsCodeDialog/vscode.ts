@@ -172,9 +172,9 @@ const spawnAsync = async (params: string[]) => {
 
         codeProcess.on('close', (code, signal) => {
             if (code === 0 && signal === null) {
-                if (stderr) console.log(stderr);
                 return resolve(stdout.trim().split('\n'));
             }
+            if (stderr) console.log(stderr);
             return reject();
         });
     });
