@@ -117,16 +117,20 @@ export const VsCodeDialog = () => {
                             extensions={extensions}
                             nrfjprog={nrfjprog}
                         />
-                        <InstallMissingButton
-                            disabled={
-                                !extensions.some(
-                                    e =>
-                                        e.selected &&
-                                        e.state !==
-                                            VsCodeExtensionState.INSTALLED
-                                )
-                            }
-                        />
+                        {extensions.some(
+                            e => e.state !== VsCodeExtensionState.INSTALLED
+                        ) && (
+                            <InstallMissingButton
+                                disabled={
+                                    !extensions.some(
+                                        e =>
+                                            e.selected &&
+                                            e.state !==
+                                                VsCodeExtensionState.INSTALLED
+                                    )
+                                }
+                            />
+                        )}
                     </>
                 )}
                 <CloseButton handleClose={handleClose} />
