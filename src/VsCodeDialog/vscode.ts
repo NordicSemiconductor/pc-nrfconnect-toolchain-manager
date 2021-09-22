@@ -147,9 +147,7 @@ const getNrfjprogStatus = async () => {
 };
 
 const pathEnvVariable = () => {
-    if (process.platform !== 'darwin') {
-        return remote.process.env.PATH;
-    }
+    if (process.platform !== 'darwin') return remote.process.env.PATH;
 
     return `/usr/local/bin:${remote.process.env.PATH}`;
 };
