@@ -57,16 +57,24 @@ const EXTENSIONS = [
     {
         required: true,
         id: 'nordic-semiconductor.nrf-connect',
-        name: 'Nrf Connect',
+        name: 'nRF Connect',
     },
     { required: true, id: 'marus25.cortex-debug', name: 'Cortex-Debug' },
     {
         required: false,
         id: 'nordic-semiconductor.nrf-terminal',
-        name: 'Nrf Terminal',
+        name: 'nRF Terminal',
     },
-    { required: false, id: 'luveti.kconfig', name: 'kconfig' },
-    { required: false, id: 'plorefice.devicetree', name: 'DeviceTree' },
+    {
+        required: false,
+        id: 'nordic-semiconductor.nrf-kconfig',
+        name: 'nRF Kconfig',
+    },
+    {
+        required: false,
+        id: 'nordic-semiconductor.nrf-devicetree',
+        name: 'nRF DeviceTree',
+    },
     { required: false, id: 'ms-vscode.cpptools', name: 'C/C++' },
 ];
 
