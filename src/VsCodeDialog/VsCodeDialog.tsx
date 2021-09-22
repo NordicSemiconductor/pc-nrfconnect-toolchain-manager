@@ -148,7 +148,7 @@ const getTitle = (status: VsCodeStatus) => {
         case VsCodeStatus.INSTALLED:
             return 'VS Code';
         case VsCodeStatus.MISSING_TOOLS:
-            return 'Missing VS Code extensions';
+            return 'Recommended VS Code extensions';
         default:
             return 'VS Code';
     }
