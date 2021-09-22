@@ -73,11 +73,7 @@ const EXTENSIONS = [
 export const showVsCodeDialog = () => (dispatch: Dispatch) => {
     dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
     dispatch(setVsCodeDialogVisible());
-    return dispatch(getVsCodeStatus()).then(status => {
-        if (status !== VsCodeStatus.INSTALLED)
-            dispatch(setVsCodeDialogVisible());
-        return Promise.resolve(status);
-    });
+    return dispatch(getVsCodeStatus()).then(status => Promise.resolve(status));
 };
 
 export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
