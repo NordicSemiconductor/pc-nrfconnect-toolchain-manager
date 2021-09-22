@@ -157,7 +157,7 @@ const spawnAsync = async (params: string[]) => {
         const codeProcess = spawn('code', params, {
             shell: true,
             env: {
-                ...process.env,
+                ...remote.process.env,
                 PATH: pathEnvVariable(),
             },
         });
