@@ -186,7 +186,7 @@ const FirstInstallInstructions = () => {
                 </Button>
             </ButtonToolbar>
             <Tabs defaultActiveKey="vscode" id="uncontrolled-tab">
-                <Tab eventKey="vscode" title="VSCode">
+                <Tab eventKey="vscode" title="VS Code">
                     <div>
                         <Card
                             body
@@ -201,7 +201,7 @@ const FirstInstallInstructions = () => {
                             </p>
                             <ol>
                                 <li>
-                                    Start SEGGER Embedded Studio by clicking{' '}
+                                    Start Visual Studio Code by clicking{' '}
                                     <b>Open VS Code</b>
                                 </li>
                                 <li>
@@ -288,9 +288,9 @@ const FirstInstallInstructions = () => {
                                     </ol>
                                 </li>
                                 <li>
-                                    You can view additional documentation and
-                                    help by clicking <b>Open Walkthrough</b> on
-                                    the Welcome page.
+                                    Additional documentation is available by
+                                    clicking <b>Open Walkthrough</b> on the
+                                    Welcome page.
                                 </li>
                             </ol>
                         </Card>
@@ -312,7 +312,7 @@ const FirstInstallInstructions = () => {
                             <ol>
                                 <li>
                                     Start SEGGER Embedded Studio by clicking{' '}
-                                    <b>Open IDE</b>
+                                    <b>Open Segger Embedded Studio</b>
                                 </li>
                                 <li>
                                     Select{' '}
