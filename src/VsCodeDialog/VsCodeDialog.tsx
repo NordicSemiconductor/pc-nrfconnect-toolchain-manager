@@ -31,6 +31,8 @@ import {
     vsCodeStatus,
 } from './vscodeSlice';
 
+import './vscodeDialog.scss';
+
 export const VsCodeDialog = () => {
     const dispatch = useDispatch();
     const status = useSelector(vsCodeStatus);
@@ -211,7 +213,15 @@ const ExtensionStateIcon = ({ state }: { state: VsCodeExtensionState }) => {
         case VsCodeExtensionState.INSTALLING:
             return <Spinner animation="border" role="status" size="sm" />;
     }
-    return <img src={src} alt={alt} height="18px" width="18px" />;
+    return (
+        <img
+            src={src}
+            alt={alt}
+            height="18px"
+            width="18px"
+            className="extension-state-icon"
+        />
+    );
 };
 
 const ExtensionCheck = ({ extension }: { extension: VsCodeExtension }) => {
