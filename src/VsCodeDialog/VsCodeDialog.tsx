@@ -17,7 +17,8 @@ import Button from '../Manager/Environment/Button';
 import { isInProgress } from '../Manager/Environment/environmentReducer';
 import { isAnyToolchainInProgress } from '../Manager/managerSlice';
 import { isVsCodeEnabled } from '../Settings/settingsSlice';
-import { installExtensions, openVsCode } from './vscode';
+import { TDispatch } from '../thunk';
+import { getVsCodeStatus, installExtensions, openVsCode } from './vscode';
 import {
     isDialogVisible,
     setVsCodeDialogHidden,
@@ -178,21 +179,30 @@ const OpenAnywayButton = ({
 }: {
     handleClose: () => void;
     extensions: VsCodeExtension[];
-}) => (
-    <Button
-        icon=""
-        label={
-            extensions.every(e => e.state === VsCodeExtensionState.INSTALLED)
-                ? 'Open VS Code'
-                : 'Open VS Code anyway'
-        }
-        onClick={() => {
-            openVsCode();
-            handleClose();
-        }}
-        variant="primary"
-    />
-);
+}) => {
+    const dispatch = useDispatch<TDispatch>();
+    return (
+        <Button
+            icon=""
+            label={
+                extensions.every(
+                    e => e.state === VsCodeExtensionState.INSTALLED
+                )
+                    ? 'Open VS Code'
+                    : 'Open VS Code anyway'
+            }
+            onClick={() => {
+                dispatch(getVsCodeStatus()).then((s: VsCodeStatus) => {
+                    if (s === VsCodeStatus.INSTALLED) {
+                        openVsCode();
+                        handleClose();
+                    }
+                });
+            }}
+            variant="primary"
+        />
+    );
+};
 
 const ExtensionStateIcon = ({ state }: { state: VsCodeExtensionState }) => {
     let src;
