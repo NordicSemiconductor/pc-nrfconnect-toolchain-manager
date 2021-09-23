@@ -21,8 +21,8 @@ import { isInProgress, isInstalled } from './environmentReducer';
 
 export const OpenVsCode = ({ environment }: { environment: Environment }) => {
     const dispatch = useDispatch<TDispatch>();
-    if (!useSelector(isVsCodeEnabled)) return <></>;
-    if (!isInstalled(environment)) return <></>;
+    if (!useSelector(isVsCodeEnabled)) return null;
+    if (!isInstalled(environment)) return null;
 
     return (
         <Button
