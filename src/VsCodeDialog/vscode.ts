@@ -39,12 +39,10 @@ import { remote } from 'electron';
 
 import { Dispatch, RootState } from '../state';
 import {
-    deselectExtension,
     installedExtension,
     installExtensionFailed,
     setVsCodeDialogVisible,
     setVsCodeExtensions,
-    setVsCodeNrfjprogInstalled,
     setVsCodeStatus,
     startInstallingExtension,
     VsCodeExtension,
@@ -55,27 +53,23 @@ import {
 
 const EXTENSIONS = [
     {
-        required: true,
         id: 'nordic-semiconductor.nrf-connect',
         name: 'nRF Connect',
     },
-    { required: true, id: 'marus25.cortex-debug', name: 'Cortex-Debug' },
+    { id: 'marus25.cortex-debug', name: 'Cortex-Debug' },
     {
-        required: false,
         id: 'nordic-semiconductor.nrf-terminal',
         name: 'nRF Terminal',
     },
     {
-        required: false,
         id: 'nordic-semiconductor.nrf-kconfig',
         name: 'nRF Kconfig',
     },
     {
-        required: false,
         id: 'nordic-semiconductor.nrf-devicetree',
         name: 'nRF DeviceTree',
     },
-    { required: false, id: 'ms-vscode.cpptools', name: 'C/C++' },
+    { id: 'ms-vscode.cpptools', name: 'C/C++' },
 ];
 
 export const showVsCodeDialog = () => (dispatch: Dispatch) => {
@@ -93,9 +87,7 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
         dispatch(setVsCodeNrfjprogInstalled(nrfjprog));
         if (
             extensions.some(
-                extension =>
-                    extension.required &&
-                    extension.state !== VsCodeExtensionState.INSTALLED
+                extension => extension.state !== VsCodeExtensionState.INSTALLED
             ) ||
             !nrfjprog
         )
@@ -111,7 +103,7 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
 export const installExtensions =
     () => (dispatch: Dispatch, getState: () => RootState) =>
         vsCodeExtensions(getState()).forEach(extension => {
-            if (extension.selected)
+            if (extension.state !== VsCodeExtensionState.INSTALLED)
                 dispatch(installExtension(extension.identifier));
         });
 
@@ -119,7 +111,6 @@ const installExtension = (identifier: string) => async (dispatch: Dispatch) => {
     try {
         dispatch(startInstallingExtension(identifier));
         await spawnAsync(['--install-extension', identifier]);
-        dispatch(deselectExtension(identifier));
         dispatch(installedExtension(identifier));
     } catch {
         dispatch(installExtensionFailed(identifier));
@@ -131,11 +122,9 @@ export const listInstalledExtensions = async (): Promise<VsCodeExtension[]> => {
     return EXTENSIONS.map(extension => ({
         identifier: extension.id,
         name: extension.name,
-        required: extension.required,
         state: installedExtensions.includes(extension.id)
             ? VsCodeExtensionState.INSTALLED
             : VsCodeExtensionState.NOT_INSTALLED,
-        selected: !installedExtensions.includes(extension.id),
     }));
 };
 

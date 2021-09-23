@@ -5,7 +5,6 @@
  */
 
 import React from 'react';
-import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { Spinner } from 'pc-nrfconnect-shared';
@@ -19,10 +18,8 @@ import { isAnyToolchainInProgress } from '../Manager/managerSlice';
 import { isVsCodeEnabled } from '../Settings/settingsSlice';
 import { installExtensions, openVsCode } from './vscode';
 import {
-    deselectExtension,
     isDialogVisible,
     nrfjprogInstalled,
-    selectExtension,
     setVsCodeDialogHidden,
     VsCodeExtension,
     vsCodeExtensions,
@@ -125,18 +122,7 @@ export const VsCodeDialog = () => {
                         />
                         {extensions.some(
                             e => e.state !== VsCodeExtensionState.INSTALLED
-                        ) && (
-                            <InstallMissingButton
-                                disabled={
-                                    !extensions.some(
-                                        e =>
-                                            e.selected &&
-                                            e.state !==
-                                                VsCodeExtensionState.INSTALLED
-                                    )
-                                }
-                            />
-                        )}
+                        ) && <InstallMissingButton />}
                     </>
                 )}
                 <CloseButton handleClose={handleClose} />
@@ -164,15 +150,14 @@ const CloseButton = ({ handleClose }: { handleClose: () => void }) => (
     <Button icon="" label="Close" onClick={handleClose} variant="primary" />
 );
 
-const InstallMissingButton = ({ disabled }: { disabled: boolean }) => {
+const InstallMissingButton = () => {
     const dispatch = useDispatch();
     return (
         <Button
             icon=""
-            label="Install selected extensions"
+            label="Install missing extensions"
             onClick={() => dispatch(installExtensions())}
             variant="primary"
-            disabled={disabled}
         />
     );
 };
@@ -189,9 +174,8 @@ const OpenAnywayButton = ({
     <Button
         icon=""
         label={
-            extensions.every(e =>
-                e.required ? e.state === VsCodeExtensionState.INSTALLED : true
-            ) && nrfjprog
+            extensions.every(e => e.state === VsCodeExtensionState.INSTALLED) &&
+            nrfjprog
                 ? 'Open VS Code'
                 : 'Open VS Code anyway'
         }
@@ -234,33 +218,12 @@ const ExtensionStateIcon = ({ state }: { state: VsCodeExtensionState }) => {
     );
 };
 
-const ExtensionCheck = ({ extension }: { extension: VsCodeExtension }) => {
-    const dispatch = useDispatch();
-    return (
-        <>
-            <div className="vscode-dialog-entry">
-                <Form.Check
-                    inline
-                    type="checkbox"
-                    id={extension.identifier}
-                    label={`${extension.name} (${extension.identifier})`}
-                    defaultChecked={
-                        extension.state !== VsCodeExtensionState.INSTALLED
-                    }
-                    disabled={
-                        extension.state === VsCodeExtensionState.INSTALLED
-                    }
-                    onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-                        if (evt.target.checked)
-                            dispatch(selectExtension(extension.identifier));
-                        else dispatch(deselectExtension(extension.identifier));
-                    }}
-                />
-                <ExtensionStateIcon state={extension.state} />
-            </div>
-        </>
-    );
-};
+const ExtensionItem = ({ extension }: { extension: VsCodeExtension }) => (
+    <div className="vscode-dialog-entry">
+        <ExtensionStateIcon state={extension.state} />{' '}
+        {`${extension.name} (${extension.identifier})`}
+    </div>
+);
 
 const ExtensionsMissing = ({
     extensions,
@@ -269,9 +232,6 @@ const ExtensionsMissing = ({
     extensions: VsCodeExtension[];
     nrfjprog: boolean;
 }) => {
-    const required = extensions.filter(e => e.required);
-    const recommended = extensions.filter(e => !e.required);
-
     const failedInstall = extensions.some(
         e => e.state === VsCodeExtensionState.FAILED
     );
@@ -284,8 +244,8 @@ const ExtensionsMissing = ({
             </p>
             <div className="vscode-dialog-list">
                 <h4>Required</h4>
-                {required.map(extension => (
-                    <ExtensionCheck extension={extension} />
+                {extensions.map(extension => (
+                    <ExtensionItem extension={extension} />
                 ))}
                 {!nrfjprog && (
                     <div className="vscode-dialog-entry">
@@ -307,10 +267,6 @@ const ExtensionsMissing = ({
                 )}
             </div>
             <div className="vscode-dialog-list">
-                <h4>Recommended</h4>
-                {recommended.map(extension => (
-                    <ExtensionCheck extension={extension} />
-                ))}
                 {failedInstall && (
                     <div className="vscode-dialog-entry">
                         <i>

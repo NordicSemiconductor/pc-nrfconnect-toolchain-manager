@@ -25,9 +25,7 @@ export enum VsCodeExtensionState {
 export interface VsCodeExtension {
     identifier: string;
     name: string;
-    required: boolean;
     state: VsCodeExtensionState;
-    selected: boolean;
 }
 
 export interface VsCodeState {
@@ -81,18 +79,6 @@ const slice = createSlice({
             );
             if (extension) extension.state = VsCodeExtensionState.FAILED;
         },
-        selectExtension(state, action) {
-            const extension = state.extensions.find(
-                e => e.identifier === action.payload
-            );
-            if (extension) extension.selected = true;
-        },
-        deselectExtension(state, action) {
-            const extension = state.extensions.find(
-                e => e.identifier === action.payload
-            );
-            if (extension) extension.selected = false;
-        },
     },
 });
 
@@ -107,8 +93,6 @@ export const {
         installExtensionFailed,
         setVsCodeNrfjprogInstalled,
         setVsCodeDialogHidden,
-        selectExtension,
-        deselectExtension,
     },
 } = slice;
 
