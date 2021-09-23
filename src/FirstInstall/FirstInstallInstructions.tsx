@@ -215,8 +215,12 @@ const FirstInstallInstructions = () => {
                                     following:
                                     <ul>
                                         <li>
-                                            Clicking on the Extensions tab and
-                                            then <b>Open Welcome Page</b>
+                                            Clicking on the nRF Connect for VS
+                                            Code icon to the left in VS Code.
+                                        </li>
+                                        <li>
+                                            Open the Welcome Page by clicking{' '}
+                                            <b>Open Welcome page</b>
                                         </li>
                                         <li>
                                             Using the nRF Connect: Welcome
@@ -294,8 +298,12 @@ const FirstInstallInstructions = () => {
                                     </ol>
                                 </li>
                                 <li>
-                                    Additional documentation is available by
-                                    clicking <b>Open Walkthrough</b> on the
+                                    Additional documentation and{' '}
+                                    <a href="https://www.youtube.com/playlist?list=PLx_tBuQ_KSqEt7NK-H7Lu78lT2OijwIMl">
+                                        how-to-guides
+                                    </a>{' '}
+                                    are available through the{' '}
+                                    <b>Open Walkthrough</b> option on the
                                     Welcome page.
                                 </li>
                             </ol>
