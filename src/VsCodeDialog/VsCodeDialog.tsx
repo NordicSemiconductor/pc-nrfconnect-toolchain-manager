@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import Alert from 'react-bootstrap/Alert';
 import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { Spinner } from 'pc-nrfconnect-shared';
@@ -236,9 +237,12 @@ const ExtensionsMissing = ({
 }: {
     extensions: VsCodeExtension[];
 }) => {
-    const failedInstall = extensions.some(
-        e => e.state === VsCodeExtensionState.FAILED
-    );
+    const [showAlert, setShowAlert] = useState(false);
+    useEffect(() => {
+        if (extensions.some(e => e.state === VsCodeExtensionState.FAILED))
+            setShowAlert(true);
+        else setShowAlert(false);
+    }, [extensions, setShowAlert]);
 
     return (
         <>
@@ -247,28 +251,30 @@ const ExtensionsMissing = ({
                 the following extensions:
             </p>
             <div className="vscode-dialog-list">
-                <h4>Required</h4>
                 {extensions.map(extension => (
                     <ExtensionItem extension={extension} />
                 ))}
             </div>
-            <div className="vscode-dialog-list">
-                {failedInstall && (
-                    <div className="vscode-dialog-entry">
-                        <i>
-                            Some extensions failed to install. Please try to
-                            install them manually through the{' '}
-                            <a
-                                target="_blank"
-                                rel="noreferrer"
-                                href="https://code.visualstudio.com/docs/editor/extension-marketplace"
-                            >
-                                VS Code Extension Marketplace
-                            </a>
-                        </i>
-                    </div>
-                )}
-            </div>
+            <p>
+                Extensions can be individually enabled and disabled in VS Code.
+            </p>
+            {showAlert && (
+                <Alert
+                    variant="danger"
+                    onClose={() => setShowAlert(false)}
+                    dismissible
+                >
+                    Some extensions failed to install. Please try to install
+                    them manually through the{' '}
+                    <Alert.Link
+                        target="_blank"
+                        rel="noreferrer"
+                        href="https://code.visualstudio.com/docs/editor/extension-marketplace"
+                    >
+                        VS Code Extension Marketplace
+                    </Alert.Link>
+                </Alert>
+            )}
         </>
     );
 };
