@@ -10,7 +10,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import { useDispatch, useSelector } from 'react-redux';
-import { Toggle } from 'pc-nrfconnect-shared';
+import { colors, Toggle } from 'pc-nrfconnect-shared';
 
 import {
     currentInstallDir,
@@ -60,8 +60,6 @@ export default () => {
                         <Form.Group controlId="showOlderEnvironments">
                             <div className="d-flex">
                                 <Toggle
-                                    isToggled={olderEnvironmentsHidden}
-                                    labelRight
                                     onToggle={() =>
                                         dispatch(
                                             showOlderEnvironments(
@@ -69,7 +67,12 @@ export default () => {
                                             )
                                         )
                                     }
+                                    isToggled={olderEnvironmentsHidden}
+                                    labelRight
                                     label="Show only 3 newest minor versions"
+                                    barColor={colors.gray700}
+                                    barColorToggled={colors.nordicBlue}
+                                    variant="secondary"
                                 />
                             </div>
 
@@ -88,12 +91,15 @@ export default () => {
                         <Form.Group controlId="toggleVsCode">
                             <div className="d-flex">
                                 <Toggle
-                                    isToggled={vsCodeEnabled}
-                                    labelRight
                                     onToggle={() =>
                                         dispatch(enableVsCode(!vsCodeEnabled))
                                     }
+                                    isToggled={vsCodeEnabled}
+                                    labelRight
                                     label="Show Vs Code button on environments"
+                                    barColor={colors.gray700}
+                                    barColorToggled={colors.nordicBlue}
+                                    variant="secondary"
                                 />
                             </div>
 
