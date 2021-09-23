@@ -232,22 +232,25 @@ const ExtensionCheck = ({ extension }: { extension: VsCodeExtension }) => {
     const dispatch = useDispatch();
     return (
         <>
-            <br />
-            <Form.Check
-                inline
-                type="checkbox"
-                label={`${extension.name} (${extension.identifier})`}
-                defaultChecked={
-                    extension.state !== VsCodeExtensionState.INSTALLED
-                }
-                disabled={extension.state === VsCodeExtensionState.INSTALLED}
-                onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
-                    if (evt.target.checked)
-                        dispatch(selectExtension(extension.identifier));
-                    else dispatch(deselectExtension(extension.identifier));
-                }}
-            />
-            <ExtensionStateIcon state={extension.state} />
+            <div className="vscode-dialog-entry">
+                <Form.Check
+                    inline
+                    type="checkbox"
+                    label={`${extension.name} (${extension.identifier})`}
+                    defaultChecked={
+                        extension.state !== VsCodeExtensionState.INSTALLED
+                    }
+                    disabled={
+                        extension.state === VsCodeExtensionState.INSTALLED
+                    }
+                    onChange={(evt: React.ChangeEvent<HTMLInputElement>) => {
+                        if (evt.target.checked)
+                            dispatch(selectExtension(extension.identifier));
+                        else dispatch(deselectExtension(extension.identifier));
+                    }}
+                />
+                <ExtensionStateIcon state={extension.state} />
+            </div>
         </>
     );
 };
@@ -268,54 +271,55 @@ const ExtensionsMissing = ({
 
     return (
         <>
-            For developing nRF applications with VS Code we recommend using the
-            following extensions:
-            <br />
-            <strong>Required</strong>
-            {required.map(extension => (
-                <ExtensionCheck extension={extension} />
-            ))}
-            {!nrfjprog && (
-                <>
-                    <br />
-                    <i>
-                        To use the nRF Connect extension for VS Code, you need
-                        to{' '}
-                        <a
-                            target="_blank"
-                            rel="noreferrer"
-                            href="https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools"
-                        >
-                            install nRF Command Line Tools
-                        </a>{' '}
-                    </i>
-                    <ExtensionStateIcon
-                        state={VsCodeExtensionState.NOT_INSTALLED}
-                    />
-                </>
-            )}
-            <br />
-            <br />
-            <strong>Recommended</strong>
-            {recommended.map(extension => (
-                <ExtensionCheck extension={extension} />
-            ))}
-            {failedInstall && (
-                <>
-                    <br />
-                    <i>
-                        Some extensions failed to install. Please try to install
-                        them manually through the{' '}
-                        <a
-                            target="_blank"
-                            rel="noreferrer"
-                            href="https://code.visualstudio.com/docs/editor/extension-marketplace"
-                        >
-                            VS Code Extension Marketplace
-                        </a>
-                    </i>
-                </>
-            )}
+            <p>
+                For developing nRF applications with VS Code we recommend using
+                the following extensions:
+            </p>
+            <div className="vscode-dialog-list">
+                <h4>Required</h4>
+                {required.map(extension => (
+                    <ExtensionCheck extension={extension} />
+                ))}
+                {!nrfjprog && (
+                    <div className="vscode-dialog-entry">
+                        <i className="vscode-install-text">
+                            To use the nRF Connect extension for VS Code, you
+                            need to{' '}
+                            <a
+                                target="_blank"
+                                rel="noreferrer"
+                                href="https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools"
+                            >
+                                install nRF Command Line Tools
+                            </a>{' '}
+                        </i>
+                        <ExtensionStateIcon
+                            state={VsCodeExtensionState.NOT_INSTALLED}
+                        />
+                    </div>
+                )}
+            </div>
+            <div className="vscode-dialog-list">
+                <h4>Recommended</h4>
+                {recommended.map(extension => (
+                    <ExtensionCheck extension={extension} />
+                ))}
+                {failedInstall && (
+                    <div className="vscode-dialog-entry">
+                        <i>
+                            Some extensions failed to install. Please try to
+                            install them manually through the{' '}
+                            <a
+                                target="_blank"
+                                rel="noreferrer"
+                                href="https://code.visualstudio.com/docs/editor/extension-marketplace"
+                            >
+                                VS Code Extension Marketplace
+                            </a>
+                        </i>
+                    </div>
+                )}
+            </div>
         </>
     );
 };
