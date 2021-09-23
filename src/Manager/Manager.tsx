@@ -19,7 +19,6 @@ import { isOlderEnvironmentsHidden } from '../Settings/settingsSlice';
 import { TDispatch } from '../thunk';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import EventAction from '../usageDataActions';
-import { getVsCodeStatus } from '../VsCodeDialog/vscode';
 import VsCodeDialog from '../VsCodeDialog/VsCodeDialog';
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
