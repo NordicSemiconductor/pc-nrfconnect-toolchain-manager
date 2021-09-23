@@ -128,12 +128,20 @@ export const VsCodeDialog = () => {
                     <>
                         <OpenAnywayButton
                             handleClose={handleClose}
-                            extensions={extensions}
+                            openAnywayText={extensions.some(
+                                e => e.state !== VsCodeExtensionState.INSTALLED
+                            )}
                         />
                         {extensions.some(
                             e => e.state !== VsCodeExtensionState.INSTALLED
                         ) && <InstallMissingButton />}
                     </>
+                )}
+                {status === VsCodeStatus.MISSING_NRFJPROG && (
+                    <OpenAnywayButton
+                        handleClose={handleClose}
+                        openAnywayText
+                    />
                 )}
                 <CloseButton handleClose={handleClose} />
             </Modal.Footer>
@@ -176,29 +184,28 @@ const InstallMissingButton = () => {
 
 const OpenAnywayButton = ({
     handleClose,
-    extensions,
+    openAnywayText,
 }: {
     handleClose: () => void;
-    extensions: VsCodeExtension[];
+    openAnywayText: boolean;
 }) => {
     const dispatch = useDispatch<TDispatch>();
     return (
         <Button
             icon=""
-            label={
-                extensions.every(
-                    e => e.state === VsCodeExtensionState.INSTALLED
-                )
-                    ? 'Open VS Code'
-                    : 'Open VS Code anyway'
-            }
+            label={openAnywayText ? 'Open VS Code anyway' : 'Open VS Code'}
             onClick={() => {
-                dispatch(getVsCodeStatus()).then((s: VsCodeStatus) => {
-                    if (s === VsCodeStatus.INSTALLED) {
-                        openVsCode();
-                        handleClose();
-                    }
-                });
+                // Open anyway implies the user does not care about having all required things installed thus we don't need to check for nrfjprog
+                if (openAnywayText) {
+                    openVsCode();
+                    handleClose();
+                } else
+                    dispatch(getVsCodeStatus()).then((s: VsCodeStatus) => {
+                        if (s === VsCodeStatus.INSTALLED) {
+                            openVsCode();
+                            handleClose();
+                        }
+                    });
             }}
             variant="primary"
         />
