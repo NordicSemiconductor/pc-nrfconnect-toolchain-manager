@@ -47,6 +47,8 @@ import { sep } from 'path';
 import { currentInstallDir } from '../InstallDir/installDirSlice';
 import { hideFirstSteps, selectedVersion } from '../Manager/managerSlice';
 
+import './style.scss';
+
 const Ie = () => (
     <>
         {' '}
@@ -185,7 +187,11 @@ const FirstInstallInstructions = () => {
                     Go back
                 </Button>
             </ButtonToolbar>
-            <Tabs defaultActiveKey="vscode" id="uncontrolled-tab">
+            <Tabs
+                className="temp"
+                defaultActiveKey="vscode"
+                id="uncontrolled-tab"
+            >
                 <Tab eventKey="vscode" title="VS Code">
                     <div>
                         <Card
