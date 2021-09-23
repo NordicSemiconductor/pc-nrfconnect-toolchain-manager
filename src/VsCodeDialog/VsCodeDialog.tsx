@@ -236,6 +236,7 @@ const ExtensionCheck = ({ extension }: { extension: VsCodeExtension }) => {
                 <Form.Check
                     inline
                     type="checkbox"
+                    id={extension.identifier}
                     label={`${extension.name} (${extension.identifier})`}
                     defaultChecked={
                         extension.state !== VsCodeExtensionState.INSTALLED
