@@ -180,7 +180,7 @@ const FirstInstallInstructions = () => {
         <div>
             <ButtonToolbar className="mb-2">
                 <Button
-                    className="mdi mdi-arrow-left"
+                    className="mdi mdi-arrow-left ml-auto"
                     variant="secondary"
                     onClick={() => dispatch(hideFirstSteps())}
                 >
