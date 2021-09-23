@@ -440,6 +440,15 @@ const FirstInstallInstructions = () => {
                     </div>
                 </Tab>
             </Tabs>
+            <ButtonToolbar className="mt-2">
+                <Button
+                    className="mdi mdi-arrow-left ml-auto"
+                    variant="secondary"
+                    onClick={() => dispatch(hideFirstSteps())}
+                >
+                    Go back
+                </Button>
+            </ButtonToolbar>
         </div>
     );
 };
