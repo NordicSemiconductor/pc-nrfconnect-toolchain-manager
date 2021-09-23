@@ -37,3 +37,26 @@
 .extension-state-icon {
     vertical-align: sub;
 }
+
+.vscode-dialog-entry {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.vscode-dialog-list {
+    margin-bottom: 12px;
+}
+
+.vscode-dialog-checking-install {
+    display: flex;
+    align-items: center;
+
+    span {
+        margin-right: 8px;
+    }
+}
+
+.vscode-install-text {
+    margin-right: 8px;
+}
