@@ -9,6 +9,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
+import { Spinner as SharedSpinner } from 'pc-nrfconnect-shared';
 
 import extensionFailed from '../../resources/extension-failed.svg';
 import extensionInstalled from '../../resources/extension-installed.svg';
@@ -54,8 +55,14 @@ export const VsCodeDialog = () => {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {status === VsCodeStatus.NOT_CHECKED &&
-                    'Checking if vscode is available on the system.'}
+                {status === VsCodeStatus.NOT_CHECKED && (
+                    <div className="vscode-dialog-checking-install">
+                        <span>
+                            Checking if vscode is available on the system.
+                        </span>
+                        <SharedSpinner />
+                    </div>
+                )}
                 {status === VsCodeStatus.NOT_INSTALLED && (
                     <>
                         {toolchainInProgress ? (

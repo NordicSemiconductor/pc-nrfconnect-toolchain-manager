@@ -48,6 +48,15 @@
     margin-bottom: 12px;
 }
 
+.vscode-dialog-checking-install {
+    display: flex;
+    align-items: center;
+
+    span {
+        margin-right: 8px;
+    }
+}
+
 .vscode-install-text {
     margin-right: 8px;
 }
