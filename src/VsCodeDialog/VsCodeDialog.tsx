@@ -119,7 +119,7 @@ export const VsCodeDialog = () => {
                         >
                             install nRF Command Line Tools
                         </a>
-                        .
+                        &nbsp; and restart nRF Connect for Desktop.
                     </div>
                 )}
             </Modal.Body>
