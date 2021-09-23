@@ -7,9 +7,8 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import Spinner from 'react-bootstrap/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
-import { Spinner as SharedSpinner } from 'pc-nrfconnect-shared';
+import { Spinner } from 'pc-nrfconnect-shared';
 
 import extensionFailed from '../../resources/extension-failed.svg';
 import extensionInstalled from '../../resources/extension-installed.svg';
@@ -60,7 +59,7 @@ export const VsCodeDialog = () => {
                         <span>
                             Checking if vscode is available on the system.
                         </span>
-                        <SharedSpinner />
+                        <Spinner />
                     </div>
                 )}
                 {status === VsCodeStatus.NOT_INSTALLED && (
@@ -222,7 +221,7 @@ const ExtensionStateIcon = ({ state }: { state: VsCodeExtensionState }) => {
             alt = 'Installed';
             break;
         case VsCodeExtensionState.INSTALLING:
-            return <Spinner animation="border" role="status" size="sm" />;
+            return <Spinner />;
     }
     return (
         <img
