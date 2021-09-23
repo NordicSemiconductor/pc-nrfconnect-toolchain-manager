@@ -14,7 +14,6 @@ import { openVsCode, showVsCodeDialog } from '../../VsCodeDialog/vscode';
 import {
     setVsCodeDialogHidden,
     VsCodeStatus,
-    vsCodeStatus,
 } from '../../VsCodeDialog/vscodeSlice';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
@@ -22,23 +21,14 @@ import { isInProgress, isInstalled } from './environmentReducer';
 
 export const OpenVsCode = ({ environment }: { environment: Environment }) => {
     const dispatch = useDispatch<TDispatch>();
-    const status = useSelector(vsCodeStatus);
     if (!useSelector(isVsCodeEnabled)) return <></>;
     if (!isInstalled(environment)) return <></>;
 
     return (
         <Button
             icon="x-mdi-rocket"
-            label={
-                status === VsCodeStatus.NOT_INSTALLED
-                    ? 'Install VS Code'
-                    : 'Open VS Code'
-            }
-            title={
-                status === VsCodeStatus.NOT_INSTALLED
-                    ? 'Install Visual Studio Code'
-                    : 'Open Visual Studio Code'
-            }
+            label="Open VS Code"
+            title="Open Visual Studio Code"
             variant="primary"
             disabled={isInProgress(environment)}
             onClick={() => {

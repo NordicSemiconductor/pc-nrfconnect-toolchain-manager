@@ -63,9 +63,6 @@ const Environments = () => {
 export default () => {
     const dispatch = useDispatch<TDispatch>();
     useEffect(() => initEnvironments(dispatch), [dispatch]);
-    useEffect(() => {
-        dispatch(getVsCodeStatus());
-    }, [dispatch]);
     const showingFirstSteps = useSelector(isShowingFirstSteps);
 
     if (showingFirstSteps) {
