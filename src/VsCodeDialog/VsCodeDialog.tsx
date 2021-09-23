@@ -74,8 +74,8 @@ export const VsCodeDialog = () => {
                                     href={installLink()}
                                 >
                                     install VS Code
-                                </a>
-                                .
+                                </a>{' '}
+                                and restart nRF Connect for Desktop.
                             </>
                         ) : (
                             <>
@@ -88,7 +88,7 @@ export const VsCodeDialog = () => {
                                 >
                                     Install VS Code
                                 </a>{' '}
-                                and try again.
+                                and restart nRF Connect for Desktop.
                             </>
                         )}
                         {process.platform === 'darwin' && (
