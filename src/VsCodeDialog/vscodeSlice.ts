@@ -12,7 +12,8 @@ export enum VsCodeStatus {
     NOT_CHECKED,
     INSTALLED,
     NOT_INSTALLED,
-    MISSING_TOOLS,
+    MISSING_EXTENSIONS,
+    MISSING_NRFJPROG,
 }
 
 export enum VsCodeExtensionState {
@@ -31,14 +32,12 @@ export interface VsCodeExtension {
 export interface VsCodeState {
     status: VsCodeStatus;
     extensions: VsCodeExtension[];
-    nrfjprogInstalled: boolean;
     isDialogVisible: boolean;
 }
 
 const initialState: VsCodeState = {
     status: VsCodeStatus.NOT_CHECKED,
     extensions: [],
-    nrfjprogInstalled: false,
     isDialogVisible: false,
 };
 
@@ -70,9 +69,6 @@ const slice = createSlice({
             );
             if (extension) extension.state = VsCodeExtensionState.INSTALLED;
         },
-        setVsCodeNrfjprogInstalled(state, action) {
-            state.nrfjprogInstalled = action.payload;
-        },
         installExtensionFailed(state, action) {
             const extension = state.extensions.find(
                 e => e.identifier === action.payload
@@ -91,7 +87,6 @@ export const {
         startInstallingExtension,
         installedExtension,
         installExtensionFailed,
-        setVsCodeNrfjprogInstalled,
         setVsCodeDialogHidden,
     },
 } = slice;
@@ -99,7 +94,5 @@ export const {
 export const vsCodeStatus = ({ app: { vsCode } }: RootState) => vsCode.status;
 export const vsCodeExtensions = ({ app: { vsCode } }: RootState) =>
     vsCode.extensions;
-export const nrfjprogInstalled = ({ app: { vsCode } }: RootState) =>
-    vsCode.nrfjprogInstalled;
 export const isDialogVisible = ({ app: { vsCode } }: RootState) =>
     vsCode.isDialogVisible;

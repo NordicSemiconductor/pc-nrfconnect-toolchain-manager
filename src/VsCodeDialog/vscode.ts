@@ -85,16 +85,17 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
     try {
         const extensions = await listInstalledExtensions();
         dispatch(setVsCodeExtensions(extensions));
-        const nrfjprog = await getNrfjprogStatus();
-        dispatch(setVsCodeNrfjprogInstalled(nrfjprog));
         if (
             extensions.some(
                 extension => extension.state !== VsCodeExtensionState.INSTALLED
-            ) ||
-            !nrfjprog
+            )
         )
-            status = VsCodeStatus.MISSING_TOOLS;
-        else status = VsCodeStatus.INSTALLED;
+            status = VsCodeStatus.MISSING_EXTENSIONS;
+        else {
+            const nrfjprog = await getNrfjprogStatus();
+            if (!nrfjprog) status = VsCodeStatus.MISSING_NRFJPROG;
+            else status = VsCodeStatus.INSTALLED;
+        }
     } catch {
         status = VsCodeStatus.NOT_INSTALLED;
     }

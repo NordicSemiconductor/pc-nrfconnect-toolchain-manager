@@ -19,7 +19,6 @@ import { isVsCodeEnabled } from '../Settings/settingsSlice';
 import { installExtensions, openVsCode } from './vscode';
 import {
     isDialogVisible,
-    nrfjprogInstalled,
     setVsCodeDialogHidden,
     VsCodeExtension,
     vsCodeExtensions,
@@ -34,7 +33,6 @@ export const VsCodeDialog = () => {
     const dispatch = useDispatch();
     const status = useSelector(vsCodeStatus);
     const extensions = useSelector(vsCodeExtensions);
-    const nrfjprog = useSelector(nrfjprogInstalled);
     const enabled = useSelector(isVsCodeEnabled);
     const visible = useSelector(isDialogVisible);
     const toolchainInProgress = useSelector(isAnyToolchainInProgress);
@@ -105,20 +103,29 @@ export const VsCodeDialog = () => {
                         )}
                     </>
                 )}
-                {status === VsCodeStatus.MISSING_TOOLS && (
-                    <ExtensionsMissing
-                        extensions={extensions}
-                        nrfjprog={nrfjprog}
-                    />
+                {status === VsCodeStatus.MISSING_EXTENSIONS && (
+                    <ExtensionsMissing extensions={extensions} />
+                )}
+                {status === VsCodeStatus.MISSING_NRFJPROG && (
+                    <div className="vscode-dialog-entry">
+                        To use the nRF Connect extension for VS Code, you need
+                        to{' '}
+                        <a
+                            target="_blank"
+                            rel="noreferrer"
+                            href="https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools"
+                        >
+                            install nRF Command Line Tools
+                        </a>{' '}
+                    </div>
                 )}
             </Modal.Body>
             <Modal.Footer>
-                {status === VsCodeStatus.MISSING_TOOLS && (
+                {status === VsCodeStatus.MISSING_EXTENSIONS && (
                     <>
                         <OpenAnywayButton
                             handleClose={handleClose}
                             extensions={extensions}
-                            nrfjprog={nrfjprog}
                         />
                         {extensions.some(
                             e => e.state !== VsCodeExtensionState.INSTALLED
@@ -139,8 +146,10 @@ const getTitle = (status: VsCodeStatus) => {
             return 'VS Code is not installed';
         case VsCodeStatus.INSTALLED:
             return 'VS Code';
-        case VsCodeStatus.MISSING_TOOLS:
+        case VsCodeStatus.MISSING_EXTENSIONS:
             return 'Recommended VS Code extensions';
+        case VsCodeStatus.MISSING_NRFJPROG:
+            return 'nRF Command Line Tools is not installed';
         default:
             return 'VS Code';
     }
@@ -165,17 +174,14 @@ const InstallMissingButton = () => {
 const OpenAnywayButton = ({
     handleClose,
     extensions,
-    nrfjprog,
 }: {
     handleClose: () => void;
     extensions: VsCodeExtension[];
-    nrfjprog: boolean;
 }) => (
     <Button
         icon=""
         label={
-            extensions.every(e => e.state === VsCodeExtensionState.INSTALLED) &&
-            nrfjprog
+            extensions.every(e => e.state === VsCodeExtensionState.INSTALLED)
                 ? 'Open VS Code'
                 : 'Open VS Code anyway'
         }
@@ -227,10 +233,8 @@ const ExtensionItem = ({ extension }: { extension: VsCodeExtension }) => (
 
 const ExtensionsMissing = ({
     extensions,
-    nrfjprog,
 }: {
     extensions: VsCodeExtension[];
-    nrfjprog: boolean;
 }) => {
     const failedInstall = extensions.some(
         e => e.state === VsCodeExtensionState.FAILED
@@ -247,24 +251,6 @@ const ExtensionsMissing = ({
                 {extensions.map(extension => (
                     <ExtensionItem extension={extension} />
                 ))}
-                {!nrfjprog && (
-                    <div className="vscode-dialog-entry">
-                        <i className="vscode-install-text">
-                            To use the nRF Connect extension for VS Code, you
-                            need to{' '}
-                            <a
-                                target="_blank"
-                                rel="noreferrer"
-                                href="https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools"
-                            >
-                                install nRF Command Line Tools
-                            </a>{' '}
-                        </i>
-                        <ExtensionStateIcon
-                            state={VsCodeExtensionState.NOT_INSTALLED}
-                        />
-                    </div>
-                )}
             </div>
             <div className="vscode-dialog-list">
                 {failedInstall && (
