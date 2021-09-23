@@ -70,6 +70,8 @@ const EXTENSIONS = [
         name: 'nRF DeviceTree',
     },
     { id: 'ms-vscode.cpptools', name: 'C/C++' },
+    { id: 'trond-snekvik.gnu-mapfiles', name: 'GNU Linker Map Files' },
+    { id: 'twxs.cmake', name: 'CMake' },
 ];
 
 export const showVsCodeDialog = () => (dispatch: Dispatch) => {
