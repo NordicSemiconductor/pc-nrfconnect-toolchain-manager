@@ -58,7 +58,7 @@ export const VsCodeDialog = () => {
                 {status === VsCodeStatus.NOT_CHECKED && (
                     <div className="vscode-dialog-checking-install">
                         <span>
-                            Checking if vscode is available on the system.
+                            Checking if VS Code and dependencies are installed.
                         </span>
                         <Spinner />
                     </div>
@@ -156,15 +156,13 @@ export const VsCodeDialog = () => {
 const getTitle = (status: VsCodeStatus) => {
     switch (status) {
         case VsCodeStatus.NOT_CHECKED:
-            return 'Checking for VS Code';
+            return 'Opening VS Code';
         case VsCodeStatus.NOT_INSTALLED:
-            return 'VS Code is not installed';
-        case VsCodeStatus.INSTALLED:
-            return 'VS Code';
+            return 'Install VS Code';
         case VsCodeStatus.MISSING_EXTENSIONS:
-            return 'Recommended VS Code extensions';
+            return 'Install recommended VS Code extensions';
         case VsCodeStatus.MISSING_NRFJPROG:
-            return 'nRF Command Line Tools is not installed';
+            return 'Install nRF Command Line Tools';
         default:
             return 'VS Code';
     }
@@ -287,13 +285,13 @@ const ExtensionsMissing = ({
                     dismissible
                 >
                     Some extensions failed to install. Please try to install
-                    them manually through the{' '}
+                    them manually from the{' '}
                     <Alert.Link
                         target="_blank"
                         rel="noreferrer"
-                        href="https://code.visualstudio.com/docs/editor/extension-marketplace"
+                        href="https://marketplace.visualstudio.com/items?itemName=nordic-semiconductor.nrf-connect-extension-pack"
                     >
-                        VS Code Extension Marketplace
+                        nRF Connect Extension Pack
                     </Alert.Link>
                 </Alert>
             )}
