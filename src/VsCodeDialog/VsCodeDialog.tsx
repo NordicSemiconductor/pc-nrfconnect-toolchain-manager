@@ -262,7 +262,10 @@ const ExtensionsMissing = ({
             </p>
             <div className="vscode-dialog-list">
                 {extensions.map(extension => (
-                    <ExtensionItem extension={extension} />
+                    <ExtensionItem
+                        key={extension.identifier}
+                        extension={extension}
+                    />
                 ))}
             </div>
             <p>
