@@ -163,7 +163,7 @@ const getTitle = (status: VsCodeStatus) => {
         case VsCodeStatus.NOT_INSTALLED:
             return 'Install VS Code';
         case VsCodeStatus.MISSING_EXTENSIONS:
-            return 'Install recommended VS Code extensions';
+            return 'Install VS Code extensions';
         case VsCodeStatus.MISSING_NRFJPROG:
             return 'Install nRF Command Line Tools';
         default:
