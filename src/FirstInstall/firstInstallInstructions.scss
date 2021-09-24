@@ -34,6 +34,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-.temp > a {
+.first-steps-tabs > a {
     border-color: transparent !important;
+}
+
+.nav-tabs > .nav-link.active,
+.nav-tabs > .nav-link {
+    color: black;
 }
