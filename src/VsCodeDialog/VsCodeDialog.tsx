@@ -25,6 +25,7 @@ import {
 import {
     hideVsCodeDialog,
     isDialogVisible,
+    setVsCodeStatus,
     VsCodeExtension,
     vsCodeExtensions,
     VsCodeExtensionState,
@@ -128,8 +129,7 @@ export const VsCodeDialog = () => {
             <Modal.Footer>
                 {status === VsCodeStatus.MISSING_EXTENSIONS && (
                     <>
-                        <OpenAnywayButton
-                            handleClose={handleClose}
+                        <MissingExtensionsSkipButton
                             skipText={extensions.some(
                                 e => e.state !== VsCodeExtensionState.INSTALLED
                             )}
@@ -140,7 +140,15 @@ export const VsCodeDialog = () => {
                     </>
                 )}
                 {status === VsCodeStatus.MISSING_NRFJPROG && (
-                    <OpenAnywayButton handleClose={handleClose} skipText />
+                    <Button
+                        icon=""
+                        label="Skip"
+                        onClick={() => {
+                            openVsCode();
+                            handleClose();
+                        }}
+                        variant="secondary"
+                    />
                 )}
                 <CloseButton handleClose={handleClose} />
             </Modal.Footer>
@@ -179,23 +187,16 @@ const InstallMissingButton = () => {
     );
 };
 
-const OpenAnywayButton = ({
-    handleClose,
-    skipText,
-}: {
-    handleClose: () => void;
-    skipText: boolean;
-}) => {
+const MissingExtensionsSkipButton = ({ skipText }: { skipText: boolean }) => {
     const dispatch = useDispatch<TDispatch>();
     return (
         <Button
             icon=""
             label={skipText ? 'Skip' : 'Open VS Code'}
             onClick={() => {
-                if (skipText) {
-                    openVsCode();
-                    handleClose();
-                } else dispatch(checkOpenVsCodeWithDelay());
+                if (skipText)
+                    dispatch(setVsCodeStatus(VsCodeStatus.MISSING_NRFJPROG));
+                else dispatch(checkOpenVsCodeWithDelay());
             }}
             variant={skipText ? 'secondary' : 'primary'}
         />
