@@ -87,7 +87,7 @@ export const checkOpenVsCodeWithDelay = () => (dispatch: Dispatch) => {
             openVsCode();
         } else {
             const end = new Date();
-            const diff = minDelay - (end - start) / 1000;
+            const diff = minDelay - (+end - +start) / 1000;
             if (diff > 0)
                 setTimeout(() => dispatch(setVsCodeStatus(status)), diff);
             else dispatch(setVsCodeStatus(status));
