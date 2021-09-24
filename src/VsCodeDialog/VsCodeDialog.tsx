@@ -132,7 +132,7 @@ export const VsCodeDialog = () => {
                     <>
                         <OpenAnywayButton
                             handleClose={handleClose}
-                            openAnywayText={extensions.some(
+                            skipText={extensions.some(
                                 e => e.state !== VsCodeExtensionState.INSTALLED
                             )}
                         />
@@ -142,10 +142,7 @@ export const VsCodeDialog = () => {
                     </>
                 )}
                 {status === VsCodeStatus.MISSING_NRFJPROG && (
-                    <OpenAnywayButton
-                        handleClose={handleClose}
-                        openAnywayText
-                    />
+                    <OpenAnywayButton handleClose={handleClose} skipText />
                 )}
                 <CloseButton handleClose={handleClose} />
             </Modal.Footer>
@@ -169,7 +166,7 @@ const getTitle = (status: VsCodeStatus) => {
 };
 
 const CloseButton = ({ handleClose }: { handleClose: () => void }) => (
-    <Button icon="" label="Close" onClick={handleClose} variant="primary" />
+    <Button icon="" label="Close" onClick={handleClose} variant="secondary" />
 );
 
 const InstallMissingButton = () => {
@@ -186,30 +183,23 @@ const InstallMissingButton = () => {
 
 const OpenAnywayButton = ({
     handleClose,
-    openAnywayText,
+    skipText,
 }: {
     handleClose: () => void;
-    openAnywayText: boolean;
+    skipText: boolean;
 }) => {
     const dispatch = useDispatch<TDispatch>();
     return (
         <Button
             icon=""
-            label={openAnywayText ? 'Open VS Code anyway' : 'Open VS Code'}
+            label={skipText ? 'Skip' : 'Open VS Code'}
             onClick={() => {
-                // Open anyway implies the user does not care about having all required things installed thus we don't need to check for nrfjprog
-                if (openAnywayText) {
+                if (skipText) {
                     openVsCode();
                     handleClose();
-                } else
-                    dispatch(getVsCodeStatus()).then((s: VsCodeStatus) => {
-                        if (s === VsCodeStatus.INSTALLED) {
-                            openVsCode();
-                            handleClose();
-                        }
-                    });
+                } else dispatch(checkOpenVsCodeWithDelay());
             }}
-            variant="primary"
+            variant={skipText ? 'secondary' : 'primary'}
         />
     );
 };
