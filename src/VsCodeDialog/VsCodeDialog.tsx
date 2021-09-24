@@ -50,7 +50,7 @@ export const VsCodeDialog = () => {
         <Modal show onHide={handleClose} backdrop="static" size="lg">
             <Modal.Header closeButton={!isInProgress}>
                 <Modal.Title data-testid="title">
-                    <h3>{getTitle(status)}</h3>
+                    {getTitle(status)}
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
