@@ -36,8 +36,10 @@
 
 import { spawn } from 'child_process';
 import { remote } from 'electron';
+import { usageData } from 'pc-nrfconnect-shared';
 
 import { Dispatch, RootState } from '../state';
+import EventAction from '../usageDataActions';
 import {
     hideVsCodeDialog,
     installedExtension,
@@ -145,7 +147,7 @@ export const listInstalledExtensions = async (): Promise<VsCodeExtension[]> => {
     }));
 };
 
-const getNrfjprogStatus = async () => {
+export const getNrfjprogStatus = async () => {
     return new Promise<boolean>(resolve => {
         const spawnAsync = spawn('nrfjprog', {
             shell: true,
@@ -199,5 +201,6 @@ const spawnAsync = async (params: string[]) => {
 };
 
 export const openVsCode = () => {
+    usageData.sendUsageData(EventAction.OPEN_VS_CODE, process.platform);
     spawnAsync([]);
 };

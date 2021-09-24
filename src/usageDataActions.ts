@@ -65,6 +65,10 @@ enum EventAction {
     REPORT_OS_INFO = 'Report OS info',
     REPORT_ERROR = 'Report error',
     REPORT_LOCAL_ENVS = 'Report locally existing environments',
+    OPEN_VS_CODE = 'Open VS Code',
+    INSTALL_VS_EXTENSION = 'Install VS Code extension',
+    VS_INSTALLED = 'Status of VS Code installation',
+    NRFJPROG_INSTALLED = 'Status of nrfjprog installation',
 }
 
 export default EventAction;

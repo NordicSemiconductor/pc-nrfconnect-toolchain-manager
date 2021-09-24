@@ -5,8 +5,10 @@
  */
 
 import { createSlice } from '@reduxjs/toolkit';
+import { usageData } from 'pc-nrfconnect-shared';
 
 import { RootState } from '../state';
+import EventAction from '../usageDataActions';
 
 export enum VsCodeStatus {
     NOT_CHECKED,
@@ -64,6 +66,11 @@ const slice = createSlice({
             if (extension) extension.state = VsCodeExtensionState.INSTALLING;
         },
         installedExtension(state, action) {
+            usageData.sendUsageData(
+                EventAction.INSTALL_VS_EXTENSION,
+                action.payload
+            );
+
             const extension = state.extensions.find(
                 e => e.identifier === action.payload
             );
