@@ -299,7 +299,11 @@ const FirstInstallInstructions = () => {
                                 </li>
                                 <li>
                                     Additional documentation and{' '}
-                                    <a href="https://www.youtube.com/playlist?list=PLx_tBuQ_KSqEt7NK-H7Lu78lT2OijwIMl">
+                                    <a
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        href="https://www.youtube.com/playlist?list=PLx_tBuQ_KSqEt7NK-H7Lu78lT2OijwIMl"
+                                    >
                                         how-to-guides
                                     </a>{' '}
                                     are available through the{' '}
