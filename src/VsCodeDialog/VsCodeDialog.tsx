@@ -19,14 +19,12 @@ import { isAnyToolchainInProgress } from '../Manager/managerSlice';
 import { TDispatch } from '../thunk';
 import {
     checkOpenVsCodeWithDelay,
-    getVsCodeStatus,
     installExtensions,
     openVsCode,
 } from './vscode';
 import {
     hideVsCodeDialog,
     isDialogVisible,
-    setVsCodeStatus,
     VsCodeExtension,
     vsCodeExtensions,
     VsCodeExtensionState,
