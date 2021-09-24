@@ -99,11 +99,6 @@ export const persistedHideOlderEnvironments = () =>
 export const setPersistedHideOlderEnvironments = (visible: boolean) =>
     store().set('hideOlderEnvironments', visible);
 
-export const persistedEnableVsCode = () =>
-    store<boolean>().get('enableVsCode', true);
-export const setPersistedEnableVsCode = (visible: boolean) =>
-    store().set('enableVsCode', visible);
-
 export const persistedShowVsCodeDialogDuringInstall = () =>
     store<boolean>().get('showVsCodeDialogDuringInstall', true);
 export const setPersistedShowVsCodeDialogDuringInstall = (visible: boolean) =>

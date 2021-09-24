@@ -16,7 +16,6 @@ import extensionNotInstalled from '../../resources/extension-not-installed.svg';
 import Button from '../Manager/Environment/Button';
 import { isInProgress } from '../Manager/Environment/environmentReducer';
 import { isAnyToolchainInProgress } from '../Manager/managerSlice';
-import { isVsCodeEnabled } from '../Settings/settingsSlice';
 import { TDispatch } from '../thunk';
 import { getVsCodeStatus, installExtensions, openVsCode } from './vscode';
 import {
@@ -35,11 +34,10 @@ export const VsCodeDialog = () => {
     const dispatch = useDispatch();
     const status = useSelector(vsCodeStatus);
     const extensions = useSelector(vsCodeExtensions);
-    const enabled = useSelector(isVsCodeEnabled);
     const visible = useSelector(isDialogVisible);
     const toolchainInProgress = useSelector(isAnyToolchainInProgress);
 
-    if (!enabled || !visible) return null;
+    if (!visible) return null;
 
     const handleClose = () => dispatch(setVsCodeDialogHidden());
 

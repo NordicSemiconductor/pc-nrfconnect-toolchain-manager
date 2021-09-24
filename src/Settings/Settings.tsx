@@ -22,9 +22,7 @@ import {
     toolchainRootUrl,
 } from '../ToolchainSource/toolchainSourceSlice';
 import {
-    enableVsCode,
     isOlderEnvironmentsHidden,
-    isVsCodeEnabled,
     showOlderEnvironments,
 } from './settingsSlice';
 
@@ -32,7 +30,6 @@ export default () => {
     const dispatch = useDispatch();
     const installDir = useSelector(currentInstallDir);
     const disabled = process.platform === 'darwin';
-    const vsCodeEnabled = useSelector(isVsCodeEnabled);
     const toolchainUrl = useSelector(toolchainRootUrl);
     const olderEnvironmentsHidden = useSelector(isOlderEnvironmentsHidden);
 
@@ -81,31 +78,6 @@ export default () => {
                                 <br />
                                 Hide pre-releases when a corresponding release
                                 is official.
-                            </Form.Text>
-                        </Form.Group>
-                    </Col>
-                </Row>
-
-                <Row className="settings-info mt-4">
-                    <Col>
-                        <Form.Group controlId="toggleVsCode">
-                            <div className="d-flex">
-                                <Toggle
-                                    onToggle={() =>
-                                        dispatch(enableVsCode(!vsCodeEnabled))
-                                    }
-                                    isToggled={vsCodeEnabled}
-                                    labelRight
-                                    label="Show Vs Code button on environments"
-                                    barColor={colors.gray700}
-                                    barColorToggled={colors.nordicBlue}
-                                    variant="secondary"
-                                />
-                            </div>
-
-                            <Form.Text className="text-muted">
-                                Experimental feature. Will be released with the
-                                new vscode extension.
                             </Form.Text>
                         </Form.Group>
                     </Col>

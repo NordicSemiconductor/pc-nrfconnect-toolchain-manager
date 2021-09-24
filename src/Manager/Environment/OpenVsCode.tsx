@@ -5,9 +5,8 @@
  */
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { isVsCodeEnabled } from '../../Settings/settingsSlice';
 import { Environment } from '../../state';
 import { TDispatch } from '../../thunk';
 import { openVsCode, showVsCodeDialog } from '../../VsCodeDialog/vscode';
@@ -21,7 +20,6 @@ import { isInProgress, isInstalled } from './environmentReducer';
 
 export const OpenVsCode = ({ environment }: { environment: Environment }) => {
     const dispatch = useDispatch<TDispatch>();
-    if (!useSelector(isVsCodeEnabled)) return null;
     if (!isInstalled(environment)) return null;
 
     return (
