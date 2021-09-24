@@ -45,10 +45,10 @@ const slice = createSlice({
     name: 'vsCode',
     initialState,
     reducers: {
-        setVsCodeDialogVisible: state => {
+        showVsCodeDialog: state => {
             state.isDialogVisible = true;
         },
-        setVsCodeDialogHidden: state => {
+        hideVsCodeDialog: state => {
             state.isDialogVisible = false;
         },
         setVsCodeStatus: (state, action) => {
@@ -81,13 +81,13 @@ const slice = createSlice({
 export const {
     reducer,
     actions: {
-        setVsCodeDialogVisible,
+        showVsCodeDialog,
         setVsCodeStatus,
         setVsCodeExtensions,
         startInstallingExtension,
         installedExtension,
         installExtensionFailed,
-        setVsCodeDialogHidden,
+        hideVsCodeDialog,
     },
 } = slice;
 

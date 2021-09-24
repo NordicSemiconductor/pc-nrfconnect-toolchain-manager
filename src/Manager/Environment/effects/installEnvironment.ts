@@ -46,11 +46,11 @@ import {
 } from '../../../persistentStore';
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
+import { getVsCodeStatus } from '../../../VsCodeDialog/vscode';
 import {
-    getVsCodeStatus,
     showVsCodeDialog,
-} from '../../../VsCodeDialog/vscode';
-import { VsCodeStatus } from '../../../VsCodeDialog/vscodeSlice';
+    VsCodeStatus,
+} from '../../../VsCodeDialog/vscodeSlice';
 import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';

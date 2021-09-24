@@ -17,10 +17,16 @@ import Button from '../Manager/Environment/Button';
 import { isInProgress } from '../Manager/Environment/environmentReducer';
 import { isAnyToolchainInProgress } from '../Manager/managerSlice';
 import { TDispatch } from '../thunk';
-import { getVsCodeStatus, installExtensions, openVsCode } from './vscode';
 import {
+    checkOpenVsCodeWithDelay,
+    getVsCodeStatus,
+    installExtensions,
+    openVsCode,
+} from './vscode';
+import {
+    hideVsCodeDialog,
     isDialogVisible,
-    setVsCodeDialogHidden,
+    setVsCodeStatus,
     VsCodeExtension,
     vsCodeExtensions,
     VsCodeExtensionState,
@@ -39,7 +45,7 @@ export const VsCodeDialog = () => {
 
     if (!visible) return null;
 
-    const handleClose = () => dispatch(setVsCodeDialogHidden());
+    const handleClose = () => dispatch(hideVsCodeDialog());
 
     return (
         <Modal show onHide={handleClose} backdrop="static" size="lg">

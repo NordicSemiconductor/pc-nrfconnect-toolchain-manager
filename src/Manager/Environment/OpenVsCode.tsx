@@ -9,11 +9,7 @@ import { useDispatch } from 'react-redux';
 
 import { Environment } from '../../state';
 import { TDispatch } from '../../thunk';
-import { openVsCode, showVsCodeDialog } from '../../VsCodeDialog/vscode';
-import {
-    setVsCodeDialogHidden,
-    VsCodeStatus,
-} from '../../VsCodeDialog/vscodeSlice';
+import { checkOpenVsCodeWithDelay } from '../../VsCodeDialog/vscode';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
 import { isInProgress, isInstalled } from './environmentReducer';
@@ -30,12 +26,7 @@ export const OpenVsCode = ({ environment }: { environment: Environment }) => {
             variant="primary"
             disabled={isInProgress(environment)}
             onClick={() => {
-                dispatch(showVsCodeDialog()).then((s: VsCodeStatus) => {
-                    if (s === VsCodeStatus.INSTALLED) {
-                        dispatch(setVsCodeDialogHidden());
-                        openVsCode();
-                    }
-                });
+                dispatch(checkOpenVsCodeWithDelay());
             }}
         />
     );

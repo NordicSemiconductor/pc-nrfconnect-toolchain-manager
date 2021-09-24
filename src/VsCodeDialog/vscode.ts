@@ -39,11 +39,12 @@ import { remote } from 'electron';
 
 import { Dispatch, RootState } from '../state';
 import {
+    hideVsCodeDialog,
     installedExtension,
     installExtensionFailed,
-    setVsCodeDialogVisible,
     setVsCodeExtensions,
     setVsCodeStatus,
+    showVsCodeDialog,
     startInstallingExtension,
     VsCodeExtension,
     vsCodeExtensions,
@@ -74,10 +75,24 @@ const EXTENSIONS = [
     { id: 'twxs.cmake', name: 'CMake' },
 ];
 
-export const showVsCodeDialog = () => (dispatch: Dispatch) => {
+const minDelay = 500;
+export const checkOpenVsCodeWithDelay = () => (dispatch: Dispatch) => {
     dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
-    dispatch(setVsCodeDialogVisible());
-    return dispatch(getVsCodeStatus()).then(status => Promise.resolve(status));
+    dispatch(showVsCodeDialog());
+
+    const start = new Date();
+    dispatch(getVsCodeStatus()).then(status => {
+        if (status === VsCodeStatus.INSTALLED) {
+            dispatch(hideVsCodeDialog());
+            openVsCode();
+        } else {
+            const end = new Date();
+            const diff = minDelay - (end - start) / 1000;
+            if (diff > 0)
+                setTimeout(() => dispatch(setVsCodeStatus(status)), diff);
+            else dispatch(setVsCodeStatus(status));
+        }
+    });
 };
 
 export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
@@ -99,7 +114,6 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
     } catch {
         status = VsCodeStatus.NOT_INSTALLED;
     }
-    dispatch(setVsCodeStatus(status));
     return Promise.resolve(status);
 };
 
@@ -135,6 +149,10 @@ const getNrfjprogStatus = async () => {
     return new Promise<boolean>(resolve => {
         const spawnAsync = spawn('nrfjprog', {
             shell: true,
+            env: {
+                ...remote.process.env,
+                PATH: pathEnvVariable(),
+            },
         });
 
         spawnAsync.on('close', (code, signal) => {
