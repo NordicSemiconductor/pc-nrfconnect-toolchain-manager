@@ -36,7 +36,7 @@
 
 import { spawn } from 'child_process';
 import { remote } from 'electron';
-import { usageData } from 'pc-nrfconnect-shared';
+import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import { Dispatch, RootState } from '../state';
 import EventAction from '../usageDataActions';
@@ -131,8 +131,10 @@ const installExtension = (identifier: string) => async (dispatch: Dispatch) => {
         dispatch(startInstallingExtension(identifier));
         await spawnAsync(['--install-extension', identifier]);
         dispatch(installedExtension(identifier));
+        logger.info(`Installed extension ${identifier}`);
     } catch {
         dispatch(installExtensionFailed(identifier));
+        logger.error(`Failed to install extension ${identifier}`);
     }
 };
 
