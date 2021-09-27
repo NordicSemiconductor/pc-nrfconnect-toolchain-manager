@@ -1,8 +1,8 @@
 ## 0.10.0 - 2021-09-27
 ### Added
--  Launch VS Code with installation instructions based on missing software
--  First steps to building with VS Code instructions
--  Settings to hide older environments
+-  Launch VS Code with installation instructions
+-  First steps instructions to building with VS Code
+-  Setting to hide older environments
 
 ## 0.9.4 - 2021-09-03
 ### Fixed
