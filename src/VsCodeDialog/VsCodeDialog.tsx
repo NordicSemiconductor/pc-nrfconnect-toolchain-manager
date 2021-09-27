@@ -113,7 +113,7 @@ export const VsCodeDialog = () => {
                     <ExtensionsMissing extensions={extensions} />
                 )}
                 {status === VsCodeStatus.MISSING_NRFJPROG && (
-                    <div className="vscode-dialog-entry">
+                    <>
                         To use the nRF Connect extension for VS Code, you need
                         to&nbsp;
                         <a
@@ -123,8 +123,8 @@ export const VsCodeDialog = () => {
                         >
                             install nRF Command Line Tools
                         </a>
-                        &nbsp; and restart nRF Connect for Desktop.
-                    </div>
+                        &nbsp;and restart nRF Connect for Desktop.
+                    </>
                 )}
             </Modal.Body>
             <Modal.Footer>
