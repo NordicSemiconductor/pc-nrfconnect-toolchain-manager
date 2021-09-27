@@ -48,6 +48,7 @@ import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { getVsCodeStatus } from '../../../VsCodeDialog/vscode';
 import {
+    setVsCodeStatus,
     showVsCodeDialog,
     VsCodeStatus,
 } from '../../../VsCodeDialog/vscodeSlice';
@@ -77,8 +78,10 @@ export const install =
 
         if (persistedShowVsCodeDialogDuringInstall()) {
             dispatch(getVsCodeStatus()).then(status => {
-                if (status === VsCodeStatus.NOT_INSTALLED)
+                dispatch(setVsCodeStatus(status));
+                if (status === VsCodeStatus.NOT_INSTALLED) {
                     dispatch(showVsCodeDialog());
+                }
             });
             setPersistedShowVsCodeDialogDuringInstall(false);
         }
