@@ -6,6 +6,7 @@ import { InstallDirectoryState } from './InstallDir/installDirSlice';
 import { ConfirmDialogState } from './ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { SettingsState } from './Settings/settingsSlice';
 import { ToolChainSourceState as ToolchainSourceState } from './ToolchainSource/toolchainSourceSlice';
+import { VsCodeState } from './VsCodeDialog/vscodeSlice';
 
 export type Toolchain = {
     version: string;
@@ -46,6 +47,7 @@ export type AppState = {
     toolchainSource: ToolchainSourceState;
     reduxConfirmDialog: ConfirmDialogState;
     settings: SettingsState;
+    vsCode: VsCodeState;
 };
 
 export type RootState = NrfConnectState<AppState>;

@@ -16,8 +16,13 @@ import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
 import NrfCard from '../NrfCard/NrfCard';
 import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
 import { isOlderEnvironmentsHidden } from '../Settings/settingsSlice';
+import { Dispatch } from '../state';
+import { TDispatch } from '../thunk';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import EventAction from '../usageDataActions';
+import { getNrfjprogStatus, getVsCodeStatus } from '../VsCodeDialog/vscode';
+import VsCodeDialog from '../VsCodeDialog/VsCodeDialog';
+import { VsCodeStatus } from '../VsCodeDialog/vscodeSlice';
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
 import initEnvironments from './initEnvironments';
@@ -58,8 +63,8 @@ const Environments = () => {
 };
 
 export default () => {
-    const dispatch = useDispatch();
-    useEffect(() => initEnvironments(dispatch), [dispatch]);
+    const dispatch = useDispatch<TDispatch>();
+    useEffect(() => initApp(dispatch), [dispatch]);
     const showingFirstSteps = useSelector(isShowingFirstSteps);
 
     if (showingFirstSteps) {
@@ -106,8 +111,32 @@ export default () => {
                     <ToolchainSourceDialog />
                     <InstallDirDialog />
                     <ReduxConfirmDialog />
+                    <VsCodeDialog />
                 </>
             )}
         </div>
+    );
+};
+
+const initApp = (dispatch: Dispatch) => {
+    initEnvironments(dispatch);
+    reportVsCodeStatus(dispatch);
+};
+
+const reportVsCodeStatus = async (dispatch: Dispatch) => {
+    const status = await dispatch(getVsCodeStatus());
+    const nrfjprogInstalled = await getNrfjprogStatus();
+    const statusString = {
+        [VsCodeStatus.INSTALLED]: 'VS Code installed',
+        [VsCodeStatus.MISSING_EXTENSIONS]: 'Extensions are missing',
+        [VsCodeStatus.MISSING_NRFJPROG]: 'nRFjprog is missing',
+        [VsCodeStatus.NOT_CHECKED]: 'Status not checked',
+        [VsCodeStatus.NOT_INSTALLED]: 'VS Code not installed',
+    }[status];
+
+    usageData.sendUsageData(EventAction.VS_INSTALLED, statusString);
+    usageData.sendUsageData(
+        EventAction.NRFJPROG_INSTALLED,
+        nrfjprogInstalled ? 'Installed' : 'Not installed'
     );
 };

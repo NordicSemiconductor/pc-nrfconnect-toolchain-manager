@@ -44,14 +44,14 @@ import { openSegger } from './segger';
 
 type Props = { environment: Environment };
 
-const OpenIde = ({ environment }: Props) => {
+const OpenSegger = ({ environment }: Props) => {
     if (!canBeOpenedInSegger(environment)) return null;
 
     return (
         <Button
             icon="x-mdi-rocket"
             onClick={() => openSegger(environment.toolchainDir)}
-            label="Open IDE"
+            label="Open Segger Embedded Studio"
             title="Open SEGGER Embedded Studio"
             disabled={isInProgress(environment)}
             variant="primary"
@@ -59,6 +59,6 @@ const OpenIde = ({ environment }: Props) => {
     );
 };
 
-OpenIde.propTypes = { environment: environmentPropType.isRequired };
+OpenSegger.propTypes = { environment: environmentPropType.isRequired };
 
-export default OpenIde;
+export default OpenSegger;

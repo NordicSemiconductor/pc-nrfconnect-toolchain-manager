@@ -10,7 +10,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import { useDispatch, useSelector } from 'react-redux';
-import { Toggle } from 'pc-nrfconnect-shared';
+import { colors, Toggle } from 'pc-nrfconnect-shared';
 
 import {
     currentInstallDir,
@@ -23,16 +23,13 @@ import {
 } from '../ToolchainSource/toolchainSourceSlice';
 import {
     isOlderEnvironmentsHidden,
-    isVsCodeVisible,
     showOlderEnvironments,
-    showVsCode,
 } from './settingsSlice';
 
 export default () => {
     const dispatch = useDispatch();
     const installDir = useSelector(currentInstallDir);
     const disabled = process.platform === 'darwin';
-    const vsCodeVisible = useSelector(isVsCodeVisible);
     const toolchainUrl = useSelector(toolchainRootUrl);
     const olderEnvironmentsHidden = useSelector(isOlderEnvironmentsHidden);
 
@@ -60,8 +57,6 @@ export default () => {
                         <Form.Group controlId="showOlderEnvironments">
                             <div className="d-flex">
                                 <Toggle
-                                    isToggled={olderEnvironmentsHidden}
-                                    labelRight
                                     onToggle={() =>
                                         dispatch(
                                             showOlderEnvironments(
@@ -69,7 +64,12 @@ export default () => {
                                             )
                                         )
                                     }
+                                    isToggled={olderEnvironmentsHidden}
+                                    labelRight
                                     label="Show only 3 newest minor versions"
+                                    barColor={colors.gray700}
+                                    barColorToggled={colors.nordicBlue}
+                                    variant="secondary"
                                 />
                             </div>
 
@@ -78,28 +78,6 @@ export default () => {
                                 <br />
                                 Hide pre-releases when a corresponding release
                                 is official.
-                            </Form.Text>
-                        </Form.Group>
-                    </Col>
-                </Row>
-
-                <Row className="settings-info mt-4">
-                    <Col>
-                        <Form.Group controlId="toggleVsCode">
-                            <div className="d-flex">
-                                <Toggle
-                                    isToggled={vsCodeVisible}
-                                    labelRight
-                                    onToggle={() =>
-                                        dispatch(showVsCode(!vsCodeVisible))
-                                    }
-                                    label="Show Vs Code button on environments"
-                                />
-                            </div>
-
-                            <Form.Text className="text-muted">
-                                Experimental feature. Will be released with the
-                                new vscode extension.
                             </Form.Text>
                         </Form.Group>
                     </Col>

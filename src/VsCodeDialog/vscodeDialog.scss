@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 - 2018, Nordic Semiconductor ASA
+/* Copyright (c) 2015 - 2021, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -34,51 +34,26 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import React from 'react';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
+.extension-state-icon {
+    vertical-align: sub;
+    margin-right: 6px;
+}
 
-import NrfCard from '../../NrfCard/NrfCard';
-import { Environment as Model } from '../../state';
-import EnvironmentMenu from './EnvironmentMenu';
-import environmentPropType from './environmentPropType';
-import Install from './Install';
-import Name from './Name';
-import OpenSegger from './OpenSegger';
-import { OpenVsCode } from './OpenVsCode';
-import ProgressBar from './ProgressBar';
-import ProgressLabel from './ProgressLabel';
-import ShowFirstSteps from './ShowFirstSteps';
+.vscode-dialog-entry {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
 
-import './style.scss';
+.vscode-dialog-list {
+    margin-bottom: 12px;
+}
 
-type Props = { environment: Model };
+.vscode-dialog-checking-install {
+    display: flex;
+    align-items: center;
 
-const Environment = ({ environment }: Props) => (
-    <NrfCard>
-        <Row noGutters>
-            <Col>
-                <Name environment={environment} />
-                <ProgressLabel environment={environment} />
-            </Col>
-            <Col
-                as={ButtonToolbar}
-                /* @ts-ignore */
-                xs="auto ml-auto"
-                className="d-flex align-items-center my-3 pl-3 wide-btns"
-            >
-                <ShowFirstSteps environment={environment} />
-                <Install environment={environment} />
-                <OpenVsCode environment={environment} />
-                <OpenSegger environment={environment} />
-                <EnvironmentMenu environment={environment} />
-            </Col>
-        </Row>
-        <ProgressBar environment={environment} />
-    </NrfCard>
-);
-
-Environment.propTypes = { environment: environmentPropType.isRequired };
-
-export default Environment;
+    span {
+        margin-right: 8px;
+    }
+}

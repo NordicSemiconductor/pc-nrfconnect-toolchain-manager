@@ -94,12 +94,12 @@ export const persistedShowMaster = () =>
 export const setPersistedShowMaster = (visible: boolean) =>
     store().set('showMaster', visible);
 
-export const persistedShowVsCode = () =>
-    store<boolean>().get('showVsCode', false);
-export const setPersistedShowVsCode = (visible: boolean) =>
-    store().set('showVsCode', visible);
-
 export const persistedHideOlderEnvironments = () =>
     store<boolean>().get('hideOlderEnvironments', true);
 export const setPersistedHideOlderEnvironments = (visible: boolean) =>
     store().set('hideOlderEnvironments', visible);
+
+export const persistedShowVsCodeDialogDuringInstall = () =>
+    store<boolean>().get('showVsCodeDialogDuringInstall', true);
+export const setPersistedShowVsCodeDialogDuringInstall = (visible: boolean) =>
+    store().set('showVsCodeDialogDuringInstall', visible);
