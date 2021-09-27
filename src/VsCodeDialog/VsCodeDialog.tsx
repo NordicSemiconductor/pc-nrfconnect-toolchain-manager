@@ -19,6 +19,7 @@ import { isAnyToolchainInProgress } from '../Manager/managerSlice';
 import { TDispatch } from '../thunk';
 import {
     checkOpenVsCodeWithDelay,
+    getNrfjprogStatus,
     installExtensions,
     openVsCode,
 } from './vscode';
@@ -133,6 +134,7 @@ export const VsCodeDialog = () => {
                             skipText={extensions.some(
                                 e => e.state !== VsCodeExtensionState.INSTALLED
                             )}
+                            handleClose={handleClose}
                         />
                         {extensions.some(
                             e => e.state !== VsCodeExtensionState.INSTALLED
@@ -187,16 +189,31 @@ const InstallMissingButton = () => {
     );
 };
 
-const MissingExtensionsSkipButton = ({ skipText }: { skipText: boolean }) => {
+const MissingExtensionsSkipButton = ({
+    skipText,
+    handleClose,
+}: {
+    skipText: boolean;
+    handleClose: () => void;
+}) => {
     const dispatch = useDispatch<TDispatch>();
     return (
         <Button
             icon=""
             label={skipText ? 'Skip' : 'Open VS Code'}
             onClick={() => {
-                if (skipText)
-                    dispatch(setVsCodeStatus(VsCodeStatus.MISSING_NRFJPROG));
-                else dispatch(checkOpenVsCodeWithDelay());
+                if (skipText) {
+                    getNrfjprogStatus().then(isInstalled => {
+                        if (!isInstalled)
+                            dispatch(
+                                setVsCodeStatus(VsCodeStatus.MISSING_NRFJPROG)
+                            );
+                        else {
+                            handleClose();
+                            openVsCode();
+                        }
+                    });
+                } else dispatch(checkOpenVsCodeWithDelay());
             }}
             variant={skipText ? 'secondary' : 'primary'}
         />
