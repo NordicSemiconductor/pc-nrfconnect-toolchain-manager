@@ -1,6 +1,7 @@
 ## Unreleased
 ### Added
 - Launch VS Code for an environment.
+- UI tests for VsCodeDialog component
 
 ## 0.9.4 - 2021-09-03
 ### Fixed
