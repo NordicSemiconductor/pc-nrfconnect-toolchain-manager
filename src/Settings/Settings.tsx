@@ -34,7 +34,7 @@ export default () => {
     const olderEnvironmentsHidden = useSelector(isOlderEnvironmentsHidden);
 
     return (
-        <div>
+        <div className="toolchain-manager-main-window">
             <NrfCard>
                 <Row className="settings-info">
                     <Col className="ml-3">
