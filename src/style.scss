@@ -36,7 +36,7 @@
 
 @import "~pc-nrfconnect-shared/styles";
 
-.core19-app-content .core19-main-and-log .core19-main-container .carousel-inner {
+.toolchain-manager-main-window {
     height: initial;
     max-width: 800px;
     margin: auto;
@@ -87,7 +87,8 @@ code {
     font-size: 1em;
 }
 
-p, li {
+p,
+li {
     margin-bottom: 0.5rem;
 }
 

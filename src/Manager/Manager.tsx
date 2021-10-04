@@ -90,6 +90,7 @@ export default () => {
                     (evt.dataTransfer.files[0] || {}).path;
                 dispatch(showInstallPackageDialog(pkg));
             }}
+            className="toolchain-manager-main-window"
         >
             <PlatformInstructions />
             {(process.platform !== 'linux' || enableLinux) && (
