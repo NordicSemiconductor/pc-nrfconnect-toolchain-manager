@@ -1,3 +1,8 @@
+## Unreleased
+
+### Changed
+- Color of install progressbar to #00A9CE
+
 ## 0.10.0 - 2021-09-27
 ### Added
 -  Launch VS Code with installation instructions
