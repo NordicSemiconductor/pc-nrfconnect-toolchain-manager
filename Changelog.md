@@ -1,4 +1,4 @@
-## 0.10.1 - 2021-10-07
+## Unreleased
 
 ### Changed
 - Color of install progressbar to #00A9CE
