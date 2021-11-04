@@ -2,6 +2,7 @@
 
 ### Changed
 - Color of install progressbar to #00A9CE
+- Icons
 
 ## 0.10.0 - 2021-09-27
 ### Added
