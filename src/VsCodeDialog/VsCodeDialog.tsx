@@ -21,6 +21,7 @@ import {
     checkOpenVsCodeWithDelay,
     getNrfjprogStatus,
     installExtensions,
+    NrfjprogStatus,
     openVsCode,
 } from './vscode';
 import {
@@ -105,6 +106,11 @@ export const VsCodeDialog = () => {
                                     Launching from the command line
                                 </a>
                                 .
+                                <b>
+                                    M1-based Mac machines are not currently
+                                    supported by our extension so please install
+                                    the{' '}
+                                </b>
                             </>
                         )}
                     </>
@@ -126,6 +132,41 @@ export const VsCodeDialog = () => {
                         &nbsp;and restart nRF Connect for Desktop.
                     </>
                 )}
+                {status === VsCodeStatus.INSTALL_INTEL && (
+                    <>
+                        Our extension curently does not support M1 and therefore
+                        requires Intel version of Visual Studio Code.
+                        <br />
+                        Please&nbsp;
+                        <a
+                            target="_blank"
+                            rel="noreferrer"
+                            href="https://code.visualstudio.com/download#"
+                        >
+                            install the <i>Intel Chip</i> version of Visual
+                            Studio Code
+                        </a>
+                        &nbsp; and restart nRF Connect for Desktop.
+                    </>
+                )}
+                {status === VsCodeStatus.NRFJPROG_INSTALL_INTEL && (
+                    <>
+                        Our extension curently does not support M1 and therefore
+                        requires the Intel version of nRF Command Line Tools and
+                        SEGGER JLink.
+                        <br />
+                        Please select the <i>Intel Chip</i> version of SEGGER
+                        JLink when&nbsp;
+                        <a
+                            target="_blank"
+                            rel="noreferrer"
+                            href="https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools/Download#infotabs"
+                        >
+                            installing nRF Command Line Tools
+                        </a>
+                        &nbsp; and restart nRF Connect for Desktop.
+                    </>
+                )}
             </Modal.Body>
             <Modal.Footer>
                 {status === VsCodeStatus.MISSING_EXTENSIONS && (
@@ -141,7 +182,9 @@ export const VsCodeDialog = () => {
                         ) && <InstallMissingButton />}
                     </>
                 )}
-                {status === VsCodeStatus.MISSING_NRFJPROG && (
+                {(status === VsCodeStatus.INSTALL_INTEL ||
+                    status === VsCodeStatus.MISSING_NRFJPROG ||
+                    status === VsCodeStatus.NRFJPROG_INSTALL_INTEL) && (
                     <Button
                         icon=""
                         label="Skip"
@@ -164,10 +207,14 @@ const getTitle = (status: VsCodeStatus) => {
             return 'Opening VS Code';
         case VsCodeStatus.NOT_INSTALLED:
             return 'Install VS Code';
+        case VsCodeStatus.INSTALL_INTEL:
+            return 'Install Intel version of VS Code';
         case VsCodeStatus.MISSING_EXTENSIONS:
             return 'Install VS Code extensions';
         case VsCodeStatus.MISSING_NRFJPROG:
             return 'Install nRF Command Line Tools';
+        case VsCodeStatus.NRFJPROG_INSTALL_INTEL:
+            return 'Install Intel version of JLink';
         default:
             return 'VS Code';
     }
@@ -203,10 +250,16 @@ const MissingExtensionsSkipButton = ({
             label={skipText ? 'Skip' : 'Open VS Code'}
             onClick={() => {
                 if (skipText) {
-                    getNrfjprogStatus().then(isInstalled => {
-                        if (!isInstalled)
+                    getNrfjprogStatus().then(state => {
+                        if (state === NrfjprogStatus.NOT_INSTALLED)
                             dispatch(
                                 setVsCodeStatus(VsCodeStatus.MISSING_NRFJPROG)
+                            );
+                        else if (state === NrfjprogStatus.M1_VERSION)
+                            dispatch(
+                                setVsCodeStatus(
+                                    VsCodeStatus.NRFJPROG_INSTALL_INTEL
+                                )
                             );
                         else {
                             handleClose();

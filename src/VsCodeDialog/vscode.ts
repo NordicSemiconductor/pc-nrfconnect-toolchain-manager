@@ -6,6 +6,7 @@
 
 import { spawn } from 'child_process';
 import { remote } from 'electron';
+import os from 'os';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import { Dispatch, RootState } from '../state';
@@ -47,8 +48,44 @@ const EXTENSIONS = [
     { id: 'twxs.cmake', name: 'CMake' },
 ];
 
+export enum NrfjprogStatus {
+    NOT_INSTALLED,
+    INSTALLED,
+    M1_VERSION,
+}
+
+const checkExecArchitecture = async (exec: string) => {
+    return new Promise<string>(resolve => {
+        const spawnAsync = spawn(`file $(which ${exec})`, {
+            shell: true,
+            env: {
+                ...remote.process.env,
+                PATH: pathEnvVariable(),
+            },
+        });
+        let stdout = '';
+        spawnAsync.stdout.on('data', data => {
+            stdout += data;
+        });
+
+        spawnAsync.on('close', async (code, signal) => {
+            if (code === 0 && signal === null) {
+                const universalMatch =
+                    /Mach-O universal binary with 2 architectures/;
+                const intelMatch = /Mach-O 64-bit executable x86_64/;
+                if (stdout.match(universalMatch)) return resolve('universal');
+                if (stdout.match(intelMatch)) return resolve('x86_64');
+                return resolve('arm');
+            }
+        });
+    });
+};
+
+const isAppleSilicon =
+    process.platform === 'darwin' && os.cpus()[0].model.includes('Apple');
+
 const minDelay = 500;
-export const checkOpenVsCodeWithDelay = () => (dispatch: Dispatch) => {
+export const checkOpenVsCodeWithDelay = () => async (dispatch: Dispatch) => {
     dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
     dispatch(showVsCodeDialog());
 
@@ -80,7 +117,15 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
             status = VsCodeStatus.MISSING_EXTENSIONS;
         else {
             const nrfjprog = await getNrfjprogStatus();
-            if (!nrfjprog) status = VsCodeStatus.MISSING_NRFJPROG;
+            if (
+                isAppleSilicon &&
+                (await checkExecArchitecture('vscode')) !== 'x86_64'
+            )
+                status = VsCodeStatus.INSTALL_INTEL;
+            else if (nrfjprog === NrfjprogStatus.NOT_INSTALLED)
+                status = VsCodeStatus.MISSING_NRFJPROG;
+            else if (nrfjprog === NrfjprogStatus.M1_VERSION)
+                status = VsCodeStatus.NRFJPROG_INSTALL_INTEL;
             else status = VsCodeStatus.INSTALLED;
         }
     } catch {
@@ -119,8 +164,8 @@ export const listInstalledExtensions = async (): Promise<VsCodeExtension[]> => {
     }));
 };
 
-export const getNrfjprogStatus = () => {
-    return new Promise<boolean>(resolve => {
+export const getNrfjprogStatus = async () => {
+    return new Promise<NrfjprogStatus>(resolve => {
         const spawnAsync = spawn('nrfjprog', {
             shell: true,
             env: {
@@ -129,11 +174,16 @@ export const getNrfjprogStatus = () => {
             },
         });
 
-        spawnAsync.on('close', (code, signal) => {
+        spawnAsync.on('close', async (code, signal) => {
             if (code === 0 && signal === null) {
-                return resolve(true);
+                if (
+                    isAppleSilicon &&
+                    (await checkExecArchitecture('jlink')) !== 'x86_64'
+                )
+                    return resolve(NrfjprogStatus.M1_VERSION);
+                return resolve(NrfjprogStatus.INSTALLED);
             }
-            return resolve(false);
+            return resolve(NrfjprogStatus.NOT_INSTALLED);
         });
     });
 };

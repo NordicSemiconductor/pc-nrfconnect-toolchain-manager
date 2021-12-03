@@ -16,6 +16,8 @@ export enum VsCodeStatus {
     NOT_INSTALLED,
     MISSING_EXTENSIONS,
     MISSING_NRFJPROG,
+    INSTALL_INTEL,
+    NRFJPROG_INSTALL_INTEL,
 }
 
 export enum VsCodeExtensionState {
