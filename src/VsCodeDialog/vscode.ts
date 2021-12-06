@@ -81,7 +81,7 @@ const checkExecArchitecture = async (exec: string) => {
     });
 };
 
-const isAppleSilicon =
+export const isAppleSilicon =
     process.platform === 'darwin' && os.cpus()[0].model.includes('Apple');
 
 const minDelay = 500;

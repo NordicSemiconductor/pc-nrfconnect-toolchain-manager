@@ -21,6 +21,7 @@ import {
     checkOpenVsCodeWithDelay,
     getNrfjprogStatus,
     installExtensions,
+    isAppleSilicon,
     NrfjprogStatus,
     openVsCode,
 } from './vscode';
@@ -106,11 +107,14 @@ export const VsCodeDialog = () => {
                                     Launching from the command line
                                 </a>
                                 .
-                                <b>
-                                    M1-based Mac machines are not currently
-                                    supported by our extension so please install
-                                    the{' '}
-                                </b>
+                                {isAppleSilicon && (
+                                    <>
+                                        <br />
+                                        M1-based Mac machines are not currently
+                                        supported by our extension so please
+                                        install the <b>Intel Chip</b> version
+                                    </>
+                                )}
                             </>
                         )}
                     </>
@@ -130,6 +134,15 @@ export const VsCodeDialog = () => {
                             install nRF Command Line Tools
                         </a>
                         &nbsp;and restart nRF Connect for Desktop.
+                        {isAppleSilicon && (
+                            <>
+                                <b>
+                                    M1-based Mac machines are not currently
+                                    supported by our extension so please install
+                                    the <b>Intel Chip</b> version
+                                </b>
+                            </>
+                        )}
                     </>
                 )}
                 {status === VsCodeStatus.INSTALL_INTEL && (
@@ -366,6 +379,7 @@ const installLink = () => {
         return 'https://code.visualstudio.com/docs/setup/windows';
     }
     if (process.platform === 'darwin') {
+        if (isAppleSilicon) return 'https://code.visualstudio.com/download#';
         return 'https://code.visualstudio.com/docs/setup/mac';
     }
     if (process.platform === 'linux') {
