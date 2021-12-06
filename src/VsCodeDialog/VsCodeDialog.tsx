@@ -97,6 +97,7 @@ export const VsCodeDialog = () => {
                         {process.platform === 'darwin' && (
                             <>
                                 <br />
+                                <br />
                                 On macOS please make sure that you also follow
                                 the instructions for{' '}
                                 <a
@@ -147,8 +148,8 @@ export const VsCodeDialog = () => {
                 )}
                 {status === VsCodeStatus.INSTALL_INTEL && (
                     <>
-                        Our extension curently does not support M1 and therefore
-                        requires Intel version of Visual Studio Code.
+                        Our extension currently does not support M1 and
+                        therefore requires Intel version of Visual Studio Code.
                         <br />
                         Please&nbsp;
                         <a
@@ -156,7 +157,7 @@ export const VsCodeDialog = () => {
                             rel="noreferrer"
                             href="https://code.visualstudio.com/download#"
                         >
-                            install the <i>Intel Chip</i> version of Visual
+                            install the <b>Intel Chip</b> version of Visual
                             Studio Code
                         </a>
                         &nbsp; and restart nRF Connect for Desktop.
@@ -164,11 +165,11 @@ export const VsCodeDialog = () => {
                 )}
                 {status === VsCodeStatus.NRFJPROG_INSTALL_INTEL && (
                     <>
-                        Our extension curently does not support M1 and therefore
-                        requires the Intel version of nRF Command Line Tools and
-                        SEGGER JLink.
+                        Our extension currently does not support M1 and
+                        therefore requires the Intel version of nRF Command Line
+                        Tools and SEGGER JLink.
                         <br />
-                        Please select the <i>Intel Chip</i> version of SEGGER
+                        Please select the <b>Intel Chip</b> version of SEGGER
                         JLink when&nbsp;
                         <a
                             target="_blank"
