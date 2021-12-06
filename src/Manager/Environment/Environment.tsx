@@ -64,7 +64,7 @@ const Environment = ({ environment }: Props) => (
             </Col>
             <Col
                 as={ButtonToolbar}
-                /* @ts-ignore */
+                // @ts-ignore this property exists
                 xs="auto ml-auto"
                 className="d-flex align-items-center my-3 pl-3 wide-btns"
             >

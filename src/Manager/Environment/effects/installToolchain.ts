@@ -61,9 +61,26 @@ export const installToolchain =
             await dispatch(unpack(version, packageLocation, toolchainDir));
             updateConfigFile(toolchainDir);
         } catch (error) {
-            dispatch(showErrorDialog(`${error.message || error}`));
-            usageData.sendErrorReport(error.message || error);
+            const message = getErrorMessage(error);
+            dispatch(showErrorDialog(message));
+            usageData.sendErrorReport(message);
         }
 
         dispatch(finishInstallToolchain(version, toolchainDir));
     };
+
+export const getErrorMessage = (error: unknown) => {
+    if (error instanceof Error) {
+        return error.message;
+    }
+
+    if (typeof error === 'string') {
+        return error;
+    }
+
+    if (typeof error === 'object') {
+        return JSON.stringify(error);
+    }
+
+    return `${error}`;
+};

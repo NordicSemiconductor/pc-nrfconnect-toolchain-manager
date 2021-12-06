@@ -51,6 +51,7 @@ import { updateConfigFile } from '../segger';
 import { cloneNcs } from './cloneNcs';
 import { downloadToolchain } from './downloadToolchain';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
+import { getErrorMessage } from './installToolchain';
 import { unpack } from './unpack';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -105,7 +106,8 @@ export const installPackage =
             dispatch(finishInstallToolchain(version, toolchainDir));
             await dispatch(cloneNcs(version, toolchainDir, false));
         } catch (error) {
-            dispatch(showErrorDialog(`${error.message || error}`));
-            usageData.sendErrorReport(error.message || error);
+            const message = getErrorMessage(error);
+            dispatch(showErrorDialog(`${message}`));
+            usageData.sendErrorReport(`${message}`);
         }
     };

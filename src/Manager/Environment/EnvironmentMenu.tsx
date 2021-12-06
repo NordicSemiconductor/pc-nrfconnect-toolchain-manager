@@ -185,7 +185,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
             {process.platform !== 'win32' && (
                 <Dropdown.Item
                     onClick={() =>
-                        /* @ts-ignore */
+                        // @ts-ignore We don't support all platforms
                         openTerminal[platform](toolchainDir, version)
                     }
                 >

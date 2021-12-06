@@ -55,7 +55,7 @@ import {
 import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
-import { installToolchain } from './installToolchain';
+import { getErrorMessage, installToolchain } from './installToolchain';
 
 // eslint-disable-next-line import/prefer-default-export
 export const install =
@@ -92,7 +92,8 @@ export const install =
             await dispatch(installToolchain(version, toolchain, toolchainDir));
             await dispatch(cloneNcs(version, toolchainDir, justUpdate));
         } catch (error) {
-            dispatch(showErrorDialog(`${error.message || error}`));
-            usageData.sendErrorReport(error.message || error);
+            const message = getErrorMessage(error);
+            dispatch(showErrorDialog(`${message}`));
+            usageData.sendErrorReport(`${message}`);
         }
     };

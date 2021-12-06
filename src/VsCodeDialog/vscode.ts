@@ -149,7 +149,7 @@ export const listInstalledExtensions = async (): Promise<VsCodeExtension[]> => {
     }));
 };
 
-export const getNrfjprogStatus = async () => {
+export const getNrfjprogStatus = () => {
     return new Promise<boolean>(resolve => {
         const spawnAsync = spawn('nrfjprog', {
             shell: true,
@@ -174,7 +174,7 @@ const pathEnvVariable = () => {
     return `/usr/local/bin:${remote.process.env.PATH}`;
 };
 
-const spawnAsync = async (params: string[]) => {
+const spawnAsync = (params: string[]) => {
     return new Promise<string[]>((resolve, reject) => {
         const codeProcess = spawn('code', params, {
             shell: true,

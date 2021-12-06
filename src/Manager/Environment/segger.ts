@@ -43,6 +43,7 @@ import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import EventAction from '../../usageDataActions';
+import { getErrorMessage } from './effects/installToolchain';
 
 const { exec: remoteExec } = remote.require('child_process');
 
@@ -174,7 +175,8 @@ const readFile = (filePath: string): string | null => {
         return fs.readFileSync(filePath, { encoding: 'utf8' });
     } catch (error) {
         // The file may be just not there yet, so we treat this case not as an error
-        usageData.sendErrorReport(error.message || error);
+        const message = getErrorMessage(error);
+        usageData.sendErrorReport(message);
         return null;
     }
 };
@@ -214,8 +216,9 @@ export const updateConfigFile = (toolchainDir: string) => {
                 fs.writeFileSync(configPath, xmlContent);
             }
         }
-    } catch (e) {
-        usageData.sendErrorReport(e.message || e);
+    } catch (error) {
+        const message = getErrorMessage(error);
+        usageData.sendErrorReport(message);
     }
 };
 

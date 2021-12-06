@@ -53,7 +53,7 @@ import { DOWNLOAD, reportProgress } from './reportProgress';
 
 export const downloadToolchain =
     (version: string, { name, sha512, uri }: Partial<Toolchain>) =>
-    async (dispatch: Dispatch) =>
+    (dispatch: Dispatch) =>
         new Promise<string>((resolve, reject) => {
             logger.info(`Downloading toolchain ${version}`);
             dispatch(setProgress(version, 'Downloading', 0));
