@@ -77,6 +77,7 @@ const checkExecArchitecture = async (exec: string) => {
                 if (stdout.includes(intelMatch)) return resolve('x86_64');
                 return resolve('arm');
             }
+            return resolve('error')
         });
     });
 };
