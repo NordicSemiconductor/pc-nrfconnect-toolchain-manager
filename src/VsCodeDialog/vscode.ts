@@ -119,7 +119,7 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
             const nrfjprog = await getNrfjprogStatus();
             if (
                 isAppleSilicon &&
-                (await checkExecArchitecture('vscode')) !== 'x86_64'
+                (await checkExecArchitecture('code')) !== 'x86_64'
             )
                 status = VsCodeStatus.INSTALL_INTEL;
             else if (nrfjprog === NrfjprogStatus.NOT_INSTALLED)
@@ -178,7 +178,7 @@ export const getNrfjprogStatus = async () => {
             if (code === 0 && signal === null) {
                 if (
                     isAppleSilicon &&
-                    (await checkExecArchitecture('jlink')) !== 'x86_64'
+                    (await checkExecArchitecture('jlinkexe')) !== 'x86_64'
                 )
                     return resolve(NrfjprogStatus.M1_VERSION);
                 return resolve(NrfjprogStatus.INSTALLED);
