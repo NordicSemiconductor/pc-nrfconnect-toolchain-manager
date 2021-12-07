@@ -71,10 +71,10 @@ const checkExecArchitecture = async (exec: string) => {
         spawnAsync.on('close', async (code, signal) => {
             if (code === 0 && signal === null) {
                 const universalMatch =
-                    /Mach-O universal binary with 2 architectures/;
-                const intelMatch = /Mach-O 64-bit executable x86_64/;
-                if (stdout.match(universalMatch)) return resolve('universal');
-                if (stdout.match(intelMatch)) return resolve('x86_64');
+                    "Mach-O universal binary with 2 architectures";
+                const intelMatch = "Mach-O 64-bit executable x86_64";
+                if (stdout.includes(universalMatch)) return resolve('universal');
+                if (stdout.includes(intelMatch)) return resolve('x86_64');
                 return resolve('arm');
             }
         });
