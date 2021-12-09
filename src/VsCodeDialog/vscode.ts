@@ -54,34 +54,6 @@ export enum NrfjprogStatus {
     M1_VERSION,
 }
 
-const checkExecArchitecture = async (exec: string) => {
-    return new Promise<string>(resolve => {
-        const spawnAsync = spawn(`file $(which ${exec})`, {
-            shell: true,
-            env: {
-                ...remote.process.env,
-                PATH: pathEnvVariable(),
-            },
-        });
-        let stdout = '';
-        spawnAsync.stdout.on('data', data => {
-            stdout += data;
-        });
-
-        spawnAsync.on('close', async (code, signal) => {
-            if (code === 0 && signal === null) {
-                const universalMatch =
-                    "Mach-O universal binary with 2 architectures";
-                const intelMatch = "Mach-O 64-bit executable x86_64";
-                if (stdout.includes(universalMatch)) return resolve('universal');
-                if (stdout.includes(intelMatch)) return resolve('x86_64');
-                return resolve('arm');
-            }
-            return resolve('error')
-        });
-    });
-};
-
 export const isAppleSilicon =
     process.platform === 'darwin' && os.cpus()[0].model.includes('Apple');
 
@@ -118,9 +90,12 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
             status = VsCodeStatus.MISSING_EXTENSIONS;
         else {
             const nrfjprog = await getNrfjprogStatus();
+            const vscode = await spawnAsync(
+                'file "$(dirname "$(readlink $(which code))")/../../../MacOS/Electron"'
+            );
             if (
                 isAppleSilicon &&
-                (await checkExecArchitecture('code')) !== 'x86_64'
+                (await checkExecArchitecture(vscode)) !== 'x86_64'
             )
                 status = VsCodeStatus.INSTALL_INTEL;
             else if (nrfjprog === NrfjprogStatus.NOT_INSTALLED)
@@ -145,7 +120,7 @@ export const installExtensions =
 const installExtension = (identifier: string) => async (dispatch: Dispatch) => {
     try {
         dispatch(startInstallingExtension(identifier));
-        await spawnAsync(['--install-extension', identifier]);
+        await spawnAsync('code', ['--install-extension', identifier]);
         dispatch(installedExtension(identifier));
         logger.info(`Installed extension ${identifier}`);
     } catch {
@@ -155,7 +130,11 @@ const installExtension = (identifier: string) => async (dispatch: Dispatch) => {
 };
 
 export const listInstalledExtensions = async (): Promise<VsCodeExtension[]> => {
-    const installedExtensions = await spawnAsync(['--list-extensions']);
+    const installedExtensions = (
+        await spawnAsync('code', ['--list-extensions'])
+    )
+        .trim()
+        .split('\n');
     return EXTENSIONS.map(extension => ({
         identifier: extension.id,
         name: extension.name,
@@ -166,27 +145,21 @@ export const listInstalledExtensions = async (): Promise<VsCodeExtension[]> => {
 };
 
 export const getNrfjprogStatus = async () => {
-    return new Promise<NrfjprogStatus>(resolve => {
-        const spawnAsync = spawn('nrfjprog', {
-            shell: true,
-            env: {
-                ...remote.process.env,
-                PATH: pathEnvVariable(),
-            },
-        });
-
-        spawnAsync.on('close', async (code, signal) => {
-            if (code === 0 && signal === null) {
-                if (
-                    isAppleSilicon &&
-                    (await checkExecArchitecture('jlinkexe')) !== 'x86_64'
-                )
-                    return resolve(NrfjprogStatus.M1_VERSION);
-                return resolve(NrfjprogStatus.INSTALLED);
+    try {
+        await spawnAsync('nrfjprog');
+        try {
+            if (isAppleSilicon) {
+                const stdout = await spawnAsync('jlinkexe');
+                if (checkExecArchitecture(stdout) !== 'x86_64')
+                    return NrfjprogStatus.M1_VERSION;
             }
-            return resolve(NrfjprogStatus.NOT_INSTALLED);
-        });
-    });
+        } catch {
+            return NrfjprogStatus.M1_VERSION;
+        }
+        return NrfjprogStatus.INSTALLED;
+    } catch {
+        return NrfjprogStatus.NOT_INSTALLED;
+    }
 };
 
 const pathEnvVariable = () => {
@@ -195,9 +168,17 @@ const pathEnvVariable = () => {
     return `/usr/local/bin:${remote.process.env.PATH}`;
 };
 
-const spawnAsync = (params: string[]) => {
-    return new Promise<string[]>((resolve, reject) => {
-        const codeProcess = spawn('code', params, {
+const checkExecArchitecture = (stdout: string) => {
+    const universalMatch = 'Mach-O universal binary with 2 architectures';
+    const intelMatch = 'Mach-O 64-bit executable x86_64';
+    if (stdout.includes(universalMatch)) return 'universal';
+    if (stdout.includes(intelMatch)) return 'x86_64';
+    return 'arm';
+};
+
+const spawnAsync = (cmd: string, params?: string[]) => {
+    return new Promise<string>((resolve, reject) => {
+        const codeProcess = spawn(cmd, params, {
             shell: true,
             env: {
                 ...remote.process.env,
@@ -215,7 +196,7 @@ const spawnAsync = (params: string[]) => {
 
         codeProcess.on('close', (code, signal) => {
             if (code === 0 && signal === null) {
-                return resolve(stdout.trim().split('\n'));
+                return resolve(stdout);
             }
             if (stderr) console.log(stderr);
             return reject();
@@ -225,5 +206,5 @@ const spawnAsync = (params: string[]) => {
 
 export const openVsCode = () => {
     usageData.sendUsageData(EventAction.OPEN_VS_CODE, process.platform);
-    spawnAsync([]);
+    spawnAsync('code');
 };
