@@ -5,7 +5,7 @@
  */
 
 import path from 'path';
-import { logger, usageData } from 'pc-nrfconnect-shared';
+import { describeError, logger, usageData } from 'pc-nrfconnect-shared';
 
 import showErrorDialog from '../../../launcherActions';
 import {
@@ -25,7 +25,7 @@ import {
 import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
-import { getErrorMessage, installToolchain } from './installToolchain';
+import { installToolchain } from './installToolchain';
 
 // eslint-disable-next-line import/prefer-default-export
 export const install =
@@ -62,7 +62,7 @@ export const install =
             await dispatch(installToolchain(version, toolchain, toolchainDir));
             await dispatch(cloneNcs(version, toolchainDir, justUpdate));
         } catch (error) {
-            const message = getErrorMessage(error);
+            const message = describeError(error);
             dispatch(showErrorDialog(`${message}`));
             usageData.sendErrorReport(`${message}`);
         }

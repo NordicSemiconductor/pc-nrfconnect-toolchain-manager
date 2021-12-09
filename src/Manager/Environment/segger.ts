@@ -10,10 +10,9 @@ import fs from 'fs';
 import fse from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import { logger, usageData } from 'pc-nrfconnect-shared';
+import { describeError, logger, usageData } from 'pc-nrfconnect-shared';
 
 import EventAction from '../../usageDataActions';
-import { getErrorMessage } from './effects/installToolchain';
 
 const { exec: remoteExec } = remote.require('child_process');
 
@@ -145,7 +144,7 @@ const readFile = (filePath: string): string | null => {
         return fs.readFileSync(filePath, { encoding: 'utf8' });
     } catch (error) {
         // The file may be just not there yet, so we treat this case not as an error
-        const message = getErrorMessage(error);
+        const message = describeError(error);
         usageData.sendErrorReport(message);
         return null;
     }
@@ -187,7 +186,7 @@ export const updateConfigFile = (toolchainDir: string) => {
             }
         }
     } catch (error) {
-        const message = getErrorMessage(error);
+        const message = describeError(error);
         usageData.sendErrorReport(message);
     }
 };

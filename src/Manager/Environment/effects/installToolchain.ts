@@ -5,7 +5,7 @@
  */
 
 import fse from 'fs-extra';
-import { usageData } from 'pc-nrfconnect-shared';
+import { describeError, usageData } from 'pc-nrfconnect-shared';
 
 import showErrorDialog from '../../../launcherActions';
 import { Dispatch, Toolchain } from '../../../state';
@@ -31,26 +31,10 @@ export const installToolchain =
             await dispatch(unpack(version, packageLocation, toolchainDir));
             updateConfigFile(toolchainDir);
         } catch (error) {
-            const message = getErrorMessage(error);
+            const message = describeError(error);
             dispatch(showErrorDialog(message));
             usageData.sendErrorReport(message);
         }
 
         dispatch(finishInstallToolchain(version, toolchainDir));
     };
-
-export const getErrorMessage = (error: unknown) => {
-    if (error instanceof Error) {
-        return error.message;
-    }
-
-    if (typeof error === 'string') {
-        return error;
-    }
-
-    if (typeof error === 'object') {
-        return JSON.stringify(error);
-    }
-
-    return `${error}`;
-};

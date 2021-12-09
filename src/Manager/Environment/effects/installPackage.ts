@@ -6,7 +6,7 @@
 
 import fse from 'fs-extra';
 import path from 'path';
-import { usageData } from 'pc-nrfconnect-shared';
+import { describeError, usageData } from 'pc-nrfconnect-shared';
 
 import showErrorDialog from '../../../launcherActions';
 import { persistedInstallDir as installDir } from '../../../persistentStore';
@@ -21,7 +21,6 @@ import { updateConfigFile } from '../segger';
 import { cloneNcs } from './cloneNcs';
 import { downloadToolchain } from './downloadToolchain';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
-import { getErrorMessage } from './installToolchain';
 import { unpack } from './unpack';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -76,7 +75,7 @@ export const installPackage =
             dispatch(finishInstallToolchain(version, toolchainDir));
             await dispatch(cloneNcs(version, toolchainDir, false));
         } catch (error) {
-            const message = getErrorMessage(error);
+            const message = describeError(error);
             dispatch(showErrorDialog(`${message}`));
             usageData.sendErrorReport(`${message}`);
         }
