@@ -98,8 +98,8 @@ export const VsCodeDialog = () => {
                             <>
                                 <br />
                                 <br />
-                                On macOS please make sure that you also follow
-                                the instructions for{' '}
+                                On macOS please make sure to also follow the
+                                instructions for{' '}
                                 <a
                                     target="_blank"
                                     rel="noreferrer"
@@ -113,7 +113,7 @@ export const VsCodeDialog = () => {
                                         <br />
                                         M1-based Mac machines are not currently
                                         supported by our extension so please
-                                        install the <b>Intel Chip</b> version
+                                        install the <b>Intel Chip</b> version.
                                     </>
                                 )}
                             </>
@@ -149,7 +149,8 @@ export const VsCodeDialog = () => {
                 {status === VsCodeStatus.INSTALL_INTEL && (
                     <>
                         Our extension currently does not support M1 and
-                        therefore requires Intel version of Visual Studio Code.
+                        therefore requires the Intel version of Visual Studio
+                        Code.
                         <br />
                         Please&nbsp;
                         <a
@@ -157,17 +158,16 @@ export const VsCodeDialog = () => {
                             rel="noreferrer"
                             href="https://code.visualstudio.com/download#"
                         >
-                            install the <b>Intel Chip</b> version of Visual
-                            Studio Code
+                            install the <b>Intel Chip</b> version
                         </a>
-                        &nbsp; and restart nRF Connect for Desktop.
+                        &nbsp;of Visual Studio Code and restart nRF Connect for
+                        Desktop.
                     </>
                 )}
                 {status === VsCodeStatus.NRFJPROG_INSTALL_INTEL && (
                     <>
                         Our extension currently does not support M1 and
-                        therefore requires the Intel version of nRF Command Line
-                        Tools and SEGGER JLink.
+                        therefore requires the Intel version of SEGGER JLink.
                         <br />
                         Please select the <b>Intel Chip</b> version of SEGGER
                         JLink when&nbsp;
