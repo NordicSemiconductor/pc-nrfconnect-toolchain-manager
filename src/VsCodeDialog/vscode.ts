@@ -91,7 +91,7 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
         else {
             const nrfjprog = await getNrfjprogStatus();
             const vscode = await spawnAsync(
-                'file "$(dirname "$(readlink $(which code))")/../../../MacOS/Electron"'
+                'file "$(dirname "$(readlink $(which code))")/../../../MacOS/Electron"'
             );
             if (
                 isAppleSilicon &&
@@ -149,7 +149,7 @@ export const getNrfjprogStatus = async () => {
         await spawnAsync('nrfjprog');
         try {
             if (isAppleSilicon) {
-                const stdout = await spawnAsync('jlinkexe');
+                const stdout = await spawnAsync('file $(which jlinkexe)');
                 if (checkExecArchitecture(stdout) !== 'x86_64')
                     return NrfjprogStatus.M1_VERSION;
             }
