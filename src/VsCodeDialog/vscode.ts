@@ -58,7 +58,7 @@ export const isAppleSilicon =
     process.platform === 'darwin' && os.cpus()[0].model.includes('Apple');
 
 const minDelay = 500;
-export const checkOpenVsCodeWithDelay = () => async (dispatch: Dispatch) => {
+export const checkOpenVsCodeWithDelay = () => (dispatch: Dispatch) => {
     dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
     dispatch(showVsCodeDialog());
 
