@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2021 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
+ */
+
 import { NrfConnectState } from 'pc-nrfconnect-shared';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
