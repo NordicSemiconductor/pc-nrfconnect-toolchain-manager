@@ -90,15 +90,13 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
             status = VsCodeStatus.MISSING_EXTENSIONS;
         else {
             const nrfjprog = await getNrfjprogStatus();
-            const vscode = await spawnAsync(
-                'file "$(dirname "$(readlink $(which code))")/../../../MacOS/Electron"'
-            );
-            if (
-                isAppleSilicon &&
-                (await checkExecArchitecture(vscode)) !== 'x86_64'
-            )
-                status = VsCodeStatus.INSTALL_INTEL;
-            else if (nrfjprog === NrfjprogStatus.NOT_INSTALLED)
+            if (isAppleSilicon) {
+                const vscode = await spawnAsync(
+                    'file "$(dirname "$(readlink $(which code))")/../../../MacOS/Electron"'
+                );
+                if ((await checkExecArchitecture(vscode)) !== 'x86_64')
+                    status = VsCodeStatus.INSTALL_INTEL;
+            } else if (nrfjprog === NrfjprogStatus.NOT_INSTALLED)
                 status = VsCodeStatus.MISSING_NRFJPROG;
             else if (nrfjprog === NrfjprogStatus.M1_VERSION)
                 status = VsCodeStatus.NRFJPROG_INSTALL_INTEL;
