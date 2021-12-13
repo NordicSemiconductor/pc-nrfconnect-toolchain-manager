@@ -21,6 +21,8 @@ import {
     checkOpenVsCodeWithDelay,
     getNrfjprogStatus,
     installExtensions,
+    isAppleSilicon,
+    NrfjprogStatus,
     openVsCode,
 } from './vscode';
 import {
@@ -95,8 +97,9 @@ export const VsCodeDialog = () => {
                         {process.platform === 'darwin' && (
                             <>
                                 <br />
-                                On macOS please make sure that you also follow
-                                the instructions for{' '}
+                                <br />
+                                On macOS please make sure to also follow the
+                                instructions for{' '}
                                 <a
                                     target="_blank"
                                     rel="noreferrer"
@@ -105,6 +108,14 @@ export const VsCodeDialog = () => {
                                     Launching from the command line
                                 </a>
                                 .
+                                {isAppleSilicon && (
+                                    <>
+                                        <br />
+                                        M1-based Mac machines are not currently
+                                        supported by our extension so please
+                                        install the <b>Intel Chip</b> version.
+                                    </>
+                                )}
                             </>
                         )}
                     </>
@@ -124,6 +135,49 @@ export const VsCodeDialog = () => {
                             install nRF Command Line Tools
                         </a>
                         &nbsp;and restart nRF Connect for Desktop.
+                        {isAppleSilicon && (
+                            <>
+                                <br />
+                                M1-based Mac machines are not currently
+                                supported by our extension so please install the{' '}
+                                <b>Intel Chip</b> version
+                            </>
+                        )}
+                    </>
+                )}
+                {status === VsCodeStatus.INSTALL_INTEL && (
+                    <>
+                        Our extension currently does not support M1 and
+                        therefore requires the Intel version of Visual Studio
+                        Code.
+                        <br />
+                        Please&nbsp;
+                        <a
+                            target="_blank"
+                            rel="noreferrer"
+                            href="https://code.visualstudio.com/download#"
+                        >
+                            install the <b>Intel Chip</b> version
+                        </a>
+                        &nbsp;of Visual Studio Code and restart nRF Connect for
+                        Desktop.
+                    </>
+                )}
+                {status === VsCodeStatus.NRFJPROG_INSTALL_INTEL && (
+                    <>
+                        Our extension currently does not support M1 and
+                        therefore requires the Intel version of SEGGER JLink.
+                        <br />
+                        Please select the <b>Intel Chip</b> version of SEGGER
+                        JLink when&nbsp;
+                        <a
+                            target="_blank"
+                            rel="noreferrer"
+                            href="https://www.nordicsemi.com/Products/Development-tools/nRF-Command-Line-Tools/Download#infotabs"
+                        >
+                            installing nRF Command Line Tools
+                        </a>
+                        &nbsp; and restart nRF Connect for Desktop.
                     </>
                 )}
             </Modal.Body>
@@ -141,7 +195,9 @@ export const VsCodeDialog = () => {
                         ) && <InstallMissingButton />}
                     </>
                 )}
-                {status === VsCodeStatus.MISSING_NRFJPROG && (
+                {(status === VsCodeStatus.INSTALL_INTEL ||
+                    status === VsCodeStatus.MISSING_NRFJPROG ||
+                    status === VsCodeStatus.NRFJPROG_INSTALL_INTEL) && (
                     <Button
                         icon=""
                         label="Skip"
@@ -164,10 +220,14 @@ const getTitle = (status: VsCodeStatus) => {
             return 'Opening VS Code';
         case VsCodeStatus.NOT_INSTALLED:
             return 'Install VS Code';
+        case VsCodeStatus.INSTALL_INTEL:
+            return 'Install Intel version of VS Code';
         case VsCodeStatus.MISSING_EXTENSIONS:
             return 'Install VS Code extensions';
         case VsCodeStatus.MISSING_NRFJPROG:
             return 'Install nRF Command Line Tools';
+        case VsCodeStatus.NRFJPROG_INSTALL_INTEL:
+            return 'Install Intel version of JLink';
         default:
             return 'VS Code';
     }
@@ -203,10 +263,16 @@ const MissingExtensionsSkipButton = ({
             label={skipText ? 'Skip' : 'Open VS Code'}
             onClick={() => {
                 if (skipText) {
-                    getNrfjprogStatus().then(isInstalled => {
-                        if (!isInstalled)
+                    getNrfjprogStatus().then(state => {
+                        if (state === NrfjprogStatus.NOT_INSTALLED)
                             dispatch(
                                 setVsCodeStatus(VsCodeStatus.MISSING_NRFJPROG)
+                            );
+                        else if (state === NrfjprogStatus.M1_VERSION)
+                            dispatch(
+                                setVsCodeStatus(
+                                    VsCodeStatus.NRFJPROG_INSTALL_INTEL
+                                )
                             );
                         else {
                             handleClose();
@@ -313,6 +379,7 @@ const installLink = () => {
         return 'https://code.visualstudio.com/docs/setup/windows';
     }
     if (process.platform === 'darwin') {
+        if (isAppleSilicon) return 'https://code.visualstudio.com/download#';
         return 'https://code.visualstudio.com/docs/setup/mac';
     }
     if (process.platform === 'linux') {

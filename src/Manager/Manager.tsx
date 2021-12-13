@@ -20,7 +20,11 @@ import { Dispatch } from '../state';
 import { TDispatch } from '../thunk';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import EventAction from '../usageDataActions';
-import { getNrfjprogStatus, getVsCodeStatus } from '../VsCodeDialog/vscode';
+import {
+    getNrfjprogStatus,
+    getVsCodeStatus,
+    NrfjprogStatus,
+} from '../VsCodeDialog/vscode';
 import VsCodeDialog from '../VsCodeDialog/VsCodeDialog';
 import { VsCodeStatus } from '../VsCodeDialog/vscodeSlice';
 import Environment from './Environment/Environment';
@@ -124,20 +128,33 @@ const initApp = (dispatch: Dispatch) => {
     reportVsCodeStatus(dispatch);
 };
 
+const nrfjprogStatusToString = (status: NrfjprogStatus) => {
+    switch (status) {
+        case NrfjprogStatus.NOT_INSTALLED:
+            return 'Not installed';
+        case NrfjprogStatus.INSTALLED:
+            return 'Installed';
+        case NrfjprogStatus.M1_VERSION:
+            return 'M1 version installed';
+    }
+};
+
 const reportVsCodeStatus = async (dispatch: Dispatch) => {
     const status = await dispatch(getVsCodeStatus());
-    const nrfjprogInstalled = await getNrfjprogStatus();
+    const nrfjprogInstallStatus = await getNrfjprogStatus();
     const statusString = {
         [VsCodeStatus.INSTALLED]: 'VS Code installed',
         [VsCodeStatus.MISSING_EXTENSIONS]: 'Extensions are missing',
         [VsCodeStatus.MISSING_NRFJPROG]: 'nRFjprog is missing',
         [VsCodeStatus.NOT_CHECKED]: 'Status not checked',
         [VsCodeStatus.NOT_INSTALLED]: 'VS Code not installed',
+        [VsCodeStatus.INSTALL_INTEL]: 'VS Code M1 version installed',
+        [VsCodeStatus.NRFJPROG_INSTALL_INTEL]: 'nRFjprog M1 version installed',
     }[status];
 
     usageData.sendUsageData(EventAction.VS_INSTALLED, statusString);
     usageData.sendUsageData(
         EventAction.NRFJPROG_INSTALLED,
-        nrfjprogInstalled ? 'Installed' : 'Not installed'
+        nrfjprogStatusToString(nrfjprogInstallStatus)
     );
 };

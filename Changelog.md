@@ -1,5 +1,6 @@
 ## Unreleased
-
+### Added
+- Instructions for installing Intel version of VS Code and JLink
 ### Changed
 - Color of install progressbar to #00A9CE
 - Icons
