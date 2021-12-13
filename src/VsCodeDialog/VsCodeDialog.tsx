@@ -137,11 +137,10 @@ export const VsCodeDialog = () => {
                         &nbsp;and restart nRF Connect for Desktop.
                         {isAppleSilicon && (
                             <>
-                                <b>
-                                    M1-based Mac machines are not currently
-                                    supported by our extension so please install
-                                    the <b>Intel Chip</b> version
-                                </b>
+                                <br />
+                                M1-based Mac machines are not currently
+                                supported by our extension so please install the{' '}
+                                <b>Intel Chip</b> version
                             </>
                         )}
                     </>
