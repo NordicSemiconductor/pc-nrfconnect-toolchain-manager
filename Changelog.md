@@ -5,6 +5,10 @@
 - Color of install progressbar to #00A9CE
 - Icons
 
+## 0.10.1 - 2021-11-12
+### Fixed
+- `Open SDK directory` and `Open toolchain directory` did not work
+
 ## 0.10.0 - 2021-09-27
 ### Added
 -  Launch VS Code with installation instructions
