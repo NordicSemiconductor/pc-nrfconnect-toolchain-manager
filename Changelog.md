@@ -1,9 +1,13 @@
-## Unreleased
+## 0.10.2 - 2022-01-06
 ### Added
 - Instructions for installing Intel version of VS Code and JLink
 ### Changed
-- Color of install progressbar to #00A9CE
+- Color of install progressbar
 - Icons
+
+## 0.10.1 - 2021-11-12
+### Fixed
+- `Open SDK directory` and `Open toolchain directory` did not work
 
 ## 0.10.0 - 2021-09-27
 ### Added

@@ -123,7 +123,7 @@ const openDirectory = (directory: string) => {
         EventAction.OPEN_DIR,
         `${process.platform}; ${process.arch}; ${directory}`
     );
-    shell.openItem(directory);
+    shell.openPath(directory);
 };
 
 type EnvironmentMenuProps = { environment: Environment };
