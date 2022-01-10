@@ -1,4 +1,4 @@
-## 0.10.2 - 2022-01-06
+## 0.10.2 - 2022-01-10
 ### Added
 - Instructions for installing Intel version of VS Code and JLink
 ### Changed
