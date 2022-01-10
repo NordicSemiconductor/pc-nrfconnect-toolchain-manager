@@ -1,19 +1,19 @@
 ## 0.10.2 - 2022-01-10
 ### Added
-- Instructions for installing Intel version of VS Code and JLink
+- Instructions for installing Intel version of VS Code and JLink.
 ### Changed
-- Color of install progressbar
-- Icons
+- Color of install progressbar.
+- Icons.
 
 ## 0.10.1 - 2021-11-12
 ### Fixed
-- `Open SDK directory` and `Open toolchain directory` did not work
+- `Open SDK directory` and `Open toolchain directory` did not work.
 
 ## 0.10.0 - 2021-09-27
 ### Added
--  Launch VS Code with installation instructions
--  First steps instructions to building with VS Code
--  Setting to hide older environments
+-  Launch VS Code with installation instructions.
+-  First steps instructions to building with VS Code.
+-  Setting to hide older environments.
 
 ## 0.9.4 - 2021-09-03
 ### Fixed
