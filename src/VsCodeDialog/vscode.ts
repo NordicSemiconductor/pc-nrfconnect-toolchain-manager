@@ -199,10 +199,10 @@ const spawnAsync = (cmd: string, params?: string[]) => {
         });
 
         codeProcess.on('close', (code, signal) => {
+            if (stderr) console.log(stderr);
             if (code === 0 && signal === null) {
                 return resolve(stdout);
             }
-            if (stderr) console.log(stderr);
             return reject();
         });
     });
