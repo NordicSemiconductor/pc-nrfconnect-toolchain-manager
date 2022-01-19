@@ -115,6 +115,12 @@ export const installExtensions =
                 dispatch(installExtension(extension.identifier));
         });
 
+const onExtensionInstallFailed =
+    (identifier: string) => (dispatch: Dispatch) => {
+        dispatch(installExtensionFailed(identifier));
+        logger.error(`Failed to install extension ${identifier}`);
+    };
+
 const installExtension = (identifier: string) => async (dispatch: Dispatch) => {
     try {
         dispatch(startInstallingExtension(identifier));
@@ -123,13 +129,9 @@ const installExtension = (identifier: string) => async (dispatch: Dispatch) => {
         if (installedExtensions.map(e => e.identifier).includes(identifier)) {
             dispatch(installedExtension(identifier));
             logger.info(`Installed extension ${identifier}`);
-        } else {
-            dispatch(installExtensionFailed(identifier));
-            logger.error(`Failed to install extension ${identifier}`);
-        }
+        } else onExtensionInstallFailed(identifier);
     } catch {
-        dispatch(installExtensionFailed(identifier));
-        logger.error(`Failed to install extension ${identifier}`);
+        onExtensionInstallFailed(identifier);
     }
 };
 
