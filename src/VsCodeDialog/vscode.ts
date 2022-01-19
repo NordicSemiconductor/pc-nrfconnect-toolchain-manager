@@ -119,8 +119,14 @@ const installExtension = (identifier: string) => async (dispatch: Dispatch) => {
     try {
         dispatch(startInstallingExtension(identifier));
         await spawnAsync('code', ['--install-extension', identifier]);
-        dispatch(installedExtension(identifier));
-        logger.info(`Installed extension ${identifier}`);
+        const installedExtensions = await listInstalledExtensions();
+        if (installedExtensions.map(e => e.identifier).includes(identifier)) {
+            dispatch(installedExtension(identifier));
+            logger.info(`Installed extension ${identifier}`);
+        } else {
+            dispatch(installExtensionFailed(identifier));
+            logger.error(`Failed to install extension ${identifier}`);
+        }
     } catch {
         dispatch(installExtensionFailed(identifier));
         logger.error(`Failed to install extension ${identifier}`);
