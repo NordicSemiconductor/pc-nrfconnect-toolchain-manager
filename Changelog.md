@@ -1,3 +1,7 @@
+## 0.10.3 - 2022-01-19
+### Fixed
+- VS Code Extensions which failed to install were not detected in some cases.
+
 ## 0.10.2 - 2022-01-10
 ### Added
 - Instructions for installing Intel version of VS Code and JLink.
