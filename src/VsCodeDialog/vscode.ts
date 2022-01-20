@@ -115,15 +115,23 @@ export const installExtensions =
                 dispatch(installExtension(extension.identifier));
         });
 
+const onExtensionInstallFailed =
+    (identifier: string) => (dispatch: Dispatch) => {
+        dispatch(installExtensionFailed(identifier));
+        logger.error(`Failed to install extension ${identifier}`);
+    };
+
 const installExtension = (identifier: string) => async (dispatch: Dispatch) => {
     try {
         dispatch(startInstallingExtension(identifier));
         await spawnAsync('code', ['--install-extension', identifier]);
-        dispatch(installedExtension(identifier));
-        logger.info(`Installed extension ${identifier}`);
+        const installedExtensions = await listInstalledExtensions();
+        if (installedExtensions.some(e => e.identifier === identifier)) {
+            dispatch(installedExtension(identifier));
+            logger.info(`Installed extension ${identifier}`);
+        } else onExtensionInstallFailed(identifier);
     } catch {
-        dispatch(installExtensionFailed(identifier));
-        logger.error(`Failed to install extension ${identifier}`);
+        onExtensionInstallFailed(identifier);
     }
 };
 
@@ -193,10 +201,10 @@ const spawnAsync = (cmd: string, params?: string[]) => {
         });
 
         codeProcess.on('close', (code, signal) => {
+            if (stderr) console.log(stderr);
             if (code === 0 && signal === null) {
                 return resolve(stdout);
             }
-            if (stderr) console.log(stderr);
             return reject();
         });
     });
