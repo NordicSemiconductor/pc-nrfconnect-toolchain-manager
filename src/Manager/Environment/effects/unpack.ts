@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import remote from '@electron/remote';
 import { execSync } from 'child_process';
-import { remote } from 'electron';
 import extract from 'extract-zip';
 import fse from 'fs-extra';
 import path from 'path';

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { remote } from 'electron';
+import { shell } from '@electron/remote';
 import fs from 'fs';
 import path from 'path';
 
@@ -68,7 +68,7 @@ const confirmRemoveDir = (directory: string) => (dispatch: Dispatch) =>
                 'Should you intend to manually remedy the issue, click _Open folder_. ' +
                 'Make sure hidden items are visible.',
             confirmLabel: 'Remove',
-            onOptional: () => remote.shell.showItemInFolder(directory),
+            onOptional: () => shell.showItemInFolder(directory),
             optionalLabel: 'Open folder',
         })
     );

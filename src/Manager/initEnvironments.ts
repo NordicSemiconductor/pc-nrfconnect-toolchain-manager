@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { net } from '@electron/remote';
 import { execSync } from 'child_process';
-import { remote } from 'electron';
 import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
@@ -65,7 +65,7 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
 };
 
 const downloadIndex = (dispatch: Dispatch) => {
-    const request = remote.net.request({ url: toolchainIndexUrl() });
+    const request = net.request({ url: toolchainIndexUrl() });
     request.setHeader('pragma', 'no-cache');
     request.on('response', response => {
         let result = '';

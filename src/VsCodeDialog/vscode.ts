@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import remote from '@electron/remote';
 import { spawn } from 'child_process';
-import { remote } from 'electron';
 import os from 'os';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 

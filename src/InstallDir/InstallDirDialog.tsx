@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { remote } from 'electron';
+import { dialog } from '@electron/remote';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { install } from '../Manager/Environment/effects/installEnvironment';
@@ -28,7 +28,7 @@ const selectInstallDir = async (
 ) => {
     const {
         filePaths: [filePath],
-    } = await remote.dialog.showOpenDialog({
+    } = await dialog.showOpenDialog({
         title: 'Select installation directory',
         defaultPath: installDir,
         properties: ['openDirectory', 'createDirectory'],
