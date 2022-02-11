@@ -23,7 +23,6 @@ import { calculateTimeConsumed, isWestPresent } from './helpers';
 
 const { spawn: remoteSpawn } = remote.require('child_process');
 
-// eslint-disable-next-line import/prefer-default-export
 export const cloneNcs =
     (version: string, toolchainDir: string, justUpdate: boolean) =>
     async (dispatch: Dispatch) => {

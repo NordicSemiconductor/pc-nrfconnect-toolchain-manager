@@ -19,7 +19,6 @@ import { reportProgress, UNPACK } from './reportProgress';
 
 const sudo = remote.require('sudo-prompt');
 
-// eslint-disable-next-line import/prefer-default-export
 export const unpack =
     (version: string, src: string, dest: string) =>
     async (dispatch: Dispatch) => {

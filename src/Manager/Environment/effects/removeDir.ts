@@ -11,7 +11,6 @@ import { usageData } from 'pc-nrfconnect-shared';
 import showErrorDialog from '../../../launcherActions';
 import { Dispatch } from '../../../state';
 
-// eslint-disable-next-line import/prefer-default-export
 export const removeDir = (srcDir: string) => async (dispatch: Dispatch) => {
     let renameOfDirSuccessful = false;
     try {

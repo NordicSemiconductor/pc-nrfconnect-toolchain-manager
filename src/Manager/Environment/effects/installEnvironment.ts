@@ -27,7 +27,6 @@ import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { installToolchain } from './installToolchain';
 
-// eslint-disable-next-line import/prefer-default-export
 export const install =
     ({ version, toolchains }: Environment, justUpdate: boolean) =>
     async (dispatch: Dispatch) => {
