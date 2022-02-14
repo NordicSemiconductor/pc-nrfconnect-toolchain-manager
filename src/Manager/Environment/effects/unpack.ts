@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import remote from '@electron/remote';
+import { require as remoteRequire } from '@electron/remote';
 import { execSync } from 'child_process';
 import extract from 'extract-zip';
 import fse from 'fs-extra';
@@ -17,7 +17,7 @@ import { setProgress } from '../environmentReducer';
 import { calculateTimeConsumed } from './helpers';
 import { reportProgress, UNPACK } from './reportProgress';
 
-const sudo = remote.require('sudo-prompt');
+const sudo = remoteRequire('sudo-prompt');
 
 export const unpack =
     (version: string, src: string, dest: string) =>

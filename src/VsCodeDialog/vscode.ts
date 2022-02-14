@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import remote from '@electron/remote';
 import { spawn } from 'child_process';
 import os from 'os';
 import { logger, usageData } from 'pc-nrfconnect-shared';
@@ -169,9 +168,9 @@ export const getNrfjprogStatus = async () => {
 };
 
 const pathEnvVariable = () => {
-    if (process.platform !== 'darwin') return remote.process.env.PATH;
+    if (process.platform !== 'darwin') return process.env.PATH;
 
-    return `/usr/local/bin:${remote.process.env.PATH}`;
+    return `/usr/local/bin:${process.env.PATH}`;
 };
 
 const checkExecArchitecture = (stdout: string) => {
@@ -187,7 +186,7 @@ const spawnAsync = (cmd: string, params?: string[]) => {
         const codeProcess = spawn(cmd, params, {
             shell: true,
             env: {
-                ...remote.process.env,
+                ...process.env,
                 PATH: pathEnvVariable(),
             },
         });

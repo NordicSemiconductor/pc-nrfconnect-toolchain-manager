@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import remote from '@electron/remote';
+import { require as remoteRequire } from '@electron/remote';
 import { exec, ExecException } from 'child_process';
 import fs from 'fs';
 import fse from 'fs-extra';
@@ -14,7 +14,7 @@ import { describeError, logger, usageData } from 'pc-nrfconnect-shared';
 
 import EventAction from '../../usageDataActions';
 
-const { exec: remoteExec } = remote.require('child_process');
+const { exec: remoteExec } = remoteRequire('child_process');
 
 const findOrCreateSettingsNode = (xml: Document) => {
     let settings = xml.querySelector('settings');
@@ -227,7 +227,7 @@ export const openSegger = async (toolchainDir: string) => {
                 `open "${toolchainDir}/segger_embedded_studio/${realStudioPath}"`,
                 {
                     env: {
-                        PATH: `${toolchainDir}/bin:${remote.process.env.PATH}`,
+                        PATH: `${toolchainDir}/bin:${process.env.PATH}`,
                         ZEPHYR_TOOLCHAIN_VARIANT: 'gnuarmemb',
                         GNUARMEMB_TOOLCHAIN_PATH: toolchainDir,
                     },
@@ -242,8 +242,8 @@ export const openSegger = async (toolchainDir: string) => {
                 `${toolchainDir}/segger_embedded_studio/bin/emStudio`,
                 {
                     env: {
-                        ...remote.process.env,
-                        PATH: `${toolchainDir}/bin:${toolchainDir}/usr/bin:${remote.process.env.PATH}`,
+                        ...process.env,
+                        PATH: `${toolchainDir}/bin:${toolchainDir}/usr/bin:${process.env.PATH}`,
                         PYTHONHOME: `${toolchainDir}/lib/python3.8`,
                         PYTHONPATH: `${toolchainDir}/usr/lib/python3.8:${toolchainDir}/lib/python3.8/site-packages:${toolchainDir}/usr/lib/python3/dist-packages:${toolchainDir}/usr/lib/python3.8/lib-dynload`,
                         GIT_EXEC_PATH: `${toolchainDir}/usr/lib/git-core`,
