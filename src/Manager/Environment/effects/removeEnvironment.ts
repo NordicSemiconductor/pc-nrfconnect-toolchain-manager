@@ -16,7 +16,6 @@ import {
 } from '../environmentReducer';
 import { removeDir } from './removeDir';
 
-// eslint-disable-next-line import/prefer-default-export
 export const removeEnvironment =
     ({ toolchainDir, version }: Environment) =>
     async (dispatch: Dispatch) => {

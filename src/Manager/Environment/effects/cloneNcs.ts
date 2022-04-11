@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { require as remoteRequire } from '@electron/remote';
 import { ChildProcess, spawn } from 'child_process';
-import { remote } from 'electron';
 import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
@@ -21,9 +21,8 @@ import {
 } from '../environmentReducer';
 import { calculateTimeConsumed, isWestPresent } from './helpers';
 
-const { spawn: remoteSpawn } = remote.require('child_process');
+const { spawn: remoteSpawn } = remoteRequire('child_process');
 
-// eslint-disable-next-line import/prefer-default-export
 export const cloneNcs =
     (version: string, toolchainDir: string, justUpdate: boolean) =>
     async (dispatch: Dispatch) => {
@@ -63,9 +62,9 @@ export const cloneNcs =
                     const gitversion = fs
                         .readdirSync(`${toolchainDir}/Cellar/git`)
                         .pop();
-                    env.PATH = `${toolchainDir}/bin:${remote.process.env.PATH}`;
+                    env.PATH = `${toolchainDir}/bin:${process.env.PATH}`;
                     env.GIT_EXEC_PATH = `${toolchainDir}/Cellar/git/${gitversion}/libexec/git-core`;
-                    env.HOME = `${remote.process.env.HOME}`;
+                    env.HOME = `${process.env.HOME}`;
 
                     ncsMgr = spawn(
                         `${toolchainDir}/ncsmgr/ncsmgr`,
@@ -77,7 +76,7 @@ export const cloneNcs =
                 case 'linux': {
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const { ZEPHYR_BASE, ...env } = process.env;
-                    env.PATH = `${toolchainDir}/bin:${toolchainDir}/usr/bin:${remote.process.env.PATH}`;
+                    env.PATH = `${toolchainDir}/bin:${toolchainDir}/usr/bin:${process.env.PATH}`;
                     env.PYTHONHOME = `${toolchainDir}/lib/python3.8`;
                     env.PYTHONPATH = `${toolchainDir}/usr/lib/python3.8:${toolchainDir}/lib/python3.8/site-packages:${toolchainDir}/usr/lib/python3/dist-packages:${toolchainDir}/usr/lib/python3.8/lib-dynload`;
                     env.GIT_EXEC_PATH = `${toolchainDir}/usr/lib/git-core`;

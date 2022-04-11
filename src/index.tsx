@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-/* eslint-disable react/prop-types */
-
 import React from 'react';
 import { App } from 'pc-nrfconnect-shared';
 

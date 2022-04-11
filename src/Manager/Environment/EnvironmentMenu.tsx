@@ -8,8 +8,9 @@ import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { useDispatch } from 'react-redux';
+import { require as remoteRequire } from '@electron/remote';
 import { exec, ExecException, execSync } from 'child_process';
-import { remote, shell } from 'electron';
+import { shell } from 'electron';
 import { readdirSync } from 'fs';
 import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
@@ -39,7 +40,7 @@ const execCallback = (
     if (stdout) logger.debug(stdout);
 };
 
-const { exec: remoteExec } = remote.require('child_process');
+const { exec: remoteExec } = remoteRequire('child_process');
 
 const openBash = (directory: string) => {
     logger.info('Open bash');
@@ -102,7 +103,7 @@ END
             .replace(/'/g, '');
 
         const e = [
-            `PATH=${toolchainDir}/bin:${toolchainDir}/usr/bin:${toolchainDir}/segger_embedded_studio/bin:${remote.process.env.PATH}`,
+            `PATH=${toolchainDir}/bin:${toolchainDir}/usr/bin:${toolchainDir}/segger_embedded_studio/bin:${process.env.PATH}`,
             `PYTHONHOME=${toolchainDir}/lib/python3.8`,
             `PYTHONPATH=${toolchainDir}/usr/lib/python3.8:${toolchainDir}/lib/python3.8/site-packages:${toolchainDir}/usr/lib/python3/dist-packages:${toolchainDir}/usr/lib/python3.8/lib-dynload`,
             `GIT_EXEC_PATH=${toolchainDir}/usr/lib/git-core`,
@@ -155,7 +156,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
             {process.platform !== 'win32' && (
                 <Dropdown.Item
                     onClick={() =>
-                        // @ts-ignore We don't support all platforms
+                        // @ts-expect-error We don't support all platforms
                         openTerminal[platform](toolchainDir, version)
                     }
                 >

@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { net } from '@electron/remote';
 import { createHash } from 'crypto';
-import { remote } from 'electron';
 import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
@@ -39,8 +39,7 @@ export const downloadToolchain =
             const writeStream = fs.createWriteStream(packageLocation);
 
             const downloadTimeStart = new Date();
-            remote.net
-                .request({ url })
+            net.request({ url })
                 .on('response', response => {
                     const totalLength = response.headers[
                         'content-length'

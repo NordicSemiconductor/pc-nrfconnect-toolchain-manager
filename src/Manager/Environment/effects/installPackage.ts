@@ -23,7 +23,6 @@ import { downloadToolchain } from './downloadToolchain';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { unpack } from './unpack';
 
-// eslint-disable-next-line import/prefer-default-export
 export const installPackage =
     (urlOrFilePath: string) => async (dispatch: Dispatch) => {
         usageData.sendUsageData(

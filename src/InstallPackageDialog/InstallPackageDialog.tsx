@@ -7,7 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { useDispatch, useSelector } from 'react-redux';
-import { remote } from 'electron';
+import { dialog } from '@electron/remote';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { installPackage } from '../Manager/Environment/effects/installPackage';
@@ -30,7 +30,7 @@ export default () => {
     };
 
     const getPackage = () => {
-        remote.dialog
+        dialog
             .showOpenDialog({
                 title: 'Select nRF Connect SDK toolchain package',
                 filters: [
