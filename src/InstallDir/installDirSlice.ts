@@ -11,7 +11,7 @@ import {
     persistedInstallDir,
     setPersistedInstallDir,
 } from '../persistentStore';
-import { RootState } from '../state';
+import type { RootState } from '../state';
 
 const CONFIRM_DIR = Symbol('Confirm the install directory');
 const SET_DIR = Symbol('Set the install directory');

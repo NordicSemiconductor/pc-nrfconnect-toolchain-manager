@@ -7,7 +7,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { usageData } from 'pc-nrfconnect-shared';
 
-import { RootState } from '../state';
+import type { RootState } from '../state';
 import EventAction from '../usageDataActions';
 
 export enum VsCodeStatus {

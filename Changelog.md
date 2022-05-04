@@ -1,99 +1,153 @@
 ## 0.10.3 - 2022-01-19
+
 ### Fixed
-- VS Code Extensions which failed to install were not detected in some cases.
+
+-   VS Code Extensions which failed to install were not detected in some cases.
 
 ## 0.10.2 - 2022-01-10
+
 ### Added
-- Instructions for installing Intel version of VS Code and JLink.
+
+-   Instructions for installing Intel version of VS Code and JLink.
+
 ### Changed
-- Color of install progressbar.
-- Icons.
+
+-   Color of install progressbar.
+-   Icons.
 
 ## 0.10.1 - 2021-11-12
+
 ### Fixed
-- `Open SDK directory` and `Open toolchain directory` did not work.
+
+-   `Open SDK directory` and `Open toolchain directory` did not work.
 
 ## 0.10.0 - 2021-09-27
+
 ### Added
--  Launch VS Code with installation instructions.
--  First steps instructions to building with VS Code.
--  Setting to hide older environments.
+
+-   Launch VS Code with installation instructions.
+-   First steps instructions to building with VS Code.
+-   Setting to hide older environments.
 
 ## 0.9.4 - 2021-09-03
+
 ### Fixed
-- On macOS the terminal was missing `/usr/local/bin` in the `PATH`.
+
+-   On macOS the terminal was missing `/usr/local/bin` in the `PATH`.
 
 ## 0.9.3 - 2021-07-04
+
 ### Removed
-- Experimental banner for macOS.
+
+-   Experimental banner for macOS.
 
 ## 0.9.2 - 2021-06-23
+
 ### Changed
-- Establish compatibility with nRF Connect for Desktop 3.7.
+
+-   Establish compatibility with nRF Connect for Desktop 3.7.
+
 ### Fixed
-- Installation would not start.
-- Open IDE button was not working.
+
+-   Installation would not start.
+-   Open IDE button was not working.
 
 ## 0.9.1 - 2021-02-08
+
 ### Changed
-- Prevented using non-default base path on macOS.
+
+-   Prevented using non-default base path on macOS.
+
 ### Fixed
-- Opening SEGGER Embedded Studio on macOS.
+
+-   Opening SEGGER Embedded Studio on macOS.
 
 ## 0.9.0 - 2020-12-18
+
 ### Added
-- Dialog and instructions to remove directories that would block installation.
+
+-   Dialog and instructions to remove directories that would block installation.
+
 ### Changed
-- Disabled First steps screen during installation.
+
+-   Disabled First steps screen during installation.
 
 ## 0.8.2 - 2020-11-25
+
 ### Fixed
-- cmake configuration issue on macOS.
+
+-   cmake configuration issue on macOS.
+
 ### Changed
-- Minor style update.
+
+-   Minor style update.
 
 ## 0.8.1 - 2020-09-30
+
 ### Fixed
-- Source code link.
+
+-   Source code link.
 
 ## 0.8.0 - 2020-09-29
+
 ### Fixed
-- Unzipping issue on Windows.
-- Incorrect percentage number for download progress.
+
+-   Unzipping issue on Windows.
+-   Incorrect percentage number for download progress.
+
 ### Changed
-- Update SES default config with tool paths.
+
+-   Update SES default config with tool paths.
+
 ### Added
-- Usage statistics
+
+-   Usage statistics
 
 ## 0.7.1 - 2020-07-24
+
 ### Fixed
-- Update SDK/toolchain actions.
+
+-   Update SDK/toolchain actions.
 
 ## 0.7.0 - 2020-07-08
+
 ### Added
-- Install toolchain from URL or local file.
+
+-   Install toolchain from URL or local file.
 
 ## 0.6.1 - 2020-06-09
+
 ### Changed
-- NCS clone process without external window on win32.
+
+-   NCS clone process without external window on win32.
 
 ## 0.6.0 - 2020-06-02
+
 ### Added
-- macOS support.
+
+-   macOS support.
 
 ## 0.5.0 - 2020-04-02
-- First public release.
+
+-   First public release.
 
 ## 0.2.2-beta.1 - 2020-04-01
+
 ### Fixed
-- Updating SDK and toolchain.
+
+-   Updating SDK and toolchain.
 
 ## 0.2.1-beta.1 - 2020-03-05
+
 ### Added
-- Confirmation dialog to remove environment.
-- Error dialog when remove fails.
+
+-   Confirmation dialog to remove environment.
+-   Error dialog when remove fails.
+
 ### Changed
-- App icon.
+
+-   App icon.
 
 ## 0.2.0-beta.1 - 2020-02-21
-- Initial public beta release.
+
+-   Initial public beta release.

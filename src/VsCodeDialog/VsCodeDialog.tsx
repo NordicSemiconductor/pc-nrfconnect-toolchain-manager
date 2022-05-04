@@ -38,7 +38,7 @@ import {
 
 import './vscodeDialog.scss';
 
-export const VsCodeDialog = () => {
+const VsCodeDialog = () => {
     const dispatch = useDispatch();
     const status = useSelector(vsCodeStatus);
     const extensions = useSelector(vsCodeExtensions);

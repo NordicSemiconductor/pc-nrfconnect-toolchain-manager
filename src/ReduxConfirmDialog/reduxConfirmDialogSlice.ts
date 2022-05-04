@@ -6,7 +6,7 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { RootState } from '../state';
+import type { RootState } from '../state';
 
 export interface ConfirmDialogState {
     callback?: (isCancelled: boolean) => void;
