@@ -9,7 +9,7 @@ import {
     persistedHideOlderEnvironments,
     setPersistedHideOlderEnvironments,
 } from '../persistentStore';
-import { RootState } from '../state';
+import type { RootState } from '../state';
 
 export interface SettingsState {
     isOlderEnvironmentsHidden: boolean;

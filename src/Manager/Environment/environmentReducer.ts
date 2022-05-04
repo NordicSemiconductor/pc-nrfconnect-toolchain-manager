@@ -6,7 +6,7 @@
 
 import { AnyAction } from 'redux';
 
-import { Environment } from '../../state';
+import type { Environment } from '../../state';
 
 const START_INSTALL_TOOLCHAIN = 'START_INSTALL_TOOLCHAIN';
 export const startInstallToolchain = (version: string) => ({

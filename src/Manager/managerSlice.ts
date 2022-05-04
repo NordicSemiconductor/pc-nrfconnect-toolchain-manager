@@ -7,7 +7,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AnyAction } from 'redux';
 
-import {
+import type {
     Environment,
     Environments,
     Manager,

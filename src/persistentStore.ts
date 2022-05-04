@@ -28,7 +28,7 @@ const defaultInstallDir =
 export const persistedInstallDir = (): string =>
     process.platform === 'darwin'
         ? defaultInstallDir ?? ''
-        : store<string>().get('installDir', defaultInstallDir ?? '');
+        : store().get('installDir', defaultInstallDir ?? '');
 
 export const setPersistedInstallDir = (dir: string) =>
     store().set('installDir', dir);
@@ -59,17 +59,16 @@ export const toolchainUrl = (name: string) =>
 export const setToolchainIndexUrl = (value: string) =>
     store().set('toolchainIndexUrl', value);
 
-export const persistedShowMaster = () =>
-    store<boolean>().get('showMaster', false);
+export const persistedShowMaster = () => store().get('showMaster', false);
 export const setPersistedShowMaster = (visible: boolean) =>
     store().set('showMaster', visible);
 
 export const persistedHideOlderEnvironments = () =>
-    store<boolean>().get('hideOlderEnvironments', true);
+    store().get('hideOlderEnvironments', true);
 export const setPersistedHideOlderEnvironments = (visible: boolean) =>
     store().set('hideOlderEnvironments', visible);
 
 export const persistedShowVsCodeDialogDuringInstall = () =>
-    store<boolean>().get('showVsCodeDialogDuringInstall', true);
+    store().get('showVsCodeDialogDuringInstall', true);
 export const setPersistedShowVsCodeDialogDuringInstall = (visible: boolean) =>
     store().set('showVsCodeDialogDuringInstall', visible);

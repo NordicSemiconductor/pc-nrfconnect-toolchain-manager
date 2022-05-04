@@ -6,7 +6,7 @@
 
 import semver from 'semver';
 
-import { Environment } from '../state';
+import type { Environment } from '../state';
 
 export const filterEnvironments = (
     environments: Environment[]

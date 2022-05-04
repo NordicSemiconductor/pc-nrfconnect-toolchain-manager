@@ -7,7 +7,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { toolchainIndexUrl } from '../persistentStore';
-import { RootState } from '../state';
+import type { RootState } from '../state';
 
 export interface ToolChainSourceState {
     toolchainRootUrl: string;
