@@ -40,7 +40,7 @@
         "@types/semver": "^7.3.8",
         "electron": "^13.5.1",
         "electron-store": "^8.0.0",
-        "pc-nrfconnect-shared": "github:NordicSemiconductor/pc-nrfconnect-shared#v6.0.5",
+        "pc-nrfconnect-shared": "https://github.com/NordicSemiconductor/pc-nrfconnect-shared#v6.0.5",
         "react": "16.13.1",
         "react-dom": "16.13.1",
         "react-redux": "7.2.0",
