@@ -10,6 +10,7 @@ import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
 import { getAppDir, logger, usageData } from 'pc-nrfconnect-shared';
+import { gt } from 'semver';
 
 import {
     persistedInstallDir as installDir,
@@ -85,11 +86,36 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
 
 const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
     try {
-        const result = execSync(`${exePath} -v --json`, { encoding: 'utf8' });
-        const resultJson = JSON.parse(result);
-        logger.info(`Using nRF Util version: ${resultJson.data.version}`);
+        let result = execSync(`${exePath} toolchain-manager --json list`, {
+            encoding: 'utf8',
+        });
+        let resultJson = JSON.parse(result).data.sdks;
+        const installedEnvironments = resultJson.filter(
+            (environment: Environment) => gt(environment.version, 'v1.9.99')
+        );
+        result = execSync(`${exePath} toolchain-manager --json search`, {
+            encoding: 'utf8',
+        });
+
+        resultJson = JSON.parse(result).data.sdks;
+        resultJson
+            .filter((environment: Environment) =>
+                gt(environment.version, 'v1.9.99')
+            )
+            .map((environment: Environment) => ({
+                ...environment,
+                isInstalled: !!installedEnvironments.find(
+                    (e: Environment) => e.version === environment.version
+                ),
+            }))
+            .forEach((environment: Environment) => {
+                dispatch(addEnvironment(environment));
+                logger.info(
+                    `Toolchain ${environment.version} has been added to the list`
+                );
+            });
     } catch (e) {
-        logger.error(`Failed to check nRF Util version`);
+        logger.error(`Failed to download toolchain index file`);
     }
 };
 
