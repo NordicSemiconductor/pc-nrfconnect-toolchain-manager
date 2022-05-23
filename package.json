@@ -58,7 +58,7 @@
         "semver"
     ],
     "eslintConfig": {
-        "extends": "./node_modules/pc-nrfconnect-shared/config/eslintrc"
+        "extends": "./node_modules/pc-nrfconnect-shared/config/eslintrc.js"
     },
     "prettier": "./node_modules/pc-nrfconnect-shared/config/prettier.config.js"
 }

@@ -9,7 +9,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
-import { logger, usageData } from 'pc-nrfconnect-shared';
+import { getAppDir, logger, usageData } from 'pc-nrfconnect-shared';
 
 import {
     persistedInstallDir as installDir,
@@ -23,6 +23,25 @@ import {
     addLocallyExistingEnvironment,
     clearEnvironments,
 } from './managerSlice';
+
+const EXE_PATH_WIN = path.resolve(getAppDir(), 'resources', 'nrfutil.exe');
+const EXE_PATH_MAC = path.resolve(getAppDir(), 'resources', 'nrfutil.exe');
+const EXE_PATH_LINUX = path.resolve(getAppDir(), 'resources', 'nrfutil.exe');
+
+let exePath: string;
+switch (process.platform) {
+    case 'win32':
+        exePath = EXE_PATH_WIN;
+        break;
+    case 'darwin':
+        exePath = EXE_PATH_MAC;
+        break;
+    case 'linux':
+        exePath = EXE_PATH_LINUX;
+        break;
+    default:
+        logger.error(`Unsupported platform detected: ${process.platform}`);
+}
 
 const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
     try {
@@ -61,6 +80,16 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
         usageData.sendErrorReport(
             `Fail to detect locally existing environments with error: ${e}`
         );
+    }
+};
+
+const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
+    try {
+        const result = execSync(`${exePath} -v --json`, { encoding: 'utf8' });
+        const resultJson = JSON.parse(result);
+        logger.info(`Using nRF Util version: ${resultJson.data.version}`);
+    } catch (e) {
+        logger.error(`Failed to check nRF Util version`);
     }
 };
 
@@ -110,8 +139,52 @@ const downloadIndex = (dispatch: Dispatch) => {
     request.end();
 };
 
+const checkNrfUtil = () => {
+    try {
+        const result = execSync(`${exePath} -v --json`, { encoding: 'utf8' });
+        const resultJson = JSON.parse(result);
+        logger.info(`Using nRF Util version: ${resultJson.data.version}`);
+        checkToolchainManagerCli();
+    } catch (e) {
+        logger.error(`Failed to check nRF Util version: ${e}`);
+    }
+};
+
+const checkToolchainManagerCli = () => {
+    try {
+        let result = execSync(`${exePath} list`, { encoding: 'utf8' });
+        const isToolchainManagerInstalled =
+            result.includes('toolchain-manager');
+        if (!isToolchainManagerInstalled) {
+            installToolchainManagerCli();
+        }
+
+        result = execSync(`${exePath} toolchain-manager -v --json`, {
+            encoding: 'utf8',
+        });
+        const resultJson = JSON.parse(result);
+        logger.info(
+            `Using Toolchain Manager CLI version: ${resultJson.data.version}`
+        );
+    } catch (e) {
+        logger.error(`Failed to check Toolchain Manager CLI version: ${e}`);
+    }
+};
+
+const installToolchainManagerCli = () => {
+    try {
+        execSync(`${exePath} install toolchain-manager`, {
+            encoding: 'utf8',
+        });
+        execSync(`${exePath} list`, { encoding: 'utf8' });
+    } catch (e) {
+        logger.error(`Failed to install Toolchain Manager CLI version: ${e}`);
+    }
+};
+
 export default (dispatch: Dispatch) => {
     logger.info('Initializing environments...');
+    checkNrfUtil();
     const dir = path.dirname(installDir());
     if (
         process.platform === 'darwin' &&
@@ -129,4 +202,5 @@ export default (dispatch: Dispatch) => {
     dispatch(clearEnvironments());
     detectLocallyExistingEnvironments(dispatch);
     downloadIndex(dispatch);
+    downloadIndexByNrfUtil(dispatch);
 };
