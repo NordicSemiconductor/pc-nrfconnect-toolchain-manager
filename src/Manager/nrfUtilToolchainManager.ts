@@ -54,7 +54,11 @@ export const logNrfUtilTMVersion = (): void => {
     const tcm = spawnSync(executablePath, ['--version'], {
         encoding: 'utf8',
     });
-    logger.info(tcm.stdout.split('\n')[0]);
+
+    const version = JSON.parse(tcm.stdout).data as VersionInformation;
+    logger.info(
+        `${version.name} ${version.version} (${version.commit_hash} ${version.commit_date})`
+    );
 };
 
 interface SDK {
@@ -76,4 +80,17 @@ interface SearchResult {
         }[];
         version: string;
     }[];
+}
+
+interface VersionInformation {
+    // eslint-disable-next-line camelcase
+    build_timestamp: string;
+    // eslint-disable-next-line camelcase
+    commit_date: string;
+    // eslint-disable-next-line camelcase
+    commit_hash: string;
+    dependencies: null;
+    host: string;
+    name: string;
+    version: string;
 }
