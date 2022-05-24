@@ -9,7 +9,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
-import { getAppDir, logger, usageData } from 'pc-nrfconnect-shared';
+import { logger, usageData } from 'pc-nrfconnect-shared';
 import { gt } from 'semver';
 
 import {
@@ -24,25 +24,11 @@ import {
     addLocallyExistingEnvironment,
     clearEnvironments,
 } from './managerSlice';
-
-const EXE_PATH_WIN = path.resolve(getAppDir(), 'resources', 'nrfutil.exe');
-const EXE_PATH_MAC = path.resolve(getAppDir(), 'resources', 'nrfutil.exe');
-const EXE_PATH_LINUX = path.resolve(getAppDir(), 'resources', 'nrfutil.exe');
-
-let exePath: string;
-switch (process.platform) {
-    case 'win32':
-        exePath = EXE_PATH_WIN;
-        break;
-    case 'darwin':
-        exePath = EXE_PATH_MAC;
-        break;
-    case 'linux':
-        exePath = EXE_PATH_LINUX;
-        break;
-    default:
-        logger.error(`Unsupported platform detected: ${process.platform}`);
-}
+import {
+    listSdks,
+    logNrfUtilTMVersion,
+    searchSdks,
+} from './nrfUtilToolchainManager';
 
 const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
     try {
@@ -86,30 +72,26 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
 
 const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
     try {
-        let result = execSync(`${exePath} toolchain-manager --json list`, {
-            encoding: 'utf8',
-        });
-        let resultJson = JSON.parse(result).data.sdks;
-        const installedEnvironments = resultJson.filter(
-            (environment: Environment) => gt(environment.version, 'v1.9.99')
+        const sdks = listSdks();
+        const installedEnvironments = sdks.filter(environment =>
+            gt(environment.version, 'v1.9.99')
         );
-        result = execSync(`${exePath} toolchain-manager --json search`, {
-            encoding: 'utf8',
-        });
-
-        resultJson = JSON.parse(result).data.sdks;
-        resultJson
-            .filter((environment: Environment) =>
-                gt(environment.version, 'v1.9.99')
-            )
-            .map((environment: Environment) => ({
+        const search = searchSdks();
+        search.sdks
+            .filter(environment => gt(environment.version, 'v1.9.99'))
+            .map(environment => ({
                 ...environment,
                 isInstalled: !!installedEnvironments.find(
-                    (e: Environment) => e.version === environment.version
+                    e => e.version === environment.version
                 ),
             }))
-            .forEach((environment: Environment) => {
-                dispatch(addEnvironment(environment));
+            .forEach(environment => {
+                dispatch(
+                    addEnvironment({
+                        toolchainDir: '',
+                        ...environment,
+                    })
+                );
                 logger.info(
                     `Toolchain ${environment.version} has been added to the list`
                 );
@@ -165,52 +147,9 @@ const downloadIndex = (dispatch: Dispatch) => {
     request.end();
 };
 
-const checkNrfUtil = () => {
-    try {
-        const result = execSync(`${exePath} -v --json`, { encoding: 'utf8' });
-        const resultJson = JSON.parse(result);
-        logger.info(`Using nRF Util version: ${resultJson.data.version}`);
-        checkToolchainManagerCli();
-    } catch (e) {
-        logger.error(`Failed to check nRF Util version: ${e}`);
-    }
-};
-
-const checkToolchainManagerCli = () => {
-    try {
-        let result = execSync(`${exePath} list`, { encoding: 'utf8' });
-        const isToolchainManagerInstalled =
-            result.includes('toolchain-manager');
-        if (!isToolchainManagerInstalled) {
-            installToolchainManagerCli();
-        }
-
-        result = execSync(`${exePath} toolchain-manager -v --json`, {
-            encoding: 'utf8',
-        });
-        const resultJson = JSON.parse(result);
-        logger.info(
-            `Using Toolchain Manager CLI version: ${resultJson.data.version}`
-        );
-    } catch (e) {
-        logger.error(`Failed to check Toolchain Manager CLI version: ${e}`);
-    }
-};
-
-const installToolchainManagerCli = () => {
-    try {
-        execSync(`${exePath} install toolchain-manager`, {
-            encoding: 'utf8',
-        });
-        execSync(`${exePath} list`, { encoding: 'utf8' });
-    } catch (e) {
-        logger.error(`Failed to install Toolchain Manager CLI version: ${e}`);
-    }
-};
-
-export default (dispatch: Dispatch) => {
+export default (dispatch: Dispatch): void => {
     logger.info('Initializing environments...');
-    checkNrfUtil();
+    logNrfUtilTMVersion();
     const dir = path.dirname(installDir());
     if (
         process.platform === 'darwin' &&
