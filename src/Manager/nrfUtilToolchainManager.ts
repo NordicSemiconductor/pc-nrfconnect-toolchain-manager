@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { spawn, spawnSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import path from 'path';
 import { getAppDir, logger } from 'pc-nrfconnect-shared';
 
@@ -50,7 +50,7 @@ export const searchSdks = (): SearchResult => {
     return data as SearchResult;
 };
 
-export const logNrfUtilTMVersion = () => {
+export const logNrfUtilTMVersion = (): void => {
     const tcm = spawnSync(executablePath, ['--version'], {
         encoding: 'utf8',
     });
