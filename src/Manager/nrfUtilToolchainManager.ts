@@ -51,7 +51,7 @@ export const searchSdks = (): SearchResult => {
 };
 
 export const logNrfUtilTMVersion = (): void => {
-    const tcm = spawnSync(executablePath, ['--version'], {
+    const tcm = spawnSync(executablePath, ['--json', '--version'], {
         encoding: 'utf8',
     });
 
