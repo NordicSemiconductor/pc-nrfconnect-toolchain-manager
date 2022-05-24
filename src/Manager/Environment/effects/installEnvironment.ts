@@ -14,7 +14,7 @@ import {
     setHasInstalledAnNcs,
     setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
-import { Dispatch, Environment } from '../../../state';
+import { Dispatch, Environment, Toolchain } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { getVsCodeStatus } from '../../../VsCodeDialog/vscode';
 import {
@@ -23,12 +23,13 @@ import {
     VsCodeStatus,
 } from '../../../VsCodeDialog/vscodeSlice';
 import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
+import { installSdk } from '../../nrfUtilToolchainManager';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { installToolchain } from './installToolchain';
 
 export const install =
-    ({ version, toolchains }: Environment, justUpdate: boolean) =>
+    ({ version, toolchains, type }: Environment, justUpdate: boolean) =>
     async (dispatch: Dispatch) => {
         logger.info(`Start to install toolchain ${version}`);
         const toolchain = getLatestToolchain(toolchains);
@@ -55,14 +56,42 @@ export const install =
             setPersistedShowVsCodeDialogDuringInstall(false);
         }
 
-        try {
-            if (toolchain === undefined) throw new Error('No toolchain found');
-            await dispatch(ensureCleanTargetDir(toolchainDir));
-            await dispatch(installToolchain(version, toolchain, toolchainDir));
-            await dispatch(cloneNcs(version, toolchainDir, justUpdate));
-        } catch (error) {
-            const message = describeError(error);
-            dispatch(showErrorDialog(`${message}`));
-            usageData.sendErrorReport(`${message}`);
+        if (type === 'legacy') {
+            await installLegacy(
+                toolchain,
+                dispatch,
+                toolchainDir,
+                version,
+                justUpdate
+            );
+        }
+
+        if (type === 'nrfUtil') {
+            await installNrfUtil(version);
         }
     };
+
+const installNrfUtil = async (version: string) => {
+    await installSdk(version, update => {
+        console.log(update);
+    });
+};
+
+const installLegacy = async (
+    toolchain: Toolchain | undefined,
+    dispatch: Dispatch,
+    toolchainDir: string,
+    version: string,
+    justUpdate: boolean
+) => {
+    try {
+        if (toolchain === undefined) throw new Error('No toolchain found');
+        await dispatch(ensureCleanTargetDir(toolchainDir));
+        await dispatch(installToolchain(version, toolchain, toolchainDir));
+        await dispatch(cloneNcs(version, toolchainDir, justUpdate));
+    } catch (error) {
+        const message = describeError(error);
+        dispatch(showErrorDialog(`${message}`));
+        usageData.sendErrorReport(`${message}`);
+    }
+};

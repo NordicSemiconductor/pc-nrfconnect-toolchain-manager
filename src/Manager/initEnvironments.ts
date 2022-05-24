@@ -16,7 +16,7 @@ import {
     persistedInstallDir as installDir,
     toolchainIndexUrl,
 } from '../persistentStore';
-import { Dispatch, Environment } from '../state';
+import { Dispatch, Environment, LegacyEnvironment } from '../state';
 import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
 import {
@@ -88,7 +88,7 @@ const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
             .forEach(environment => {
                 dispatch(
                     addEnvironment({
-                        toolchainDir: '',
+                        type: 'nrfUtil',
                         ...environment,
                     })
                 );
@@ -120,12 +120,16 @@ const downloadIndex = (dispatch: Dispatch) => {
                 logger.debug(
                     `Index json has been downloaded with result: ${result}`
                 );
-                JSON.parse(result).forEach((environment: Environment) => {
-                    dispatch(addEnvironment(environment));
-                    logger.info(
-                        `Toolchain ${environment.version} has been added to the list`
-                    );
-                });
+                JSON.parse(result).forEach(
+                    (environment: Omit<LegacyEnvironment, 'type'>) => {
+                        dispatch(
+                            addEnvironment({ ...environment, type: 'legacy' })
+                        );
+                        logger.info(
+                            `Toolchain ${environment.version} has been added to the list`
+                        );
+                    }
+                );
             } catch (e) {
                 usageData.sendErrorReport(
                     `Fail to parse index json file with error: ${e}`

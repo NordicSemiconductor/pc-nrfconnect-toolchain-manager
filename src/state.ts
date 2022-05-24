@@ -21,7 +21,16 @@ export type Toolchain = {
     uri?: string;
 };
 
-export type Environment = {
+export type Environment = LegacyEnvironment | NrfUtilEnvironment;
+
+export type NrfUtilEnvironment = {
+    type: 'nrfUtil';
+    version: string;
+    toolchains: Toolchain[];
+};
+
+export type LegacyEnvironment = {
+    type: 'legacy';
     version: string;
     toolchainDir: string;
     isWestPresent?: boolean;

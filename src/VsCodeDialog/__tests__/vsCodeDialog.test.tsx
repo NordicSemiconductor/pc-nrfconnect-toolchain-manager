@@ -157,6 +157,7 @@ describe('VS Code not installed when installing a toolchain for the first time',
     it('should display a "While the toolchain is installing ... install VS Code" dialog', async () => {
         const screen = render(<VsCodeDialog />, [
             addEnvironment({
+                type: 'legacy',
                 version: 'v0.0',
                 toolchainDir: '',
                 isWestPresent: false,
