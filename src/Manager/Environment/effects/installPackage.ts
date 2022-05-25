@@ -55,6 +55,7 @@ export const installPackage =
 
             dispatch(
                 addLocallyExistingEnvironment({
+                    type: 'legacy',
                     version,
                     toolchainDir,
                     isInstalled: false,

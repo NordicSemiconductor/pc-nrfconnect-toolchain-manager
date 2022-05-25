@@ -6,7 +6,7 @@
 
 import { AnyAction } from 'redux';
 
-import type { Environment } from '../../state';
+import type { Environment, LegacyEnvironment } from '../../state';
 
 const START_INSTALL_TOOLCHAIN = 'START_INSTALL_TOOLCHAIN';
 export const startInstallToolchain = (version: string) => ({
@@ -124,7 +124,6 @@ export const canBeDownloaded = (env: Environment | undefined) =>
 
 export const version = (env: Environment) => env.version;
 export const toolchainDir = (env: Environment) => env.toolchainDir;
-export const canBeOpenedInSegger = (env: Environment) => env.isWestPresent;
 
 export const progress = (env: Environment) => env.progress;
 

@@ -9,24 +9,26 @@ import React from 'react';
 import { Environment } from '../../state';
 import Button from './Button';
 import environmentPropType from './environmentPropType';
-import { canBeOpenedInSegger, isInProgress } from './environmentReducer';
+import { isInProgress } from './environmentReducer';
 import { openSegger } from './segger';
 
 type Props = { environment: Environment };
 
 const OpenSegger = ({ environment }: Props) => {
-    if (!canBeOpenedInSegger(environment)) return null;
+    if (environment.isWestPresent && environment.type === 'legacy') {
+        return (
+            <Button
+                icon="x-mdi-rocket"
+                onClick={() => openSegger(environment.toolchainDir)}
+                label="Open Segger Embedded Studio"
+                title="Open SEGGER Embedded Studio"
+                disabled={isInProgress(environment)}
+                variant="primary"
+            />
+        );
+    }
 
-    return (
-        <Button
-            icon="x-mdi-rocket"
-            onClick={() => openSegger(environment.toolchainDir)}
-            label="Open Segger Embedded Studio"
-            title="Open SEGGER Embedded Studio"
-            disabled={isInProgress(environment)}
-            variant="primary"
-        />
-    );
+    return null;
 };
 
 OpenSegger.propTypes = { environment: environmentPropType.isRequired };

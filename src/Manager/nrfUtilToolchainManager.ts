@@ -69,9 +69,7 @@ export const logNrfUtilTMVersion = () => {
     );
 };
 
-export const handleChunk = (
-    onUpdate: (update: TaskBegin | TaskProgress | TaskEnd) => void
-) => {
+export const handleChunk = (onUpdate: (update: Task) => void) => {
     let buffer = '';
     return (chunk: any) => {
         buffer += chunk.toString('utf8');
@@ -84,10 +82,7 @@ export const handleChunk = (
     };
 };
 
-export const installSdk = (
-    version: string,
-    onUpdate: (update: TaskBegin | TaskProgress | TaskEnd) => void
-) =>
+export const installSdk = (version: string, onUpdate: (update: Task) => void) =>
     new Promise(resolve => {
         const tcm = spawn(executablePath, ['--json', 'install', version]);
 

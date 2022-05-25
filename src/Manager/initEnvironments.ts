@@ -56,6 +56,7 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
                 );
                 dispatch(
                     addLocallyExistingEnvironment({
+                        type: 'legacy',
                         version,
                         toolchainDir,
                         isWestPresent: westPresent,
@@ -89,6 +90,7 @@ const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
                 dispatch(
                     addEnvironment({
                         type: 'nrfUtil',
+                        toolchainDir: '',
                         ...environment,
                     })
                 );

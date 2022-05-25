@@ -111,6 +111,7 @@ const managerSlice = createSlice({
         addLocallyExistingEnvironment: (
             state,
             action: PayloadAction<{
+                type: 'legacy' | 'nrfUtil';
                 version: string;
                 toolchainDir: string;
                 isWestPresent: boolean;

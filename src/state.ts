@@ -27,6 +27,15 @@ export type NrfUtilEnvironment = {
     type: 'nrfUtil';
     version: string;
     toolchains: Toolchain[];
+    toolchainDir: string;
+
+    isInstalled?: boolean;
+    isWestPresent?: boolean;
+    isInstallingToolchain?: boolean;
+    isCloningSdk?: boolean;
+    isRemoving?: boolean;
+    progress?: number;
+    stage?: 'Downloading' | 'Installing';
 };
 
 export type LegacyEnvironment = {
