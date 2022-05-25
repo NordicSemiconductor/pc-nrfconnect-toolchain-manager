@@ -28,7 +28,7 @@ const executablePath = (() => {
             return path.resolve(
                 getAppDir(),
                 'resources',
-                'nrfutil-toolchain-manager.exe'
+                'nrfutil-toolchain-manager'
             );
         default:
             logger.error(`Unsupported platform detected: ${process.platform}`);

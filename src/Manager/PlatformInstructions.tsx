@@ -11,7 +11,7 @@ import { string } from 'prop-types';
 
 const isLinux = process.platform === 'linux';
 
-export const enableLinux = false;
+export const enableLinux = true;
 
 const OnlineDocs: FC<{ label: string }> = ({ label }) => (
     <a

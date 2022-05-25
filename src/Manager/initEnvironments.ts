@@ -170,6 +170,8 @@ export default (dispatch: Dispatch): void => {
     fse.mkdirpSync(installDir());
     dispatch(clearEnvironments());
     detectLocallyExistingEnvironments(dispatch);
-    downloadIndex(dispatch);
+    if (process.platform !== 'linux') {
+        downloadIndex(dispatch);
+    }
     downloadIndexByNrfUtil(dispatch);
 };
