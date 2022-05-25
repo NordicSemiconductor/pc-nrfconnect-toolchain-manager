@@ -71,7 +71,7 @@ export const logNrfUtilTMVersion = () => {
 
 export const handleChunk = (onUpdate: (update: Task) => void) => {
     let buffer = '';
-    return (chunk: any) => {
+    return (chunk: Buffer) => {
         buffer += chunk.toString('utf8');
 
         while (buffer.includes('\n')) {
@@ -100,7 +100,6 @@ interface SDK {
 }
 
 interface SearchResult {
-    // eslint-disable-next-line camelcase
     index_url: string;
     sdks: {
         toolchains: Toolchain[];
@@ -109,11 +108,8 @@ interface SearchResult {
 }
 
 interface VersionInformation {
-    // eslint-disable-next-line camelcase
     build_timestamp: string;
-    // eslint-disable-next-line camelcase
     commit_date: string;
-    // eslint-disable-next-line camelcase
     commit_hash: string;
     dependencies: null;
     host: string;

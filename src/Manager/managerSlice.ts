@@ -150,6 +150,7 @@ export const {
     },
 } = managerSlice;
 
+// eslint-disable-next-line default-param-last -- Because this is a reducer, where this is the required signature
 export default (state = initialState(), action: AnyAction) => {
     const stateAfterEnvironmentReducer = maybeCallEnvironmentReducer(
         state,

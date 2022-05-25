@@ -181,8 +181,8 @@ const checkExecArchitecture = (stdout: string) => {
     return 'arm';
 };
 
-const spawnAsync = (cmd: string, params?: string[]) => {
-    return new Promise<string>((resolve, reject) => {
+const spawnAsync = (cmd: string, params?: string[]) =>
+    new Promise<string>((resolve, reject) => {
         const codeProcess = spawn(cmd, params, {
             shell: true,
             env: {
@@ -207,7 +207,6 @@ const spawnAsync = (cmd: string, params?: string[]) => {
             return reject();
         });
     });
-};
 
 export const openVsCode = () => {
     usageData.sendUsageData(EventAction.OPEN_VS_CODE, process.platform);

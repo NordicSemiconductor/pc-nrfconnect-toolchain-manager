@@ -16,7 +16,7 @@ describe('nrfutil toolchain manager tests', () => {
         const handleChunks = (chunks: string[]) => {
             const messages: Task[] = [];
             const handler = handleChunk(message => messages.push(message));
-            chunks.forEach(chunk => handler(chunk));
+            chunks.forEach(chunk => handler(Buffer.from(chunk, 'utf-8')));
             return messages;
         };
 

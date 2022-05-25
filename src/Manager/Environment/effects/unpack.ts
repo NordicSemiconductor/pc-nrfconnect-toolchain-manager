@@ -67,13 +67,13 @@ export const unpack =
                 break;
             }
             case 'linux': {
-                await new Promise<void>((resolve, reject) =>
+                await new Promise<void>((resolve, reject) => {
                     sudo.exec(
                         `snap install ${src} --devmode`,
                         { name: 'Toolchain Manager' },
                         (err: Error) => (err ? reject(err) : resolve())
-                    )
-                );
+                    );
+                });
                 dispatch(setProgress(version, 'Installing...', 99));
                 fse.removeSync(dest);
                 const shortVer = version.replace(/\./g, '');
