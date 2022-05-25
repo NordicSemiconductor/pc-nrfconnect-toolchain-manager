@@ -16,7 +16,7 @@ import {
     persistedInstallDir as installDir,
     toolchainIndexUrl,
 } from '../persistentStore';
-import { Dispatch, Environment, LegacyEnvironment } from '../state';
+import { Dispatch, LegacyEnvironment } from '../state';
 import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
 import {

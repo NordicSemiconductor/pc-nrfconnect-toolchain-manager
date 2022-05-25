@@ -5,10 +5,11 @@
  */
 
 import { spawn, spawnSync } from 'child_process';
+import { chmodSync } from 'fs';
 import path from 'path';
 import { getAppDir, logger } from 'pc-nrfconnect-shared';
 
-import { NrfUtilEnvironment, Toolchain } from '../state';
+import { Toolchain } from '../state';
 
 const executablePath = (() => {
     switch (process.platform) {
@@ -35,6 +36,10 @@ const executablePath = (() => {
             throw new Error();
     }
 })();
+
+if (process.platform === 'linux') {
+    chmodSync(executablePath, '0755');
+}
 
 export const listSdks = () => {
     const tcm = spawnSync(executablePath, ['--json', 'list'], {
@@ -71,10 +76,15 @@ export const installSdk = (
     new Promise(resolve => {
         const tcm = spawn(executablePath, ['--json', 'install', version]);
 
-        tcm.stdout.on('data', message => {
-            console.log(message.toString('utf8'));
-            const payload = JSON.parse(message.toString('utf8'));
-            onUpdate(payload);
+        let buffer = '';
+        tcm.stdout.on('data', chunk => {
+            buffer += chunk.toString('utf8');
+
+            while (buffer.includes('\n')) {
+                const message = buffer.split('\n')[0];
+                buffer = buffer.substring(message.length + 2);
+                onUpdate(JSON.parse(message));
+            }
         });
 
         tcm.on('close', resolve);
