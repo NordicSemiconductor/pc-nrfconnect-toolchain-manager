@@ -27,7 +27,7 @@ const executablePath = (() => {
             );
         case 'linux':
             return path.resolve(
-                getAppDir(),
+                getAppDir() ?? '',
                 'resources',
                 'nrfutil-toolchain-manager'
             );
@@ -69,6 +69,21 @@ export const logNrfUtilTMVersion = () => {
     );
 };
 
+export const handleChunk = (
+    onUpdate: (update: TaskBegin | TaskProgress | TaskEnd) => void
+) => {
+    let buffer = '';
+    return (chunk: any) => {
+        buffer += chunk.toString('utf8');
+
+        while (buffer.includes('\n')) {
+            const message = buffer.split('\n')[0];
+            buffer = buffer.substring(message.length + 1);
+            onUpdate(JSON.parse(message));
+        }
+    };
+};
+
 export const installSdk = (
     version: string,
     onUpdate: (update: TaskBegin | TaskProgress | TaskEnd) => void
@@ -76,16 +91,7 @@ export const installSdk = (
     new Promise(resolve => {
         const tcm = spawn(executablePath, ['--json', 'install', version]);
 
-        let buffer = '';
-        tcm.stdout.on('data', chunk => {
-            buffer += chunk.toString('utf8');
-
-            while (buffer.includes('\n')) {
-                const message = buffer.split('\n')[0];
-                buffer = buffer.substring(message.length + 2);
-                onUpdate(JSON.parse(message));
-            }
-        });
+        tcm.stdout.on('data', handleChunk(onUpdate));
 
         tcm.on('close', resolve);
     });
@@ -120,7 +126,9 @@ interface VersionInformation {
     version: string;
 }
 
-interface Task {
+export type Task = TaskBegin | TaskProgress | TaskEnd;
+
+interface TaskDescriptor {
     id: string;
     description: string;
 }
@@ -128,14 +136,14 @@ interface Task {
 interface TaskBegin {
     type: 'task_begin';
     data: {
-        task: Task;
+        task: TaskDescriptor;
     };
 }
 
 interface TaskProgress {
     type: 'task_progress';
     data: {
-        task: Task;
+        task: TaskDescriptor;
         progress: {
             progressPercentage: number;
             description: string;
@@ -146,7 +154,7 @@ interface TaskProgress {
 interface TaskEnd {
     type: 'task_end';
     data: {
-        task: Task;
+        task: TaskDescriptor;
         message: string;
         result: 'success' | 'failure';
     };
