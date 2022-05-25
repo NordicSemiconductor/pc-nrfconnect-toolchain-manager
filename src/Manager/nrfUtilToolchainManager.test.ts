@@ -6,6 +6,11 @@
 
 import { handleChunk, Task } from './nrfUtilToolchainManager';
 
+jest.mock('pc-nrfconnect-shared', () => ({
+    ...jest.requireActual('pc-nrfconnect-shared'),
+    getAppDir: () => '/mocked/data/dir',
+}));
+
 describe('nrfutil toolchain manager tests', () => {
     it('parse chunks into messages', () => {
         const handleChunks = (chunks: string[]) => {

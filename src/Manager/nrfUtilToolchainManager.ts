@@ -27,7 +27,7 @@ const executablePath = (() => {
             );
         case 'linux':
             return path.resolve(
-                getAppDir() ?? '',
+                getAppDir(),
                 'resources',
                 'nrfutil-toolchain-manager'
             );
