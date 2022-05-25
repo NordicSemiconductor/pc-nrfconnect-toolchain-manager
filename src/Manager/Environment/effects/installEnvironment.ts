@@ -24,6 +24,7 @@ import {
 } from '../../../VsCodeDialog/vscodeSlice';
 import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
 import { installSdk } from '../../nrfUtilToolchainManager';
+import { newTaskEvent } from '../environmentReducer';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { installToolchain } from './installToolchain';
@@ -37,10 +38,6 @@ export const install =
         logger.info(`Installing ${toolchain?.name} at ${toolchainDir}`);
         logger.debug(`Install with toolchain version ${toolchain?.version}`);
         logger.debug(`Install with sha512 ${toolchain?.sha512}`);
-        usageData.sendUsageData(
-            EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
-            `${version}; ${toolchain?.name}`
-        );
 
         dispatch(selectEnvironment(version));
 
@@ -57,6 +54,11 @@ export const install =
         }
 
         if (type === 'legacy') {
+            usageData.sendUsageData(
+                EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
+                `${version}; ${toolchain?.name}`
+            );
+
             await installLegacy(
                 toolchain,
                 dispatch,
@@ -67,13 +69,17 @@ export const install =
         }
 
         if (type === 'nrfUtil') {
-            await installNrfUtil(version);
+            usageData.sendUsageData(
+                EventAction.INSTALL_TOOLCHAIN_FROM_NRFUTIL,
+                `${version}; ${toolchain?.name}`
+            );
+            await installNrfUtil(version, dispatch);
         }
     };
 
-const installNrfUtil = async (version: string) => {
+const installNrfUtil = async (version: string, dispatch: Dispatch) => {
     await installSdk(version, update => {
-        console.log(update);
+        dispatch(newTaskEvent(version, update));
     });
 };
 

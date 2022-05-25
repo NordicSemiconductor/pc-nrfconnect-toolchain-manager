@@ -5,11 +5,10 @@
  */
 
 import { spawn, spawnSync } from 'child_process';
-import { chmodSync } from 'fs';
 import path from 'path';
 import { getAppDir, logger } from 'pc-nrfconnect-shared';
 
-import { Toolchain } from '../state';
+import { TaskEvent, Toolchain } from '../state';
 
 const executablePath = (() => {
     switch (process.platform) {
@@ -37,9 +36,14 @@ const executablePath = (() => {
     }
 })();
 
-if (process.platform === 'linux') {
-    chmodSync(executablePath, '0755');
-}
+export const getNrfUtilConfig = () => {
+    const tcm = spawnSync(executablePath, ['--json', 'config'], {
+        encoding: 'utf8',
+    });
+    const { data } = JSON.parse(tcm.stdout);
+
+    return data as Config;
+};
 
 export const listSdks = () => {
     const tcm = spawnSync(executablePath, ['--json', 'list'], {
@@ -69,7 +73,7 @@ export const logNrfUtilTMVersion = () => {
     );
 };
 
-export const handleChunk = (onUpdate: (update: Task) => void) => {
+export const handleChunk = (onUpdate: (update: TaskEvent) => void) => {
     let buffer = '';
     return (chunk: Buffer) => {
         buffer += chunk.toString('utf8');
@@ -82,7 +86,10 @@ export const handleChunk = (onUpdate: (update: Task) => void) => {
     };
 };
 
-export const installSdk = (version: string, onUpdate: (update: Task) => void) =>
+export const installSdk = (
+    version: string,
+    onUpdate: (update: TaskEvent) => void
+) =>
     new Promise(resolve => {
         const tcm = spawn(executablePath, ['--json', 'install', version]);
 
@@ -117,36 +124,8 @@ interface VersionInformation {
     version: string;
 }
 
-export type Task = TaskBegin | TaskProgress | TaskEnd;
-
-interface TaskDescriptor {
-    id: string;
-    description: string;
-}
-
-interface TaskBegin {
-    type: 'task_begin';
-    data: {
-        task: TaskDescriptor;
-    };
-}
-
-interface TaskProgress {
-    type: 'task_progress';
-    data: {
-        task: TaskDescriptor;
-        progress: {
-            progressPercentage: number;
-            description: string;
-        };
-    };
-}
-
-interface TaskEnd {
-    type: 'task_end';
-    data: {
-        task: TaskDescriptor;
-        message: string;
-        result: 'success' | 'failure';
-    };
+interface Config {
+    current_sdk_install: null;
+    install_dir: string;
+    toolchain_index_url_override: null;
 }

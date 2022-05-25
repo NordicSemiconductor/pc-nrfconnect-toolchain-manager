@@ -6,7 +6,14 @@
 
 import { AnyAction } from 'redux';
 
-import type { Environment } from '../../state';
+import type { Environment, TaskEvent } from '../../state';
+
+const NEW_TASK_EVENT = 'NEW_TASK_EVENT';
+export const newTaskEvent = (version: string, taskEvent: TaskEvent) => ({
+    type: NEW_TASK_EVENT,
+    version,
+    taskEvent,
+});
 
 const START_INSTALL_TOOLCHAIN = 'START_INSTALL_TOOLCHAIN';
 export const startInstallToolchain = (version: string) => ({
@@ -67,44 +74,59 @@ export const removeEnvironmentReducer = (version: string) => ({
     version,
 });
 
-export default (state: Environment, { type, ...action }: AnyAction) => {
+export default (environment: Environment, { type, ...action }: AnyAction) => {
     switch (type) {
+        case NEW_TASK_EVENT:
+            if (environment.type === 'nrfUtil') {
+                const { id } = action.taskEvent.data.task;
+                const currentTaskEvents = environment.tasks[id] ?? [];
+                const taskEvents = [...currentTaskEvents, action.taskEvent];
+
+                return {
+                    ...environment,
+                    tasks: {
+                        ...environment.tasks,
+                        [id]: taskEvents,
+                    },
+                };
+            }
+            return environment;
         case START_INSTALL_TOOLCHAIN:
             return {
-                ...state,
+                ...environment,
                 isInstallingToolchain: true,
             };
         case FINISH_INSTALL_TOOLCHAIN:
             return {
-                ...state,
+                ...environment,
                 stage: null,
                 isInstallingToolchain: false,
                 toolchainDir: action.toolchainDir,
                 isInstalled: true,
             };
         case START_CLONING_SDK:
-            return { ...state, isCloningSdk: true };
+            return { ...environment, isCloningSdk: true };
         case FINISH_CLONING_SDK:
             return {
-                ...state,
+                ...environment,
                 isCloningSdk: false,
                 isWestPresent: action.isWestPresent,
             };
         case START_REMOVING:
             return {
-                ...state,
+                ...environment,
                 stage: 'Removing...',
                 isRemoving: true,
                 progress: 100,
             };
         case FINISH_REMOVING:
-            return { ...state, stage: null, isRemoving: false };
+            return { ...environment, stage: null, isRemoving: false };
         case SET_PROGRESS:
-            return { ...state, ...action };
+            return { ...environment, ...action };
         case REMOVE_ENVIRONMENT:
-            return { ...state, isInstalled: false, isWestPresent: false };
+            return { ...environment, isInstalled: false, isWestPresent: false };
         default:
-            return state;
+            return environment;
     }
 };
 
@@ -127,9 +149,27 @@ export const toolchainDir = (env: Environment) => env.toolchainDir;
 
 export const progress = (env: Environment) => env.progress;
 
-export const progressLabel = (env: Environment) =>
-    isInProgress(env) && env.progress !== undefined
-        ? `${env.stage || ''}${
-              env.progress % 100 !== 0 ? ` ${env.progress}%` : ''
-          }`
-        : '';
+export const progressLabel = (env: Environment) => {
+    if (env.type === 'legacy') {
+        return isInProgress(env) && env.progress !== undefined
+            ? `${env.stage || ''}${
+                  env.progress % 100 !== 0 ? ` ${env.progress}%` : ''
+              }`
+            : '';
+    }
+
+    if (env.type === 'nrfUtil') {
+        return Object.values(env.tasks)
+            .map(taskEvents => describeTask(taskEvents))
+            .join(', ');
+    }
+};
+
+function describeTask(taskEvents: TaskEvent[]): string {
+    const { task } = taskEvents[0].data;
+    const lastTask = taskEvents.slice(-1)[0];
+    if (lastTask.type === 'task_end') {
+        return `${task.description} ${lastTask.data.message}`;
+    }
+    return task.description;
+}

@@ -29,6 +29,8 @@ export type NrfUtilEnvironment = {
     toolchains: Toolchain[];
     toolchainDir: string;
 
+    tasks: { [key: string]: TaskEvent[] };
+
     isInstalled?: boolean;
     isWestPresent?: boolean;
     isInstallingToolchain?: boolean;
@@ -76,3 +78,37 @@ export type AppState = {
 
 export type RootState = NrfConnectState<AppState>;
 export type Dispatch = ThunkDispatch<RootState, null, AnyAction>;
+
+export type TaskEvent = TaskBegin | TaskProgress | TaskEnd;
+
+interface TaskDescriptor {
+    id: string;
+    description: string;
+}
+
+interface TaskBegin {
+    type: 'task_begin';
+    data: {
+        task: TaskDescriptor;
+    };
+}
+
+interface TaskProgress {
+    type: 'task_progress';
+    data: {
+        task: TaskDescriptor;
+        progress: {
+            progressPercentage: number;
+            description: string;
+        };
+    };
+}
+
+interface TaskEnd {
+    type: 'task_end';
+    data: {
+        task: TaskDescriptor;
+        message: string;
+        result: 'success' | 'failure';
+    };
+}

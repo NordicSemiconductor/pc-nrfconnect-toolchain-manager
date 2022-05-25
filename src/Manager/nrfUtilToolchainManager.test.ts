@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { handleChunk, Task } from './nrfUtilToolchainManager';
+import { TaskEvent } from '../state';
+import { handleChunk } from './nrfUtilToolchainManager';
 
 jest.mock('pc-nrfconnect-shared', () => ({
     ...jest.requireActual('pc-nrfconnect-shared'),
@@ -14,7 +15,7 @@ jest.mock('pc-nrfconnect-shared', () => ({
 describe('nrfutil toolchain manager tests', () => {
     it('parse chunks into messages', () => {
         const handleChunks = (chunks: string[]) => {
-            const messages: Task[] = [];
+            const messages: TaskEvent[] = [];
             const handler = handleChunk(message => messages.push(message));
             chunks.forEach(chunk => handler(Buffer.from(chunk, 'utf-8')));
             return messages;

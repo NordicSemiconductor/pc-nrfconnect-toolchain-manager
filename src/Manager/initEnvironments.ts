@@ -25,6 +25,7 @@ import {
     clearEnvironments,
 } from './managerSlice';
 import {
+    getNrfUtilConfig,
     listSdks,
     logNrfUtilTMVersion,
     searchSdks,
@@ -73,6 +74,7 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
 
 const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
     try {
+        const config = getNrfUtilConfig();
         const sdks = listSdks();
         const installedEnvironments = sdks.filter(environment =>
             gt(environment.version, 'v1.9.99')
@@ -90,7 +92,8 @@ const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
                 dispatch(
                     addEnvironment({
                         type: 'nrfUtil',
-                        toolchainDir: '',
+                        tasks: {},
+                        toolchainDir: config.install_dir,
                         ...environment,
                     })
                 );

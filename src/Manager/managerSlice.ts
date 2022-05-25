@@ -121,6 +121,7 @@ const managerSlice = createSlice({
             const environment: Environment = {
                 ...action.payload,
                 toolchains: [],
+                tasks: {},
             };
             state.environments = append(state.environments, environment);
         },
