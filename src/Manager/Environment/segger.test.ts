@@ -64,7 +64,7 @@ expect.extend({
     },
 });
 
-const expectNrfSettingAreCorrect = xml => {
+const expectNrfSettingAreCorrect = (xml: string) => {
     if (process.platform === 'win32') {
         expect(xml).toContainNode(
             'settings setting[name="Nordic/ToolchainDir"]',
@@ -93,7 +93,7 @@ const expectNrfSettingAreCorrect = xml => {
     );
 };
 
-const expectFirstTimeSettingAreCorrect = xml => {
+const expectFirstTimeSettingAreCorrect = (xml: string) => {
     expectNrfSettingAreCorrect(xml);
     expect(xml).toContainNode(
         'settings setting[name="Environment/User Settings"]',
@@ -101,7 +101,7 @@ const expectFirstTimeSettingAreCorrect = xml => {
     );
 };
 
-const expectExistingUserSettingsAreRetained = xml => {
+const expectExistingUserSettingsAreRetained = (xml: string) => {
     expectNrfSettingAreCorrect(xml);
     expect(xml).toContainNode(
         'settings setting[name="Environment/User Settings"]',
@@ -140,7 +140,7 @@ describe('update segger settings', () => {
     });
 
     it('creates the xml', () => {
-        const createdSettings = updateSettingsXml(null, testPath);
+        const createdSettings = updateSettingsXml('', testPath);
 
         expectFirstTimeSettingAreCorrect(createdSettings);
     });

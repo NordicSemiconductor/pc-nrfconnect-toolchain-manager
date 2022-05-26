@@ -5,6 +5,6 @@
  */
 
 export default jest.fn(() => ({
-    get: (_, defaultValue) => defaultValue,
+    get: (_: unknown, defaultValue: unknown) => defaultValue,
     set: () => undefined,
 }));
