@@ -24,7 +24,7 @@ import {
 } from '../../../VsCodeDialog/vscodeSlice';
 import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
 import { installSdk } from '../../nrfUtilToolchainManager';
-import { newTaskEvent } from '../environmentReducer';
+import { addTaskEvent } from '../environmentReducer';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { installToolchain } from './installToolchain';
@@ -79,7 +79,7 @@ export const install =
 
 const installNrfUtil = async (version: string, dispatch: Dispatch) => {
     await installSdk(version, update => {
-        dispatch(newTaskEvent(version, update));
+        dispatch(addTaskEvent({ version, payload: update }));
     });
 };
 

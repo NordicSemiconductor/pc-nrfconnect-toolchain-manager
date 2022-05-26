@@ -4,16 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AnyAction } from 'redux';
 
-import type { Environment, TaskEvent } from '../../state';
-
-const NEW_TASK_EVENT = 'NEW_TASK_EVENT';
-export const newTaskEvent = (version: string, taskEvent: TaskEvent) => ({
-    type: NEW_TASK_EVENT,
-    version,
-    taskEvent,
-});
+import type { Environment, NrfUtilEnvironment, TaskEvent } from '../../state';
 
 const START_INSTALL_TOOLCHAIN = 'START_INSTALL_TOOLCHAIN';
 export const startInstallToolchain = (version: string) => ({
@@ -74,23 +68,28 @@ export const removeEnvironmentReducer = (version: string) => ({
     version,
 });
 
+type VersionPayload<T> = PayloadAction<{ payload: T } & { version: string }>;
+
+const nrfUtilEnvironmentSlice = createSlice({
+    initialState: <NrfUtilEnvironment>{},
+    name: 'nrfUtilEnvironments',
+    reducers: {
+        addTaskEvent: (state, action: VersionPayload<TaskEvent>) => {
+            const { id } = action.payload.payload.data.task;
+            const currentTaskEvents = state.tasks[id] ?? [];
+            const taskEvents = [...currentTaskEvents, action.payload.payload];
+            state.tasks[id] = taskEvents;
+        },
+    },
+});
+
+export const {
+    reducer,
+    actions: { addTaskEvent },
+} = nrfUtilEnvironmentSlice;
+
 export default (environment: Environment, { type, ...action }: AnyAction) => {
     switch (type) {
-        case NEW_TASK_EVENT:
-            if (environment.type === 'nrfUtil') {
-                const { id } = action.taskEvent.data.task;
-                const currentTaskEvents = environment.tasks[id] ?? [];
-                const taskEvents = [...currentTaskEvents, action.taskEvent];
-
-                return {
-                    ...environment,
-                    tasks: {
-                        ...environment.tasks,
-                        [id]: taskEvents,
-                    },
-                };
-            }
-            return environment;
         case START_INSTALL_TOOLCHAIN:
             return {
                 ...environment,

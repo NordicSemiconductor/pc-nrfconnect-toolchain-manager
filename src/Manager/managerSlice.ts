@@ -17,6 +17,7 @@ import type {
 import environmentReducer, {
     canBeDownloaded,
     isInProgress,
+    reducer as nrfUtilReducer,
     REMOVE_ENVIRONMENT,
     removeEnvironmentReducer,
 } from './Environment/environmentReducer';
@@ -48,18 +49,23 @@ const remove = (environments: Environments, version: string) => {
 };
 
 const maybeCallEnvironmentReducer = (state: Manager, action: AnyAction) => {
-    if (action.version == null || state.environments[action.version] == null) {
+    const version = action.version ?? action.payload?.version;
+    const environment = state.environments[version];
+
+    if (!environment) {
         return state;
     }
+
+    const target = // legacy or nrfutil-reducer for environment
+        environment.type === 'nrfUtil'
+            ? nrfUtilReducer(environment, action)
+            : environmentReducer(environment, action);
 
     return {
         ...state,
         environments: {
             ...state.environments,
-            [action.version]: environmentReducer(
-                state.environments[action.version],
-                action
-            ),
+            [version]: target,
         },
     };
 };
