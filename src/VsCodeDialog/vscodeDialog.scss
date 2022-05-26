@@ -4,15 +4,34 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-.extension-state-icon {
-    vertical-align: sub;
-    margin-right: 6px;
-}
+@import '~pc-nrfconnect-shared/styles';
 
 .vscode-dialog-entry {
     display: flex;
+    flex-direction: row;
     align-items: center;
     margin-bottom: 4px;
+
+    .mdi {
+        margin-right: 6px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 18px;
+        font-size: 18px;
+    }
+
+    .extension-not-installed {
+        color: $gray-100;
+    }
+
+    .extension-installed {
+        color: $primary;
+    }
+
+    .mdi-alert {
+        color: $brand-danger;
+    }
 }
 
 .vscode-dialog-list {
