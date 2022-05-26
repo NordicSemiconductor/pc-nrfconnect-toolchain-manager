@@ -16,6 +16,7 @@
     "files": [
         "dist/",
         "resources/icon.*",
+        "resources/nrfutil-toolchain-manager",
         "LICENSE"
     ],
     "scripts": {
