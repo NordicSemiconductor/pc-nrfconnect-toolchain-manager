@@ -10,7 +10,6 @@ import { useDispatch } from 'react-redux';
 import { Environment } from '../../state';
 import { selectEnvironment, showFirstSteps } from '../managerSlice';
 import Button from './Button';
-import environmentPropType from './environmentPropType';
 import { isOnlyAvailable, version } from './environmentReducer';
 
 type Props = { environment: Environment };
@@ -31,7 +30,5 @@ const ShowFirstSteps = ({ environment }: Props) => {
         />
     );
 };
-
-ShowFirstSteps.propTypes = { environment: environmentPropType.isRequired };
 
 export default ShowFirstSteps;

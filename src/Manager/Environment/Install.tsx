@@ -11,7 +11,6 @@ import { showConfirmInstallDirDialog } from '../../InstallDir/installDirSlice';
 import { Environment } from '../../state';
 import Button from './Button';
 import { install } from './effects/installEnvironment';
-import environmentPropType from './environmentPropType';
 import { isOnlyAvailable, version } from './environmentReducer';
 
 type Props = { environment: Environment };
@@ -43,7 +42,5 @@ const Install = ({ environment }: Props) => {
         />
     );
 };
-
-Install.propTypes = { environment: environmentPropType.isRequired };
 
 export default Install;

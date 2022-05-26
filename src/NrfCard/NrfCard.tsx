@@ -6,7 +6,6 @@
 
 import React, { FC } from 'react';
 import Card from 'react-bootstrap/Card';
-import { arrayOf, node } from 'prop-types';
 
 import './nrfCard.scss';
 
@@ -15,9 +14,5 @@ const NrfCard: FC = ({ children }) => (
         {children}
     </Card>
 );
-
-NrfCard.propTypes = {
-    children: arrayOf(node).isRequired,
-};
 
 export default NrfCard;

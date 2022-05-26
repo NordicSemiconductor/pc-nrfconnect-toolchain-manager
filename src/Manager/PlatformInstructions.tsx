@@ -7,7 +7,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import { execSync } from 'child_process';
-import { string } from 'prop-types';
 
 const isLinux = process.platform === 'linux';
 
@@ -22,10 +21,6 @@ const OnlineDocs: FC<{ label: string }> = ({ label }) => (
         {label}
     </a>
 );
-
-OnlineDocs.propTypes = {
-    label: string.isRequired,
-};
 
 export default () => {
     if (!isLinux) return null;

@@ -20,7 +20,6 @@ import EventAction from '../../usageDataActions';
 import { showConfirmRemoveDialog } from '../managerSlice';
 import { cloneNcs } from './effects/cloneNcs';
 import { install } from './effects/installEnvironment';
-import environmentPropType from './environmentPropType';
 import {
     isInstalled,
     toolchainDir as getToolchainDir,
@@ -190,6 +189,5 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
         </DropdownButton>
     );
 };
-EnvironmentMenu.propTypes = { environment: environmentPropType.isRequired };
 
 export default EnvironmentMenu;

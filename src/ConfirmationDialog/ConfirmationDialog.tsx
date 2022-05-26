@@ -7,7 +7,17 @@
 import React, { FC } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { bool, func, string } from 'prop-types';
+
+type Props = {
+    title: string;
+    isVisible: boolean;
+    onCancel?: () => void;
+    onConfirm: () => void;
+    onOptional?: () => void;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    optionalLabel?: string;
+};
 
 const ConfirmationDialog: FC<Props> = ({
     title,
@@ -42,27 +52,5 @@ const ConfirmationDialog: FC<Props> = ({
         </Modal.Footer>
     </Modal>
 );
-
-type Props = {
-    title: string;
-    isVisible: boolean;
-    onCancel?: () => void;
-    onConfirm: () => void;
-    onOptional?: () => void;
-    confirmLabel?: string;
-    cancelLabel?: string;
-    optionalLabel?: string;
-};
-
-ConfirmationDialog.propTypes = {
-    title: string.isRequired,
-    isVisible: bool.isRequired,
-    onConfirm: func.isRequired,
-    onCancel: func,
-    onOptional: func,
-    confirmLabel: string,
-    cancelLabel: string,
-    optionalLabel: string,
-};
 
 export default ConfirmationDialog;

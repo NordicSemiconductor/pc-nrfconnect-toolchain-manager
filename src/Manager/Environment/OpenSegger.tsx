@@ -8,7 +8,6 @@ import React from 'react';
 
 import { Environment } from '../../state';
 import Button from './Button';
-import environmentPropType from './environmentPropType';
 import { isInProgress } from './environmentReducer';
 import { openSegger } from './segger';
 
@@ -30,7 +29,5 @@ const OpenSegger = ({ environment }: Props) => {
 
     return null;
 };
-
-OpenSegger.propTypes = { environment: environmentPropType.isRequired };
 
 export default OpenSegger;

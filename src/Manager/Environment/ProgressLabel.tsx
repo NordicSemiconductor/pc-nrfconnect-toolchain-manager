@@ -8,7 +8,6 @@ import React from 'react';
 import Row from 'react-bootstrap/Row';
 
 import { Environment } from '../../state';
-import environmentPropType from './environmentPropType';
 import { progressLabel } from './environmentReducer';
 
 type Props = { environment: Environment };
@@ -17,7 +16,5 @@ const ProgressLabel = ({ environment }: Props) => (
         {progressLabel(environment)}
     </Row>
 );
-
-ProgressLabel.propTypes = { environment: environmentPropType.isRequired };
 
 export default ProgressLabel;

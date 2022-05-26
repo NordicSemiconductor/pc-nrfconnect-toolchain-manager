@@ -11,7 +11,6 @@ import { Environment } from '../../state';
 import { TDispatch } from '../../thunk';
 import { checkOpenVsCodeWithDelay } from '../../VsCodeDialog/vscode';
 import Button from './Button';
-import environmentPropType from './environmentPropType';
 import { isInProgress, isInstalled } from './environmentReducer';
 
 export const OpenVsCode = ({ environment }: { environment: Environment }) => {
@@ -31,7 +30,5 @@ export const OpenVsCode = ({ environment }: { environment: Environment }) => {
         />
     );
 };
-
-OpenVsCode.propTypes = { environment: environmentPropType.isRequired };
 
 export default OpenVsCode;
