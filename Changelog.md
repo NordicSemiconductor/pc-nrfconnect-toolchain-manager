@@ -1,3 +1,9 @@
+## Unreleased
+
+### Fixed
+
+-   Icons for the status of VS Code Extensions were not displayed.
+
 ## 0.10.3 - 2022-01-19
 
 ### Fixed

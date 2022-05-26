@@ -10,9 +10,6 @@ import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { Spinner } from 'pc-nrfconnect-shared';
 
-import extensionFailed from '../../resources/extension-failed.svg';
-import extensionInstalled from '../../resources/extension-installed.svg';
-import extensionNotInstalled from '../../resources/extension-not-installed.svg';
 import Button from '../Manager/Environment/Button';
 import { isInProgress } from '../Manager/Environment/environmentReducer';
 import { isAnyToolchainInProgress } from '../Manager/managerSlice';
@@ -286,40 +283,39 @@ const MissingExtensionsSkipButton = ({
     );
 };
 
-const ExtensionStateIcon = ({ state }: { state: VsCodeExtensionState }) => {
-    let src;
-    let alt;
-
+const ExtensionStateIcon = (state: VsCodeExtensionState) => {
     switch (state) {
         case VsCodeExtensionState.NOT_INSTALLED:
-            src = extensionNotInstalled;
-            alt = 'Not installed';
-            break;
+            return (
+                <span
+                    className="mdi mdi-check-circle extension-not-installed"
+                    data-testid="extension-not-installed"
+                />
+            );
         case VsCodeExtensionState.FAILED:
-            src = extensionFailed;
-            alt = 'Failed to install';
-            break;
+            return (
+                <span
+                    className="mdi mdi-alert"
+                    data-testid="extension-failed"
+                />
+            );
+
         case VsCodeExtensionState.INSTALLED:
-            src = extensionInstalled;
-            alt = 'Installed';
-            break;
+            return (
+                <span
+                    className="mdi mdi-check-circle extension-installed"
+                    data-testid="extension-installed"
+                />
+            );
+
         case VsCodeExtensionState.INSTALLING:
             return <Spinner />;
     }
-    return (
-        <img
-            src={src}
-            alt={alt}
-            height="18px"
-            width="18px"
-            className="extension-state-icon"
-        />
-    );
 };
 
 const ExtensionItem = ({ extension }: { extension: VsCodeExtension }) => (
     <div className="vscode-dialog-entry">
-        <ExtensionStateIcon state={extension.state} />{' '}
+        {ExtensionStateIcon(extension.state)}
         {`${extension.name} (${extension.identifier})`}
     </div>
 );
