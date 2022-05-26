@@ -5,39 +5,34 @@
  */
 
 import { spawn, spawnSync } from 'child_process';
+import { existsSync } from 'fs';
 import path from 'path';
-import { getAppDir, logger } from 'pc-nrfconnect-shared';
+import { getAppFile, logger } from 'pc-nrfconnect-shared';
 
 import { TaskEvent, Toolchain } from '../state';
 
-const executablePath = (() => {
-    switch (process.platform) {
-        case 'win32':
-            return path.resolve(
-                getAppDir(),
-                'resources',
-                'nrfutil-toolchain-manager.exe'
-            );
-        case 'darwin':
-            return path.resolve(
-                getAppDir(),
-                'resources',
-                'nrfutil-toolchain-manager.exe'
-            );
-        case 'linux':
-            return path.resolve(
-                getAppDir(),
-                'resources',
-                'nrfutil-toolchain-manager'
-            );
-        default:
-            logger.error(`Unsupported platform detected: ${process.platform}`);
-            throw new Error();
+const nrfutilToolchainManager = () => {
+    const executable = getAppFile(
+        path.join(
+            'resources',
+            'nrfutil-toolchain-manager',
+            process.platform,
+            'nrfutil-toolchain-manager.exe'
+        )
+    );
+
+    if (executable == null || !existsSync(executable)) {
+        const message = `No executable '${executable}' found.`;
+
+        logger.error(message);
+        throw new Error(message);
     }
-})();
+
+    return executable;
+};
 
 export const getNrfUtilConfig = () => {
-    const tcm = spawnSync(executablePath, ['--json', 'config'], {
+    const tcm = spawnSync(nrfutilToolchainManager(), ['--json', 'config'], {
         encoding: 'utf8',
     });
     const { data } = JSON.parse(tcm.stdout);
@@ -46,7 +41,7 @@ export const getNrfUtilConfig = () => {
 };
 
 export const listSdks = () => {
-    const tcm = spawnSync(executablePath, ['--json', 'list'], {
+    const tcm = spawnSync(nrfutilToolchainManager(), ['--json', 'list'], {
         encoding: 'utf8',
     });
     const { data } = JSON.parse(tcm.stdout);
@@ -54,7 +49,7 @@ export const listSdks = () => {
 };
 
 export const searchSdks = () => {
-    const tcm = spawnSync(executablePath, ['--json', 'search'], {
+    const tcm = spawnSync(nrfutilToolchainManager(), ['--json', 'search'], {
         encoding: 'utf8',
     });
     const { data } = JSON.parse(tcm.stdout);
@@ -62,7 +57,7 @@ export const searchSdks = () => {
 };
 
 export const logNrfUtilTMVersion = () => {
-    const tcm = spawnSync(executablePath, ['--json', '--version'], {
+    const tcm = spawnSync(nrfutilToolchainManager(), ['--json', '--version'], {
         encoding: 'utf8',
     });
 
@@ -91,7 +86,11 @@ export const installSdk = (
     onUpdate: (update: TaskEvent) => void
 ) =>
     new Promise(resolve => {
-        const tcm = spawn(executablePath, ['--json', 'install', version]);
+        const tcm = spawn(nrfutilToolchainManager(), [
+            '--json',
+            'install',
+            version,
+        ]);
 
         tcm.stdout.on('data', handleChunk(onUpdate));
 
