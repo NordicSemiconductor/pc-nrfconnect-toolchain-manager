@@ -287,14 +287,25 @@ const ExtensionStateIcon = (state: VsCodeExtensionState) => {
     switch (state) {
         case VsCodeExtensionState.NOT_INSTALLED:
             return (
-                <span className="mdi mdi-check-circle extension-not-installed" />
+                <span
+                    className="mdi mdi-check-circle extension-not-installed"
+                    data-testid="extension-not-installed"
+                />
             );
         case VsCodeExtensionState.FAILED:
-            return <span className="mdi mdi-alert" />;
+            return (
+                <span
+                    className="mdi mdi-alert"
+                    data-testid="extension-failed"
+                />
+            );
 
         case VsCodeExtensionState.INSTALLED:
             return (
-                <span className="mdi mdi-check-circle extension-installed" />
+                <span
+                    className="mdi mdi-check-circle extension-installed"
+                    data-testid="extension-installed"
+                />
             );
 
         case VsCodeExtensionState.INSTALLING:
