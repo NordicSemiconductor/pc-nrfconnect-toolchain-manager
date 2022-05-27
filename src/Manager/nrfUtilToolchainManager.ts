@@ -40,20 +40,20 @@ export const getNrfUtilConfig = () => {
     return data as Config;
 };
 
-export const listSdks = () => {
+export const listToolchains = () => {
     const tcm = spawnSync(nrfutilToolchainManager(), ['--json', 'list'], {
         encoding: 'utf8',
     });
     const { data } = JSON.parse(tcm.stdout);
-    return data.sdks as SDK[];
+    return data.toolchains as InstalledToolchain[];
 };
 
-export const searchSdks = () => {
+export const searchToolchains = () => {
     const tcm = spawnSync(nrfutilToolchainManager(), ['--json', 'search'], {
         encoding: 'utf8',
     });
     const { data } = JSON.parse(tcm.stdout);
-    return data.sdks as SearchResultSDK[];
+    return data.sdks as ToolchainSearch[];
 };
 
 export const logNrfUtilTMVersion = () => {
@@ -143,15 +143,12 @@ export const westUpdate = (
         tcm.on('close', resolve);
     });
 
-interface SDK {
+interface InstalledToolchain {
     path: string;
-    toolchain: {
-        path: string;
-    };
-    version: string;
+    ncs_version: string;
 }
 
-interface SearchResultSDK {
+interface ToolchainSearch {
     toolchains: Toolchain[];
     version: string;
 }

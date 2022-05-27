@@ -25,9 +25,9 @@ import {
     clearEnvironments,
 } from './managerSlice';
 import {
-    listSdks,
+    listToolchains,
     logNrfUtilTMVersion,
-    searchSdks,
+    searchToolchains,
 } from './nrfUtilToolchainManager';
 
 const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
@@ -73,17 +73,17 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
 
 const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
     try {
-        const installed = listSdks()
-            .filter(environment => !isLegacyEnvironment(environment.version))
-            .map<NrfUtilEnvironment>(env => ({
-                ...env,
+        const installed = listToolchains()
+            .filter(toolchain => !isLegacyEnvironment(toolchain.ncs_version))
+            .map<NrfUtilEnvironment>(toolchain => ({
+                version: toolchain.ncs_version,
                 tasks: {},
-                toolchainDir: env.toolchain.path,
+                toolchainDir: toolchain.path,
                 toolchains: [],
                 type: 'nrfUtil',
                 isInstalled: true,
             }));
-        const other = searchSdks()
+        const other = searchToolchains()
             .filter(environment => !isLegacyEnvironment(environment.version))
             .filter(
                 environment =>
