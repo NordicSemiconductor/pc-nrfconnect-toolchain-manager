@@ -110,7 +110,7 @@ export const handleChunk = (onUpdate: (update: TaskEvent) => void) => {
     };
 };
 
-export const installSdk = (
+export const installToolchain = (
     version: string,
     onUpdate: (update: TaskEvent) => void
 ) =>

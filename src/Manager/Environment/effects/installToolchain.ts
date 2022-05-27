@@ -9,7 +9,7 @@ import { describeError, usageData } from 'pc-nrfconnect-shared';
 
 import showErrorDialog from '../../../launcherActions';
 import { Dispatch, Toolchain } from '../../../state';
-import { installSdk } from '../../nrfUtilToolchainManager';
+import { installToolchain as installNrfutilToolchain } from '../../nrfUtilToolchainManager';
 import {
     addTaskEvent,
     finishInstallToolchain,
@@ -40,7 +40,7 @@ export const installToolchain =
                 usageData.sendErrorReport(message);
             }
         } else {
-            await installSdk(version, update => {
+            await installNrfutilToolchain(version, update => {
                 dispatch(addTaskEvent({ version, payload: update }));
                 switch (update.type) {
                     case 'task_begin':
