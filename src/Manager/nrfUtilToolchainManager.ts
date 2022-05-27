@@ -32,9 +32,12 @@ const nrfutilToolchainManager = () => {
 };
 
 interface Config {
-    current_sdk_install: null;
+    current_toolchain: null | {
+        data: string;
+        type: string;
+    };
     install_dir: string;
-    toolchain_index_url_override: null;
+    toolchain_index_url_override: null | string;
 }
 
 export const getNrfUtilConfig = () => {
