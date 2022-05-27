@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AnyAction } from 'redux';
 
-import type { Environment, NrfUtilEnvironment, TaskEvent } from '../../state';
+import type { Environment, TaskEvent } from '../../state';
 
 const START_INSTALL_TOOLCHAIN = 'START_INSTALL_TOOLCHAIN';
 export const startInstallToolchain = (version: string) => ({
@@ -67,26 +66,6 @@ export const removeEnvironmentReducer = (version: string) => ({
     type: REMOVE_ENVIRONMENT,
     version,
 });
-
-type VersionPayload<T> = PayloadAction<{ payload: T } & { version: string }>;
-
-const nrfUtilEnvironmentSlice = createSlice({
-    initialState: <NrfUtilEnvironment>{},
-    name: 'nrfUtilEnvironments',
-    reducers: {
-        addTaskEvent: (state, action: VersionPayload<TaskEvent>) => {
-            const { id } = action.payload.payload.data.task;
-            const currentTaskEvents = state.tasks[id] ?? [];
-            const taskEvents = [...currentTaskEvents, action.payload.payload];
-            state.tasks[id] = taskEvents;
-        },
-    },
-});
-
-export const {
-    reducer,
-    actions: { addTaskEvent },
-} = nrfUtilEnvironmentSlice;
 
 export default (environment: Environment, { type, ...action }: AnyAction) => {
     switch (type) {

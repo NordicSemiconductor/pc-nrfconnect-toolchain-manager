@@ -17,10 +17,10 @@ import type {
 import environmentReducer, {
     canBeDownloaded,
     isInProgress,
-    reducer as nrfUtilReducer,
     REMOVE_ENVIRONMENT,
     removeEnvironmentReducer,
 } from './Environment/environmentReducer';
+import { reducer as nrfUtilReducer } from './Environment/nrfUtilEnvironmentSlice';
 import { sortedByVersion } from './versionFilter';
 
 const append = (environments: Environments, environment: Environment) => ({

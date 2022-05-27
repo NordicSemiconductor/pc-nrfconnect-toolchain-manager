@@ -89,6 +89,8 @@ export const installSdk = (
         const tcm = spawn(nrfutilToolchainManager(), [
             '--json',
             'install',
+            '--toolchain-index',
+            'http://localhost:8080/index-win10.json',
             version,
         ]);
 
