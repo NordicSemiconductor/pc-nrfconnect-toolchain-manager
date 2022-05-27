@@ -126,6 +126,23 @@ export const installSdk = (
         tcm.on('close', resolve);
     });
 
+const noop = () => {};
+export const removeToolchain = (
+    version: string,
+    onUpdate: (update: TaskEvent) => void = noop
+) =>
+    new Promise(resolve => {
+        const tcm = spawn(nrfutilToolchainManager(), [
+            '--json',
+            'remove',
+            version,
+        ]);
+
+        tcm.stdout.on('data', handleChunk(onUpdate));
+
+        tcm.on('close', resolve);
+    });
+
 export const sdkPath = (version: string) =>
     path.resolve(getNrfUtilConfig().install_dir, version);
 

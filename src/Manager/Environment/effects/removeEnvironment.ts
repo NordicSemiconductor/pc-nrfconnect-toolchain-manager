@@ -9,7 +9,7 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
-import { sdkPath } from '../../nrfUtilToolchainManager';
+import { removeToolchain, sdkPath } from '../../nrfUtilToolchainManager';
 import {
     finishRemoving,
     isLegacyEnvironment,
@@ -17,6 +17,15 @@ import {
     startRemoving,
 } from '../environmentReducer';
 import { removeDir } from './removeDir';
+
+const removeLegacyEnvironment = (dispatch: Dispatch, toolchainDir: string) =>
+    dispatch(removeDir(path.dirname(toolchainDir)));
+
+const removeNrfutilEnvironment = (dispatch: Dispatch, version: string) =>
+    Promise.all([
+        removeToolchain(version),
+        dispatch(removeDir(sdkPath(version))),
+    ]);
 
 export const removeEnvironment =
     (environment: Environment) => async (dispatch: Dispatch) => {
@@ -26,14 +35,14 @@ export const removeEnvironment =
 
         dispatch(startRemoving(version));
 
-        if (!isLegacyEnvironment(version)) {
-            await dispatch(removeDir(path.dirname(sdkPath(version))));
+        if (isLegacyEnvironment(version)) {
+            await removeLegacyEnvironment(dispatch, toolchainDir);
+        } else {
+            await removeNrfutilEnvironment(dispatch, version);
         }
 
-        if (await dispatch(removeDir(path.dirname(toolchainDir ?? '')))) {
-            logger.info(`Finished removing ${version} at ${toolchainDir}`);
-            dispatch(removeEnvironmentReducer(version));
-        }
+        logger.info(`Finished removing ${version} at ${toolchainDir}`);
+        dispatch(removeEnvironmentReducer(version));
 
         dispatch(finishRemoving(version));
     };
