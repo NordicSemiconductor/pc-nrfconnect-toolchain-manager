@@ -15,7 +15,7 @@ import { gt } from 'semver';
 import showErrorDialog from '../../../launcherActions';
 import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';
-import { westInit, westUpdate } from '../../nrfUtilToolchainManager';
+import { sdkPath, westInit, westUpdate } from '../../nrfUtilToolchainManager';
 import {
     finishCloningSdk,
     isLegacyEnvironment,
@@ -162,15 +162,14 @@ async function nrfUtilCloneNcs(
 
     try {
         if (!justUpdate) {
-            await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
+            await fse.remove(path.resolve(sdkPath(version), '.west'));
+            dispatch(setProgress(version, 'Initializing environment...'));
+            logger.info(`Initializing environment for ${version}`);
+            await westInit(version);
         }
-        setProgress(version, `Initializing west...`);
-        await westInit();
-
-        dispatch(setProgress(version, 'Initializing environment...'));
-        logger.info(`Initializing environment for ${version}`);
 
         await westUpdate(
+            version,
             update => {
                 const repo = (
                     /=== updating (\w+)/.exec(update.toString()) || []

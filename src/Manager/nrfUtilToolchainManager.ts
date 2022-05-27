@@ -5,7 +5,7 @@
  */
 
 import { spawn, spawnSync } from 'child_process';
-import { existsSync } from 'fs';
+import { existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import { getAppFile, logger } from 'pc-nrfconnect-shared';
 
@@ -97,20 +97,33 @@ export const installSdk = (
         tcm.on('close', resolve);
     });
 
-export const westInit = () =>
+export const sdkPath = (version: string) =>
+    path.resolve(getNrfUtilConfig().install_dir, version);
+
+export const westInit = (version: string) =>
     new Promise(resolve => {
+        mkdirSync(sdkPath(version), {
+            recursive: true,
+        });
+
         const tcm = spawn(nrfutilToolchainManager(), [
             'launch',
             '--chdir',
+            sdkPath(version),
             '--',
             'west',
             'init',
+            '-m',
+            'https://github.com/nrfconnect/sdk-nrf',
+            '--mr',
+            version,
         ]);
 
         tcm.on('close', resolve);
     });
 
 export const westUpdate = (
+    version: string,
     onUpdate: (update: string) => void,
     onError: (error: string) => void
 ) =>
@@ -118,6 +131,7 @@ export const westUpdate = (
         const tcm = spawn(nrfutilToolchainManager(), [
             'launch',
             '--chdir',
+            sdkPath(version),
             '--',
             'west',
             'update',
