@@ -6,7 +6,7 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { NrfUtilEnvironment, TaskEvent } from '../../state';
+import type { NrfUtilEnvironment, TaskEvent } from '../../state';
 
 type VersionPayload<T> = PayloadAction<{ payload: T } & { version: string }>;
 

@@ -24,7 +24,7 @@ import {
 } from '../../../VsCodeDialog/vscodeSlice';
 import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
 import { installSdk } from '../../nrfUtilToolchainManager';
-import { addTaskEvent } from '../environmentReducer';
+import { addTaskEvent } from '../nrfUtilEnvironmentSlice';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { installToolchain } from './installToolchain';

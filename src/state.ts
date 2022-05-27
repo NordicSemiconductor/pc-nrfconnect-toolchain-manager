@@ -8,7 +8,7 @@ import { NrfConnectState } from 'pc-nrfconnect-shared';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 
-import { InstallDirectoryState } from './InstallDir/installDirSlice';
+import type { InstallDirectoryState } from './InstallDir/installDirSlice';
 import { ConfirmDialogState } from './ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { SettingsState } from './Settings/settingsSlice';
 import { ToolChainSourceState as ToolchainSourceState } from './ToolchainSource/toolchainSourceSlice';
