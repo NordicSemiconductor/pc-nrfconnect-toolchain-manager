@@ -37,7 +37,7 @@ export type NrfUtilEnvironment = {
     isCloningSdk?: boolean;
     isRemoving?: boolean;
     progress?: number;
-    stage?: 'Downloading' | 'Installing';
+    stage?: string;
 };
 
 export type LegacyEnvironment = {
@@ -51,7 +51,7 @@ export type LegacyEnvironment = {
     isCloningSdk?: boolean;
     isRemoving?: boolean;
     progress?: number;
-    stage?: 'Downloading' | 'Installing';
+    stage?: string;
 };
 export type Environments = {
     [key: string]: Environment;
