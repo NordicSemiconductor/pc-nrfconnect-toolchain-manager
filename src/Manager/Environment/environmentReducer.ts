@@ -6,6 +6,7 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AnyAction } from 'redux';
+import { lte } from 'semver';
 
 import type { Environment, NrfUtilEnvironment, TaskEvent } from '../../state';
 
@@ -148,27 +149,12 @@ export const toolchainDir = (env: Environment) => env.toolchainDir;
 
 export const progress = (env: Environment) => env.progress;
 
-export const progressLabel = (env: Environment) => {
-    if (env.type === 'legacy') {
-        return isInProgress(env) && env.progress !== undefined
-            ? `${env.stage || ''}${
-                  env.progress % 100 !== 0 ? ` ${env.progress}%` : ''
-              }`
-            : '';
-    }
+export const progressLabel = (env: Environment) =>
+    isInProgress(env) && env.progress !== undefined
+        ? `${env.stage || ''}${
+              env.progress % 100 !== 0 ? ` ${env.progress}%` : ''
+          }`
+        : env.stage;
 
-    if (env.type === 'nrfUtil') {
-        return Object.values(env.tasks)
-            .map(taskEvents => describeTask(taskEvents))
-            .join(', ');
-    }
-};
-
-function describeTask(taskEvents: TaskEvent[]): string {
-    const { task } = taskEvents[0].data;
-    const lastTask = taskEvents.slice(-1)[0];
-    if (lastTask.type === 'task_end') {
-        return `${task.description} ${lastTask.data.message}`;
-    }
-    return task.description;
-}
+export const isLegacyEnvironment = (environmentVersion: string) =>
+    lte(environmentVersion, 'v1.9.99');
