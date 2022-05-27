@@ -11,6 +11,7 @@ import type {
     Environment,
     Environments,
     Manager,
+    NrfUtilEnvironment,
     RootState,
     Toolchain,
 } from '../state';
@@ -56,16 +57,17 @@ const maybeCallEnvironmentReducer = (state: Manager, action: AnyAction) => {
         return state;
     }
 
-    const target = // legacy or nrfutil-reducer for environment
-        environment.type === 'nrfUtil'
-            ? nrfUtilReducer(environment, action)
-            : environmentReducer(environment, action);
+    let env = nrfUtilReducer(
+        environment as NrfUtilEnvironment,
+        action
+    ) as Environment;
+    env = environmentReducer(environment, action) as Environment;
 
     return {
         ...state,
         environments: {
             ...state.environments,
-            [version]: target,
+            [version]: env,
         },
     };
 };
