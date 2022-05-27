@@ -10,7 +10,6 @@ import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
-import { gt } from 'semver';
 
 import showErrorDialog from '../../../launcherActions';
 import { Dispatch } from '../../../state';

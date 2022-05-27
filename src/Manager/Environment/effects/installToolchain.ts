@@ -6,7 +6,6 @@
 
 import fse from 'fs-extra';
 import { describeError, usageData } from 'pc-nrfconnect-shared';
-import { gt } from 'semver';
 
 import showErrorDialog from '../../../launcherActions';
 import { Dispatch, Toolchain } from '../../../state';
