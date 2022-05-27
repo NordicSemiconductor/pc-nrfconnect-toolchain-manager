@@ -11,7 +11,7 @@ import { usageData } from 'pc-nrfconnect-shared';
 import showErrorDialog from '../../../launcherActions';
 import { Dispatch } from '../../../state';
 
-export const removeDir = (srcDir: string) => async (dispatch: Dispatch) => {
+export const removeDir = async (dispatch: Dispatch, srcDir: string) => {
     let renameOfDirSuccessful = false;
     try {
         const toBeDeletedDir = path.resolve(srcDir, '..', 'toBeDeleted');

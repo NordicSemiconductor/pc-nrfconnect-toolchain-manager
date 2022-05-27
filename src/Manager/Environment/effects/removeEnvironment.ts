@@ -19,12 +19,12 @@ import {
 import { removeDir } from './removeDir';
 
 const removeLegacyEnvironment = (dispatch: Dispatch, toolchainDir: string) =>
-    dispatch(removeDir(path.dirname(toolchainDir)));
+    removeDir(dispatch, path.dirname(toolchainDir));
 
 const removeNrfutilEnvironment = (dispatch: Dispatch, version: string) =>
     Promise.all([
         removeToolchain(version),
-        dispatch(removeDir(sdkPath(version))),
+        removeDir(dispatch, sdkPath(version)),
     ]);
 
 export const removeEnvironment =
