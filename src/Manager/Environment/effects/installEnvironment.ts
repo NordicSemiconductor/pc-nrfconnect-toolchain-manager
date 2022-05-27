@@ -11,7 +11,6 @@ import showErrorDialog from '../../../launcherActions';
 import {
     persistedInstallDir as installDir,
     persistedShowVsCodeDialogDuringInstall,
-    setHasInstalledAnNcs,
     setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
 import { Dispatch, Environment, Toolchain } from '../../../state';
@@ -38,10 +37,6 @@ export const install =
         logger.info(`Installing ${toolchain?.name} at ${toolchainDir}`);
         logger.debug(`Install with toolchain version ${toolchain?.version}`);
         logger.debug(`Install with sha512 ${toolchain?.sha512}`);
-
-        dispatch(selectEnvironment(version));
-
-        setHasInstalledAnNcs();
 
         if (persistedShowVsCodeDialogDuringInstall()) {
             dispatch(getVsCodeStatus()).then(status => {

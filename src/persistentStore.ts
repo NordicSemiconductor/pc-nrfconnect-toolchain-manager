@@ -8,9 +8,6 @@ import os from 'os';
 import path from 'path';
 import { getPersistentStore as store } from 'pc-nrfconnect-shared';
 
-export const isFirstInstall = () => store().get('isFirstInstall', true);
-export const setHasInstalledAnNcs = () => store().set('isFirstInstall', false);
-
 const defaultInstallDir =
     {
         win32: path.resolve(os.homedir(), 'ncs'),
