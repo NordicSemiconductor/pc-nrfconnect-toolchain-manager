@@ -53,7 +53,7 @@ export const searchSdks = () => {
         encoding: 'utf8',
     });
     const { data } = JSON.parse(tcm.stdout);
-    return data as SearchResult;
+    return data.sdks as SearchResultSDK[];
 };
 
 export const logNrfUtilTMVersion = () => {
@@ -97,6 +97,38 @@ export const installSdk = (
         tcm.on('close', resolve);
     });
 
+export const westInit = () =>
+    new Promise(resolve => {
+        const tcm = spawn(nrfutilToolchainManager(), [
+            'launch',
+            '--chdir',
+            '--',
+            'west',
+            'init',
+        ]);
+
+        tcm.on('close', resolve);
+    });
+
+export const westUpdate = (
+    onUpdate: (update: string) => void,
+    onError: (error: string) => void
+) =>
+    new Promise(resolve => {
+        const tcm = spawn(nrfutilToolchainManager(), [
+            'launch',
+            '--chdir',
+            '--',
+            'west',
+            'update',
+        ]);
+
+        tcm.stdout.on('data', onUpdate);
+        tcm.stdout.on('error', onError);
+        tcm.stderr.on('data', onError);
+        tcm.on('close', resolve);
+    });
+
 interface SDK {
     path: string;
     toolchain: {
@@ -105,12 +137,9 @@ interface SDK {
     version: string;
 }
 
-interface SearchResult {
-    index_url: string;
-    sdks: {
-        toolchains: Toolchain[];
-        version: string;
-    }[];
+interface SearchResultSDK {
+    toolchains: Toolchain[];
+    version: string;
 }
 
 interface VersionInformation {

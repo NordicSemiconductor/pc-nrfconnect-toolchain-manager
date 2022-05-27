@@ -13,7 +13,7 @@ import {
     persistedShowVsCodeDialogDuringInstall,
     setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
-import { Dispatch, Environment, Toolchain } from '../../../state';
+import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { getVsCodeStatus } from '../../../VsCodeDialog/vscode';
 import {
@@ -21,9 +21,7 @@ import {
     showVsCodeDialog,
     VsCodeStatus,
 } from '../../../VsCodeDialog/vscodeSlice';
-import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
-import { installSdk } from '../../nrfUtilToolchainManager';
-import { addTaskEvent } from '../environmentReducer';
+import { getLatestToolchain } from '../../managerSlice';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { installToolchain } from './installToolchain';
@@ -48,51 +46,21 @@ export const install =
             setPersistedShowVsCodeDialogDuringInstall(false);
         }
 
-        if (type === 'legacy') {
-            usageData.sendUsageData(
-                EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
-                `${version}; ${toolchain?.name}`
-            );
+        usageData.sendUsageData(
+            type === 'legacy'
+                ? EventAction.INSTALL_TOOLCHAIN_FROM_INDEX
+                : EventAction.INSTALL_TOOLCHAIN_FROM_NRFUTIL,
+            `${version}; ${toolchain?.name}`
+        );
 
-            await installLegacy(
-                toolchain,
-                dispatch,
-                toolchainDir,
-                version,
-                justUpdate
-            );
-        }
-
-        if (type === 'nrfUtil') {
-            usageData.sendUsageData(
-                EventAction.INSTALL_TOOLCHAIN_FROM_NRFUTIL,
-                `${version}; ${toolchain?.name}`
-            );
-            await installNrfUtil(version, dispatch);
+        try {
+            if (toolchain === undefined) throw new Error('No toolchain found');
+            await dispatch(ensureCleanTargetDir(toolchainDir));
+            await dispatch(installToolchain(version, toolchain, toolchainDir));
+            await dispatch(cloneNcs(version, toolchainDir, justUpdate));
+        } catch (error) {
+            const message = describeError(error);
+            dispatch(showErrorDialog(`${message}`));
+            usageData.sendErrorReport(`${message}`);
         }
     };
-
-const installNrfUtil = async (version: string, dispatch: Dispatch) => {
-    await installSdk(version, update => {
-        dispatch(addTaskEvent({ version, payload: update }));
-    });
-};
-
-const installLegacy = async (
-    toolchain: Toolchain | undefined,
-    dispatch: Dispatch,
-    toolchainDir: string,
-    version: string,
-    justUpdate: boolean
-) => {
-    try {
-        if (toolchain === undefined) throw new Error('No toolchain found');
-        await dispatch(ensureCleanTargetDir(toolchainDir));
-        await dispatch(installToolchain(version, toolchain, toolchainDir));
-        await dispatch(cloneNcs(version, toolchainDir, justUpdate));
-    } catch (error) {
-        const message = describeError(error);
-        dispatch(showErrorDialog(`${message}`));
-        usageData.sendErrorReport(`${message}`);
-    }
-};
