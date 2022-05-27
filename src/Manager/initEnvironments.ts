@@ -10,22 +10,21 @@ import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
-import { gt } from 'semver';
 
 import {
     persistedInstallDir as installDir,
     toolchainIndexUrl,
 } from '../persistentStore';
-import { Dispatch, LegacyEnvironment } from '../state';
+import { Dispatch, LegacyEnvironment, NrfUtilEnvironment } from '../state';
 import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
+import { isLegacyEnvironment } from './Environment/environmentReducer';
 import {
     addEnvironment,
     addLocallyExistingEnvironment,
     clearEnvironments,
 } from './managerSlice';
 import {
-    getNrfUtilConfig,
     listSdks,
     logNrfUtilTMVersion,
     searchSdks,
@@ -74,33 +73,35 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
 
 const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
     try {
-        const config = getNrfUtilConfig();
-        const sdks = listSdks();
-        const installedEnvironments = sdks.filter(environment =>
-            gt(environment.version, 'v1.9.99')
-        );
-        const search = searchSdks();
-        search.sdks
-            .filter(environment => gt(environment.version, 'v1.9.99'))
-            .map(environment => ({
+        const installed = listSdks()
+            .filter(environment => !isLegacyEnvironment(environment.version))
+            .map<NrfUtilEnvironment>(env => ({
+                ...env,
+                tasks: {},
+                toolchainDir: env.toolchain.path,
+                toolchains: [],
+                type: 'nrfUtil',
+                isInstalled: true,
+            }));
+        const other = searchSdks()
+            .filter(environment => !isLegacyEnvironment(environment.version))
+            .filter(
+                environment =>
+                    !installed.some(env => env.version === environment.version)
+            )
+            .map<NrfUtilEnvironment>(environment => ({
                 ...environment,
-                isInstalled: !!installedEnvironments.find(
-                    e => e.version === environment.version
-                ),
-            }))
-            .forEach(environment => {
-                dispatch(
-                    addEnvironment({
-                        type: 'nrfUtil',
-                        tasks: {},
-                        toolchainDir: config.install_dir,
-                        ...environment,
-                    })
-                );
-                logger.info(
-                    `Toolchain ${environment.version} has been added to the list`
-                );
-            });
+                tasks: {},
+                toolchainDir: '',
+                type: 'nrfUtil',
+                isInstalled: false,
+            }));
+        [...installed, ...other].forEach(environment => {
+            dispatch(addEnvironment(environment));
+            logger.info(
+                `Toolchain ${environment.version} has been added to the list`
+            );
+        });
     } catch (e) {
         logger.error(`Failed to download toolchain index file`);
     }
