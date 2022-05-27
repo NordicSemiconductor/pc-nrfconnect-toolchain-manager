@@ -31,6 +31,12 @@ const nrfutilToolchainManager = () => {
     return executable;
 };
 
+interface Config {
+    current_sdk_install: null;
+    install_dir: string;
+    toolchain_index_url_override: null;
+}
+
 export const getNrfUtilConfig = () => {
     const tcm = spawnSync(nrfutilToolchainManager(), ['--json', 'config'], {
         encoding: 'utf8',
@@ -40,6 +46,11 @@ export const getNrfUtilConfig = () => {
     return data as Config;
 };
 
+interface InstalledToolchain {
+    path: string;
+    ncs_version: string;
+}
+
 export const listToolchains = () => {
     const tcm = spawnSync(nrfutilToolchainManager(), ['--json', 'list'], {
         encoding: 'utf8',
@@ -48,6 +59,11 @@ export const listToolchains = () => {
     return data.toolchains as InstalledToolchain[];
 };
 
+interface ToolchainSearch {
+    toolchains: Toolchain[];
+    version: string;
+}
+
 export const searchToolchains = () => {
     const tcm = spawnSync(nrfutilToolchainManager(), ['--json', 'search'], {
         encoding: 'utf8',
@@ -55,6 +71,16 @@ export const searchToolchains = () => {
     const { data } = JSON.parse(tcm.stdout);
     return data.sdks as ToolchainSearch[];
 };
+
+interface VersionInformation {
+    build_timestamp: string;
+    commit_date: string;
+    commit_hash: string;
+    dependencies: null;
+    host: string;
+    name: string;
+    version: string;
+}
 
 export const logNrfUtilTMVersion = () => {
     const tcm = spawnSync(nrfutilToolchainManager(), ['--json', '--version'], {
@@ -142,29 +168,3 @@ export const westUpdate = (
         tcm.stderr.on('data', onError);
         tcm.on('close', resolve);
     });
-
-interface InstalledToolchain {
-    path: string;
-    ncs_version: string;
-}
-
-interface ToolchainSearch {
-    toolchains: Toolchain[];
-    version: string;
-}
-
-interface VersionInformation {
-    build_timestamp: string;
-    commit_date: string;
-    commit_hash: string;
-    dependencies: null;
-    host: string;
-    name: string;
-    version: string;
-}
-
-interface Config {
-    current_sdk_install: null;
-    install_dir: string;
-    toolchain_index_url_override: null;
-}
