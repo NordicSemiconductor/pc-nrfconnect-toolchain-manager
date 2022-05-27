@@ -9,8 +9,10 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
+import { sdkPath } from '../../nrfUtilToolchainManager';
 import {
     finishRemoving,
+    isLegacyEnvironment,
     removeEnvironmentReducer,
     startRemoving,
 } from '../environmentReducer';
@@ -23,6 +25,10 @@ export const removeEnvironment =
         usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
 
         dispatch(startRemoving(version));
+
+        if (!isLegacyEnvironment(version)) {
+            await dispatch(removeDir(path.dirname(sdkPath(version))));
+        }
 
         if (await dispatch(removeDir(path.dirname(toolchainDir ?? '')))) {
             logger.info(`Finished removing ${version} at ${toolchainDir}`);
