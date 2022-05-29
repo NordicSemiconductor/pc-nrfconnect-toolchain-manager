@@ -21,15 +21,11 @@ export type Toolchain = {
     uri?: string;
 };
 
-export type Environment = LegacyEnvironment | NrfUtilEnvironment;
-
-export type NrfUtilEnvironment = {
-    type: 'nrfUtil';
+export type Environment = {
+    type: 'nrfUtil' | 'legacy';
     version: string;
     toolchains: Toolchain[];
     toolchainDir: string;
-
-    tasks: { [key: string]: TaskEvent[] };
 
     isInstalled?: boolean;
     isWestPresent?: boolean;
@@ -40,19 +36,6 @@ export type NrfUtilEnvironment = {
     stage?: string;
 };
 
-export type LegacyEnvironment = {
-    type: 'legacy';
-    version: string;
-    toolchainDir: string;
-    isWestPresent?: boolean;
-    isInstalled?: boolean;
-    toolchains: Toolchain[];
-    isInstallingToolchain?: boolean;
-    isCloningSdk?: boolean;
-    isRemoving?: boolean;
-    progress?: number;
-    stage?: string;
-};
 export type Environments = {
     [key: string]: Environment;
 };

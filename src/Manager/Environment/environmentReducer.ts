@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AnyAction } from 'redux';
 import { lte } from 'semver';
 
-import type { Environment, NrfUtilEnvironment, TaskEvent } from '../../state';
+import type { Environment } from '../../state';
 
 const START_INSTALL_TOOLCHAIN = 'START_INSTALL_TOOLCHAIN';
 export const startInstallToolchain = (version: string) => ({
@@ -55,7 +54,7 @@ const SET_PROGRESS = 'SET_PROGRESS';
 export const setProgress = (
     version: string,
     stage: string,
-    progress = 100
+    progress?: number
 ) => ({
     type: SET_PROGRESS,
     version,
@@ -68,26 +67,6 @@ export const removeEnvironmentReducer = (version: string) => ({
     type: REMOVE_ENVIRONMENT,
     version,
 });
-
-type VersionPayload<T> = PayloadAction<{ payload: T } & { version: string }>;
-
-const nrfUtilEnvironmentSlice = createSlice({
-    initialState: <NrfUtilEnvironment>{},
-    name: 'nrfUtilEnvironments',
-    reducers: {
-        addTaskEvent: (state, action: VersionPayload<TaskEvent>) => {
-            const { id } = action.payload.payload.data.task;
-            const currentTaskEvents = state.tasks[id] ?? [];
-            const taskEvents = [...currentTaskEvents, action.payload.payload];
-            state.tasks[id] = taskEvents;
-        },
-    },
-});
-
-export const {
-    reducer,
-    actions: { addTaskEvent },
-} = nrfUtilEnvironmentSlice;
 
 export default (environment: Environment, { type, ...action }: AnyAction) => {
     switch (type) {
@@ -150,11 +129,9 @@ export const toolchainDir = (env: Environment) => env.toolchainDir;
 export const progress = (env: Environment) => env.progress;
 
 export const progressLabel = (env: Environment) =>
-    isInProgress(env) && env.progress !== undefined
-        ? `${env.stage || ''}${
-              env.progress % 100 !== 0 ? ` ${env.progress}%` : ''
-          }`
-        : env.stage;
+    isInProgress(env) && env.stage !== undefined
+        ? `${env.stage} ${env.progress}${env.progress ? '%' : ''}`
+        : '';
 
 export const isLegacyEnvironment = (environmentVersion: string) =>
     lte(environmentVersion, 'v1.9.99');

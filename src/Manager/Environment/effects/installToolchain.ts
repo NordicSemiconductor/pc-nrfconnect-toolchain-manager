@@ -11,7 +11,6 @@ import showErrorDialog from '../../../launcherActions';
 import { Dispatch, Toolchain } from '../../../state';
 import { installToolchain as installNrfutilToolchain } from '../../nrfUtilToolchainManager';
 import {
-    addTaskEvent,
     finishInstallToolchain,
     isLegacyEnvironment,
     setProgress,
@@ -41,7 +40,6 @@ export const installToolchain =
             }
         } else {
             await installNrfutilToolchain(version, update => {
-                dispatch(addTaskEvent({ version, payload: update }));
                 switch (update.type) {
                     case 'task_begin':
                         dispatch(

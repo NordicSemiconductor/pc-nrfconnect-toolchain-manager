@@ -15,7 +15,7 @@ import {
     persistedInstallDir as installDir,
     toolchainIndexUrl,
 } from '../persistentStore';
-import { Dispatch, LegacyEnvironment, NrfUtilEnvironment } from '../state';
+import { Dispatch, Environment } from '../state';
 import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
 import { isLegacyEnvironment } from './Environment/environmentReducer';
@@ -75,9 +75,8 @@ const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
     try {
         const installed = listToolchains()
             .filter(toolchain => !isLegacyEnvironment(toolchain.ncs_version))
-            .map<NrfUtilEnvironment>(toolchain => ({
+            .map<Environment>(toolchain => ({
                 version: toolchain.ncs_version,
-                tasks: {},
                 toolchainDir: toolchain.path,
                 toolchains: [],
                 type: 'nrfUtil',
@@ -89,9 +88,8 @@ const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
                 environment =>
                     !installed.some(env => env.version === environment.version)
             )
-            .map<NrfUtilEnvironment>(environment => ({
+            .map<Environment>(environment => ({
                 ...environment,
-                tasks: {},
                 toolchainDir: '',
                 type: 'nrfUtil',
                 isInstalled: false,
@@ -127,7 +125,7 @@ const downloadIndex = (dispatch: Dispatch) => {
                     `Index json has been downloaded with result: ${result}`
                 );
                 JSON.parse(result).forEach(
-                    (environment: Omit<LegacyEnvironment, 'type'>) => {
+                    (environment: Omit<Environment, 'type'>) => {
                         dispatch(
                             addEnvironment({ ...environment, type: 'legacy' })
                         );

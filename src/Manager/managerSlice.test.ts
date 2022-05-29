@@ -30,7 +30,6 @@ const exampleEnvironment: Environment = {
     version: 'v1.2.0',
     toolchainDir: '',
     toolchains: [],
-    tasks: {},
 };
 
 describe('getLatestToolchain', () => {

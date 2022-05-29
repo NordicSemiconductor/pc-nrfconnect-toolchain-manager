@@ -11,14 +11,12 @@ import type {
     Environment,
     Environments,
     Manager,
-    NrfUtilEnvironment,
     RootState,
     Toolchain,
 } from '../state';
 import environmentReducer, {
     canBeDownloaded,
     isInProgress,
-    reducer as nrfUtilReducer,
     REMOVE_ENVIRONMENT,
     removeEnvironmentReducer,
 } from './Environment/environmentReducer';
@@ -57,17 +55,11 @@ const maybeCallEnvironmentReducer = (state: Manager, action: AnyAction) => {
         return state;
     }
 
-    let env = nrfUtilReducer(
-        environment as NrfUtilEnvironment,
-        action
-    ) as Environment;
-    env = environmentReducer(environment, action) as Environment;
-
     return {
         ...state,
         environments: {
             ...state.environments,
-            [version]: env,
+            [version]: environmentReducer(environment, action),
         },
     };
 };
@@ -129,7 +121,6 @@ const managerSlice = createSlice({
             const environment: Environment = {
                 ...action.payload,
                 toolchains: [],
-                tasks: {},
             };
             state.environments = append(state.environments, environment);
         },
