@@ -54,7 +54,7 @@ const SET_PROGRESS = 'SET_PROGRESS';
 export const setProgress = (
     version: string,
     stage: string,
-    progress?: number
+    progress: number | undefined = undefined
 ) => ({
     type: SET_PROGRESS,
     version,
@@ -96,7 +96,6 @@ export default (environment: Environment, { type, ...action }: AnyAction) => {
                 ...environment,
                 stage: 'Removing...',
                 isRemoving: true,
-                progress: 100,
             };
         case FINISH_REMOVING:
             return { ...environment, stage: null, isRemoving: false };
@@ -130,7 +129,9 @@ export const progress = (env: Environment) => env.progress;
 
 export const progressLabel = (env: Environment) =>
     isInProgress(env) && env.stage !== undefined
-        ? `${env.stage} ${env.progress}${env.progress ? '%' : ''}`
+        ? `${env.stage} ${env.progress ?? ''}${
+              env.progress !== undefined ? '%' : ''
+          }`
         : '';
 
 export const isLegacyEnvironment = (environmentVersion: string) =>
