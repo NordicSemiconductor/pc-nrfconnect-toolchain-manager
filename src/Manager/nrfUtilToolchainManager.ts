@@ -114,7 +114,7 @@ export const installToolchain = (
     version: string,
     onUpdate: (update: TaskEvent) => void
 ) =>
-    new Promise(resolve => {
+    new Promise<void>((resolve, reject) => {
         const tcm = spawn(nrfutilToolchainManager(), [
             '--json',
             'install',
@@ -123,7 +123,7 @@ export const installToolchain = (
 
         tcm.stdout.on('data', handleChunk(onUpdate));
 
-        tcm.on('close', resolve);
+        tcm.on('close', code => (code === 0 ? resolve() : reject()));
     });
 
 const noop = () => {};
@@ -171,9 +171,10 @@ export const westInit = (version: string) =>
 export const westUpdate = (
     version: string,
     onUpdate: (update: string) => void,
-    onError: (error: string) => void
+    onError: (error: string) => void,
+    onErrorData: (error: string) => void
 ) =>
-    new Promise(resolve => {
+    new Promise<void>((resolve, reject) => {
         const tcm = spawn(nrfutilToolchainManager(), [
             'launch',
             '--chdir',
@@ -185,6 +186,6 @@ export const westUpdate = (
 
         tcm.stdout.on('data', onUpdate);
         tcm.stdout.on('error', onError);
-        tcm.stderr.on('data', onError);
-        tcm.on('close', resolve);
+        tcm.stderr.on('data', onErrorData);
+        tcm.on('close', code => (code === 0 ? resolve() : reject()));
     });
