@@ -18,6 +18,7 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import { showConfirmRemoveDialog } from '../managerSlice';
+import { sdkPath } from '../nrfUtilToolchainManager';
 import { cloneNcs } from './effects/cloneNcs';
 import { install } from './effects/installEnvironment';
 import {
@@ -130,6 +131,10 @@ type EnvironmentMenuProps = { environment: Environment };
 const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
     const dispatch = useDispatch();
     const toolchainDir = getToolchainDir(environment);
+    const sdkDir = () =>
+        environment.type === 'legacy'
+            ? path.dirname(toolchainDir)
+            : sdkPath(environment.version);
     const version = getVersion(environment);
     const { platform } = process;
 
@@ -163,9 +168,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                 </Dropdown.Item>
             )}
             <Dropdown.Divider />
-            <Dropdown.Item
-                onClick={() => openDirectory(path.dirname(toolchainDir))}
-            >
+            <Dropdown.Item onClick={() => openDirectory(sdkDir())}>
                 Open SDK directory
             </Dropdown.Item>
             <Dropdown.Item onClick={() => openDirectory(toolchainDir)}>
