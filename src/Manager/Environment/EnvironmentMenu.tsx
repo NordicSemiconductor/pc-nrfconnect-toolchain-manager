@@ -18,7 +18,11 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import { showConfirmRemoveDialog } from '../managerSlice';
-import { launchWinBash, sdkPath } from '../nrfUtilToolchainManager';
+import {
+    launchTerminal,
+    launchWinBash,
+    sdkPath,
+} from '../nrfUtilToolchainManager';
 import { cloneNcs } from './effects/cloneNcs';
 import { install } from './effects/installEnvironment';
 import {
@@ -70,7 +74,7 @@ const openCmd = (directory: string) => {
     );
 };
 
-const openTerminal = {
+const launchLegacyTerminal = {
     darwin: (toolchainDir: string) => {
         logger.info('Open terminal');
         usageData.sendUsageData(
@@ -138,10 +142,9 @@ type EnvironmentMenuProps = { environment: Environment };
 const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
     const dispatch = useDispatch();
     const toolchainDir = getToolchainDir(environment);
+    const isLegacyEnv = environment.type === 'legacy';
     const sdkDir = () =>
-        environment.type === 'legacy'
-            ? path.dirname(toolchainDir)
-            : sdkPath(environment.version);
+        isLegacyEnv ? path.dirname(toolchainDir) : sdkPath(environment.version);
     const version = getVersion(environment);
     const { platform } = process;
 
@@ -166,10 +169,17 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
             )}
             {process.platform !== 'win32' && (
                 <Dropdown.Item
-                    onClick={() =>
-                        // @ts-expect-error We don't support all platforms
-                        openTerminal[platform](toolchainDir, version)
-                    }
+                    onClick={() => {
+                        if (isLegacyEnv) {
+                            // @ts-expect-error We don't support all platforms
+                            launchLegacyTerminal[platform](
+                                toolchainDir,
+                                version
+                            );
+                        } else {
+                            launchTerminal();
+                        }
+                    }}
                 >
                     Open Terminal
                 </Dropdown.Item>
