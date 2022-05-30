@@ -39,7 +39,10 @@ export default () => {
     return (
         <>
             <Alert variant="warning">
-                <b>Linux is currently not supported by this app. </b>
+                <b>
+                    Linux currently only supports toolchains from version 2.0.0
+                    and later on this app.{' '}
+                </b>
                 <OnlineDocs label="Installation instructions for Linux" />
             </Alert>
             {!isSnapAvailable && (
