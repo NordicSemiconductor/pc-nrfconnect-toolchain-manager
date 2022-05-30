@@ -1,3 +1,10 @@
+### Unreleased
+
+### Added
+
+-   Support nRF Connect SDK 2.0.
+-   Support Linux.
+
 ## 0.10.3 - 2022-01-19
 
 ### Fixed
