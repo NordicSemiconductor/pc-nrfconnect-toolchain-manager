@@ -9,7 +9,7 @@ import { existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import { getAppFile, logger } from 'pc-nrfconnect-shared';
 
-import { TaskEvent, Toolchain } from '../state';
+import type { TaskEvent, Toolchain } from '../state';
 
 const nrfutilToolchainManager = () => {
     const executable = getAppFile(

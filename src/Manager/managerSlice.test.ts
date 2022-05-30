@@ -14,6 +14,10 @@ import {
     getLatestToolchain,
 } from './managerSlice';
 
+jest.mock('./nrfUtilToolchainManager', () => ({
+    getNrfUtilConfig: jest.fn(() => ({})),
+}));
+
 const older = {
     version: '20200217',
     name: 'ncs-toolchain-v1.2.0-20200217-a56f2eb.zip',

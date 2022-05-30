@@ -17,6 +17,10 @@ import {
     VsCodeStatus,
 } from '../vscodeSlice';
 
+jest.mock('../../Manager/nrfUtilToolchainManager', () => ({
+    getNrfUtilConfig: jest.fn(() => ({})),
+}));
+
 const vsCodeDialogActions = (status: VsCodeStatus) => [
     showVsCodeDialog(),
     setVsCodeStatus(status),

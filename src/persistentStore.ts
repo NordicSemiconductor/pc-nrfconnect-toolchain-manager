@@ -4,23 +4,12 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import os from 'os';
 import path from 'path';
 import { getPersistentStore as store } from 'pc-nrfconnect-shared';
 
-const defaultInstallDir =
-    {
-        win32: path.resolve(os.homedir(), 'ncs'),
-        darwin: '/opt/nordic/ncs',
-        linux: path.resolve(os.homedir(), 'ncs'),
-        aix: undefined,
-        android: undefined,
-        cygwin: undefined,
-        freebsd: undefined,
-        netbsd: undefined,
-        openbsd: undefined,
-        sunos: undefined,
-    }[process.platform] ?? path.resolve(os.homedir(), 'ncs');
+import { getNrfUtilConfig } from './Manager/nrfUtilToolchainManager';
+
+const defaultInstallDir = getNrfUtilConfig().install_dir;
 
 export const persistedInstallDir = (): string =>
     process.platform === 'darwin'
