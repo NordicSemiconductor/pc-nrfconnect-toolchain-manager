@@ -190,10 +190,10 @@ export const westUpdate = (
         tcm.on('close', code => (code === 0 ? resolve() : reject()));
     });
 
-export const launchBash = () => {
-    if (process.platform === 'win32') {
-        exec(`${nrfutilToolchainManager()}  launch cmd.exe /k start bash.exe`);
-    } else {
-        exec(`${nrfutilToolchainManager()}  launch --terminal`);
-    }
+export const launchWinBash = () => {
+    exec(`${nrfutilToolchainManager()}  launch cmd.exe /k start bash.exe`);
+};
+
+export const launchTerminal = () => {
+    exec(`${nrfutilToolchainManager()}  launch --terminal`);
 };

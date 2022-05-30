@@ -18,7 +18,7 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import { showConfirmRemoveDialog } from '../managerSlice';
-import { launchBash, sdkPath } from '../nrfUtilToolchainManager';
+import { launchWinBash, sdkPath } from '../nrfUtilToolchainManager';
 import { cloneNcs } from './effects/cloneNcs';
 import { install } from './effects/installEnvironment';
 import {
@@ -53,7 +53,7 @@ const openBash = (environment: Environment) => {
         const directory = getToolchainDir(environment);
         exec(`"${path.resolve(directory, 'git-bash.exe')}"`, execCallback);
     } else {
-        launchBash();
+        launchWinBash();
     }
 };
 
