@@ -95,7 +95,7 @@ async function updateNrfUtil(version: string, dispatch: Dispatch) {
             console.error(error.toString());
         },
         errorData => {
-            console.warn('errorData', errorData);
+            console.warn('errorData', errorData.toString());
         }
     );
 }
