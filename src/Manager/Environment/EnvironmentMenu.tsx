@@ -63,7 +63,6 @@ const openCmd = (directory: string) => {
         EventAction.OPEN_CMD,
         `${process.platform}; ${process.arch}`
     );
-    console.log(`start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`);
 
     exec(
         `start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`,
