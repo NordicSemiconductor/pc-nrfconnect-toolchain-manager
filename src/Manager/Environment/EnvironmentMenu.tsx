@@ -18,7 +18,7 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import { showConfirmRemoveDialog } from '../managerSlice';
-import { sdkPath } from '../nrfUtilToolchainManager';
+import { launchBash, sdkPath } from '../nrfUtilToolchainManager';
 import { cloneNcs } from './effects/cloneNcs';
 import { install } from './effects/installEnvironment';
 import {
@@ -42,13 +42,19 @@ const execCallback = (
 
 const { exec: remoteExec } = remoteRequire('child_process');
 
-const openBash = (directory: string) => {
+const openBash = (environment: Environment) => {
     logger.info('Open bash');
     usageData.sendUsageData(
         EventAction.OPEN_BASH,
         `${process.platform}; ${process.arch}`
     );
-    exec(`"${path.resolve(directory, 'git-bash.exe')}"`, execCallback);
+
+    if (environment.type === 'legacy') {
+        const directory = getToolchainDir(environment);
+        exec(`"${path.resolve(directory, 'git-bash.exe')}"`, execCallback);
+    } else {
+        launchBash();
+    }
 };
 
 const openCmd = (directory: string) => {
@@ -57,6 +63,8 @@ const openCmd = (directory: string) => {
         EventAction.OPEN_CMD,
         `${process.platform}; ${process.arch}`
     );
+    console.log(`start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`);
+
     exec(
         `start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`,
         execCallback
@@ -149,7 +157,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
         >
             {process.platform === 'win32' && (
                 <>
-                    <Dropdown.Item onClick={() => openBash(toolchainDir)}>
+                    <Dropdown.Item onClick={() => openBash(environment)}>
                         Open bash
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => openCmd(toolchainDir)}>

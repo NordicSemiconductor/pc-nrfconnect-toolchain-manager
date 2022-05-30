@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { spawn, spawnSync } from 'child_process';
+import { exec, spawn, spawnSync } from 'child_process';
 import { existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import { getAppFile, logger } from 'pc-nrfconnect-shared';
@@ -189,3 +189,11 @@ export const westUpdate = (
         tcm.stderr.on('data', onErrorData);
         tcm.on('close', code => (code === 0 ? resolve() : reject()));
     });
+
+export const launchBash = () => {
+    if (process.platform === 'win32') {
+        exec(`${nrfutilToolchainManager()}  launch cmd.exe /k start bash.exe`);
+    } else {
+        exec(`${nrfutilToolchainManager()}  launch --terminal`);
+    }
+};
