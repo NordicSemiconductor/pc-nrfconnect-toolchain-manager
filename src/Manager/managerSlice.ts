@@ -160,7 +160,7 @@ export default (state = initialState(), action: AnyAction) => {
 };
 
 export const getLatestToolchain = (toolchains: Toolchain[]) =>
-    sortedByVersion(toolchains).pop();
+    sortedByVersion(toolchains).slice(-1)[0];
 
 export const isRemoveDirDialogVisible = ({ app }: RootState) =>
     app.manager.isRemoveDirDialogVisible;
