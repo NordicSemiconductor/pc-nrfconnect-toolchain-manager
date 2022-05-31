@@ -5,9 +5,12 @@
  */
 
 import fse from 'fs-extra';
-import { describeError, usageData } from 'pc-nrfconnect-shared';
+import {
+    describeError,
+    ErrorDialogActions,
+    usageData,
+} from 'pc-nrfconnect-shared';
 
-import showErrorDialog from '../../../launcherActions';
 import { Dispatch, Toolchain } from '../../../state';
 import installNrfutilToolchain from '../../nrfutil/install';
 import {
@@ -35,7 +38,7 @@ export const installToolchain =
                 updateConfigFile(toolchainDir);
             } catch (error) {
                 const message = describeError(error);
-                dispatch(showErrorDialog(message));
+                dispatch(ErrorDialogActions.showDialog(message));
                 usageData.sendErrorReport(message);
             }
         } else {

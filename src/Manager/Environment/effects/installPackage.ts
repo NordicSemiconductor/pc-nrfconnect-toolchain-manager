@@ -6,9 +6,12 @@
 
 import fse from 'fs-extra';
 import path from 'path';
-import { describeError, usageData } from 'pc-nrfconnect-shared';
+import {
+    describeError,
+    ErrorDialogActions,
+    usageData,
+} from 'pc-nrfconnect-shared';
 
-import showErrorDialog from '../../../launcherActions';
 import { persistedInstallDir as installDir } from '../../../persistentStore';
 import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';
@@ -36,7 +39,7 @@ export const installPackage =
         if (!match) {
             const errorMsg =
                 'Filename is not recognized as a toolchain package.';
-            dispatch(showErrorDialog(errorMsg));
+            dispatch(ErrorDialogActions.showDialog(errorMsg));
             usageData.sendErrorReport(errorMsg);
             return;
         }
@@ -76,7 +79,7 @@ export const installPackage =
             await dispatch(cloneNcs(version, toolchainDir, false));
         } catch (error) {
             const message = describeError(error);
-            dispatch(showErrorDialog(`${message}`));
+            dispatch(ErrorDialogActions.showDialog(`${message}`));
             usageData.sendErrorReport(`${message}`);
         }
     };

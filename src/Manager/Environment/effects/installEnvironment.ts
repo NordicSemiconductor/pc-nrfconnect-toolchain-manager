@@ -5,9 +5,13 @@
  */
 
 import path from 'path';
-import { describeError, logger, usageData } from 'pc-nrfconnect-shared';
+import {
+    describeError,
+    ErrorDialogActions,
+    logger,
+    usageData,
+} from 'pc-nrfconnect-shared';
 
-import showErrorDialog from '../../../launcherActions';
 import {
     persistedInstallDir as installDir,
     persistedShowVsCodeDialogDuringInstall,
@@ -60,7 +64,7 @@ export const install =
             await dispatch(cloneNcs(version, toolchainDir, justUpdate));
         } catch (error) {
             const message = describeError(error);
-            dispatch(showErrorDialog(`${message}`));
+            dispatch(ErrorDialogActions.showDialog(`${message}`));
             usageData.sendErrorReport(`${message}`);
         }
     };

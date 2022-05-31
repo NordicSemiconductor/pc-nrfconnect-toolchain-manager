@@ -9,9 +9,8 @@ import { ChildProcess, spawn } from 'child_process';
 import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
-import { logger, usageData } from 'pc-nrfconnect-shared';
+import { ErrorDialogActions, logger, usageData } from 'pc-nrfconnect-shared';
 
-import showErrorDialog from '../../../launcherActions';
 import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { westInit, westUpdate } from '../../nrfutil/west';
@@ -54,7 +53,7 @@ export const cloneNcs =
             }
         } catch (error) {
             const errorMsg = `Failed to clone the repositories: ${error}`;
-            dispatch(showErrorDialog(errorMsg));
+            dispatch(ErrorDialogActions.showDialog(errorMsg));
             usageData.sendErrorReport(errorMsg);
         }
 
@@ -83,7 +82,15 @@ async function initNrfUtil(version: string, dispatch: Dispatch) {
     await fse.remove(path.resolve(sdkPath(version), '.west'));
     dispatch(setProgress(version, 'Initializing environment...'));
     logger.info(`Initializing environment for ${version}`);
-    await westInit(version);
+    await westInit(
+        version,
+        error => {
+            console.error(error.toString());
+        },
+        errorData => {
+            console.warn('errorData', errorData.toString());
+        }
+    );
 }
 
 async function updateNrfUtil(version: string, dispatch: Dispatch) {
