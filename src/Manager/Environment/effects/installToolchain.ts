@@ -9,7 +9,7 @@ import { describeError, usageData } from 'pc-nrfconnect-shared';
 
 import showErrorDialog from '../../../launcherActions';
 import { Dispatch, Toolchain } from '../../../state';
-import { installToolchain as installNrfutilToolchain } from '../../nrfUtilToolchainManager';
+import installNrfutilToolchain from '../../nrfutil/install';
 import {
     finishInstallToolchain,
     isLegacyEnvironment,

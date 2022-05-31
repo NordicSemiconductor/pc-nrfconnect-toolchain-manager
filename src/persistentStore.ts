@@ -7,9 +7,9 @@
 import path from 'path';
 import { getPersistentStore as store } from 'pc-nrfconnect-shared';
 
-import { getNrfUtilConfig } from './Manager/nrfUtilToolchainManager';
+import getNrfutilConfig from './Manager/nrfutil/config';
 
-const defaultInstallDir = getNrfUtilConfig().install_dir;
+const defaultInstallDir = getNrfutilConfig().install_dir;
 
 export const persistedInstallDir = (): string =>
     process.platform === 'darwin'

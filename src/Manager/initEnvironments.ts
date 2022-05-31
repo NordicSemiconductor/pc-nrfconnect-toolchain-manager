@@ -24,11 +24,9 @@ import {
     addLocallyExistingEnvironment,
     clearEnvironments,
 } from './managerSlice';
-import {
-    listToolchains,
-    logNrfUtilTMVersion,
-    searchToolchains,
-} from './nrfUtilToolchainManager';
+import listToolchains from './nrfutil/list';
+import logNrfutilVersion from './nrfutil/logVersion';
+import searchToolchains from './nrfutil/search';
 
 const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
     try {
@@ -157,7 +155,7 @@ const downloadIndex = (dispatch: Dispatch) => {
 
 export default (dispatch: Dispatch): void => {
     logger.info('Initializing environments...');
-    logNrfUtilTMVersion();
+    logNrfutilVersion();
     const dir = path.dirname(installDir());
     if (
         process.platform === 'darwin' &&

@@ -9,7 +9,8 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
-import { removeToolchain, sdkPath } from '../../nrfUtilToolchainManager';
+import { sdkPath } from '../../nrfutil/config';
+import removeToolchain from '../../nrfutil/remove';
 import {
     finishRemoving,
     isLegacyEnvironment,

@@ -14,8 +14,9 @@ import {
     getLatestToolchain,
 } from './managerSlice';
 
-jest.mock('./nrfUtilToolchainManager', () => ({
-    getNrfUtilConfig: jest.fn(() => ({})),
+jest.mock('./nrfutil/config', () => ({
+    __esModule: true,
+    default: jest.fn(() => ({})),
 }));
 
 const older = {
