@@ -51,7 +51,7 @@ const openBash = (environment: Environment) => {
         const directory = getToolchainDir(environment);
         exec(`"${path.resolve(directory, 'git-bash.exe')}"`, execCallback);
     } else {
-        launchWinBash();
+        launchWinBash(environment.version);
     }
 };
 
@@ -144,7 +144,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                                 version
                             );
                         } else {
-                            launchTerminal();
+                            launchTerminal(environment.version);
                         }
                     }}
                 >

@@ -7,16 +7,21 @@
 import { exec } from 'child_process';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
+import sdkPath from '../sdkPath';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
-export const launchWinBash = () => {
+export const launchWinBash = (version: string) => {
     exec(
-        `${nrfutilToolchainManager()}  launch --install-dir "${installDir()}" cmd.exe /k start bash.exe`
+        `${nrfutilToolchainManager()}  launch --chdir "${sdkPath(
+            version
+        )}" --ncs-version "${version}" --install-dir "${installDir()}" cmd.exe /k start bash.exe`
     );
 };
 
-export const launchTerminal = () => {
+export const launchTerminal = (version: string) => {
     exec(
-        `${nrfutilToolchainManager()}  launch --install-dir "${installDir()}" --terminal`
+        `${nrfutilToolchainManager()}  launch --chdir "${sdkPath(
+            version
+        )}" --ncs-version "${version}" --install-dir "${installDir()}" --terminal`
     );
 };
