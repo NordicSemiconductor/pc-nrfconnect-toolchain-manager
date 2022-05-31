@@ -146,7 +146,8 @@ export const removeToolchain = (
 export const sdkPath = (version: string) =>
     path.resolve(getNrfUtilConfig().install_dir, version);
 
-export const westInit = (
+const west = (
+    westParams: string[],
     version: string,
     onUpdate: (update: string) => void,
     onError: (error: string) => void,
@@ -163,11 +164,7 @@ export const westInit = (
             sdkPath(version),
             '--',
             'west',
-            'init',
-            '-m',
-            'https://github.com/nrfconnect/sdk-nrf',
-            '--mr',
-            version,
+            ...westParams,
         ]);
 
         tcm.stdout.on('data', onUpdate);
@@ -175,28 +172,33 @@ export const westInit = (
         tcm.stderr.on('data', onErrorData);
         tcm.on('close', code => (code === 0 ? resolve() : reject()));
     });
+
+export const westInit = (
+    version: string,
+    onUpdate: (update: string) => void,
+    onError: (error: string) => void,
+    onErrorData: (error: string) => void
+) =>
+    west(
+        [
+            'init',
+            '-m',
+            'https://github.com/nrfconnect/sdk-nrf',
+            '--mr',
+            version,
+        ],
+        version,
+        onUpdate,
+        onError,
+        onErrorData
+    );
 
 export const westUpdate = (
     version: string,
     onUpdate: (update: string) => void,
     onError: (error: string) => void,
     onErrorData: (error: string) => void
-) =>
-    new Promise<void>((resolve, reject) => {
-        const tcm = spawn(nrfutilToolchainManager(), [
-            'launch',
-            '--chdir',
-            sdkPath(version),
-            '--',
-            'west',
-            'update',
-        ]);
-
-        tcm.stdout.on('data', onUpdate);
-        tcm.stdout.on('error', onError);
-        tcm.stderr.on('data', onErrorData);
-        tcm.on('close', code => (code === 0 ? resolve() : reject()));
-    });
+) => west(['update'], version, onUpdate, onError, onErrorData);
 
 export const launchWinBash = () => {
     exec(`${nrfutilToolchainManager()}  launch cmd.exe /k start bash.exe`);
