@@ -34,11 +34,16 @@ const className = (env: Environment) => {
     }
 };
 
+const progressOrFullBar = (environment: Environment) =>
+    isInProgress(environment) && progress(environment) === undefined
+        ? 100
+        : progress(environment);
+
 type Props = { environment: Environment };
 
 const ProgressBar = ({ environment }: Props) => (
     <BootstrapProgressBar
-        now={progress(environment)}
+        now={progressOrFullBar(environment)}
         striped={isInProgress(environment)}
         animated={isInProgress(environment)}
         className={className(environment)}

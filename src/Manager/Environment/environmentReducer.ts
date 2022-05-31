@@ -96,7 +96,7 @@ export default (environment: Environment, { type, ...action }: AnyAction) => {
                 ...environment,
                 stage: 'Removing...',
                 isRemoving: true,
-                progress: 100,
+                progress: undefined,
             };
         case FINISH_REMOVING:
             return { ...environment, stage: null, isRemoving: false };
