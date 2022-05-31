@@ -146,8 +146,13 @@ export const removeToolchain = (
 export const sdkPath = (version: string) =>
     path.resolve(getNrfUtilConfig().install_dir, version);
 
-export const westInit = (version: string) =>
-    new Promise(resolve => {
+export const westInit = (
+    version: string,
+    onUpdate: (update: string) => void,
+    onError: (error: string) => void,
+    onErrorData: (error: string) => void
+) =>
+    new Promise<void>((resolve, reject) => {
         mkdirSync(sdkPath(version), {
             recursive: true,
         });
@@ -165,7 +170,10 @@ export const westInit = (version: string) =>
             version,
         ]);
 
-        tcm.on('close', resolve);
+        tcm.stdout.on('data', onUpdate);
+        tcm.stdout.on('error', onError);
+        tcm.stderr.on('data', onErrorData);
+        tcm.on('close', code => (code === 0 ? resolve() : reject()));
     });
 
 export const westUpdate = (

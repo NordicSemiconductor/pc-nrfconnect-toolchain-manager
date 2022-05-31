@@ -82,7 +82,8 @@ async function initNrfUtil(version: string, dispatch: Dispatch) {
     await fse.remove(path.resolve(sdkPath(version), '.west'));
     dispatch(setProgress(version, 'Initializing environment...'));
     logger.info(`Initializing environment for ${version}`);
-    await westInit(version);
+    const noop = () => {};
+    await westInit(version, noop, noop, noop);
 }
 
 async function updateNrfUtil(version: string, dispatch: Dispatch) {
