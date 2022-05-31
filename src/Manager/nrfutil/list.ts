@@ -6,6 +6,7 @@
 
 import { spawnSync } from 'child_process';
 
+import { persistedInstallDir as installDir } from '../../persistentStore';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
 interface InstalledToolchain {
@@ -14,9 +15,13 @@ interface InstalledToolchain {
 }
 
 export default () => {
-    const tcm = spawnSync(nrfutilToolchainManager(), ['--json', 'list'], {
-        encoding: 'utf8',
-    });
+    const tcm = spawnSync(
+        nrfutilToolchainManager(),
+        ['--json', 'list', '--install-dir', installDir()],
+        {
+            encoding: 'utf8',
+        }
+    );
     const { data } = JSON.parse(tcm.stdout);
     return data.toolchains as InstalledToolchain[];
 };

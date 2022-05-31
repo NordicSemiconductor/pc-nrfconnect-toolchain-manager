@@ -18,8 +18,8 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import { showConfirmRemoveDialog } from '../managerSlice';
-import { sdkPath } from '../nrfutil/config';
 import { launchTerminal, launchWinBash } from '../nrfutil/terminal';
+import sdkPath from '../sdkPath';
 import { cloneNcs } from './effects/cloneNcs';
 import { install } from './effects/installEnvironment';
 import {

@@ -6,6 +6,7 @@
 
 import { spawn } from 'child_process';
 
+import { persistedInstallDir as installDir } from '../../persistentStore';
 import type { TaskEvent } from '../../state';
 import handleChunk from './handleChunk';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
@@ -15,6 +16,8 @@ export default (version: string, onUpdate: (update: TaskEvent) => void) =>
         const tcm = spawn(nrfutilToolchainManager(), [
             '--json',
             'install',
+            '--install-dir',
+            installDir(),
             version,
         ]);
 

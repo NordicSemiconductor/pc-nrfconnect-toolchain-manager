@@ -5,7 +5,6 @@
  */
 
 import { spawnSync } from 'child_process';
-import path from 'path';
 
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
@@ -26,8 +25,5 @@ const config = () => {
 
     return data as Config;
 };
-
-export const sdkPath = (version: string) =>
-    path.resolve(config().install_dir, version);
 
 export default config;

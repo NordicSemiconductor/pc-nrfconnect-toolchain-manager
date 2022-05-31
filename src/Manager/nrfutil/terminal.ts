@@ -6,12 +6,17 @@
 
 import { exec } from 'child_process';
 
+import { persistedInstallDir as installDir } from '../../persistentStore';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
 export const launchWinBash = () => {
-    exec(`${nrfutilToolchainManager()}  launch cmd.exe /k start bash.exe`);
+    exec(
+        `${nrfutilToolchainManager()}  launch --install-dir "${installDir()}" cmd.exe /k start bash.exe`
+    );
 };
 
 export const launchTerminal = () => {
-    exec(`${nrfutilToolchainManager()}  launch --terminal`);
+    exec(
+        `${nrfutilToolchainManager()}  launch --install-dir "${installDir()}" --terminal`
+    );
 };

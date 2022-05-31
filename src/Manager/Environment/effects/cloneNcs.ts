@@ -14,8 +14,8 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 import showErrorDialog from '../../../launcherActions';
 import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';
-import { sdkPath } from '../../nrfutil/config';
 import { westInit, westUpdate } from '../../nrfutil/west';
+import sdkPath from '../../sdkPath';
 import {
     finishCloningSdk,
     isLegacyEnvironment,
