@@ -10,12 +10,14 @@ import { mkdirSync } from 'fs';
 import { sdkPath } from './config';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
+const noop = () => {};
+
 const west = (
     westParams: string[],
     version: string,
-    onUpdate: (update: string) => void,
-    onError: (error: string) => void,
-    onErrorData: (error: string) => void
+    onUpdate: (update: string) => void = noop,
+    onError: (error: string) => void = noop,
+    onErrorData: (error: string) => void = noop
 ) =>
     new Promise<void>((resolve, reject) => {
         mkdirSync(sdkPath(version), {
@@ -39,9 +41,9 @@ const west = (
 
 export const westInit = (
     version: string,
-    onUpdate: (update: string) => void,
-    onError: (error: string) => void,
-    onErrorData: (error: string) => void
+    onUpdate: (update: string) => void = noop,
+    onError: (error: string) => void = noop,
+    onErrorData: (error: string) => void = noop
 ) =>
     west(
         [
