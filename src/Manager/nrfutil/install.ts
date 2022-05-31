@@ -21,7 +21,14 @@ export default (version: string, onUpdate: (update: TaskEvent) => void) =>
             version,
         ]);
 
+        let error = '';
+        tcm.stderr.on('data', (data: Buffer) => {
+            error += data.toString();
+        });
+
         tcm.stdout.on('data', handleChunk(onUpdate));
 
-        tcm.on('close', code => (code === 0 ? resolve() : reject()));
+        tcm.on('close', code =>
+            code === 0 ? resolve() : reject(new Error(error))
+        );
     });

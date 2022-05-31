@@ -16,7 +16,7 @@ export default (
     version: string,
     onUpdate: (update: TaskEvent) => void = noop
 ) =>
-    new Promise(resolve => {
+    new Promise<void>((resolve, reject) => {
         const tcm = spawn(nrfutilToolchainManager(), [
             '--json',
             'remove',
@@ -25,7 +25,12 @@ export default (
             version,
         ]);
 
+        let error = '';
+        tcm.stderr.on('data', (data: Buffer) => {
+            error += data.toString();
+        });
+
         tcm.stdout.on('data', handleChunk(onUpdate));
 
-        tcm.on('close', resolve);
+        tcm.on('close', code => (code === 0 ? resolve() : reject(error)));
     });
