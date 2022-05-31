@@ -4,13 +4,6 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-/* eslint-disable import/first */
-jest.mock('@electron/remote', () => ({
-    require: () => ({
-        exec: jest.fn(),
-    }),
-}));
-
 import path from 'path';
 
 import { updateSettingsXml, userSettings } from './segger';

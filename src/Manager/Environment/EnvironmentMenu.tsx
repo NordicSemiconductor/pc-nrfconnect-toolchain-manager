@@ -8,8 +8,7 @@ import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { useDispatch } from 'react-redux';
-import { require as remoteRequire } from '@electron/remote';
-import { exec, ExecException, execSync } from 'child_process';
+import { exec, ExecException } from 'child_process';
 import { shell } from 'electron';
 import { readdirSync } from 'fs';
 import path from 'path';
@@ -40,8 +39,6 @@ const execCallback = (
     if (stderr) usageData.sendErrorReport(stderr);
     if (stdout) logger.debug(stdout);
 };
-
-const { exec: remoteExec } = remoteRequire('child_process');
 
 const openBash = (environment: Environment) => {
     logger.info('Open bash');
@@ -94,33 +91,6 @@ tell application "Terminal"
 end tell
 END
             `,
-            execCallback
-        );
-    },
-    linux: (toolchainDir: string) => {
-        logger.info('Open terminal');
-        usageData.sendUsageData(
-            EventAction.OPEN_TERMINAL,
-            `${process.platform}; ${process.arch}`
-        );
-        const terminalApp = execSync(
-            'gsettings get org.gnome.desktop.default-applications.terminal exec'
-        )
-            .toString()
-            .trim()
-            .replace(/'/g, '');
-
-        const e = [
-            `PATH=${toolchainDir}/bin:${toolchainDir}/usr/bin:${toolchainDir}/segger_embedded_studio/bin:${process.env.PATH}`,
-            `PYTHONHOME=${toolchainDir}/lib/python3.8`,
-            `PYTHONPATH=${toolchainDir}/usr/lib/python3.8:${toolchainDir}/lib/python3.8/site-packages:${toolchainDir}/usr/lib/python3/dist-packages:${toolchainDir}/usr/lib/python3.8/lib-dynload`,
-            `GIT_EXEC_PATH=${toolchainDir}/usr/lib/git-core`,
-            `LD_LIBRARY_PATH=/var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void:${toolchainDir}/lib/python3.8/site-packages/.libs_cffi_backend:${toolchainDir}/lib/python3.8/site-packages/Pillow.libs:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/segger_embedded_studio/bin:${toolchainDir}/usr/lib/x86_64-linux-gnu:${toolchainDir}/lib:${toolchainDir}/usr/lib:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/usr/lib/x86_64-linux-gnu`,
-        ].join(' ');
-
-        remoteExec(
-            `${terminalApp} -- bash -c "${e} bash"`,
-            { cwd: path.dirname(toolchainDir) },
             execCallback
         );
     },

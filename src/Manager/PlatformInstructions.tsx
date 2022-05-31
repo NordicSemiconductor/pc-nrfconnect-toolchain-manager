@@ -4,13 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import { execSync } from 'child_process';
 
 const isLinux = process.platform === 'linux';
-
-export const enableLinux = true;
 
 const OnlineDocs: FC<{ label: string }> = ({ label }) => (
     <a
@@ -25,42 +22,13 @@ const OnlineDocs: FC<{ label: string }> = ({ label }) => (
 export default () => {
     if (!isLinux) return null;
 
-    const [isSnapAvailable, setSnapAvailable] = useState(true);
-
-    useEffect(() => {
-        if (!enableLinux || !isLinux) return;
-        try {
-            execSync('which snap');
-        } catch (err) {
-            setSnapAvailable(false);
-        }
-    }, []);
-
     return (
-        <>
-            <Alert variant="warning">
-                <b>
-                    Linux currently only supports toolchains from version 2.0.0
-                    and later on this app.{' '}
-                </b>
-                <OnlineDocs label="Installation instructions for Linux" />
-            </Alert>
-            {!isSnapAvailable && (
-                <Alert variant="danger">
-                    Linux support depends on <b>snap</b> which seems
-                    unavailable, please install the package.
-                    <br />
-                    For more information please follow the manual for your{' '}
-                    <a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href="https://snapcraft.io/docs/installing-snapd"
-                    >
-                        distribution
-                    </a>
-                    .
-                </Alert>
-            )}
-        </>
+        <Alert variant="warning">
+            <b>
+                Linux currently only supports toolchains from version 2.0.0 and
+                later on this app.{' '}
+            </b>
+            <OnlineDocs label="Installation instructions for Linux" />
+        </Alert>
     );
 };

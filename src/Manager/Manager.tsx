@@ -35,7 +35,7 @@ import {
     isShowingFirstSteps,
     showInstallPackageDialog,
 } from './managerSlice';
-import PlatformInstructions, { enableLinux } from './PlatformInstructions';
+import PlatformInstructions from './PlatformInstructions';
 import { filterEnvironments } from './versionFilter';
 
 const Environments = () => {
@@ -97,28 +97,22 @@ export default () => {
             className="toolchain-manager-main-window"
         >
             <PlatformInstructions />
-            {(process.platform !== 'linux' || enableLinux) && (
-                <>
-                    <Environments />
-                    <ButtonToolbar className="pt-3 flex-row justify-content-end">
-                        <Button
-                            variant="link"
-                            className="mdi x-mdi-briefcase-plus-outline pr-0 pt-0"
-                            onClick={() =>
-                                dispatch(showInstallPackageDialog(''))
-                            }
-                        >
-                            Install package from other source
-                        </Button>
-                    </ButtonToolbar>
-                    <RemoveEnvironmentDialog />
-                    <InstallPackageDialog />
-                    <ToolchainSourceDialog />
-                    <InstallDirDialog />
-                    <ReduxConfirmDialog />
-                    <VsCodeDialog />
-                </>
-            )}
+            <Environments />
+            <ButtonToolbar className="pt-3 flex-row justify-content-end">
+                <Button
+                    variant="link"
+                    className="mdi x-mdi-briefcase-plus-outline pr-0 pt-0"
+                    onClick={() => dispatch(showInstallPackageDialog(''))}
+                >
+                    Install package from other source
+                </Button>
+            </ButtonToolbar>
+            <RemoveEnvironmentDialog />
+            <InstallPackageDialog />
+            <ToolchainSourceDialog />
+            <InstallDirDialog />
+            <ReduxConfirmDialog />
+            <VsCodeDialog />
         </div>
     );
 };

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { require as remoteRequire } from '@electron/remote';
 import { execSync } from 'child_process';
 import extract from 'extract-zip';
 import fse from 'fs-extra';
@@ -16,8 +15,6 @@ import EventAction from '../../../usageDataActions';
 import { setProgress } from '../environmentReducer';
 import { calculateTimeConsumed } from './helpers';
 import { reportProgress, UNPACK } from './reportProgress';
-
-const sudo = remoteRequire('sudo-prompt');
 
 export const unpack =
     (version: string, src: string, dest: string) =>
@@ -64,23 +61,6 @@ export const unpack =
                     },
                 });
                 execSync(`hdiutil detach ${volume}`);
-                break;
-            }
-            case 'linux': {
-                await new Promise<void>((resolve, reject) => {
-                    sudo.exec(
-                        `snap install ${src} --devmode`,
-                        { name: 'Toolchain Manager' },
-                        (err: Error) => (err ? reject(err) : resolve())
-                    );
-                });
-                dispatch(setProgress(version, 'Installing...', 99));
-                fse.removeSync(dest);
-                const shortVer = version.replace(/\./g, '');
-                fse.symlinkSync(
-                    `/snap/ncs-toolchain-${shortVer}/current`,
-                    dest
-                );
                 break;
             }
             default:
