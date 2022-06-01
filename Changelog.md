@@ -5,6 +5,7 @@
 -   Open command prompt for windows now opens in the correct path and in the
     correct environment.
 -   VS Code didn't launch when Intel version was installed on M1.
+-   `Updating Toolchain` option didn't work.
 
 ## 0.99.3
 

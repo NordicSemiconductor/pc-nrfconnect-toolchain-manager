@@ -52,7 +52,7 @@ export const installPackage =
                 'toolchain'
             );
 
-            await dispatch(ensureCleanTargetDir(toolchainDir));
+            await dispatch(ensureCleanTargetDir(version, toolchainDir));
 
             fse.mkdirpSync(toolchainDir);
 

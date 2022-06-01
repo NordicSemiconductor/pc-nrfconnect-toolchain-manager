@@ -62,7 +62,7 @@ export const install =
 
         try {
             if (toolchain === undefined) throw new Error('No toolchain found');
-            await dispatch(ensureCleanTargetDir(toolchainDir));
+            await dispatch(ensureCleanTargetDir(version, toolchainDir));
             await dispatch(installToolchain(version, toolchain, toolchainDir));
             await dispatch(cloneNcs(version, toolchainDir, justUpdate));
         } catch (error) {

@@ -10,35 +10,43 @@ import path from 'path';
 
 import { showReduxConfirmDialogAction } from '../../../ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { Dispatch } from '../../../state';
+import { isLegacyEnvironment } from '../environmentReducer';
 import { removeDir } from './removeDir';
 
 export const ensureCleanTargetDir =
-    (toolchainDir: string) => async (dispatch: Dispatch) => {
-        let dir = toolchainDir;
-        let toBeDeleted = null;
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-            const westdir = path.resolve(dir, '.west');
-            if (fs.existsSync(westdir)) {
-                toBeDeleted = westdir;
-                break;
+    (version: string, toolchainDir: string) => async (dispatch: Dispatch) => {
+        if (isLegacyEnvironment(version)) {
+            let dir = toolchainDir;
+            let toBeDeleted = null;
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+                const westdir = path.resolve(dir, '.west');
+                if (fs.existsSync(westdir)) {
+                    toBeDeleted = westdir;
+                    break;
+                }
+                const parent = path.dirname(dir);
+                if (parent === dir) {
+                    break;
+                }
+                dir = parent;
             }
-            const parent = path.dirname(dir);
-            if (parent === dir) {
-                break;
+            if (toBeDeleted) {
+                try {
+                    await dispatch(confirmRemoveDir(toBeDeleted));
+                    await removeDir(dispatch, toBeDeleted);
+                } catch (err) {
+                    throw new Error(
+                        `${toBeDeleted} must be removed to continue installation`
+                    );
+                }
+                await dispatch(ensureCleanTargetDir(version, toolchainDir));
             }
-            dir = parent;
-        }
-        if (toBeDeleted) {
-            try {
-                await dispatch(confirmRemoveDir(toBeDeleted));
-                await removeDir(dispatch, toBeDeleted);
-            } catch (err) {
-                throw new Error(
-                    `${toBeDeleted} must be removed to continue installation`
-                );
-            }
-            await dispatch(ensureCleanTargetDir(toolchainDir));
+        } else {
+            await removeDir(
+                dispatch,
+                path.resolve(toolchainDir, 'manifest.json')
+            );
         }
     };
 
