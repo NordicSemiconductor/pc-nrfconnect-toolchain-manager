@@ -1,4 +1,23 @@
-### Unreleased
+### 0.99.2
+
+### Changed since 0.99.1
+
+-   Provide toolchain for nRF Connect SDK 2.0.0-RC2.
+-   Update nrfutil-toolchain-manager to 0.6.0.
+-   Open shell/command prompt in the SDK folder.
+-   Some fixes for Linux.
+
+### Known issue
+
+-   If you have installed the toolchain for nRF Connect SDK 2.0.0-RC1 you might
+    not see nRF Connect SDK 2.0.0-RC2. To see it:
+    -   Eiter go to the settings and disable “Show only 3 newest minor versions”
+    -   Or uninstall the toolchain for nRF Connect SDK 2.0.0-RC1 and restart the
+        Toolchain Manager.
+
+---
+
+## Unreleased
 
 ### Added
 
