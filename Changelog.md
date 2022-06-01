@@ -48,6 +48,11 @@
     just the SDK, while the toolchain resides next to it in the directory
     `toolchains/v2.0.0/`.
 
+### Fixed
+
+-   On M1 Macs with a case sensitive filesystem when launching VS Code the
+    detection of which version of J-Link is installed was broken.
+
 ## 0.10.3 - 2022-01-19
 
 ### Fixed

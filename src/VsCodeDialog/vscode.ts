@@ -154,7 +154,7 @@ export const getNrfjprogStatus = async () => {
         await spawnAsync('nrfjprog');
         try {
             if (isAppleSilicon) {
-                const stdout = await spawnAsync('file $(which jlinkexe)');
+                const stdout = await spawnAsync('file $(which JLinkExe)');
                 if (checkExecArchitecture(stdout) !== 'x86_64')
                     return NrfjprogStatus.M1_VERSION;
             }
