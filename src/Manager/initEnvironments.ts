@@ -97,6 +97,7 @@ const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
                     toolchainDir: '',
                     type: 'nrfUtil',
                     isInstalled: false,
+                    abortController: new AbortController(),
                 };
             })
             .forEach(environment => {

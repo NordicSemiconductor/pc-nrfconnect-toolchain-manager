@@ -24,9 +24,19 @@ import { downloadToolchain } from './downloadToolchain';
 import { unpack } from './unpack';
 
 export const installToolchain =
-    (version: string, toolchain: Toolchain, toolchainDir: string) =>
+    (
+        version: string,
+        toolchain: Toolchain,
+        toolchainDir: string,
+        abortController?: AbortController
+    ) =>
     async (dispatch: Dispatch) => {
+        if (abortController?.signal.aborted) return;
+
         dispatch(startInstallToolchain(version));
+        abortController?.signal.addEventListener('abort', () => {
+            dispatch(finishInstallToolchain(version, toolchainDir, true));
+        });
 
         if (isLegacyEnvironment(version)) {
             try {
@@ -42,33 +52,36 @@ export const installToolchain =
                 usageData.sendErrorReport(message);
             }
         } else {
-            await installNrfutilToolchain(version, update => {
-                switch (update.type) {
-                    case 'task_begin':
-                        dispatch(
-                            setProgress(
-                                version,
-                                mapKnownDescriptions(
-                                    update.data.task.description
+            await installNrfutilToolchain(
+                version,
+                update => {
+                    switch (update.type) {
+                        case 'task_begin':
+                            dispatch(
+                                setProgress(
+                                    version,
+                                    mapKnownDescriptions(
+                                        update.data.task.description
+                                    )
                                 )
-                            )
-                        );
-                        break;
-                    case 'task_progress':
-                        dispatch(
-                            setProgress(
-                                version,
-                                mapKnownDescriptions(
-                                    update.data.task.description
-                                ),
-                                update.data.progress.progressPercentage
-                            )
-                        );
-                        break;
-                }
-            });
+                            );
+                            break;
+                        case 'task_progress':
+                            dispatch(
+                                setProgress(
+                                    version,
+                                    mapKnownDescriptions(
+                                        update.data.task.description
+                                    ),
+                                    update.data.progress.progressPercentage
+                                )
+                            );
+                            break;
+                    }
+                },
+                abortController?.signal
+            );
         }
-
         dispatch(finishInstallToolchain(version, toolchainDir));
     };
 

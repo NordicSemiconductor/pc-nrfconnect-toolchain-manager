@@ -31,13 +31,21 @@ const Install = ({ environment }: Props) => {
         }
     })();
 
-    if (!isOnlyAvailable(environment)) return null;
-
-    return (
+    const cancel = () => {
+        environment.abortController?.abort();
+    };
+    return isOnlyAvailable(environment) ? (
         <Button
             icon="x-mdi-briefcase-download-outline"
             onClick={onClick}
             label="Install"
+            variant="secondary"
+        />
+    ) : (
+        <Button
+            icon="x-mdi-briefcase-download-outline"
+            onClick={cancel}
+            label="Cancel"
             variant="secondary"
         />
     );

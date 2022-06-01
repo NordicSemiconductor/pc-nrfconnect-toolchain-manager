@@ -16,6 +16,7 @@ const noop = () => {};
 const west = (
     westParams: string[],
     version: string,
+    abortSignal: AbortSignal,
     onUpdate: (update: string) => void = noop,
     onError: (error: string) => void = noop,
     onErrorData: (error: string) => void = noop
@@ -41,11 +42,25 @@ const west = (
         tcm.stdout.on('data', onUpdate);
         tcm.stdout.on('error', onError);
         tcm.stderr.on('data', onErrorData);
-        tcm.on('close', code => (code === 0 ? resolve() : reject()));
+
+        const close = (code: number) => {
+            abortSignal?.removeEventListener('abort', killer);
+            code === 0 ? resolve() : reject();
+        };
+
+        const killer = () => {
+            tcm.off('close', close);
+            tcm.kill();
+            resolve();
+        };
+
+        abortSignal?.addEventListener('abort', killer);
+        tcm.on('close', close);
     });
 
 export const westInit = (
     version: string,
+    abortSignal: AbortSignal,
     onUpdate?: (update: string) => void,
     onError?: (error: string) => void,
     onErrorData?: (error: string) => void
@@ -59,6 +74,7 @@ export const westInit = (
             version,
         ],
         version,
+        abortSignal,
         onUpdate,
         onError,
         onErrorData
@@ -66,7 +82,8 @@ export const westInit = (
 
 export const westUpdate = (
     version: string,
+    abortSignal: AbortSignal,
     onUpdate?: (update: string) => void,
     onError?: (error: string) => void,
     onErrorData?: (error: string) => void
-) => west(['update'], version, onUpdate, onError, onErrorData);
+) => west(['update'], version, abortSignal, onUpdate, onError, onErrorData);

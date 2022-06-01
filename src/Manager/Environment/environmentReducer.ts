@@ -18,11 +18,13 @@ export const startInstallToolchain = (version: string) => ({
 const FINISH_INSTALL_TOOLCHAIN = 'FINISH_INSTALL_TOOLCHAIN';
 export const finishInstallToolchain = (
     version: string,
-    toolchainDir: string
+    toolchainDir: string,
+    aborted = false
 ) => ({
     type: FINISH_INSTALL_TOOLCHAIN,
     version,
     toolchainDir,
+    aborted,
 });
 
 const START_CLONING_SDK = 'START_CLONING_SDK';
@@ -75,13 +77,14 @@ export default (environment: Environment, { type, ...action }: AnyAction) => {
                 ...environment,
                 isInstallingToolchain: true,
             };
+
         case FINISH_INSTALL_TOOLCHAIN:
             return {
                 ...environment,
                 stage: null,
                 isInstallingToolchain: false,
                 toolchainDir: action.toolchainDir,
-                isInstalled: true,
+                isInstalled: !action.aborted,
             };
         case START_CLONING_SDK:
             return { ...environment, isCloningSdk: true };
