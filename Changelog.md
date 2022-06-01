@@ -1,4 +1,13 @@
-### 0.99.2
+## 0.99.3
+
+### Fixes since 0.99.2
+
+-   Install faild when using a different install directory than the default from
+    `nrfutil` (On Windows: `C:\ncs`, on Linux: `~/ncs`).
+-   Opening a bash failed if the folder of the app contained a space (e.g. when
+    using the app from the Release Test source).
+-   Removing and installing again the same toolchain failed unless one reloaded
+    the app in-between.
 
 ### Changed since 0.99.1
 
