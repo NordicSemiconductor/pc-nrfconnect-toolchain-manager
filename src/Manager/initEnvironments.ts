@@ -80,24 +80,31 @@ const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
                 type: 'nrfUtil',
                 isInstalled: true,
             }));
-        const other = searchToolchains()
+        searchToolchains()
             .filter(environment => !isLegacyEnvironment(environment.version))
-            .filter(
-                environment =>
-                    !installed.some(env => env.version === environment.version)
-            )
-            .map<Environment>(environment => ({
-                ...environment,
-                toolchainDir: '',
-                type: 'nrfUtil',
-                isInstalled: false,
-            }));
-        [...installed, ...other].forEach(environment => {
-            dispatch(addEnvironment(environment));
-            logger.info(
-                `Toolchain ${environment.version} has been added to the list`
-            );
-        });
+            .map<Environment>(environment => {
+                const installedEnvironment = installed.find(
+                    env => env.version === environment.version
+                );
+                if (installedEnvironment)
+                    return {
+                        ...installedEnvironment,
+                        ...environment,
+                        type: 'nrfUtil',
+                    };
+                return {
+                    ...environment,
+                    toolchainDir: '',
+                    type: 'nrfUtil',
+                    isInstalled: false,
+                };
+            })
+            .forEach(environment => {
+                dispatch(addEnvironment(environment));
+                logger.info(
+                    `Toolchain ${environment.version} has been added to the list`
+                );
+            });
     } catch (e) {
         logger.error(`Failed to download toolchain index file`);
     }
