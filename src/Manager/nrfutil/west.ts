@@ -43,9 +43,9 @@ const west = (
 
 export const westInit = (
     version: string,
-    onUpdate: (update: string) => void = noop,
-    onError: (error: string) => void = noop,
-    onErrorData: (error: string) => void = noop
+    onUpdate?: (update: string) => void,
+    onError?: (error: string) => void,
+    onErrorData?: (error: string) => void
 ) =>
     west(
         [
@@ -63,7 +63,7 @@ export const westInit = (
 
 export const westUpdate = (
     version: string,
-    onUpdate: (update: string) => void,
-    onError: (error: string) => void,
-    onErrorData: (error: string) => void
+    onUpdate?: (update: string) => void,
+    onError?: (error: string) => void,
+    onErrorData?: (error: string) => void
 ) => west(['update'], version, onUpdate, onError, onErrorData);
