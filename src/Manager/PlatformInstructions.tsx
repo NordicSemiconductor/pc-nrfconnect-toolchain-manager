@@ -25,8 +25,7 @@ export default () => {
     return (
         <Alert variant="warning">
             <b>
-                Linux currently only supports toolchains from version 2.0.0 and
-                later on this app.{' '}
+                Toolchains older than version 2.0.0 must be installed manually.{' '}
             </b>
             <OnlineDocs label="Installation instructions for Linux" />
         </Alert>
