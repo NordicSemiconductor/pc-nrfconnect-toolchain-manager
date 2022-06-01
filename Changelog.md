@@ -1,4 +1,4 @@
-## Unreleased
+## 0.99.4
 
 ### Fixes since 0.99.3
 
