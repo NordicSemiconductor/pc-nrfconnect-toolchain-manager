@@ -7,6 +7,7 @@
 import { spawn } from 'child_process';
 import { mkdirSync } from 'fs';
 
+import { persistedInstallDir as installDir } from '../../persistentStore';
 import sdkPath from '../sdkPath';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
@@ -30,6 +31,8 @@ const west = (
             sdkPath(version),
             '--ncs-version',
             version,
+            '--install-dir',
+            installDir(),
             '--',
             'west',
             ...westParams,
