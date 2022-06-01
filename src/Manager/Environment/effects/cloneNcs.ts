@@ -81,6 +81,7 @@ async function initNrfUtil(version: string, dispatch: Dispatch) {
     logger.info(`Initializing environment for ${version}`);
     await westInit(
         version,
+        undefined,
         error => {
             console.error(error.toString());
         },
