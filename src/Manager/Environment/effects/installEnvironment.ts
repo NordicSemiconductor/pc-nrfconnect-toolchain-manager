@@ -26,6 +26,7 @@ import {
     VsCodeStatus,
 } from '../../../VsCodeDialog/vscodeSlice';
 import { getLatestToolchain } from '../../managerSlice';
+import { isLegacyEnvironment } from '../environmentReducer';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { installToolchain } from './installToolchain';
@@ -35,7 +36,9 @@ export const install =
     async (dispatch: Dispatch) => {
         logger.info(`Start to install toolchain ${version}`);
         const toolchain = getLatestToolchain(toolchains);
-        const toolchainDir = path.resolve(installDir(), version, 'toolchain');
+        const toolchainDir = isLegacyEnvironment(version)
+            ? path.resolve(installDir(), version, 'toolchain')
+            : path.resolve(installDir(), 'toolchains', version);
         logger.info(`Installing ${toolchain?.name} at ${toolchainDir}`);
         logger.debug(`Install with toolchain version ${toolchain?.version}`);
         logger.debug(`Install with sha512 ${toolchain?.sha512}`);
