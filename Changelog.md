@@ -24,6 +24,14 @@
 -   Support nRF Connect SDK 2.0.
 -   Support Linux.
 
+### Changed
+
+-   Split up directories for the SDK and the toolchains, for all versions of nRF
+    Connect SDK beginning with 2.0: Before, e.g. in the directory `v1.8.0/` the
+    SDK and the toolchain were combined. Now the directory `v2.0.0/` contains
+    just the SDK, while the toolchain resides next to it in the directory
+    `toolchains/v2.0.0/`.
+
 ## 0.10.3 - 2022-01-19
 
 ### Fixed
