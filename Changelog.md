@@ -1,3 +1,10 @@
+## Unreleased
+
+### Fixes since 0.99.3
+
+-   Open command prompt for windows now opens in the correct path and in the
+    correct environment.
+
 ## 0.99.3
 
 ### Fixes since 0.99.2

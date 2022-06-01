@@ -55,17 +55,22 @@ const openBash = (environment: Environment) => {
     }
 };
 
-const openCmd = (directory: string) => {
+const openCmd = (environment: Environment) => {
     logger.info('Open command prompt');
     usageData.sendUsageData(
         EventAction.OPEN_CMD,
         `${process.platform}; ${process.arch}`
     );
 
-    exec(
-        `start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`,
-        execCallback
-    );
+    if (environment.type === 'legacy') {
+        const directory = getToolchainDir(environment);
+        exec(
+            `start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`,
+            execCallback
+        );
+    } else {
+        launchTerminal(environment.version);
+    }
 };
 
 const launchLegacyTerminal = {
@@ -129,7 +134,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                     <Dropdown.Item onClick={() => openBash(environment)}>
                         Open bash
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => openCmd(toolchainDir)}>
+                    <Dropdown.Item onClick={() => openCmd(environment)}>
                         Open command prompt
                     </Dropdown.Item>
                 </>
