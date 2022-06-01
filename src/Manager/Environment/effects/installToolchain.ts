@@ -46,25 +46,33 @@ export const installToolchain =
                 switch (update.type) {
                     case 'task_begin':
                         dispatch(
-                            setProgress(version, update.data.task.description)
+                            setProgress(
+                                version,
+                                mapKnownDescriptions(
+                                    update.data.task.description
+                                )
+                            )
                         );
                         break;
                     case 'task_progress':
                         dispatch(
                             setProgress(
                                 version,
-                                update.data.task.description,
+                                mapKnownDescriptions(
+                                    update.data.task.description
+                                ),
                                 update.data.progress.progressPercentage
                             )
                         );
                         break;
                 }
-                if (update.type === 'task_begin')
-                    dispatch(
-                        setProgress(version, update.data.task.description)
-                    );
             });
         }
 
         dispatch(finishInstallToolchain(version, toolchainDir));
     };
+
+const mapKnownDescriptions = (description: string) =>
+    description
+        .replace('Download toolchain', 'Downloading toolchain')
+        .replace('Unpack toolchain', 'Unpacking toolchain');
