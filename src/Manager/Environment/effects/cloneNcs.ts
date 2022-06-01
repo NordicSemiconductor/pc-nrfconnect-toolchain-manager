@@ -79,31 +79,13 @@ async function initNrfUtil(version: string, dispatch: Dispatch) {
     await fse.remove(path.resolve(sdkPath(version), '.west'));
     dispatch(setProgress(version, 'Initializing environment...'));
     logger.info(`Initializing environment for ${version}`);
-    await westInit(
-        version,
-        undefined,
-        error => {
-            console.error(error.toString());
-        },
-        errorData => {
-            console.warn('errorData', errorData.toString());
-        }
-    );
+    await westInit(version);
 }
 
 async function updateNrfUtil(version: string, dispatch: Dispatch) {
-    await westUpdate(
-        version,
-        update => {
-            updateProgress(update, dispatch, version);
-        },
-        error => {
-            console.error(error.toString());
-        },
-        errorData => {
-            console.warn('errorData', errorData.toString());
-        }
-    );
+    await westUpdate(version, update => {
+        updateProgress(update, dispatch, version);
+    });
 }
 
 async function updateLegacy(
