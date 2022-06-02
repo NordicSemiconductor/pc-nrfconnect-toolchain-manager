@@ -78,7 +78,7 @@ export default (environment: Environment, { type, ...action }: AnyAction) => {
         case FINISH_INSTALL_TOOLCHAIN:
             return {
                 ...environment,
-                stage: null,
+                stage: undefined,
                 isInstallingToolchain: false,
                 toolchainDir: action.toolchainDir,
                 isInstalled: true,
@@ -99,7 +99,7 @@ export default (environment: Environment, { type, ...action }: AnyAction) => {
                 progress: undefined,
             };
         case FINISH_REMOVING:
-            return { ...environment, stage: null, isRemoving: false };
+            return { ...environment, stage: undefined, isRemoving: false };
         case SET_PROGRESS:
             return { ...environment, ...action };
         case REMOVE_ENVIRONMENT:
@@ -129,7 +129,7 @@ export const toolchainDir = (env: Environment) => env.toolchainDir;
 export const progress = (env: Environment) => env.progress;
 
 export const progressLabel = (env: Environment) =>
-    isInProgress(env) && env.stage !== undefined
+    isInProgress(env) && env.stage != null
         ? `${env.stage} ${env.progress ?? ''}${
               env.progress !== undefined ? '%' : ''
           }`
