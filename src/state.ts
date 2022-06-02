@@ -64,9 +64,10 @@ export type Dispatch = ThunkDispatch<RootState, null, AnyAction>;
 
 export type TaskEvent = TaskBegin | TaskProgress | TaskEnd;
 
-interface TaskDescriptor {
+export interface TaskDescriptor {
     id: string;
     description: string;
+    name: 'download_toolchain' | 'unpack_toolchain' | 'remove_toolchain';
 }
 
 interface TaskBegin {

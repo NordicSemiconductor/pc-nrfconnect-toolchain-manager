@@ -11,7 +11,7 @@ import {
     usageData,
 } from 'pc-nrfconnect-shared';
 
-import { Dispatch, Toolchain } from '../../../state';
+import { Dispatch, TaskDescriptor, Toolchain } from '../../../state';
 import installNrfutilToolchain from '../../nrfutil/install';
 import {
     finishInstallToolchain,
@@ -46,21 +46,14 @@ export const installToolchain =
                 switch (update.type) {
                     case 'task_begin':
                         dispatch(
-                            setProgress(
-                                version,
-                                mapKnownDescriptions(
-                                    update.data.task.description
-                                )
-                            )
+                            setProgress(version, describe(update.data.task))
                         );
                         break;
                     case 'task_progress':
                         dispatch(
                             setProgress(
                                 version,
-                                mapKnownDescriptions(
-                                    update.data.task.description
-                                ),
+                                describe(update.data.task),
                                 update.data.progress.progressPercentage
                             )
                         );
@@ -72,7 +65,15 @@ export const installToolchain =
         dispatch(finishInstallToolchain(version, toolchainDir));
     };
 
-const mapKnownDescriptions = (description: string) =>
-    description
-        .replace('Download toolchain', 'Downloading toolchain')
-        .replace('Unpack toolchain', 'Unpacking toolchain');
+const describe = (task: TaskDescriptor) => {
+    switch (task.name) {
+        case 'download_toolchain':
+            return 'Downloading toolchain';
+        case 'unpack_toolchain':
+            return 'Unpacking toolchain';
+        case 'remove_toolchain':
+            return 'Removing toolchain';
+        default:
+            return task.description;
+    }
+};
