@@ -35,6 +35,7 @@ import {
     isShowingFirstSteps,
     showInstallPackageDialog,
 } from './managerSlice';
+import NrfUtilEnvDialog from './nrfutil/NrfUtilEvnDialog';
 import PlatformInstructions from './PlatformInstructions';
 import { filterEnvironments } from './versionFilter';
 
@@ -113,6 +114,7 @@ export default () => {
             <InstallDirDialog />
             <ReduxConfirmDialog />
             <VsCodeDialog />
+            <NrfUtilEnvDialog />
         </div>
     );
 };

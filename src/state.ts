@@ -9,6 +9,7 @@ import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 
 import { InstallDirectoryState } from './InstallDir/installDirSlice';
+import { nrfUtilDialogState } from './Manager/nrfutil/nrfUtilDialogSlice';
 import { ConfirmDialogState } from './ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { SettingsState } from './Settings/settingsSlice';
 import { ToolChainSourceState as ToolchainSourceState } from './ToolchainSource/toolchainSourceSlice';
@@ -57,6 +58,7 @@ export type AppState = {
     reduxConfirmDialog: ConfirmDialogState;
     settings: SettingsState;
     vsCode: VsCodeState;
+    nrfUtilDialog: nrfUtilDialogState;
 };
 
 export type RootState = NrfConnectState<AppState>;
