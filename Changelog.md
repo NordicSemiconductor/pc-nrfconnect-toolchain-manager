@@ -55,6 +55,10 @@
 -   On M1 Macs with a case sensitive filesystem when launching VS Code the
     detection of which version of J-Link is installed was broken.
 
+### Known Issues
+
+-   Tested on Ubuntu 20.04. Currently incompatible with Ubuntu 22.04.
+
 ## 0.10.3 - 2022-01-19
 
 ### Fixed
