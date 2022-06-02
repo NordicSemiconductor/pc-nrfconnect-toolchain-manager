@@ -8,7 +8,7 @@ import React, { FC } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import ReactMarkdown from 'react-markdown';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
     hideNrfUtilDialogAction,
@@ -16,10 +16,13 @@ import {
 } from './nrfUtilDialogSlice';
 
 const NrfUtilDialog: FC = () => {
+    const dispatch = useDispatch();
     const { isVisible, content, title } = useSelector(nrfUtilDialogSelector);
 
+    const close = () => dispatch(hideNrfUtilDialogAction());
+
     return (
-        <Modal show={isVisible} onHide={hideNrfUtilDialogAction} backdrop>
+        <Modal show={isVisible} onHide={close} backdrop>
             <Modal.Header closeButton={false}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -27,10 +30,7 @@ const NrfUtilDialog: FC = () => {
                 <ReactMarkdown>{content}</ReactMarkdown>
             </Modal.Body>
             <Modal.Footer>
-                <Button
-                    variant="outline-primary"
-                    onClick={hideNrfUtilDialogAction}
-                >
+                <Button variant="outline-primary" onClick={close}>
                     Close
                 </Button>
             </Modal.Footer>
