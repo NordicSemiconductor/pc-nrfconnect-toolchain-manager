@@ -12,7 +12,7 @@ import nrfutilToolchainManager from './nrfutilToolchainManager';
 
 export const launchWinBash = (version: string) => {
     exec(
-        `"${nrfutilToolchainManager()}"  launch --chdir "${sdkPath(
+        `"${nrfutilToolchainManager()}" launch --chdir "${sdkPath(
             version
         )}" --ncs-version "${version}" --install-dir "${installDir()}" cmd.exe /k start bash.exe`
     );
@@ -20,7 +20,7 @@ export const launchWinBash = (version: string) => {
 
 export const launchTerminal = (version: string) => {
     exec(
-        `"${nrfutilToolchainManager()}"  launch --chdir "${sdkPath(
+        `"${nrfutilToolchainManager()}" launch --chdir "${sdkPath(
             version
         )}" --ncs-version "${version}" --install-dir "${installDir()}" --terminal`
     );
