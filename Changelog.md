@@ -3,7 +3,7 @@
 ### Added
 
 -   Support nRF Connect SDK 2.0.
--   Support Linux.
+-   Support Linux (Ubuntu 20.04).
 
 ### Changed
 
