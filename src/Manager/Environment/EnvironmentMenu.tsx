@@ -17,6 +17,8 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import { showConfirmRemoveDialog } from '../managerSlice';
+import { getEnvAsScript } from '../nrfutil/env';
+import { showNrfUtilDialogAction } from '../nrfutil/nrfUtilDialogSlice';
 import { launchTerminal, launchWinBash } from '../nrfutil/terminal';
 import sdkPath from '../sdkPath';
 import { cloneNcs } from './effects/cloneNcs';
@@ -148,8 +150,17 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                                 toolchainDir,
                                 version
                             );
-                        } else {
+                        } else if (process.platform === 'darwin') {
                             launchTerminal(environment.version);
+                        } else {
+                            dispatch(
+                                showNrfUtilDialogAction({
+                                    title: 'Terminal not supported',
+                                    content:
+                                        'Opening a terminal on Linux is not yet supported from within the Toolchain Manager.\n\n' +
+                                        'For now you can use the nRF Connect for VS Code extension and then use the terminal within VS code.\n',
+                                })
+                            );
                         }
                     }}
                 >

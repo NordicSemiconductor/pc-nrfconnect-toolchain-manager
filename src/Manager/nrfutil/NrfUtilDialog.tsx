@@ -7,6 +7,7 @@
 import React, { FC } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import ReactMarkdown from 'react-markdown';
 import { useSelector } from 'react-redux';
 
 import {
@@ -22,7 +23,9 @@ const NrfUtilDialog: FC = () => {
             <Modal.Header closeButton={false}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{content}</Modal.Body>
+            <Modal.Body>
+                <ReactMarkdown>{content}</ReactMarkdown>
+            </Modal.Body>
             <Modal.Footer>
                 <Button
                     variant="outline-primary"
