@@ -12,7 +12,7 @@ import { ErrorDialogActions, logger, usageData } from 'pc-nrfconnect-shared';
 
 import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';
-import { westInit, westUpdate } from '../../nrfutil/west';
+import { westExport, westInit, westUpdate } from '../../nrfutil/west';
 import sdkPath from '../../sdkPath';
 import {
     finishCloningSdk,
@@ -86,6 +86,7 @@ async function updateNrfUtil(version: string, dispatch: Dispatch) {
     await westUpdate(version, update => {
         updateProgress(update, dispatch, version);
     });
+    await westExport(version);
 }
 
 async function updateLegacy(

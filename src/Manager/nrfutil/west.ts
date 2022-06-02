@@ -16,9 +16,7 @@ const noop = () => {};
 const west = (
     westParams: string[],
     version: string,
-    onUpdate: (update: string) => void = noop,
-    onError: (error: string) => void = noop,
-    onErrorData: (error: string) => void = noop
+    onUpdate: (update: string) => void = noop
 ) =>
     new Promise<void>((resolve, reject) => {
         mkdirSync(sdkPath(version), {
@@ -39,16 +37,12 @@ const west = (
         ]);
 
         tcm.stdout.on('data', onUpdate);
-        tcm.stdout.on('error', onError);
-        tcm.stderr.on('data', onErrorData);
         tcm.on('close', code => (code === 0 ? resolve() : reject()));
     });
 
 export const westInit = (
     version: string,
-    onUpdate?: (update: string) => void,
-    onError?: (error: string) => void,
-    onErrorData?: (error: string) => void
+    onUpdate?: (update: string) => void
 ) =>
     west(
         [
@@ -59,14 +53,15 @@ export const westInit = (
             version,
         ],
         version,
-        onUpdate,
-        onError,
-        onErrorData
+        onUpdate
     );
 
 export const westUpdate = (
     version: string,
-    onUpdate?: (update: string) => void,
-    onError?: (error: string) => void,
-    onErrorData?: (error: string) => void
-) => west(['update'], version, onUpdate, onError, onErrorData);
+    onUpdate?: (update: string) => void
+) => west(['update'], version, onUpdate);
+
+export const westExport = (
+    version: string,
+    onUpdate?: (update: string) => void
+) => west(['zephyr-export'], version, onUpdate);
