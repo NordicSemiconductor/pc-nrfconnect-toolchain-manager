@@ -17,6 +17,7 @@
 
 -   On M1 Macs with a case sensitive filesystem when launching VS Code the
     detection of which version of J-Link is installed was broken.
+-   Icons for the status of VS Code Extensions were not displayed.
 
 ### Known Issues
 

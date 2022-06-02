@@ -94,12 +94,12 @@ describe('VS Code installed but some extensions missing when showing VS Code Dia
         ]);
 
         expect(
-            await screen.findAllByAltText('Not installed', {
+            await screen.findAllByTestId('extension-not-installed', {
                 exact: true,
             })
         ).toHaveLength(3);
         expect(
-            await screen.findAllByAltText('Installed', {
+            await screen.findAllByTestId('extension-installed', {
                 exact: true,
             })
         ).toHaveLength(2);
@@ -132,7 +132,7 @@ describe('Missing VS Code extensions were installed through the dialog but faile
         ]);
 
         expect(
-            await screen.findAllByAltText('Failed to install', {
+            await screen.findAllByTestId('extension-failed', {
                 exact: true,
             })
         ).toHaveLength(1);
