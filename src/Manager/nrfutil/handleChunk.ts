@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import type { TaskEvent } from '../../state';
+import type { TaskEvent } from './task';
 
 export default (onUpdate: (update: TaskEvent) => void) => {
     let buffer = '';

@@ -7,9 +7,9 @@
 import { spawn } from 'child_process';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
-import type { TaskEvent } from '../../state';
 import handleChunk from './handleChunk';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
+import type { TaskEvent } from './task';
 
 export default (version: string, onUpdate: (update: TaskEvent) => void) =>
     new Promise<void>((resolve, reject) => {

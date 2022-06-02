@@ -7,9 +7,9 @@
 import { spawn } from 'child_process';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
-import type { TaskEvent } from '../../state';
 import handleChunk from './handleChunk';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
+import type { TaskEvent } from './task';
 
 const noop = () => {};
 export default (

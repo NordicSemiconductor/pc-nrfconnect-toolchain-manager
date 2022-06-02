@@ -61,38 +61,3 @@ export type AppState = {
 
 export type RootState = NrfConnectState<AppState>;
 export type Dispatch = ThunkDispatch<RootState, null, AnyAction>;
-
-export type TaskEvent = TaskBegin | TaskProgress | TaskEnd;
-
-export interface TaskDescriptor {
-    id: string;
-    description: string;
-    name: 'download_toolchain' | 'unpack_toolchain' | 'remove_toolchain';
-}
-
-interface TaskBegin {
-    type: 'task_begin';
-    data: {
-        task: TaskDescriptor;
-    };
-}
-
-interface TaskProgress {
-    type: 'task_progress';
-    data: {
-        task: TaskDescriptor;
-        progress: {
-            progressPercentage: number;
-            description: string;
-        };
-    };
-}
-
-interface TaskEnd {
-    type: 'task_end';
-    data: {
-        task: TaskDescriptor;
-        message: string;
-        result: 'success' | 'failure';
-    };
-}

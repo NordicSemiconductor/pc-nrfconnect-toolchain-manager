@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { TaskEvent } from '../../state';
 import handleChunk from './handleChunk';
+import { TaskEvent } from './task';
 
 test('parse chunks into messages', () => {
     const handleChunks = (chunks: string[]) => {

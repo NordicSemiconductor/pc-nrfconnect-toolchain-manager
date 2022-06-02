@@ -11,8 +11,9 @@ import {
     usageData,
 } from 'pc-nrfconnect-shared';
 
-import { Dispatch, TaskDescriptor, Toolchain } from '../../../state';
+import { Dispatch, Toolchain } from '../../../state';
 import installNrfutilToolchain from '../../nrfutil/install';
+import { describe } from '../../nrfutil/task';
 import {
     finishInstallToolchain,
     isLegacyEnvironment,
@@ -64,16 +65,3 @@ export const installToolchain =
 
         dispatch(finishInstallToolchain(version, toolchainDir));
     };
-
-const describe = (task: TaskDescriptor) => {
-    switch (task.name) {
-        case 'download_toolchain':
-            return 'Downloading toolchain';
-        case 'unpack_toolchain':
-            return 'Unpacking toolchain';
-        case 'remove_toolchain':
-            return 'Removing toolchain';
-        default:
-            return task.description;
-    }
-};
