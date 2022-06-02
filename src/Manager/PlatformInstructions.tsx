@@ -4,14 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import { execSync } from 'child_process';
-import { string } from 'prop-types';
 
 const isLinux = process.platform === 'linux';
-
-export const enableLinux = false;
 
 const OnlineDocs: FC<{ label: string }> = ({ label }) => (
     <a
@@ -23,46 +19,21 @@ const OnlineDocs: FC<{ label: string }> = ({ label }) => (
     </a>
 );
 
-OnlineDocs.propTypes = {
-    label: string.isRequired,
-};
-
 export default () => {
     if (!isLinux) return null;
-
-    const [isSnapAvailable, setSnapAvailable] = useState(true);
-
-    useEffect(() => {
-        if (!enableLinux || !isLinux) return;
-        try {
-            execSync('which snap');
-        } catch (err) {
-            setSnapAvailable(false);
-        }
-    }, []);
 
     return (
         <>
             <Alert variant="warning">
-                <b>Linux is currently not supported by this app. </b>
+                <b>
+                    Toolchains older than version 2.0.0 must be installed
+                    manually.{' '}
+                </b>
                 <OnlineDocs label="Installation instructions for Linux" />
             </Alert>
-            {!isSnapAvailable && (
-                <Alert variant="danger">
-                    Linux support depends on <b>snap</b> which seems
-                    unavailable, please install the package.
-                    <br />
-                    For more information please follow the manual for your{' '}
-                    <a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href="https://snapcraft.io/docs/installing-snapd"
-                    >
-                        distribution
-                    </a>
-                    .
-                </Alert>
-            )}
+            <Alert variant="warning">
+                <b>Tested on Ubuntu 20.04 (other distributions not tested).</b>
+            </Alert>
         </>
     );
 };

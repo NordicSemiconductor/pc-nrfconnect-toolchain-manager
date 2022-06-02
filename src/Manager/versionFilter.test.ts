@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { Environment } from '../state';
 import { filterEnvironments } from './versionFilter';
 
-const mapToEnvironment = (version: string) => ({
+const mapToEnvironment = (version: string): Environment => ({
+    type: 'legacy',
     version,
     toolchains: [],
     toolchainDir: '',

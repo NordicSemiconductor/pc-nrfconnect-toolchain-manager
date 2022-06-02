@@ -10,7 +10,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import { useDispatch, useSelector } from 'react-redux';
-import { colors, Toggle } from 'pc-nrfconnect-shared';
+import { Toggle } from 'pc-nrfconnect-shared';
 
 import {
     currentInstallDir,
@@ -67,9 +67,7 @@ export default () => {
                                     isToggled={olderEnvironmentsHidden}
                                     labelRight
                                     label="Show only 3 newest minor versions"
-                                    barColor={colors.gray700}
-                                    barColorToggled={colors.nordicBlue}
-                                    variant="secondary"
+                                    variant="primary"
                                 />
                             </div>
 

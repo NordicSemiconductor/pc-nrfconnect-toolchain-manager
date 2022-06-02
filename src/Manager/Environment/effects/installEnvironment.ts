@@ -5,13 +5,16 @@
  */
 
 import path from 'path';
-import { describeError, logger, usageData } from 'pc-nrfconnect-shared';
+import {
+    describeError,
+    ErrorDialogActions,
+    logger,
+    usageData,
+} from 'pc-nrfconnect-shared';
 
-import showErrorDialog from '../../../launcherActions';
 import {
     persistedInstallDir as installDir,
     persistedShowVsCodeDialogDuringInstall,
-    setHasInstalledAnNcs,
     setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
 import { Dispatch, Environment } from '../../../state';
@@ -22,28 +25,23 @@ import {
     showVsCodeDialog,
     VsCodeStatus,
 } from '../../../VsCodeDialog/vscodeSlice';
-import { getLatestToolchain, selectEnvironment } from '../../managerSlice';
+import { getLatestToolchain } from '../../managerSlice';
+import { isLegacyEnvironment } from '../environmentReducer';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { installToolchain } from './installToolchain';
 
 export const install =
-    ({ version, toolchains }: Environment, justUpdate: boolean) =>
+    ({ version, toolchains, type }: Environment, justUpdate: boolean) =>
     async (dispatch: Dispatch) => {
         logger.info(`Start to install toolchain ${version}`);
         const toolchain = getLatestToolchain(toolchains);
-        const toolchainDir = path.resolve(installDir(), version, 'toolchain');
+        const toolchainDir = isLegacyEnvironment(version)
+            ? path.resolve(installDir(), version, 'toolchain')
+            : path.resolve(installDir(), 'toolchains', version);
         logger.info(`Installing ${toolchain?.name} at ${toolchainDir}`);
         logger.debug(`Install with toolchain version ${toolchain?.version}`);
         logger.debug(`Install with sha512 ${toolchain?.sha512}`);
-        usageData.sendUsageData(
-            EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
-            `${version}; ${toolchain?.name}`
-        );
-
-        dispatch(selectEnvironment(version));
-
-        setHasInstalledAnNcs();
 
         if (persistedShowVsCodeDialogDuringInstall()) {
             dispatch(getVsCodeStatus()).then(status => {
@@ -55,14 +53,21 @@ export const install =
             setPersistedShowVsCodeDialogDuringInstall(false);
         }
 
+        usageData.sendUsageData(
+            type === 'legacy'
+                ? EventAction.INSTALL_TOOLCHAIN_FROM_INDEX
+                : EventAction.INSTALL_TOOLCHAIN_FROM_NRFUTIL,
+            `${version}; ${toolchain?.name}`
+        );
+
         try {
             if (toolchain === undefined) throw new Error('No toolchain found');
-            await dispatch(ensureCleanTargetDir(toolchainDir));
+            await dispatch(ensureCleanTargetDir(version, toolchainDir));
             await dispatch(installToolchain(version, toolchain, toolchainDir));
             await dispatch(cloneNcs(version, toolchainDir, justUpdate));
         } catch (error) {
             const message = describeError(error);
-            dispatch(showErrorDialog(`${message}`));
+            dispatch(ErrorDialogActions.showDialog(`${message}`));
             usageData.sendErrorReport(`${message}`);
         }
     };

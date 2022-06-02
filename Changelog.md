@@ -1,8 +1,28 @@
-## Unreleased
+## 1.0.0 - 2022-06-02
+
+### Added
+
+-   Support nRF Connect SDK 2.0.
+-   Support Linux.
+
+### Changed
+
+-   Split up directories for the SDK and the toolchains, for all versions of nRF
+    Connect SDK beginning with 2.0: Before, e.g. in the directory `v1.8.0/` the
+    SDK and the toolchain were combined. Now the directory `v2.0.0/` contains
+    just the SDK, while the toolchain resides next to it in the directory
+    `toolchains/v2.0.0/`.
 
 ### Fixed
 
+-   On M1 Macs with a case sensitive filesystem when launching VS Code the
+    detection of which version of J-Link is installed was broken.
 -   Icons for the status of VS Code Extensions were not displayed.
+
+### Known Issues
+
+-   Tested on Ubuntu 20.04. Currently incompatible with Ubuntu 22.04.
+-   Opening a terminal on Linux is not supported yet.
 
 ## 0.10.3 - 2022-01-19
 

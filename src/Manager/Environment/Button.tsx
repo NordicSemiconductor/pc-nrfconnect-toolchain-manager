@@ -8,7 +8,6 @@ import React from 'react';
 import BootstrapButton, {
     ButtonProps as BootstrapProps,
 } from 'react-bootstrap/Button';
-import { string } from 'prop-types';
 
 import './style.scss';
 
@@ -27,9 +26,5 @@ const Button = ({ icon, label, ...props }: ButtonProps) => (
         {label}
     </BootstrapButton>
 );
-Button.propTypes = {
-    icon: string.isRequired,
-    label: string.isRequired,
-};
 
 export default Button;

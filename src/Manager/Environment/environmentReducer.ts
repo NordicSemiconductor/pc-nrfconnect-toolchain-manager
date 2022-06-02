@@ -5,6 +5,7 @@
  */
 
 import { AnyAction } from 'redux';
+import { lte } from 'semver';
 
 import type { Environment } from '../../state';
 
@@ -53,7 +54,7 @@ const SET_PROGRESS = 'SET_PROGRESS';
 export const setProgress = (
     version: string,
     stage: string,
-    progress = 100
+    progress: number | undefined = undefined
 ) => ({
     type: SET_PROGRESS,
     version,
@@ -67,44 +68,44 @@ export const removeEnvironmentReducer = (version: string) => ({
     version,
 });
 
-export default (state: Environment, { type, ...action }: AnyAction) => {
+export default (environment: Environment, { type, ...action }: AnyAction) => {
     switch (type) {
         case START_INSTALL_TOOLCHAIN:
             return {
-                ...state,
+                ...environment,
                 isInstallingToolchain: true,
             };
         case FINISH_INSTALL_TOOLCHAIN:
             return {
-                ...state,
-                stage: null,
+                ...environment,
+                stage: undefined,
                 isInstallingToolchain: false,
                 toolchainDir: action.toolchainDir,
                 isInstalled: true,
             };
         case START_CLONING_SDK:
-            return { ...state, isCloningSdk: true };
+            return { ...environment, isCloningSdk: true };
         case FINISH_CLONING_SDK:
             return {
-                ...state,
+                ...environment,
                 isCloningSdk: false,
                 isWestPresent: action.isWestPresent,
             };
         case START_REMOVING:
             return {
-                ...state,
+                ...environment,
                 stage: 'Removing...',
                 isRemoving: true,
-                progress: 100,
+                progress: undefined,
             };
         case FINISH_REMOVING:
-            return { ...state, stage: null, isRemoving: false };
+            return { ...environment, stage: undefined, isRemoving: false };
         case SET_PROGRESS:
-            return { ...state, ...action };
+            return { ...environment, ...action };
         case REMOVE_ENVIRONMENT:
-            return { ...state, isInstalled: false, isWestPresent: false };
+            return { ...environment, isInstalled: false, isWestPresent: false };
         default:
-            return state;
+            return environment;
     }
 };
 
@@ -124,13 +125,15 @@ export const canBeDownloaded = (env: Environment | undefined) =>
 
 export const version = (env: Environment) => env.version;
 export const toolchainDir = (env: Environment) => env.toolchainDir;
-export const canBeOpenedInSegger = (env: Environment) => env.isWestPresent;
 
 export const progress = (env: Environment) => env.progress;
 
 export const progressLabel = (env: Environment) =>
-    isInProgress(env) && env.progress !== undefined
-        ? `${env.stage || ''}${
-              env.progress % 100 !== 0 ? ` ${env.progress}%` : ''
+    isInProgress(env) && env.stage != null
+        ? `${env.stage} ${env.progress ?? ''}${
+              env.progress !== undefined ? '%' : ''
           }`
         : '';
+
+export const isLegacyEnvironment = (environmentVersion: string) =>
+    lte(environmentVersion, 'v1.9.99');

@@ -5,12 +5,19 @@
  */
 
 import fse from 'fs-extra';
-import { describeError, usageData } from 'pc-nrfconnect-shared';
+import {
+    describeError,
+    ErrorDialogActions,
+    usageData,
+} from 'pc-nrfconnect-shared';
 
-import showErrorDialog from '../../../launcherActions';
 import { Dispatch, Toolchain } from '../../../state';
+import installNrfutilToolchain from '../../nrfutil/install';
+import { describe } from '../../nrfutil/task';
 import {
     finishInstallToolchain,
+    isLegacyEnvironment,
+    setProgress,
     startInstallToolchain,
 } from '../environmentReducer';
 import { updateConfigFile } from '../segger';
@@ -22,17 +29,38 @@ export const installToolchain =
     async (dispatch: Dispatch) => {
         dispatch(startInstallToolchain(version));
 
-        try {
-            fse.mkdirpSync(toolchainDir);
-            const packageLocation = await dispatch(
-                downloadToolchain(version, toolchain)
-            );
-            await dispatch(unpack(version, packageLocation, toolchainDir));
-            updateConfigFile(toolchainDir);
-        } catch (error) {
-            const message = describeError(error);
-            dispatch(showErrorDialog(message));
-            usageData.sendErrorReport(message);
+        if (isLegacyEnvironment(version)) {
+            try {
+                fse.mkdirpSync(toolchainDir);
+                const packageLocation = await dispatch(
+                    downloadToolchain(version, toolchain)
+                );
+                await dispatch(unpack(version, packageLocation, toolchainDir));
+                updateConfigFile(toolchainDir);
+            } catch (error) {
+                const message = describeError(error);
+                dispatch(ErrorDialogActions.showDialog(message));
+                usageData.sendErrorReport(message);
+            }
+        } else {
+            await installNrfutilToolchain(version, update => {
+                switch (update.type) {
+                    case 'task_begin':
+                        dispatch(
+                            setProgress(version, describe(update.data.task))
+                        );
+                        break;
+                    case 'task_progress':
+                        dispatch(
+                            setProgress(
+                                version,
+                                describe(update.data.task),
+                                update.data.progress.progressPercentage
+                            )
+                        );
+                        break;
+                }
+            });
         }
 
         dispatch(finishInstallToolchain(version, toolchainDir));

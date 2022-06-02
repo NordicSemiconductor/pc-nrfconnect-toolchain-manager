@@ -18,11 +18,15 @@ import {
 import { Dispatch, Environment } from '../state';
 import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
+import { isLegacyEnvironment } from './Environment/environmentReducer';
 import {
     addEnvironment,
     addLocallyExistingEnvironment,
     clearEnvironments,
 } from './managerSlice';
+import listToolchains from './nrfutil/list';
+import logNrfutilVersion from './nrfutil/logVersion';
+import searchToolchains from './nrfutil/search';
 
 const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
     try {
@@ -50,6 +54,7 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
                 );
                 dispatch(
                     addLocallyExistingEnvironment({
+                        type: 'legacy',
                         version,
                         toolchainDir,
                         isWestPresent: westPresent,
@@ -61,6 +66,47 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
         usageData.sendErrorReport(
             `Fail to detect locally existing environments with error: ${e}`
         );
+    }
+};
+
+const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
+    try {
+        const installed = listToolchains()
+            .filter(toolchain => !isLegacyEnvironment(toolchain.ncs_version))
+            .map<Environment>(toolchain => ({
+                version: toolchain.ncs_version,
+                toolchainDir: toolchain.path,
+                toolchains: [],
+                type: 'nrfUtil',
+                isInstalled: true,
+            }));
+        searchToolchains()
+            .filter(environment => !isLegacyEnvironment(environment.version))
+            .map<Environment>(environment => {
+                const installedEnvironment = installed.find(
+                    env => env.version === environment.version
+                );
+                if (installedEnvironment)
+                    return {
+                        ...installedEnvironment,
+                        ...environment,
+                        type: 'nrfUtil',
+                    };
+                return {
+                    ...environment,
+                    toolchainDir: '',
+                    type: 'nrfUtil',
+                    isInstalled: false,
+                };
+            })
+            .forEach(environment => {
+                dispatch(addEnvironment(environment));
+                logger.info(
+                    `Toolchain ${environment.version} has been added to the list`
+                );
+            });
+    } catch (e) {
+        logger.error(`Failed to download toolchain index file`);
     }
 };
 
@@ -83,12 +129,16 @@ const downloadIndex = (dispatch: Dispatch) => {
                 logger.debug(
                     `Index json has been downloaded with result: ${result}`
                 );
-                JSON.parse(result).forEach((environment: Environment) => {
-                    dispatch(addEnvironment(environment));
-                    logger.info(
-                        `Toolchain ${environment.version} has been added to the list`
-                    );
-                });
+                JSON.parse(result).forEach(
+                    (environment: Omit<Environment, 'type'>) => {
+                        dispatch(
+                            addEnvironment({ ...environment, type: 'legacy' })
+                        );
+                        logger.info(
+                            `Toolchain ${environment.version} has been added to the list`
+                        );
+                    }
+                );
             } catch (e) {
                 usageData.sendErrorReport(
                     `Fail to parse index json file with error: ${e}`
@@ -110,8 +160,9 @@ const downloadIndex = (dispatch: Dispatch) => {
     request.end();
 };
 
-export default (dispatch: Dispatch) => {
+export default (dispatch: Dispatch): void => {
     logger.info('Initializing environments...');
+    logNrfutilVersion();
     const dir = path.dirname(installDir());
     if (
         process.platform === 'darwin' &&
@@ -128,5 +179,8 @@ export default (dispatch: Dispatch) => {
     fse.mkdirpSync(installDir());
     dispatch(clearEnvironments());
     detectLocallyExistingEnvironments(dispatch);
-    downloadIndex(dispatch);
+    if (process.platform !== 'linux') {
+        downloadIndex(dispatch);
+    }
+    downloadIndexByNrfUtil(dispatch);
 };

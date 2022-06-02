@@ -49,9 +49,9 @@ const customRender = (
     actions: AnyAction[] = [],
     options: RenderOptions = {}
 ) => {
-    const Wrapper: FC = props => {
-        return <Provider store={createPreparedStore(actions)} {...props} />;
-    };
+    const Wrapper: FC = props => (
+        <Provider store={createPreparedStore(actions)} {...props} />
+    );
     return render(element, { wrapper: Wrapper, ...options });
 };
 

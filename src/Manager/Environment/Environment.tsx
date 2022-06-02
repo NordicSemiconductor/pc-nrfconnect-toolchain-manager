@@ -12,7 +12,6 @@ import Row from 'react-bootstrap/Row';
 import NrfCard from '../../NrfCard/NrfCard';
 import { Environment as Model } from '../../state';
 import EnvironmentMenu from './EnvironmentMenu';
-import environmentPropType from './environmentPropType';
 import Install from './Install';
 import Name from './Name';
 import OpenSegger from './OpenSegger';
@@ -48,7 +47,5 @@ const Environment = ({ environment }: Props) => (
         <ProgressBar environment={environment} />
     </NrfCard>
 );
-
-Environment.propTypes = { environment: environmentPropType.isRequired };
 
 export default Environment;

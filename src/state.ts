@@ -9,6 +9,7 @@ import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 
 import { InstallDirectoryState } from './InstallDir/installDirSlice';
+import { nrfUtilDialogState } from './Manager/nrfutil/nrfUtilDialogSlice';
 import { ConfirmDialogState } from './ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { SettingsState } from './Settings/settingsSlice';
 import { ToolChainSourceState as ToolchainSourceState } from './ToolchainSource/toolchainSourceSlice';
@@ -22,17 +23,20 @@ export type Toolchain = {
 };
 
 export type Environment = {
+    type: 'nrfUtil' | 'legacy';
     version: string;
-    toolchainDir: string;
-    isWestPresent?: boolean;
-    isInstalled?: boolean;
     toolchains: Toolchain[];
+    toolchainDir: string;
+
+    isInstalled?: boolean;
+    isWestPresent?: boolean;
     isInstallingToolchain?: boolean;
     isCloningSdk?: boolean;
     isRemoving?: boolean;
     progress?: number;
-    stage?: 'Downloading' | 'Installing';
+    stage?: string;
 };
+
 export type Environments = {
     [key: string]: Environment;
 };
@@ -54,6 +58,7 @@ export type AppState = {
     reduxConfirmDialog: ConfirmDialogState;
     settings: SettingsState;
     vsCode: VsCodeState;
+    nrfUtilDialog: nrfUtilDialogState;
 };
 
 export type RootState = NrfConnectState<AppState>;

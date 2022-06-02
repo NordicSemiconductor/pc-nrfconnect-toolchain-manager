@@ -48,7 +48,10 @@ const remove = (environments: Environments, version: string) => {
 };
 
 const maybeCallEnvironmentReducer = (state: Manager, action: AnyAction) => {
-    if (action.version == null || state.environments[action.version] == null) {
+    const version = action.version ?? action.payload?.version;
+    const environment = state.environments[version];
+
+    if (!environment) {
         return state;
     }
 
@@ -56,10 +59,7 @@ const maybeCallEnvironmentReducer = (state: Manager, action: AnyAction) => {
         ...state,
         environments: {
             ...state.environments,
-            [action.version]: environmentReducer(
-                state.environments[action.version],
-                action
-            ),
+            [version]: environmentReducer(environment, action),
         },
     };
 };
@@ -111,6 +111,7 @@ const managerSlice = createSlice({
         addLocallyExistingEnvironment: (
             state,
             action: PayloadAction<{
+                type: 'legacy' | 'nrfUtil';
                 version: string;
                 toolchainDir: string;
                 isWestPresent: boolean;
@@ -149,6 +150,7 @@ export const {
     },
 } = managerSlice;
 
+// eslint-disable-next-line default-param-last -- Because this is a reducer, where this is the required signature
 export default (state = initialState(), action: AnyAction) => {
     const stateAfterEnvironmentReducer = maybeCallEnvironmentReducer(
         state,
@@ -158,7 +160,7 @@ export default (state = initialState(), action: AnyAction) => {
 };
 
 export const getLatestToolchain = (toolchains: Toolchain[]) =>
-    sortedByVersion(toolchains).pop();
+    sortedByVersion(toolchains).slice(-1)[0];
 
 export const isRemoveDirDialogVisible = ({ app }: RootState) =>
     app.manager.isRemoveDirDialogVisible;

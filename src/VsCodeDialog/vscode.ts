@@ -89,17 +89,20 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
             status = VsCodeStatus.MISSING_EXTENSIONS;
         else {
             const nrfjprog = await getNrfjprogStatus();
-            if (isAppleSilicon) {
-                const vscode = await spawnAsync(
-                    'file "$(dirname "$(readlink $(which code))")/../../../MacOS/Electron"'
-                );
-                if ((await checkExecArchitecture(vscode)) !== 'x86_64')
-                    status = VsCodeStatus.INSTALL_INTEL;
-            } else if (nrfjprog === NrfjprogStatus.NOT_INSTALLED)
+
+            if (nrfjprog === NrfjprogStatus.NOT_INSTALLED)
                 status = VsCodeStatus.MISSING_NRFJPROG;
             else if (nrfjprog === NrfjprogStatus.M1_VERSION)
                 status = VsCodeStatus.NRFJPROG_INSTALL_INTEL;
             else status = VsCodeStatus.INSTALLED;
+
+            if (isAppleSilicon) {
+                const vscode = await spawnAsync(
+                    'file "$(dirname "$(readlink $(which code))")/../../../MacOS/Electron"'
+                );
+                if (checkExecArchitecture(vscode) !== 'x86_64')
+                    status = VsCodeStatus.INSTALL_INTEL;
+            }
         }
     } catch {
         status = VsCodeStatus.NOT_INSTALLED;
@@ -154,7 +157,7 @@ export const getNrfjprogStatus = async () => {
         await spawnAsync('nrfjprog');
         try {
             if (isAppleSilicon) {
-                const stdout = await spawnAsync('file $(which jlinkexe)');
+                const stdout = await spawnAsync('file $(which JLinkExe)');
                 if (checkExecArchitecture(stdout) !== 'x86_64')
                     return NrfjprogStatus.M1_VERSION;
             }
@@ -181,8 +184,8 @@ const checkExecArchitecture = (stdout: string) => {
     return 'arm';
 };
 
-const spawnAsync = (cmd: string, params?: string[]) => {
-    return new Promise<string>((resolve, reject) => {
+const spawnAsync = (cmd: string, params?: string[]) =>
+    new Promise<string>((resolve, reject) => {
         const codeProcess = spawn(cmd, params, {
             shell: true,
             env: {
@@ -207,7 +210,6 @@ const spawnAsync = (cmd: string, params?: string[]) => {
             return reject();
         });
     });
-};
 
 export const openVsCode = () => {
     usageData.sendUsageData(EventAction.OPEN_VS_CODE, process.platform);

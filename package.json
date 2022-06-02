@@ -1,6 +1,6 @@
 {
     "name": "pc-nrfconnect-toolchain-manager",
-    "version": "0.10.3",
+    "version": "1.0.0",
     "description": "Install and manage tools to develop with the nRF Connect SDK (NCS)",
     "displayName": "Toolchain Manager",
     "repository": {
@@ -16,6 +16,7 @@
     "files": [
         "dist/",
         "resources/icon.*",
+        "resources/nrfutil-toolchain-manager",
         "LICENSE"
     ],
     "scripts": {
@@ -34,13 +35,13 @@
         "@testing-library/react": "^12.1.1",
         "@types/fs-extra": "^9.0.12",
         "@types/node": "^14.14.33",
-        "@types/react": "^17.0.44",
-        "@types/react-dom": "^17.0.9",
+        "@types/react": "17.0.45",
+        "@types/react-dom": "17.0.16",
         "@types/react-redux": "^7.1.18",
         "@types/semver": "^7.3.8",
         "electron": "^13.5.1",
         "electron-store": "^8.0.0",
-        "pc-nrfconnect-shared": "https://github.com/NordicSemiconductor/pc-nrfconnect-shared#v6.0.5",
+        "pc-nrfconnect-shared": "git+https://github.com/NordicSemiconductor/pc-nrfconnect-shared.git#v6.3.1",
         "react": "16.13.1",
         "react-dom": "16.13.1",
         "react-redux": "7.2.0",
@@ -58,7 +59,7 @@
         "semver"
     ],
     "eslintConfig": {
-        "extends": "./node_modules/pc-nrfconnect-shared/config/eslintrc"
+        "extends": "./node_modules/pc-nrfconnect-shared/config/eslintrc.js"
     },
     "prettier": "./node_modules/pc-nrfconnect-shared/config/prettier.config.js"
 }

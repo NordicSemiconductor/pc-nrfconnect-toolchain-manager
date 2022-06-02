@@ -6,12 +6,11 @@
 
 import fse from 'fs-extra';
 import path from 'path';
-import { usageData } from 'pc-nrfconnect-shared';
+import { ErrorDialogActions, usageData } from 'pc-nrfconnect-shared';
 
-import showErrorDialog from '../../../launcherActions';
 import { Dispatch } from '../../../state';
 
-export const removeDir = (srcDir: string) => async (dispatch: Dispatch) => {
+export const removeDir = async (dispatch: Dispatch, srcDir: string) => {
     let renameOfDirSuccessful = false;
     try {
         const toBeDeletedDir = path.resolve(srcDir, '..', 'toBeDeleted');
@@ -24,7 +23,7 @@ export const removeDir = (srcDir: string) => async (dispatch: Dispatch) => {
             `Failed to remove ${srcDir}, ${message}. ` +
             'Please close any application or window that might keep this ' +
             'environment locked, then try to remove it again.';
-        dispatch(showErrorDialog(errorMsg));
+        dispatch(ErrorDialogActions.showDialog(errorMsg));
         usageData.sendErrorReport(errorMsg);
     }
     return renameOfDirSuccessful;

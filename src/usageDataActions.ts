@@ -14,6 +14,7 @@ enum EventAction {
     LAUNCH_SETTINGS_VIEW = 'Launch settings view',
     LAUNCH_ABOUT_VIEW = 'Launch about view',
     INSTALL_TOOLCHAIN_FROM_INDEX = 'Install toolchain from index',
+    INSTALL_TOOLCHAIN_FROM_NRFUTIL = 'Install toolchain from nrfutil',
     INSTALL_TOOLCHAIN_FROM_PATH = 'Install toolchain from path',
     DOWNLOAD_TOOLCHAIN = 'Download toolchain',
     DOWNLOAD_TOOLCHAIN_SUCCESS = 'Download toolchain successfully',

@@ -8,8 +8,7 @@ import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { useDispatch } from 'react-redux';
-import { require as remoteRequire } from '@electron/remote';
-import { exec, ExecException, execSync } from 'child_process';
+import { exec, ExecException } from 'child_process';
 import { shell } from 'electron';
 import { readdirSync } from 'fs';
 import path from 'path';
@@ -18,9 +17,11 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import { showConfirmRemoveDialog } from '../managerSlice';
+import { showNrfUtilDialogAction } from '../nrfutil/nrfUtilDialogSlice';
+import { launchTerminal, launchWinBash } from '../nrfutil/terminal';
+import sdkPath from '../sdkPath';
 import { cloneNcs } from './effects/cloneNcs';
 import { install } from './effects/installEnvironment';
-import environmentPropType from './environmentPropType';
 import {
     isInstalled,
     toolchainDir as getToolchainDir,
@@ -40,30 +41,40 @@ const execCallback = (
     if (stdout) logger.debug(stdout);
 };
 
-const { exec: remoteExec } = remoteRequire('child_process');
-
-const openBash = (directory: string) => {
+const openBash = (environment: Environment) => {
     logger.info('Open bash');
     usageData.sendUsageData(
         EventAction.OPEN_BASH,
         `${process.platform}; ${process.arch}`
     );
-    exec(`"${path.resolve(directory, 'git-bash.exe')}"`, execCallback);
+
+    if (environment.type === 'legacy') {
+        const directory = getToolchainDir(environment);
+        exec(`"${path.resolve(directory, 'git-bash.exe')}"`, execCallback);
+    } else {
+        launchWinBash(environment.version);
+    }
 };
 
-const openCmd = (directory: string) => {
+const openCmd = (environment: Environment) => {
     logger.info('Open command prompt');
     usageData.sendUsageData(
         EventAction.OPEN_CMD,
         `${process.platform}; ${process.arch}`
     );
-    exec(
-        `start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`,
-        execCallback
-    );
+
+    if (environment.type === 'legacy') {
+        const directory = getToolchainDir(environment);
+        exec(
+            `start cmd /k "${path.resolve(directory, 'git-cmd.cmd')}"`,
+            execCallback
+        );
+    } else {
+        launchTerminal(environment.version);
+    }
 };
 
-const openTerminal = {
+const launchLegacyTerminal = {
     darwin: (toolchainDir: string) => {
         logger.info('Open terminal');
         usageData.sendUsageData(
@@ -89,33 +100,6 @@ END
             execCallback
         );
     },
-    linux: (toolchainDir: string) => {
-        logger.info('Open terminal');
-        usageData.sendUsageData(
-            EventAction.OPEN_TERMINAL,
-            `${process.platform}; ${process.arch}`
-        );
-        const terminalApp = execSync(
-            'gsettings get org.gnome.desktop.default-applications.terminal exec'
-        )
-            .toString()
-            .trim()
-            .replace(/'/g, '');
-
-        const e = [
-            `PATH=${toolchainDir}/bin:${toolchainDir}/usr/bin:${toolchainDir}/segger_embedded_studio/bin:${process.env.PATH}`,
-            `PYTHONHOME=${toolchainDir}/lib/python3.8`,
-            `PYTHONPATH=${toolchainDir}/usr/lib/python3.8:${toolchainDir}/lib/python3.8/site-packages:${toolchainDir}/usr/lib/python3/dist-packages:${toolchainDir}/usr/lib/python3.8/lib-dynload`,
-            `GIT_EXEC_PATH=${toolchainDir}/usr/lib/git-core`,
-            `LD_LIBRARY_PATH=/var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd/void:${toolchainDir}/lib/python3.8/site-packages/.libs_cffi_backend:${toolchainDir}/lib/python3.8/site-packages/Pillow.libs:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/segger_embedded_studio/bin:${toolchainDir}/usr/lib/x86_64-linux-gnu:${toolchainDir}/lib:${toolchainDir}/usr/lib:${toolchainDir}/lib/x86_64-linux-gnu:${toolchainDir}/usr/lib/x86_64-linux-gnu`,
-        ].join(' ');
-
-        remoteExec(
-            `${terminalApp} -- bash -c "${e} bash"`,
-            { cwd: path.dirname(toolchainDir) },
-            execCallback
-        );
-    },
 };
 
 const openDirectory = (directory: string) => {
@@ -131,6 +115,9 @@ type EnvironmentMenuProps = { environment: Environment };
 const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
     const dispatch = useDispatch();
     const toolchainDir = getToolchainDir(environment);
+    const isLegacyEnv = environment.type === 'legacy';
+    const sdkDir = () =>
+        isLegacyEnv ? path.dirname(toolchainDir) : sdkPath(environment.version);
     const version = getVersion(environment);
     const { platform } = process;
 
@@ -145,28 +132,42 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
         >
             {process.platform === 'win32' && (
                 <>
-                    <Dropdown.Item onClick={() => openBash(toolchainDir)}>
+                    <Dropdown.Item onClick={() => openBash(environment)}>
                         Open bash
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={() => openCmd(toolchainDir)}>
+                    <Dropdown.Item onClick={() => openCmd(environment)}>
                         Open command prompt
                     </Dropdown.Item>
                 </>
             )}
             {process.platform !== 'win32' && (
                 <Dropdown.Item
-                    onClick={() =>
-                        // @ts-expect-error We don't support all platforms
-                        openTerminal[platform](toolchainDir, version)
-                    }
+                    onClick={() => {
+                        if (isLegacyEnv) {
+                            // @ts-expect-error We don't support all platforms
+                            launchLegacyTerminal[platform](
+                                toolchainDir,
+                                version
+                            );
+                        } else if (process.platform === 'darwin') {
+                            launchTerminal(environment.version);
+                        } else {
+                            dispatch(
+                                showNrfUtilDialogAction({
+                                    title: 'Terminal not supported',
+                                    content:
+                                        'Opening a terminal on Linux is not yet supported from within the Toolchain Manager.\n\n' +
+                                        'For now you can use the nRF Connect for VS Code extension and then use the terminal within VS code.\n',
+                                })
+                            );
+                        }
+                    }}
                 >
                     Open Terminal
                 </Dropdown.Item>
             )}
             <Dropdown.Divider />
-            <Dropdown.Item
-                onClick={() => openDirectory(path.dirname(toolchainDir))}
-            >
+            <Dropdown.Item onClick={() => openDirectory(sdkDir())}>
                 Open SDK directory
             </Dropdown.Item>
             <Dropdown.Item onClick={() => openDirectory(toolchainDir)}>
@@ -190,6 +191,5 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
         </DropdownButton>
     );
 };
-EnvironmentMenu.propTypes = { environment: environmentPropType.isRequired };
 
 export default EnvironmentMenu;

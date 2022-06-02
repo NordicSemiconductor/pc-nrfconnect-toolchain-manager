@@ -8,7 +8,6 @@ import React from 'react';
 import BootstrapProgressBar from 'react-bootstrap/ProgressBar';
 
 import { Environment } from '../../state';
-import environmentPropType from './environmentPropType';
 import {
     isCloningSdk,
     isInProgress,
@@ -35,17 +34,20 @@ const className = (env: Environment) => {
     }
 };
 
+const progressOrFullBar = (environment: Environment) =>
+    isInProgress(environment) && progress(environment) === undefined
+        ? 100
+        : progress(environment);
+
 type Props = { environment: Environment };
 
 const ProgressBar = ({ environment }: Props) => (
     <BootstrapProgressBar
-        now={progress(environment)}
+        now={progressOrFullBar(environment)}
         striped={isInProgress(environment)}
         animated={isInProgress(environment)}
         className={className(environment)}
     />
 );
-
-ProgressBar.propTypes = { environment: environmentPropType.isRequired };
 
 export default ProgressBar;

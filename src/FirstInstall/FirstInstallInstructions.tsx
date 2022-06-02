@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { sep } from 'path';
 
 import { currentInstallDir } from '../InstallDir/installDirSlice';
+import { isLegacyEnvironment } from '../Manager/Environment/environmentReducer';
 import { hideFirstSteps, selectedVersion } from '../Manager/managerSlice';
 
 import './firstInstallInstructions.scss';
@@ -142,6 +143,217 @@ const NewSteps = () => (
     </ul>
 );
 
+const VSCode = () => (
+    <div>
+        <Card body className="selectable first-install nrf-card">
+            <h4>Building with nRF Connect for VS Code</h4>
+            <p>
+                Once the installation of the tools and the nRF Connect SDK is
+                finished, complete the following steps to build nRF Connect SDK
+                projects with VS Code.
+            </p>
+            <ol>
+                <li>
+                    Start Visual Studio Code by clicking <b>Open VS Code</b>
+                </li>
+                <li>
+                    Access the Welcome page by one of the following:
+                    <ul>
+                        <li>
+                            Clicking on the nRF Connect for VS Code icon to the
+                            left in VS Code.
+                        </li>
+                        <li>
+                            Open the Welcome Page by clicking{' '}
+                            <b>Open Welcome page</b>
+                        </li>
+                        <li>
+                            Using the nRF Connect: Welcome command available in
+                            the Command Palette (<code>Ctrl+Shift+P</code> or{' '}
+                            <code>⇧+⌘+P</code>
+                            ).
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    Set the default nRF Connect SDK and nRF Connect Toolchain in
+                    the Quick Setup feature located on the extension&apos;s
+                    Welcome page.
+                    <Alert variant="primary">
+                        <p>
+                            You can browse to your manual installations using
+                            the <b>Browse...</b> option.
+                        </p>
+                        <p>
+                            Alternatively, if the toolchain is installed on the
+                            system path, you can set the toolchain value to{' '}
+                            <code>PATH</code>.
+                        </p>
+                    </Alert>
+                </li>
+                <li>
+                    Select <b>Add an existing application to workspace...</b>
+                    <Alert variant="primary">
+                        Alternatively create a new application by clicking{' '}
+                        <b>Create a new application from sample...</b>
+                    </Alert>
+                    You can now work with the project in the IDE.
+                </li>
+                <li>
+                    To build and program an application:
+                    <ol type="a">
+                        <li>
+                            Create a build configuration by clicking{' '}
+                            <b>Add build configuration</b>.
+                            <ol>
+                                <li>
+                                    Select the board you are developing for.
+                                </li>
+                                <li>
+                                    Edit the remaining values based on your
+                                    needs.
+                                </li>
+                                <li>
+                                    Click <b>Generate Config</b>
+                                </li>
+                            </ol>
+                        </li>
+                        <li>
+                            Select <b>Build</b>
+                        </li>
+                        <li>
+                            When the build completes, you can program the sample
+                            to a connected board by clicking <b>Flash</b>
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    Additional documentation and{' '}
+                    <a
+                        target="_blank"
+                        rel="noreferrer"
+                        href="https://www.youtube.com/playlist?list=PLx_tBuQ_KSqEt7NK-H7Lu78lT2OijwIMl"
+                    >
+                        how-to-guides
+                    </a>{' '}
+                    are available through the <b>Open Walkthrough</b> option on
+                    the Welcome page.
+                </li>
+            </ol>
+        </Card>
+    </div>
+);
+
+const SEGGER = ({ version }: { version: string }) => (
+    <div>
+        <Card body className="selectable first-install nrf-card">
+            <h4>Building with SEGGER Embedded Studio</h4>
+            <p>
+                Once the installation of the tools and the nRF Connect SDK is
+                finished, complete the following steps to build nRF Connect SDK
+                projects with SES.
+            </p>
+            <ol>
+                <li>
+                    Start SEGGER Embedded Studio by clicking{' '}
+                    <b>Open Segger Embedded Studio</b>
+                </li>
+                <li>
+                    Select <code>File → Open nRF Connect SDK Project…</code>
+                </li>
+                <li>
+                    To import a project into SES, you must specify the following
+                    information:
+                    {version.match(/v1.[23]/) ? <OldSteps /> : <NewSteps />}
+                </li>
+                <li>
+                    Click <b>OK</b> to import the project into SES. You can now
+                    work with the project in the IDE.
+                </li>
+                <li>
+                    <p>Build and program your project.</p>
+                    <p>
+                        The required steps differ depending on if you build a
+                        single application or a multi-image project (such as the
+                        nRF9160 samples, which include{' '}
+                        <a
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/samples/nrf9160/spm/README.html#secure-partition-manager"
+                        >
+                            SPM
+                        </a>
+                        ).
+                    </p>
+                    <Alert variant="success">
+                        <p>
+                            If you are working with an nRF9160 DK, make sure to
+                            select the correct controller before you program the
+                            application to your board.
+                        </p>
+                        <p>
+                            Put the <b>SW5</b> switch (marked debug/prog) in the{' '}
+                            <b>NRF91</b> position to program the main
+                            controller, or in the <b>NRF52</b> position to
+                            program the board controller. See the{' '}
+                            <a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href="https://infocenter.nordicsemi.com/topic/ug_nrf91_dk/UG/nrf91_DK/mcu_device_programming.html"
+                            >
+                                Device programming section in the nRF9160 DK
+                                User Guide
+                            </a>{' '}
+                            for more information.
+                        </p>
+                    </Alert>
+                    <p>To build and program an application:</p>
+                    <ol type="a">
+                        <li>Select your project in the Project Explorer.</li>
+                        <li>
+                            From the menu, select{' '}
+                            <code>Build → Build Solution.</code>
+                        </li>
+                        <li>
+                            When the build completes, you can program the sample
+                            to a connected board:
+                            <ol>
+                                <li>
+                                    For a single-image application, select{' '}
+                                    <code>
+                                        Target → Download zephyr/zephyr.elf
+                                    </code>
+                                    .
+                                </li>
+                                <li>
+                                    For a multi-image application, select{' '}
+                                    <code>
+                                        Target → Download zephyr/merged.hex
+                                    </code>
+                                    .
+                                </li>
+                            </ol>
+                        </li>
+                    </ol>
+                    <Alert variant="primary">
+                        Alternatively, choose the <code>Build and Debug</code>{' '}
+                        option. <code>Build and Debug</code> will build the
+                        application and program it when the build completes.
+                    </Alert>
+                </li>
+                <li>
+                    To inspect the details of the code that was programmed and
+                    the memory usage, click <code>Debug → Go</code>.
+                    <Alert variant="primary">
+                        In a multi-image build, this allows you to debug the
+                        source code of your application only.
+                    </Alert>
+                </li>
+            </ol>
+        </Card>
+    </div>
+);
+
 const FirstInstallInstructions = () => {
     const dispatch = useDispatch();
     const version = useSelector(selectedVersion) || '<version>';
@@ -163,264 +375,13 @@ const FirstInstallInstructions = () => {
                 id="uncontrolled-tab"
             >
                 <Tab eventKey="vscode" title="VS Code">
-                    <div>
-                        <Card
-                            body
-                            className="selectable first-install nrf-card"
-                        >
-                            <h4>Building with nRF Connect for VS Code</h4>
-                            <p>
-                                Once the installation of the tools and the nRF
-                                Connect SDK is finished, complete the following
-                                steps to build nRF Connect SDK projects with VS
-                                Code.
-                            </p>
-                            <ol>
-                                <li>
-                                    Start Visual Studio Code by clicking{' '}
-                                    <b>Open VS Code</b>
-                                </li>
-                                <li>
-                                    Access the Welcome page by one of the
-                                    following:
-                                    <ul>
-                                        <li>
-                                            Clicking on the nRF Connect for VS
-                                            Code icon to the left in VS Code.
-                                        </li>
-                                        <li>
-                                            Open the Welcome Page by clicking{' '}
-                                            <b>Open Welcome page</b>
-                                        </li>
-                                        <li>
-                                            Using the nRF Connect: Welcome
-                                            command available in the Command
-                                            Palette (<code>Ctrl+Shift+P</code>{' '}
-                                            or <code>⇧+⌘+P</code>).
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    Set the default nRF Connect SDK and nRF
-                                    Connect Toolchain in the Quick Setup feature
-                                    located on the extension&apos;s Welcome
-                                    page.
-                                    <Alert variant="primary">
-                                        <p>
-                                            You can browse to your manual
-                                            installations using the{' '}
-                                            <b>Browse...</b> option.
-                                        </p>
-                                        <p>
-                                            Alternatively, if the toolchain is
-                                            installed on the system path, you
-                                            can set the toolchain value to{' '}
-                                            <code>PATH</code>.
-                                        </p>
-                                    </Alert>
-                                </li>
-                                <li>
-                                    Select{' '}
-                                    <b>
-                                        Add an existing application to
-                                        workspace...
-                                    </b>
-                                    <Alert variant="primary">
-                                        Alternatively create a new application
-                                        by clicking{' '}
-                                        <b>
-                                            Create a new application from
-                                            sample...
-                                        </b>
-                                    </Alert>
-                                    You can now work with the project in the
-                                    IDE.
-                                </li>
-                                <li>
-                                    To build and program an application:
-                                    <ol type="a">
-                                        <li>
-                                            Create a build configuration by
-                                            clicking{' '}
-                                            <b>Add build configuration</b>.
-                                            <ol>
-                                                <li>
-                                                    Select the board you are
-                                                    developing for.
-                                                </li>
-                                                <li>
-                                                    Edit the remaining values
-                                                    based on your needs.
-                                                </li>
-                                                <li>
-                                                    Click <b>Generate Config</b>
-                                                </li>
-                                            </ol>
-                                        </li>
-                                        <li>
-                                            Select <b>Build</b>
-                                        </li>
-                                        <li>
-                                            When the build completes, you can
-                                            program the sample to a connected
-                                            board by clicking <b>Flash</b>
-                                        </li>
-                                    </ol>
-                                </li>
-                                <li>
-                                    Additional documentation and{' '}
-                                    <a
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        href="https://www.youtube.com/playlist?list=PLx_tBuQ_KSqEt7NK-H7Lu78lT2OijwIMl"
-                                    >
-                                        how-to-guides
-                                    </a>{' '}
-                                    are available through the{' '}
-                                    <b>Open Walkthrough</b> option on the
-                                    Welcome page.
-                                </li>
-                            </ol>
-                        </Card>
-                    </div>
+                    <VSCode />
                 </Tab>
-                <Tab eventKey="segger" title="SEGGER Embedded Studio">
-                    <div>
-                        <Card
-                            body
-                            className="selectable first-install nrf-card"
-                        >
-                            <h4>Building with SEGGER Embedded Studio</h4>
-                            <p>
-                                Once the installation of the tools and the nRF
-                                Connect SDK is finished, complete the following
-                                steps to build nRF Connect SDK projects with
-                                SES.
-                            </p>
-                            <ol>
-                                <li>
-                                    Start SEGGER Embedded Studio by clicking{' '}
-                                    <b>Open Segger Embedded Studio</b>
-                                </li>
-                                <li>
-                                    Select{' '}
-                                    <code>
-                                        File → Open nRF Connect SDK Project…
-                                    </code>
-                                </li>
-                                <li>
-                                    To import a project into SES, you must
-                                    specify the following information:
-                                    {version.match(/v1.[23]/) ? (
-                                        <OldSteps />
-                                    ) : (
-                                        <NewSteps />
-                                    )}
-                                </li>
-                                <li>
-                                    Click <b>OK</b> to import the project into
-                                    SES. You can now work with the project in
-                                    the IDE.
-                                </li>
-                                <li>
-                                    <p>Build and program your project.</p>
-                                    <p>
-                                        The required steps differ depending on
-                                        if you build a single application or a
-                                        multi-image project (such as the nRF9160
-                                        samples, which include{' '}
-                                        <a
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/samples/nrf9160/spm/README.html#secure-partition-manager"
-                                        >
-                                            SPM
-                                        </a>
-                                        ).
-                                    </p>
-                                    <Alert variant="success">
-                                        <p>
-                                            If you are working with an nRF9160
-                                            DK, make sure to select the correct
-                                            controller before you program the
-                                            application to your board.
-                                        </p>
-                                        <p>
-                                            Put the <b>SW5</b> switch (marked
-                                            debug/prog) in the <b>NRF91</b>{' '}
-                                            position to program the main
-                                            controller, or in the <b>NRF52</b>{' '}
-                                            position to program the board
-                                            controller. See the{' '}
-                                            <a
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                href="https://infocenter.nordicsemi.com/topic/ug_nrf91_dk/UG/nrf91_DK/mcu_device_programming.html"
-                                            >
-                                                Device programming section in
-                                                the nRF9160 DK User Guide
-                                            </a>{' '}
-                                            for more information.
-                                        </p>
-                                    </Alert>
-                                    <p>To build and program an application:</p>
-                                    <ol type="a">
-                                        <li>
-                                            Select your project in the Project
-                                            Explorer.
-                                        </li>
-                                        <li>
-                                            From the menu, select{' '}
-                                            <code>Build → Build Solution.</code>
-                                        </li>
-                                        <li>
-                                            When the build completes, you can
-                                            program the sample to a connected
-                                            board:
-                                            <ol>
-                                                <li>
-                                                    For a single-image
-                                                    application, select{' '}
-                                                    <code>
-                                                        Target → Download
-                                                        zephyr/zephyr.elf
-                                                    </code>
-                                                    .
-                                                </li>
-                                                <li>
-                                                    For a multi-image
-                                                    application, select{' '}
-                                                    <code>
-                                                        Target → Download
-                                                        zephyr/merged.hex
-                                                    </code>
-                                                    .
-                                                </li>
-                                            </ol>
-                                        </li>
-                                    </ol>
-                                    <Alert variant="primary">
-                                        Alternatively, choose the{' '}
-                                        <code>Build and Debug</code> option.{' '}
-                                        <code>Build and Debug</code> will build
-                                        the application and program it when the
-                                        build completes.
-                                    </Alert>
-                                </li>
-                                <li>
-                                    To inspect the details of the code that was
-                                    programmed and the memory usage, click{' '}
-                                    <code>Debug → Go</code>.
-                                    <Alert variant="primary">
-                                        In a multi-image build, this allows you
-                                        to debug the source code of your
-                                        application only.
-                                    </Alert>
-                                </li>
-                            </ol>
-                        </Card>
-                    </div>
-                </Tab>
+                {isLegacyEnvironment(version) && (
+                    <Tab eventKey="segger" title="SEGGER Embedded Studio">
+                        <SEGGER version={version} />
+                    </Tab>
+                )}
             </Tabs>
             <ButtonToolbar className="mt-2">
                 <Button
