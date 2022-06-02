@@ -35,7 +35,7 @@ import {
     isShowingFirstSteps,
     showInstallPackageDialog,
 } from './managerSlice';
-import NrfUtilEnvDialog from './nrfutil/NrfUtilEvnDialog';
+import NrfUtilEnvDialog from './nrfutil/NrfUtilDialog';
 import PlatformInstructions from './PlatformInstructions';
 import { filterEnvironments } from './versionFilter';
 
