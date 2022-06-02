@@ -1,41 +1,4 @@
-## 0.99.4
-
-### Fixes since 0.99.3
-
--   Open command prompt for windows now opens in the correct path and in the
-    correct environment.
--   VS Code didn't launch when Intel version was installed on M1.
--   `Updating Toolchain` option didn't work.
-
-## 0.99.3
-
-### Fixes since 0.99.2
-
--   Install faild when using a different install directory than the default from
-    `nrfutil` (On Windows: `C:\ncs`, on Linux: `~/ncs`).
--   Opening a bash failed if the folder of the app contained a space (e.g. when
-    using the app from the Release Test source).
--   Removing and installing again the same toolchain failed unless one reloaded
-    the app in-between.
-
-### Changed since 0.99.1
-
--   Provide toolchain for nRF Connect SDK 2.0.0-RC2.
--   Update nrfutil-toolchain-manager to 0.6.0.
--   Open shell/command prompt in the SDK folder.
--   Some fixes for Linux.
-
-### Known issue
-
--   If you have installed the toolchain for nRF Connect SDK 2.0.0-RC1 you might
-    not see nRF Connect SDK 2.0.0-RC2. To see it:
-    -   Eiter go to the settings and disable “Show only 3 newest minor versions”
-    -   Or uninstall the toolchain for nRF Connect SDK 2.0.0-RC1 and restart the
-        Toolchain Manager.
-
----
-
-## Unreleased
+## 1.0.0 - 2022-06-02
 
 ### Added
 
@@ -58,6 +21,7 @@
 ### Known Issues
 
 -   Tested on Ubuntu 20.04. Currently incompatible with Ubuntu 22.04.
+-   Opening a terminal on Linux is not supported yet.
 
 ## 0.10.3 - 2022-01-19
 
