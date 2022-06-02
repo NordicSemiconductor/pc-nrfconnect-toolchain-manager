@@ -17,7 +17,6 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import { showConfirmRemoveDialog } from '../managerSlice';
-import { getEnvAsScript } from '../nrfutil/env';
 import { showNrfUtilDialogAction } from '../nrfutil/nrfUtilDialogSlice';
 import { launchTerminal, launchWinBash } from '../nrfutil/terminal';
 import sdkPath from '../sdkPath';
