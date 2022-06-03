@@ -21,18 +21,21 @@ export default () => {
         content,
         callback,
         confirmLabel,
+        hideCancel,
         cancelLabel,
         onOptional,
         optionalLabel,
     } = useSelector(reduxConfirmDialogSelector);
 
-    const cancelProps = {
-        cancelLabel,
-        onCancel: () => {
-            dispatch(hideReduxConfirmDialogAction());
-            callback ? callback(true) : undefined;
-        },
-    };
+    const cancelProps = hideCancel
+        ? {}
+        : {
+              cancelLabel,
+              onCancel: () => {
+                  dispatch(hideReduxConfirmDialogAction());
+                  callback ? callback(true) : undefined;
+              },
+          };
 
     const confirmProps = {
         confirmLabel,

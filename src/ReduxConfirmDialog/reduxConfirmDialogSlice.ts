@@ -16,6 +16,7 @@ export interface ConfirmDialogState {
     cancelLabel?: string;
     onOptional?: (isCancelled: boolean) => void;
     optionalLabel?: string;
+    hideCancel?: boolean;
 }
 
 const initialState: ConfirmDialogState = {};
