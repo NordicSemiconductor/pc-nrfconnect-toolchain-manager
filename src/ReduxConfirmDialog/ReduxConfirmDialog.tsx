@@ -26,29 +26,40 @@ export default () => {
         optionalLabel,
     } = useSelector(reduxConfirmDialogSelector);
 
+    const cancelProps = {
+        cancelLabel,
+        onCancel: () => {
+            dispatch(hideReduxConfirmDialogAction());
+            callback ? callback(true) : undefined;
+        },
+    };
+
+    const confirmProps = {
+        confirmLabel,
+        onConfirm: () => {
+            dispatch(hideReduxConfirmDialogAction());
+            callback ? callback(false) : undefined;
+        },
+    };
+
+    const optionalProps = onOptional
+        ? {
+              optionalLabel,
+              onOptional: () => {
+                  dispatch(hideReduxConfirmDialogAction());
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TypeScript does not conclude correctly that we already checked that onOptional is not undefined here
+                  onOptional!(false);
+              },
+          }
+        : {};
+
     return (
         <ConfirmationDialog
             isVisible={!!callback}
             title={title ?? ''}
-            onCancel={() => {
-                dispatch(hideReduxConfirmDialogAction());
-                callback ? callback(true) : undefined;
-            }}
-            onConfirm={() => {
-                dispatch(hideReduxConfirmDialogAction());
-                callback ? callback(false) : undefined;
-            }}
-            confirmLabel={confirmLabel}
-            cancelLabel={cancelLabel}
-            onOptional={
-                onOptional
-                    ? () => {
-                          dispatch(hideReduxConfirmDialogAction());
-                          onOptional(false);
-                      }
-                    : undefined
-            }
-            optionalLabel={optionalLabel}
+            {...confirmProps}
+            {...cancelProps}
+            {...optionalProps}
         >
             <ReactMarkdown>{content}</ReactMarkdown>
         </ConfirmationDialog>
