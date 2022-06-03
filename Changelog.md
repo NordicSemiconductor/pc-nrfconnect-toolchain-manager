@@ -1,3 +1,10 @@
+## Unreleased
+
+### Fixed
+
+-   On Windows previously installed SDK environments disappeared if users never
+    changed the installation directory.
+
 ## 1.0.0 - 2022-06-02
 
 ### Added
