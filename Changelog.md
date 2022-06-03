@@ -5,6 +5,12 @@
 -   On Windows previously installed SDK environments disappeared if users never
     changed the installation directory.
 
+### Known Issues
+
+-   When opening the Toolchain Manager for the first time after updating it it
+    sometimes just shows a white windows. On subsequent launches it works
+    normally.
+
 ## 1.0.0 - 2022-06-02
 
 ### Added
