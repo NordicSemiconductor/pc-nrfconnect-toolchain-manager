@@ -140,12 +140,13 @@ async function updateLegacy(
         ncsMgr.on('exit', code => (code ? reject(err) : resolve()));
     });
 }
+
 function updateProgress(
     data: Buffer | string,
     dispatch: Dispatch,
     version: string
 ) {
-    const repo = (/=== updating (\w+)/.exec(data.toString()) || []).pop();
+    const repo = (/=== updating ([^\s]+)/.exec(data.toString()) || []).pop();
     if (repo) {
         dispatch(setProgress(version, `Updating ${repo} repository...`));
         logger.info(`Updating ${repo} repository for ${version}`);
