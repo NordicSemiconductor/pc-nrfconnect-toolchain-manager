@@ -13,6 +13,14 @@ import nrfutilToolchainManager from './nrfutilToolchainManager';
 
 const noop = () => {};
 
+const removeFromEnv = (keysToRemove: string[]) => {
+    const env = { ...process.env };
+    keysToRemove.forEach(key => {
+        delete env[key];
+    });
+    return env;
+};
+
 const west = (
     westParams: string[],
     version: string,
@@ -23,18 +31,22 @@ const west = (
             recursive: true,
         });
 
-        const tcm = spawn(nrfutilToolchainManager(), [
-            'launch',
-            '--chdir',
-            sdkPath(version),
-            '--ncs-version',
-            version,
-            '--install-dir',
-            installDir(),
-            '--',
-            'west',
-            ...westParams,
-        ]);
+        const tcm = spawn(
+            nrfutilToolchainManager(),
+            [
+                'launch',
+                '--chdir',
+                sdkPath(version),
+                '--ncs-version',
+                version,
+                '--install-dir',
+                installDir(),
+                '--',
+                'west',
+                ...westParams,
+            ],
+            { env: removeFromEnv(['ZEPHYR_BASE']) }
+        );
 
         tcm.stdout.on('data', onUpdate);
         tcm.on('close', code => (code === 0 ? resolve() : reject()));
