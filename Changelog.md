@@ -1,3 +1,9 @@
+## Unreleased
+
+### Fixed
+
+-   Progress status did not display entire repository name.
+
 ## 1.0.0 - 2022-06-02
 
 ### Added
