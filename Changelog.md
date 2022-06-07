@@ -3,6 +3,8 @@
 ### Fixed
 
 -   Progress status did not display entire repository name.
+-   New toolchain installs failed on windows if previous manual toolchain
+    installs were present.
 
 ## 1.0.0 - 2022-06-02
 
