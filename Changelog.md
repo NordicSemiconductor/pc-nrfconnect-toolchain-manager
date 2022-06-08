@@ -27,6 +27,7 @@
 
 -   Launching of VS Code on some M1 Macs.
 -   Displaying icons for the status of VS Code Extensions.
+-   Add zephyr to environment in terminals.
 
 ### Known Issues
 
