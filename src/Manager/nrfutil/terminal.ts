@@ -31,3 +31,14 @@ export const launchTerminal = (version: string) => {
         }
     );
 };
+
+export const launchGnomeTerminal = (version: string) => {
+    exec(
+        `gnome-terminal -- "${nrfutilToolchainManager()}" launch --chdir "${sdkPath(
+            version
+        )}" --ncs-version "${version}" --install-dir "${installDir()}" --shell`,
+        {
+            env: { ...process.env, ZEPHYR_BASE: sdkPath(version, 'zephyr') },
+        }
+    );
+};
