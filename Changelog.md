@@ -3,6 +3,7 @@
 ### Added
 
 -   `ZEPHYR_BASE` to environment in terminals.
+-   Gnome-terminal support for linux.
 
 ### Fixed
 
