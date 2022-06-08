@@ -49,6 +49,9 @@ const west = (
         );
 
         tcm.stdout.on('data', onUpdate);
+        // Prevent buffer filling up and stopping west command.
+        tcm.stderr.on('data', noop);
+
         tcm.on('close', code => (code === 0 ? resolve() : reject()));
     });
 
