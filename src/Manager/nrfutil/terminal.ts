@@ -14,7 +14,10 @@ export const launchWinBash = (version: string) => {
     exec(
         `"${nrfutilToolchainManager()}" launch --chdir "${sdkPath(
             version
-        )}" --ncs-version "${version}" --install-dir "${installDir()}" cmd.exe /k start bash.exe`
+        )}" --ncs-version "${version}" --install-dir "${installDir()}" cmd.exe /k start bash.exe`,
+        {
+            env: { ZEPHYR_BASE: sdkPath(version, 'zephyr') },
+        }
     );
 };
 
@@ -22,6 +25,9 @@ export const launchTerminal = (version: string) => {
     exec(
         `"${nrfutilToolchainManager()}" launch --chdir "${sdkPath(
             version
-        )}" --ncs-version "${version}" --install-dir "${installDir()}" --terminal`
+        )}" --ncs-version "${version}" --install-dir "${installDir()}" --terminal`,
+        {
+            env: { ZEPHYR_BASE: sdkPath(version, 'zephyr') },
+        }
     );
 };
