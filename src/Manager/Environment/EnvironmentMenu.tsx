@@ -117,7 +117,7 @@ const openDirectory = (directory: string) => {
 
 const hasGnomeTerminal = () => {
     try {
-        execSync('command -v gnome-terminal');
+        execSync('command -v gnome-termina');
         return true;
     } catch (error) {
         return false;
@@ -171,8 +171,8 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                                 showNrfUtilDialogAction({
                                     title: 'Terminal not supported',
                                     content:
-                                        'Toolchain manager currently only supports gnome-terminal on Linux.\n\n' +
-                                        'Alternatively you can use the nRF Connect for VS Code extension and then use the terminal within VS code.\n',
+                                        'Toolchain manager currently only supports GNOME terminal on Linux.\n\n' +
+                                        'Alternatively you can use the nRF Connect for VS Code extension to open a terminal from within VS code.\n',
                                 })
                             );
                     }}
