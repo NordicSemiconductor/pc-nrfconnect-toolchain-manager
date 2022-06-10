@@ -117,7 +117,7 @@ const openDirectory = (directory: string) => {
 
 const hasGnomeTerminal = () => {
     try {
-        execSync('command -v gnome-termina');
+        execSync('command -v gnome-terminal');
         return true;
     } catch (error) {
         return false;
