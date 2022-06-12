@@ -17,11 +17,12 @@ type Props = { environment: Environment };
 
 const Install = ({ environment }: Props) => {
     const dispatch = useDispatch();
+
     const { platform } = process;
     const onClick = (() => {
         switch (platform) {
             case 'darwin':
-                return () => dispatch(install(environment, false));
+                return () => dispatch(install(environment, false, environment.abortController.signal));
             case 'linux':
                 return () =>
                     dispatch(showConfirmInstallDirDialog(version(environment)));
@@ -31,7 +32,18 @@ const Install = ({ environment }: Props) => {
         }
     })();
 
-    if (!isOnlyAvailable(environment)) return null;
+    const cancel = (() => {
+        environment.abortController.abort();
+    })
+
+    if (!isOnlyAvailable(environment)) return (
+        <Button
+            icon="x-mdi-briefcase-download-outline"
+            onClick={cancel}
+            label="Cancel"
+            variant="secondary"
+        />
+    );
 
     return (
         <Button

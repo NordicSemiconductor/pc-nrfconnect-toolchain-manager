@@ -193,7 +193,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
             >
                 Update SDK
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => dispatch(install(environment, true))}>
+            <Dropdown.Item onClick={() => dispatch(install(environment, true, new AbortController().signal))}>
                 Update toolchain
             </Dropdown.Item>
             <Dropdown.Divider />

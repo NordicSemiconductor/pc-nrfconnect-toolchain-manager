@@ -23,8 +23,16 @@ import {
 import { calculateTimeConsumed, isWestPresent } from './helpers';
 
 export const cloneNcs =
-    (version: string, toolchainDir: string, justUpdate: boolean) =>
+    (
+        version: string,
+        toolchainDir: string,
+        justUpdate: boolean,
+        signal: AbortSignal
+    ) =>
     async (dispatch: Dispatch) => {
+        if (signal.aborted) {
+            return;
+        }
         dispatch(startCloningSdk(version));
         logger.info(`Cloning nRF Connect SDK ${version}`);
 

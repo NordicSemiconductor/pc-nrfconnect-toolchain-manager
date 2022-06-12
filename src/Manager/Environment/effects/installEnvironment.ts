@@ -32,7 +32,11 @@ import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { installToolchain } from './installToolchain';
 
 export const install =
-    ({ version, toolchains, type }: Environment, justUpdate: boolean) =>
+    (
+        { version, toolchains, type }: Environment,
+        justUpdate: boolean,
+        signal: AbortSignal
+    ) =>
     async (dispatch: Dispatch) => {
         logger.info(`Start to install toolchain ${version}`);
         const toolchain = getLatestToolchain(toolchains);
@@ -63,8 +67,10 @@ export const install =
         try {
             if (toolchain === undefined) throw new Error('No toolchain found');
             await dispatch(ensureCleanTargetDir(version, toolchainDir));
-            await dispatch(installToolchain(version, toolchain, toolchainDir));
-            await dispatch(cloneNcs(version, toolchainDir, justUpdate));
+            await dispatch(
+                installToolchain(version, toolchain, toolchainDir, signal)
+            );
+            await dispatch(cloneNcs(version, toolchainDir, justUpdate, signal));
         } catch (error) {
             const message = describeError(error);
             dispatch(ErrorDialogActions.showDialog(`${message}`));

@@ -35,6 +35,7 @@ export type Environment = {
     isRemoving?: boolean;
     progress?: number;
     stage?: string;
+    abortController: AbortController;
 };
 
 export type Environments = {

@@ -121,6 +121,7 @@ const managerSlice = createSlice({
             const environment: Environment = {
                 ...action.payload,
                 toolchains: [],
+                abortController: new AbortController(),
             };
             state.environments = append(state.environments, environment);
         },

@@ -11,7 +11,11 @@ import handleChunk from './handleChunk';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 import type { TaskEvent } from './task';
 
-export default (version: string, onUpdate: (update: TaskEvent) => void) =>
+export default (
+    version: string,
+    onUpdate: (update: TaskEvent) => void,
+    signal: AbortSignal
+) =>
     new Promise<void>((resolve, reject) => {
         const tcm = spawn(nrfutilToolchainManager(), [
             '--json',
@@ -20,6 +24,11 @@ export default (version: string, onUpdate: (update: TaskEvent) => void) =>
             installDir(),
             version,
         ]);
+
+        signal.addEventListener('abort', () => {
+            tcm.kill();
+            resolve();
+        });
 
         let error = '';
         tcm.stderr.on('data', (data: Buffer) => {
