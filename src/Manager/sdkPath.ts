@@ -8,4 +8,5 @@ import path from 'path';
 
 import { persistedInstallDir as installDir } from '../persistentStore';
 
-export default (version: string) => path.resolve(installDir(), version);
+export default (version: string, ...params: string[]) =>
+    path.resolve(installDir(), version, ...params);

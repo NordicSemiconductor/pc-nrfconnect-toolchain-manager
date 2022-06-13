@@ -1,9 +1,17 @@
 ## Unreleased
 
+### Added
+
+-   `ZEPHYR_BASE` to environment in terminals.
+-   Linux: Gnome-terminal support.
+
 ### Fixed
 
--   On Windows previously installed SDK environments disappeared if users never
+-   Windows: Previously installed SDK environments disappeared if users never
     changed the installation directory.
+-   Windows: New toolchain installs failed if previous manual toolchain installs
+    were present.
+-   Progress status did not display entire repository name.
 
 ### Known Issues
 
