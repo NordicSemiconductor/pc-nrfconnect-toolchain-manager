@@ -63,7 +63,7 @@ const Install = ({ environment }: Props) => {
         );
     }
 
-    return <></>;
+    return null;
 };
 
 export default Install;
