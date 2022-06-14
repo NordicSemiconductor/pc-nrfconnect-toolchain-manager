@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { usageData } from 'pc-nrfconnect-shared';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -41,6 +42,7 @@ const Install = ({ environment }: Props) => {
 
     const cancel = () => {
         environment.abortController.abort();
+        usageData.sendUsageData('Cancel installation', environment.version);
     };
 
     if (isInProgress(environment)) {
