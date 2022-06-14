@@ -11,7 +11,7 @@ import { showConfirmInstallDirDialog } from '../../InstallDir/installDirSlice';
 import { Environment } from '../../state';
 import Button from './Button';
 import { install } from './effects/installEnvironment';
-import { isOnlyAvailable, version } from './environmentReducer';
+import { isInProgress, isInstalled, version } from './environmentReducer';
 
 type Props = { environment: Environment };
 
@@ -22,7 +22,14 @@ const Install = ({ environment }: Props) => {
     const onClick = (() => {
         switch (platform) {
             case 'darwin':
-                return () => dispatch(install(environment, false, environment.abortController.signal));
+                return () =>
+                    dispatch(
+                        install(
+                            environment,
+                            false,
+                            environment.abortController.signal
+                        )
+                    );
             case 'linux':
                 return () =>
                     dispatch(showConfirmInstallDirDialog(version(environment)));
@@ -32,27 +39,31 @@ const Install = ({ environment }: Props) => {
         }
     })();
 
-    const cancel = (() => {
+    const cancel = () => {
         environment.abortController.abort();
-    })
+    };
 
-    if (!isOnlyAvailable(environment)) return (
-        <Button
-            icon="x-mdi-briefcase-download-outline"
-            onClick={cancel}
-            label="Cancel"
-            variant="secondary"
-        />
-    );
+    if (isInProgress(environment)) {
+        return (
+            <Button
+                icon="x-mdi-briefcase-download-outline"
+                onClick={cancel}
+                label="Cancel"
+                variant="secondary"
+            />
+        );
+    } else if (!isInstalled(environment)) {
+        return (
+            <Button
+                icon="x-mdi-briefcase-download-outline"
+                onClick={onClick}
+                label="Install"
+                variant="secondary"
+            />
+        );
+    }
 
-    return (
-        <Button
-            icon="x-mdi-briefcase-download-outline"
-            onClick={onClick}
-            label="Install"
-            variant="secondary"
-        />
-    );
+    return <></>;
 };
 
 export default Install;
