@@ -52,7 +52,9 @@ const Install = ({ environment }: Props) => {
                 variant="secondary"
             />
         );
-    } else if (!isInstalled(environment)) {
+    }
+
+    if (!isInstalled(environment)) {
         return (
             <Button
                 icon="x-mdi-briefcase-download-outline"
