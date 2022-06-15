@@ -6,6 +6,7 @@
 
 import { spawn } from 'child_process';
 import { mkdirSync } from 'fs';
+import { logger } from 'pc-nrfconnect-shared';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
 import sdkPath from '../sdkPath';
@@ -43,14 +44,18 @@ const west = (
                 installDir(),
                 '--',
                 'west',
+                '-v',
                 ...westParams,
             ],
             { env: removeFromEnv(['ZEPHYR_BASE']) }
         );
 
-        tcm.stdout.on('data', onUpdate);
-        // Prevent buffer filling up and stopping west command.
-        tcm.stderr.on('data', noop);
+        tcm.stdout.on('data', data => {
+            logger.debug(data);
+            onUpdate(data);
+        });
+
+        tcm.stderr.on('data', err => logger.debug(err));
 
         tcm.on('close', code => (code === 0 ? resolve() : reject()));
     });
