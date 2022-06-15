@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { usageData } from 'pc-nrfconnect-shared';
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { usageData } from 'pc-nrfconnect-shared';
 
 import { showConfirmInstallDirDialog } from '../../InstallDir/installDirSlice';
 import { Environment } from '../../state';
@@ -23,14 +23,7 @@ const Install = ({ environment }: Props) => {
     const onClick = (() => {
         switch (platform) {
             case 'darwin':
-                return () =>
-                    dispatch(
-                        install(
-                            environment,
-                            false,
-                            environment.abortController.signal
-                        )
-                    );
+                return () => dispatch(install(environment, false));
             case 'linux':
                 return () =>
                     dispatch(showConfirmInstallDirDialog(version(environment)));

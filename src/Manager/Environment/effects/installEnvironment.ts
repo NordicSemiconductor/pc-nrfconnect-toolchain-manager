@@ -33,7 +33,10 @@ import { installToolchain } from './installToolchain';
 import { removeUnfinishedInstallOnAbort } from './removeEnvironment';
 
 export const install =
-    ({ version, toolchains, type, signal }: Environment, justUpdate: boolean) =>
+    (
+        { version, toolchains, type, abortController }: Environment,
+        justUpdate: boolean
+    ) =>
     async (dispatch: Dispatch) => {
         logger.info(`Start to install toolchain ${version}`);
         const toolchain = getLatestToolchain(toolchains);
@@ -65,10 +68,22 @@ export const install =
             if (toolchain === undefined) throw new Error('No toolchain found');
             await dispatch(ensureCleanTargetDir(version, toolchainDir));
             await dispatch(
-                installToolchain(version, toolchain, toolchainDir, signal)
+                installToolchain(
+                    version,
+                    toolchain,
+                    toolchainDir,
+                    abortController.signal
+                )
             );
-            await dispatch(cloneNcs(version, toolchainDir, justUpdate, signal));
-            if (signal.aborted) {
+            await dispatch(
+                cloneNcs(
+                    version,
+                    toolchainDir,
+                    justUpdate,
+                    abortController.signal
+                )
+            );
+            if (abortController.signal.aborted) {
                 removeUnfinishedInstallOnAbort(dispatch, version, toolchainDir);
             }
         } catch (error) {

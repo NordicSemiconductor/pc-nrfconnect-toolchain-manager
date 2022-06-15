@@ -54,9 +54,7 @@ export default () => {
         confirmLabel: 'Continue installation',
         onConfirm: () => {
             dispatch(hideInstallDirDialog());
-            dispatch(
-                install(environment, false, environment.abortController.signal)
-            );
+            dispatch(install(environment, false));
         },
         onCancel: () => dispatch(hideInstallDirDialog()),
         optionalLabel: 'Change directory',

@@ -76,7 +76,14 @@ export const installPackage =
             await dispatch(unpack(version, filePath, toolchainDir));
             updateConfigFile(toolchainDir);
             dispatch(finishInstallToolchain(version, toolchainDir));
-            await dispatch(cloneNcs(version, toolchainDir, false));
+            await dispatch(
+                cloneNcs(
+                    version,
+                    toolchainDir,
+                    false,
+                    new AbortController().signal
+                )
+            );
         } catch (error) {
             const message = describeError(error);
             dispatch(ErrorDialogActions.showDialog(`${message}`));
