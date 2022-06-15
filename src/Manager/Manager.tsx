@@ -27,6 +27,7 @@ import {
 } from '../VsCodeDialog/vscode';
 import VsCodeDialog from '../VsCodeDialog/VsCodeDialog';
 import { VsCodeStatus } from '../VsCodeDialog/vscodeSlice';
+import detectMultipleInstallDirs from './detectMultipleInstallDirs';
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
 import initEnvironments from './initEnvironments';
@@ -120,6 +121,7 @@ export default () => {
 };
 
 const initApp = (dispatch: Dispatch) => {
+    detectMultipleInstallDirs(dispatch);
     initEnvironments(dispatch);
     reportVsCodeStatus(dispatch);
 };

@@ -3,13 +3,25 @@
 ### Added
 
 -   Put verbose sdk update output in the log.
+-   `ZEPHYR_BASE` to environment in terminals.
+-   Linux: Gnome-terminal support.
 
 ### Fixed
 
+-   Windows: Previously installed SDK environments disappeared if users never
+    changed the installation directory.
+-   Windows: New toolchain installs failed if previous manual toolchain installs
+    were present.
 -   Progress status did not display entire repository name.
 -   New toolchain installs failed on windows if previous manual toolchain
     installs were present.
 -   West update no longer freezes on linux.
+
+### Known Issues
+
+-   When opening the Toolchain Manager for the first time after updating it it
+    sometimes just shows a white windows. On subsequent launches it works
+    normally.
 
 ## 1.0.0 - 2022-06-02
 
@@ -32,7 +44,6 @@
 
 -   Launching of VS Code on some M1 Macs.
 -   Displaying icons for the status of VS Code Extensions.
--   Add zephyr to environment in terminals.
 
 ### Known Issues
 
