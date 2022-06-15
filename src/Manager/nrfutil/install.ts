@@ -24,11 +24,10 @@ export default (
             installDir(),
             version,
         ]);
-
-        signal.addEventListener('abort', () => {
+        const abortListener = () => {
             tcm.kill();
-            resolve();
-        });
+        };
+        signal.addEventListener('abort', abortListener);
 
         let error = '';
         tcm.stderr.on('data', (data: Buffer) => {
@@ -37,7 +36,8 @@ export default (
 
         tcm.stdout.on('data', handleChunk(onUpdate));
 
-        tcm.on('close', code =>
-            code === 0 ? resolve() : reject(new Error(error))
-        );
+        tcm.on('close', code => {
+            signal.removeEventListener('abort', abortListener);
+            code === 0 ? resolve() : reject(new Error(error));
+        });
     });

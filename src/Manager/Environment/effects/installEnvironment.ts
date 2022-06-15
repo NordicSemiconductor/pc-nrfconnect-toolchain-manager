@@ -30,13 +30,10 @@ import { isLegacyEnvironment } from '../environmentReducer';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { installToolchain } from './installToolchain';
+import { removeUnfinishedInstallOnAbort } from './removeEnvironment';
 
 export const install =
-    (
-        { version, toolchains, type }: Environment,
-        justUpdate: boolean,
-        signal: AbortSignal
-    ) =>
+    ({ version, toolchains, type, signal }: Environment, justUpdate: boolean) =>
     async (dispatch: Dispatch) => {
         logger.info(`Start to install toolchain ${version}`);
         const toolchain = getLatestToolchain(toolchains);
@@ -71,6 +68,9 @@ export const install =
                 installToolchain(version, toolchain, toolchainDir, signal)
             );
             await dispatch(cloneNcs(version, toolchainDir, justUpdate, signal));
+            if (signal.aborted) {
+                removeUnfinishedInstallOnAbort(dispatch, version, toolchainDir);
+            }
         } catch (error) {
             const message = describeError(error);
             dispatch(ErrorDialogActions.showDialog(`${message}`));

@@ -189,11 +189,20 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item
-                onClick={() => dispatch(cloneNcs(version, toolchainDir, true))}
+                onClick={() =>
+                    dispatch(
+                        cloneNcs(
+                            version,
+                            toolchainDir,
+                            true,
+                            environment.abortController.signal
+                        )
+                    )
+                }
             >
                 Update SDK
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => dispatch(install(environment, true, new AbortController().signal))}>
+            <Dropdown.Item onClick={() => dispatch(install(environment, true))}>
                 Update toolchain
             </Dropdown.Item>
             <Dropdown.Divider />

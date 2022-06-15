@@ -32,6 +32,10 @@ export const installToolchain =
         signal: AbortSignal
     ) =>
     async (dispatch: Dispatch) => {
+        if (signal.aborted) {
+            return;
+        }
+
         dispatch(startInstallToolchain(version));
 
         if (isLegacyEnvironment(version)) {
@@ -48,10 +52,6 @@ export const installToolchain =
                 usageData.sendErrorReport(message);
             }
         } else {
-            signal.addEventListener('abort', () => {
-                // reset
-            });
-
             await installNrfutilToolchain(
                 version,
                 update => {
