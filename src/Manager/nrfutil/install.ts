@@ -5,6 +5,7 @@
  */
 
 import { spawn } from 'child_process';
+import treeKill from 'tree-kill';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
 import handleChunk from './handleChunk';
@@ -24,9 +25,8 @@ export default (
             installDir(),
             version,
         ]);
-        const abortListener = () => {
-            tcm.kill();
-        };
+
+        const abortListener = () => treeKill(tcm.pid);
         signal.addEventListener('abort', abortListener);
 
         let error = '';
@@ -38,6 +38,6 @@ export default (
 
         tcm.on('close', code => {
             signal.removeEventListener('abort', abortListener);
-            code === 0 ? resolve() : reject(new Error(error));
+            code === 0 || signal.aborted ? resolve() : reject(new Error(error));
         });
     });
