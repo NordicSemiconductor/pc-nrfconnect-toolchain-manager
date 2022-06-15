@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { exec, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import { mkdirSync } from 'fs';
-import { platform } from 'os';
+import treeKill from 'tree-kill';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
 import sdkPath from '../sdkPath';
@@ -50,14 +50,8 @@ const west = (
             { env: removeFromEnv(['ZEPHYR_BASE']) }
         );
 
-        const abortListener = () => {
-            if (platform() === 'win32') {
-                exec(`taskkill /pid ${tcm.pid} /T /F`);
-            } else {
-                tcm.kill();
-            }
-            signal.removeEventListener('abort', abortListener);
-        };
+        const abortListener = () => treeKill(tcm.pid);
+
         signal.addEventListener('abort', abortListener);
 
         tcm.stdout.on('data', onUpdate);
