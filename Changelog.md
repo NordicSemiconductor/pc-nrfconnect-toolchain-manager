@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Added
+
+-   Put verbose sdk update output in the log.
+
 ### Fixed
 
 -   Progress status did not display entire repository name.
