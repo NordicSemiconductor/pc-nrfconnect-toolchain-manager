@@ -43,7 +43,10 @@ const isReleasedOrPreRelease = (version: string, versions: string[]) => {
     const isPrerelease = (semver.prerelease(version)?.length ?? 0) > 0 ?? false;
 
     const hasRelease = versions.some(
-        v => semver.valid(v) && semver.diff(v, version) === 'prerelease'
+        v =>
+            semver.valid(v) &&
+            semver.prerelease(v) === null &&
+            semver.diff(v, version) === 'prerelease'
     );
 
     return !isPrerelease || !hasRelease;

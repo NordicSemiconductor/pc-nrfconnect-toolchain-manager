@@ -58,4 +58,14 @@ describe('filter versions to keep last 3 minor versions and installed environmen
         const filtered = filterEnvironments(environments);
         expect(filtered.length).toBe(3);
     });
+
+    it('filters RCs correctly', () => {
+        const versions = ['2.0.0-rc1', '2.0.0-rc2'];
+        const environments = versions.map(mapToEnvironment);
+        // 2.0.0-rc1 is installed
+        environments[0].isInstalled = true;
+
+        const filtered = filterEnvironments(environments);
+        expect(filtered.length).toBe(2);
+    });
 });

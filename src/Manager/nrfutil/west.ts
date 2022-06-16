@@ -6,6 +6,7 @@
 
 import { spawn } from 'child_process';
 import { mkdirSync } from 'fs';
+import { logger } from 'pc-nrfconnect-shared';
 import treeKill from 'tree-kill';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
@@ -45,6 +46,7 @@ const west = (
                 installDir(),
                 '--',
                 'west',
+                '-v',
                 ...westParams,
             ],
             { env: removeFromEnv(['ZEPHYR_BASE']) }
@@ -54,7 +56,12 @@ const west = (
 
         signal.addEventListener('abort', abortListener);
 
-        tcm.stdout.on('data', onUpdate);
+        tcm.stderr.on('data', err => logger.debug(err));
+
+        tcm.stdout.on('data', data => {
+            logger.debug(data);
+            onUpdate(data);
+        });
         tcm.on('close', code => {
             signal.removeEventListener('abort', abortListener);
             code === 0 || signal.aborted ? resolve() : reject();
