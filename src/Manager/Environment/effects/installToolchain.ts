@@ -25,8 +25,17 @@ import { downloadToolchain } from './downloadToolchain';
 import { unpack } from './unpack';
 
 export const installToolchain =
-    (version: string, toolchain: Toolchain, toolchainDir: string) =>
+    (
+        version: string,
+        toolchain: Toolchain,
+        toolchainDir: string,
+        signal: AbortSignal
+    ) =>
     async (dispatch: Dispatch) => {
+        if (signal.aborted) {
+            return;
+        }
+
         dispatch(startInstallToolchain(version));
 
         if (isLegacyEnvironment(version)) {
@@ -43,24 +52,28 @@ export const installToolchain =
                 usageData.sendErrorReport(message);
             }
         } else {
-            await installNrfutilToolchain(version, update => {
-                switch (update.type) {
-                    case 'task_begin':
-                        dispatch(
-                            setProgress(version, describe(update.data.task))
-                        );
-                        break;
-                    case 'task_progress':
-                        dispatch(
-                            setProgress(
-                                version,
-                                describe(update.data.task),
-                                update.data.progress.progressPercentage
-                            )
-                        );
-                        break;
-                }
-            });
+            await installNrfutilToolchain(
+                version,
+                update => {
+                    switch (update.type) {
+                        case 'task_begin':
+                            dispatch(
+                                setProgress(version, describe(update.data.task))
+                            );
+                            break;
+                        case 'task_progress':
+                            dispatch(
+                                setProgress(
+                                    version,
+                                    describe(update.data.task),
+                                    update.data.progress.progressPercentage
+                                )
+                            );
+                            break;
+                    }
+                },
+                signal
+            );
         }
 
         dispatch(finishInstallToolchain(version, toolchainDir));

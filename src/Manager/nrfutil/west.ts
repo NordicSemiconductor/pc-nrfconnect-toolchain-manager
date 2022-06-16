@@ -7,6 +7,7 @@
 import { spawn } from 'child_process';
 import { mkdirSync } from 'fs';
 import { logger } from 'pc-nrfconnect-shared';
+import treeKill from 'tree-kill';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
 import sdkPath from '../sdkPath';
@@ -25,6 +26,7 @@ const removeFromEnv = (keysToRemove: string[]) => {
 const west = (
     westParams: string[],
     version: string,
+    signal: AbortSignal,
     onUpdate: (update: string) => void = noop
 ) =>
     new Promise<void>((resolve, reject) => {
@@ -50,18 +52,23 @@ const west = (
             { env: removeFromEnv(['ZEPHYR_BASE']) }
         );
 
+        const abortListener = () => treeKill(tcm.pid);
+        signal.addEventListener('abort', abortListener);
+
+        tcm.stderr.on('data', err => logger.debug(err));
         tcm.stdout.on('data', data => {
             logger.debug(data);
             onUpdate(data);
         });
-
-        tcm.stderr.on('data', err => logger.debug(err));
-
-        tcm.on('close', code => (code === 0 ? resolve() : reject()));
+        tcm.on('close', code => {
+            signal.removeEventListener('abort', abortListener);
+            code === 0 || signal.aborted ? resolve() : reject();
+        });
     });
 
 export const westInit = (
     version: string,
+    signal: AbortSignal,
     onUpdate?: (update: string) => void
 ) =>
     west(
@@ -73,15 +80,18 @@ export const westInit = (
             version,
         ],
         version,
+        signal,
         onUpdate
     );
 
 export const westUpdate = (
     version: string,
+    signal: AbortSignal,
     onUpdate?: (update: string) => void
-) => west(['update'], version, onUpdate);
+) => west(['update'], version, signal, onUpdate);
 
 export const westExport = (
     version: string,
+    signal: AbortSignal,
     onUpdate?: (update: string) => void
-) => west(['zephyr-export'], version, onUpdate);
+) => west(['zephyr-export'], version, signal, onUpdate);

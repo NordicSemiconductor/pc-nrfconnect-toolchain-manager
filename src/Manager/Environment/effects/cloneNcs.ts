@@ -23,8 +23,16 @@ import {
 import { calculateTimeConsumed, isWestPresent } from './helpers';
 
 export const cloneNcs =
-    (version: string, toolchainDir: string, justUpdate: boolean) =>
+    (
+        version: string,
+        toolchainDir: string,
+        justUpdate: boolean,
+        signal: AbortSignal
+    ) =>
     async (dispatch: Dispatch) => {
+        if (signal.aborted) {
+            return;
+        }
         dispatch(startCloningSdk(version));
         logger.info(`Cloning nRF Connect SDK ${version}`);
 
@@ -39,14 +47,17 @@ export const cloneNcs =
                 if (isLegacyEnvironment(version)) {
                     await initLegacy(toolchainDir);
                 } else {
-                    await initNrfUtil(version, dispatch);
+                    await initNrfUtil(version, signal, dispatch);
                 }
             }
 
             if (isLegacyEnvironment(version)) {
                 await updateLegacy(justUpdate, toolchainDir, dispatch, version);
             } else {
-                await updateNrfUtil(version, dispatch);
+                await updateNrfUtil(version, dispatch, signal);
+                if (signal.aborted) {
+                    return;
+                }
             }
         } catch (error) {
             const errorMsg = `Failed to clone the repositories: ${error}`;
@@ -75,18 +86,26 @@ async function initLegacy(toolchainDir: string) {
     await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
 }
 
-async function initNrfUtil(version: string, dispatch: Dispatch) {
+async function initNrfUtil(
+    version: string,
+    signal: AbortSignal,
+    dispatch: Dispatch
+) {
     await fse.remove(path.resolve(sdkPath(version), '.west'));
     dispatch(setProgress(version, 'Initializing environment...'));
     logger.info(`Initializing environment for ${version}`);
-    await westInit(version);
+    await westInit(version, signal);
 }
 
-async function updateNrfUtil(version: string, dispatch: Dispatch) {
-    await westUpdate(version, update => {
+async function updateNrfUtil(
+    version: string,
+    dispatch: Dispatch,
+    signal: AbortSignal
+) {
+    await westUpdate(version, signal, update => {
         updateProgress(update, dispatch, version);
     });
-    await westExport(version);
+    await westExport(version, signal);
 }
 
 async function updateLegacy(

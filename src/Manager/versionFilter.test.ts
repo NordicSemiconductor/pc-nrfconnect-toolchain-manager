@@ -13,6 +13,7 @@ const mapToEnvironment = (version: string): Environment => ({
     toolchains: [],
     toolchainDir: '',
     isInstalled: false,
+    abortController: new AbortController(),
 });
 
 const filter = (versions: string[]) =>

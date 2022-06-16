@@ -50,6 +50,18 @@ export const finishRemoving = (version: string) => ({
     version,
 });
 
+const START_CANCEL_INSTALL = 'START_CANCEL_INSTALL';
+export const startCancelInstall = (version: string) => ({
+    type: START_CANCEL_INSTALL,
+    version,
+});
+
+const FINISH_CANCEL_INSTALL = 'FINISH_CANCEL_INSTALL';
+export const finishCancelInstall = (version: string) => ({
+    type: FINISH_CANCEL_INSTALL,
+    version,
+});
+
 const SET_PROGRESS = 'SET_PROGRESS';
 export const setProgress = (
     version: string,
@@ -104,6 +116,23 @@ export default (environment: Environment, { type, ...action }: AnyAction) => {
             return { ...environment, ...action };
         case REMOVE_ENVIRONMENT:
             return { ...environment, isInstalled: false, isWestPresent: false };
+        case START_CANCEL_INSTALL:
+            return {
+                ...environment,
+                isRemoving: true,
+                isInstalled: false,
+                isWestPresent: false,
+                isCloningSdk: false,
+                progress: 0,
+                stage: 'Removing...',
+            };
+        case FINISH_CANCEL_INSTALL:
+            return {
+                ...environment,
+                isRemoving: false,
+                stage: undefined,
+                abortController: new AbortController(),
+            };
         default:
             return environment;
     }

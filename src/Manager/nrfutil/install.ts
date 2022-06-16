@@ -5,13 +5,18 @@
  */
 
 import { spawn } from 'child_process';
+import treeKill from 'tree-kill';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
 import handleChunk from './handleChunk';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 import type { TaskEvent } from './task';
 
-export default (version: string, onUpdate: (update: TaskEvent) => void) =>
+export default (
+    version: string,
+    onUpdate: (update: TaskEvent) => void,
+    signal: AbortSignal
+) =>
     new Promise<void>((resolve, reject) => {
         const tcm = spawn(nrfutilToolchainManager(), [
             '--json',
@@ -21,14 +26,19 @@ export default (version: string, onUpdate: (update: TaskEvent) => void) =>
             version,
         ]);
 
+        const abortListener = () => treeKill(tcm.pid);
+        signal.addEventListener('abort', abortListener);
+
         let error = '';
         tcm.stderr.on('data', (data: Buffer) => {
             error += data.toString();
         });
-
         tcm.stdout.on('data', handleChunk(onUpdate));
-
-        tcm.on('close', code =>
-            code === 0 ? resolve() : reject(new Error(error))
-        );
+        tcm.on('close', code => {
+            signal.removeEventListener('abort', abortListener);
+            if (code === 0 || signal.aborted) {
+                resolve();
+            }
+            reject(new Error(error));
+        });
     });

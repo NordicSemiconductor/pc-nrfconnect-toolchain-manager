@@ -79,6 +79,7 @@ const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
                 toolchains: [],
                 type: 'nrfUtil',
                 isInstalled: true,
+                abortController: new AbortController(),
             }));
         searchToolchains()
             .filter(environment => !isLegacyEnvironment(environment.version))
@@ -97,6 +98,7 @@ const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
                     toolchainDir: '',
                     type: 'nrfUtil',
                     isInstalled: false,
+                    abortController: new AbortController(),
                 };
             })
             .forEach(environment => {
