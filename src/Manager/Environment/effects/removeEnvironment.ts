@@ -59,25 +59,26 @@ export const removeUnfinishedInstallOnAbort = async (
 ) => {
     dispatch(startCancelInstall(version));
     if (existsSync(toolchainDir)) {
-        await rm(toolchainDir, { recursive: true, force: true })
-            .then(() =>
-                logger.info(
-                    `Successfully removed toolchain directory: ${toolchainDir}`
-                )
-            )
-            .catch(err => logger.error(err));
+        try {
+            await rm(toolchainDir, { recursive: true, force: true });
+            logger.info(
+                `Successfully removed toolchain directory: ${toolchainDir}`
+            );
+        } catch (err) {
+            logger.error(err);
+        }
     }
     if (existsSync(sdkPath(version))) {
-        await rm(sdkPath(version), { recursive: true, force: true })
-            .then(() =>
-                logger.info(
-                    `Successfully removed SDK with version ${version} from ${sdkPath(
-                        version
-                    )}`
-                )
-            )
-            .catch(err => logger.error(err));
+        try {
+            await rm(sdkPath(version), { recursive: true, force: true });
+            logger.info(
+                `Successfully removed SDK with version ${version} from ${sdkPath(
+                    version
+                )}`
+            );
+        } catch (err) {
+            logger.error(err);
+        }
     }
-
     dispatch(finishCancelInstall(version));
 };

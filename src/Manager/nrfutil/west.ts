@@ -53,11 +53,9 @@ const west = (
         );
 
         const abortListener = () => treeKill(tcm.pid);
-
         signal.addEventListener('abort', abortListener);
 
         tcm.stderr.on('data', err => logger.debug(err));
-
         tcm.stdout.on('data', data => {
             logger.debug(data);
             onUpdate(data);

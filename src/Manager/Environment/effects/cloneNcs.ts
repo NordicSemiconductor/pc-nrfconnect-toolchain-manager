@@ -48,9 +48,6 @@ export const cloneNcs =
                     await initLegacy(toolchainDir);
                 } else {
                     await initNrfUtil(version, signal, dispatch);
-                    if (signal.aborted) {
-                        return;
-                    }
                 }
             }
 

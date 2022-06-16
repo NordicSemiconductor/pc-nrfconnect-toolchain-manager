@@ -33,11 +33,12 @@ export default (
         tcm.stderr.on('data', (data: Buffer) => {
             error += data.toString();
         });
-
         tcm.stdout.on('data', handleChunk(onUpdate));
-
         tcm.on('close', code => {
             signal.removeEventListener('abort', abortListener);
-            code === 0 || signal.aborted ? resolve() : reject(new Error(error));
+            if (code === 0 || signal.aborted) {
+                resolve();
+            }
+            reject(new Error(error));
         });
     });
