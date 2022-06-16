@@ -9,16 +9,19 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../state';
 
 export interface ConfirmDialogState {
-    callback?: (isCancelled: boolean) => void;
+    callback: null | ((isCancelled: boolean) => void);
     title?: string;
     content?: string;
     confirmLabel?: string;
     cancelLabel?: string;
     onOptional?: (isCancelled: boolean) => void;
     optionalLabel?: string;
+    hideCancel?: boolean;
 }
 
-const initialState: ConfirmDialogState = {};
+const initialState: ConfirmDialogState = {
+    callback: null,
+};
 
 const slice = createSlice({
     name: 'reduxConfirmDialog',

@@ -3,13 +3,21 @@
 ### Added
 
 -   `ZEPHYR_BASE` to environment in terminals.
--   Gnome-terminal support for linux.
+-   Linux: Gnome-terminal support.
 
 ### Fixed
 
+-   Windows: Previously installed SDK environments disappeared if users never
+    changed the installation directory.
+-   Windows: New toolchain installs failed if previous manual toolchain installs
+    were present.
 -   Progress status did not display entire repository name.
--   New toolchain installs failed on windows if previous manual toolchain
-    installs were present.
+
+### Known Issues
+
+-   When opening the Toolchain Manager for the first time after updating it it
+    sometimes just shows a white windows. On subsequent launches it works
+    normally.
 
 ## 1.0.0 - 2022-06-02
 
