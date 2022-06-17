@@ -55,9 +55,6 @@ export const cloneNcs =
                 await updateLegacy(justUpdate, toolchainDir, dispatch, version);
             } else {
                 await updateNrfUtil(version, dispatch, signal);
-                if (signal.aborted) {
-                    return;
-                }
             }
         } catch (error) {
             const errorMsg = `Failed to clone the repositories: ${error}`;
