@@ -12,7 +12,12 @@ import { showConfirmInstallDirDialog } from '../../InstallDir/installDirSlice';
 import { Environment } from '../../state';
 import Button from './Button';
 import { install } from './effects/installEnvironment';
-import { isInProgress, isOnlyAvailable, version } from './environmentReducer';
+import {
+    isInProgress,
+    isLegacyEnvironment,
+    isOnlyAvailable,
+    version,
+} from './environmentReducer';
 
 type Props = { environment: Environment };
 
@@ -38,7 +43,10 @@ const Install = ({ environment }: Props) => {
         usageData.sendUsageData('Cancel installation', environment.version);
     };
 
-    if (isInProgress(environment)) {
+    if (
+        isInProgress(environment) &&
+        !isLegacyEnvironment(environment.version)
+    ) {
         return (
             <Button
                 icon="x-mdi-briefcase-download-outline"
