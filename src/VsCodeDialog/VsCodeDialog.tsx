@@ -74,8 +74,8 @@ const VsCodeDialog = () => {
                                     href={installLink()}
                                 >
                                     install VS Code
-                                </a>{' '}
-                                and restart nRF Connect for Desktop.
+                                </a>
+                                .
                             </>
                         ) : (
                             <>
