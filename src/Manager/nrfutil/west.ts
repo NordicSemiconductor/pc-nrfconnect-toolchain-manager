@@ -62,7 +62,9 @@ const west = (
         });
         tcm.on('close', code => {
             signal.removeEventListener('abort', abortListener);
-            code === 0 || signal.aborted ? resolve() : reject();
+
+            if (code === 0 || signal.aborted) resolve();
+            else reject();
         });
     });
 
