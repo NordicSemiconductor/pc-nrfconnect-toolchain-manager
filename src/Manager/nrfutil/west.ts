@@ -57,7 +57,7 @@ const west = (
 
         tcm.stderr.on('data', err => logger.debug(err));
         tcm.stdout.on('data', data => {
-            logger.debug(data);
+            logger.debug(data.toString().trimEnd());
             onUpdate(data);
         });
         tcm.on('close', code => {
