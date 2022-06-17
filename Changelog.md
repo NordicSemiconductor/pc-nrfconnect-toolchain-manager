@@ -2,6 +2,7 @@
 
 ### Added
 
+-   Put verbose sdk update output in the log.
 -   `ZEPHYR_BASE` to environment in terminals.
 -   Linux: Gnome-terminal support.
 
@@ -12,6 +13,9 @@
 -   Windows: New toolchain installs failed if previous manual toolchain installs
     were present.
 -   Progress status did not display entire repository name.
+-   New toolchain installs failed on windows if previous manual toolchain
+    installs were present.
+-   West update no longer freezes on linux.
 
 ### Known Issues
 
