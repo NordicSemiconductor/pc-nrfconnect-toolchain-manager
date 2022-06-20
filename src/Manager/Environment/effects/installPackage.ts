@@ -63,6 +63,7 @@ export const installPackage =
                     toolchainDir,
                     isInstalled: false,
                     isWestPresent: false,
+                    abortController: new AbortController(),
                 })
             );
             dispatch(startInstallToolchain(version));
