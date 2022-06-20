@@ -116,6 +116,7 @@ const managerSlice = createSlice({
                 toolchainDir: string;
                 isWestPresent: boolean;
                 isInstalled: boolean;
+                abortController: AbortController;
             }>
         ) => {
             const environment: Environment = {
