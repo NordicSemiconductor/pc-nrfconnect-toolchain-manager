@@ -30,6 +30,10 @@ const west = (
     onUpdate: (update: string) => void = noop
 ) =>
     new Promise<void>((resolve, reject) => {
+        if (signal.aborted) {
+            resolve();
+        }
+
         mkdirSync(sdkPath(version), {
             recursive: true,
         });

@@ -62,6 +62,10 @@ export const cloneNcs =
             usageData.sendErrorReport(errorMsg);
         }
 
+        if (signal.aborted) {
+            return;
+        }
+
         dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
 
         usageData.sendUsageData(
