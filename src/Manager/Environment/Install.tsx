@@ -13,7 +13,7 @@ import { Environment } from '../../state';
 import Button from './Button';
 import { install } from './effects/installEnvironment';
 import {
-    isInProgress,
+    isDoingFreshInstall,
     isLegacyEnvironment,
     isOnlyAvailable,
     version,
@@ -44,7 +44,7 @@ const Install = ({ environment }: Props) => {
     };
 
     if (
-        isInProgress(environment) &&
+        isDoingFreshInstall(environment) &&
         !isLegacyEnvironment(environment.version)
     ) {
         return (
