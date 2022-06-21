@@ -30,6 +30,10 @@ const west = (
     onUpdate: (update: string) => void = noop
 ) =>
     new Promise<void>((resolve, reject) => {
+        if (signal.aborted) {
+            resolve();
+        }
+
         mkdirSync(sdkPath(version), {
             recursive: true,
         });
@@ -62,7 +66,9 @@ const west = (
         });
         tcm.on('close', code => {
             signal.removeEventListener('abort', abortListener);
-            code === 0 || signal.aborted ? resolve() : reject();
+
+            if (code === 0 || signal.aborted) resolve();
+            else reject();
         });
     });
 

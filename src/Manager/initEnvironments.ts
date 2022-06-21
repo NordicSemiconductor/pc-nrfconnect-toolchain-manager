@@ -59,6 +59,7 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
                         toolchainDir,
                         isWestPresent: westPresent,
                         isInstalled: true,
+                        abortController: new AbortController(),
                     })
                 );
             });
@@ -134,7 +135,11 @@ const downloadIndex = (dispatch: Dispatch) => {
                 JSON.parse(result).forEach(
                     (environment: Omit<Environment, 'type'>) => {
                         dispatch(
-                            addEnvironment({ ...environment, type: 'legacy' })
+                            addEnvironment({
+                                ...environment,
+                                abortController: new AbortController(),
+                                type: 'legacy',
+                            })
                         );
                         logger.info(
                             `Toolchain ${environment.version} has been added to the list`

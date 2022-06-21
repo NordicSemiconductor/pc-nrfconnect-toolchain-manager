@@ -55,14 +55,15 @@ export const cloneNcs =
                 await updateLegacy(justUpdate, toolchainDir, dispatch, version);
             } else {
                 await updateNrfUtil(version, dispatch, signal);
-                if (signal.aborted) {
-                    return;
-                }
             }
         } catch (error) {
             const errorMsg = `Failed to clone the repositories: ${error}`;
             dispatch(ErrorDialogActions.showDialog(errorMsg));
             usageData.sendErrorReport(errorMsg);
+        }
+
+        if (signal.aborted) {
+            return;
         }
 
         dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
