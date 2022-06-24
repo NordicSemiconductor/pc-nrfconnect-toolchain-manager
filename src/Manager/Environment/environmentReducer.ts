@@ -152,7 +152,7 @@ export const isOnlyAvailable = (env: Environment) =>
 export const canBeDownloaded = (env: Environment | undefined) =>
     env?.toolchains != null;
 export const isDoingFreshInstall = (env: Environment) =>
-    !env.isInstalled && (env.isCloningSdk || env.isInstallingToolchain);
+    !env.isWestPresent && (env.isCloningSdk || env.isInstallingToolchain);
 
 export const version = (env: Environment) => env.version;
 export const toolchainDir = (env: Environment) => env.toolchainDir;
