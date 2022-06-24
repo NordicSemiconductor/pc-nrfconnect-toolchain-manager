@@ -11,6 +11,7 @@ import Row from 'react-bootstrap/Row';
 
 import NrfCard from '../../NrfCard/NrfCard';
 import { Environment as Model } from '../../state';
+import Cancel from './Cancel';
 import EnvironmentMenu from './EnvironmentMenu';
 import Install from './Install';
 import Name from './Name';
@@ -39,6 +40,7 @@ const Environment = ({ environment }: Props) => (
             >
                 <ShowFirstSteps environment={environment} />
                 <Install environment={environment} />
+                <Cancel environment={environment} />
                 <OpenVsCode environment={environment} />
                 <OpenSegger environment={environment} />
                 <EnvironmentMenu environment={environment} />

@@ -6,18 +6,12 @@
 
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { usageData } from 'pc-nrfconnect-shared';
 
 import { showConfirmInstallDirDialog } from '../../InstallDir/installDirSlice';
 import { Environment } from '../../state';
 import Button from './Button';
 import { install } from './effects/installEnvironment';
-import {
-    isDoingFreshInstall,
-    isLegacyEnvironment,
-    isOnlyAvailable,
-    version,
-} from './environmentReducer';
+import { isOnlyAvailable, version } from './environmentReducer';
 
 type Props = { environment: Environment };
 
@@ -38,37 +32,16 @@ const Install = ({ environment }: Props) => {
         }
     })();
 
-    const cancel = () => {
-        environment.abortController.abort();
-        usageData.sendUsageData('Cancel installation', environment.version);
-    };
+    if (!isOnlyAvailable(environment)) return null;
 
-    if (
-        isDoingFreshInstall(environment) &&
-        !isLegacyEnvironment(environment.version)
-    ) {
-        return (
-            <Button
-                icon="x-mdi-briefcase-download-outline"
-                onClick={cancel}
-                label="Cancel"
-                variant="secondary"
-            />
-        );
-    }
-
-    if (isOnlyAvailable(environment)) {
-        return (
-            <Button
-                icon="x-mdi-briefcase-download-outline"
-                onClick={onClick}
-                label="Install"
-                variant="secondary"
-            />
-        );
-    }
-
-    return null;
+    return (
+        <Button
+            icon="x-mdi-briefcase-download-outline"
+            onClick={onClick}
+            label="Install"
+            variant="secondary"
+        />
+    );
 };
 
 export default Install;

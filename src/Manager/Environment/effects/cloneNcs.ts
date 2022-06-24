@@ -66,7 +66,9 @@ export const cloneNcs =
             return;
         }
 
-        dispatch(finishCloningSdk(version, isWestPresent(toolchainDir)));
+        dispatch(
+            finishCloningSdk(version, isWestPresent(version, toolchainDir))
+        );
 
         usageData.sendUsageData(
             EventAction.CLONE_NCS_SUCCESS,
