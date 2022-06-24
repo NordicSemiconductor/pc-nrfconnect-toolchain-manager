@@ -40,7 +40,7 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
                 fs.existsSync(path.resolve(toolchainDir, 'ncsmgr/manifest.env'))
             )
             .forEach(({ version, toolchainDir }) => {
-                const westPresent = isWestPresent(toolchainDir);
+                const westPresent = isWestPresent(version, toolchainDir);
                 logger.info(
                     `Locally exsisting environment found at ${toolchainDir}`
                 );
