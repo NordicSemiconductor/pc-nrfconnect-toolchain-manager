@@ -132,8 +132,8 @@ const nrfjprogStatusToString = (status: NrfjprogStatus) => {
             return 'Not installed';
         case NrfjprogStatus.INSTALLED:
             return 'Installed';
-        case NrfjprogStatus.M1_VERSION:
-            return 'M1 version installed';
+        case NrfjprogStatus.RECOMMEND_UNIVERSAL:
+            return 'Intel version installed';
     }
 };
 
@@ -146,8 +146,9 @@ const reportVsCodeStatus = async (dispatch: Dispatch) => {
         [VsCodeStatus.MISSING_NRFJPROG]: 'nRFjprog is missing',
         [VsCodeStatus.NOT_CHECKED]: 'Status not checked',
         [VsCodeStatus.NOT_INSTALLED]: 'VS Code not installed',
-        [VsCodeStatus.INSTALL_INTEL]: 'VS Code M1 version installed',
-        [VsCodeStatus.NRFJPROG_INSTALL_INTEL]: 'nRFjprog M1 version installed',
+        [VsCodeStatus.RECOMMEND_UNIVERSAL]: 'VS Code Intel version installed',
+        [VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL]:
+            'nRFjprog Intel version installed',
     }[status];
 
     usageData.sendUsageData(EventAction.VS_INSTALLED, statusString);
