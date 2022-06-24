@@ -18,7 +18,6 @@ import {
     checkOpenVsCodeWithDelay,
     getNrfjprogStatus,
     installExtensions,
-    isAppleSilicon,
     NrfjprogStatus,
     openVsCode,
 } from './vscode';
@@ -75,7 +74,8 @@ const VsCodeDialog = () => {
                                 >
                                     install VS Code
                                 </a>
-                                .
+                                . After the toolchain succesfully installed,
+                                restart nRF Connect for Desktop.
                             </>
                         ) : (
                             <>
@@ -105,14 +105,6 @@ const VsCodeDialog = () => {
                                     Launching from the command line
                                 </a>
                                 .
-                                {isAppleSilicon && (
-                                    <>
-                                        <br />
-                                        M1-based Mac machines are not currently
-                                        supported by our extension so please
-                                        install the <b>Intel Chip</b> version.
-                                    </>
-                                )}
                             </>
                         )}
                     </>
@@ -132,41 +124,26 @@ const VsCodeDialog = () => {
                             install nRF Command Line Tools
                         </a>
                         &nbsp;and restart nRF Connect for Desktop.
-                        {isAppleSilicon && (
-                            <>
-                                <br />
-                                M1-based Mac machines are not currently
-                                supported by our extension so please install the{' '}
-                                <b>Intel Chip</b> version
-                            </>
-                        )}
                     </>
                 )}
-                {status === VsCodeStatus.INSTALL_INTEL && (
+                {status === VsCodeStatus.RECOMMEND_UNIVERSAL && (
                     <>
-                        Our extension currently does not support M1 and
-                        therefore requires the Intel version of Visual Studio
-                        Code.
-                        <br />
-                        Please&nbsp;
+                        For optimal performance we recommend you to&nbsp;
                         <a
                             target="_blank"
                             rel="noreferrer"
                             href="https://code.visualstudio.com/download#"
                         >
-                            install the <b>Intel Chip</b> version
+                            install the <b>Universal</b> version
                         </a>
-                        &nbsp;of Visual Studio Code and restart nRF Connect for
-                        Desktop.
+                        &nbsp;of Visual Studio Code. After that, restart nRF
+                        Connect for Desktop to complete the installation.
                     </>
                 )}
-                {status === VsCodeStatus.NRFJPROG_INSTALL_INTEL && (
+                {status === VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL && (
                     <>
-                        Our extension currently does not support M1 and
-                        therefore requires the Intel version of SEGGER JLink.
-                        <br />
-                        Please select the <b>Intel Chip</b> version of SEGGER
-                        JLink when&nbsp;
+                        For optimal performance we recommend you to install the{' '}
+                        <b>Universal</b> version of SEGGER JLink when&nbsp;
                         <a
                             target="_blank"
                             rel="noreferrer"
@@ -174,7 +151,8 @@ const VsCodeDialog = () => {
                         >
                             installing nRF Command Line Tools
                         </a>
-                        &nbsp; and restart nRF Connect for Desktop.
+                        . After that, restart nRF Connect for Desktop to
+                        complete the installation.
                     </>
                 )}
             </Modal.Body>
@@ -192,9 +170,9 @@ const VsCodeDialog = () => {
                         ) && <InstallMissingButton />}
                     </>
                 )}
-                {(status === VsCodeStatus.INSTALL_INTEL ||
+                {(status === VsCodeStatus.RECOMMEND_UNIVERSAL ||
                     status === VsCodeStatus.MISSING_NRFJPROG ||
-                    status === VsCodeStatus.NRFJPROG_INSTALL_INTEL) && (
+                    status === VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL) && (
                     <Button
                         icon=""
                         label="Skip"
@@ -217,14 +195,14 @@ const getTitle = (status: VsCodeStatus) => {
             return 'Opening VS Code';
         case VsCodeStatus.NOT_INSTALLED:
             return 'Install VS Code';
-        case VsCodeStatus.INSTALL_INTEL:
-            return 'Install Intel version of VS Code';
+        case VsCodeStatus.RECOMMEND_UNIVERSAL:
+            return 'Install Universal version of VS Code';
         case VsCodeStatus.MISSING_EXTENSIONS:
             return 'Install VS Code extensions';
         case VsCodeStatus.MISSING_NRFJPROG:
             return 'Install nRF Command Line Tools';
-        case VsCodeStatus.NRFJPROG_INSTALL_INTEL:
-            return 'Install Intel version of JLink';
+        case VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL:
+            return 'Install Universal version of JLink';
         default:
             return 'VS Code';
     }
@@ -265,10 +243,10 @@ const MissingExtensionsSkipButton = ({
                             dispatch(
                                 setVsCodeStatus(VsCodeStatus.MISSING_NRFJPROG)
                             );
-                        else if (state === NrfjprogStatus.M1_VERSION)
+                        else if (state === NrfjprogStatus.RECOMMEND_UNIVERSAL)
                             dispatch(
                                 setVsCodeStatus(
-                                    VsCodeStatus.NRFJPROG_INSTALL_INTEL
+                                    VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL
                                 )
                             );
                         else {
@@ -375,7 +353,6 @@ const installLink = () => {
         return 'https://code.visualstudio.com/docs/setup/windows';
     }
     if (process.platform === 'darwin') {
-        if (isAppleSilicon) return 'https://code.visualstudio.com/download#';
         return 'https://code.visualstudio.com/docs/setup/mac';
     }
     if (process.platform === 'linux') {

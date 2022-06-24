@@ -50,10 +50,10 @@ const EXTENSIONS = [
 export enum NrfjprogStatus {
     NOT_INSTALLED,
     INSTALLED,
-    M1_VERSION,
+    RECOMMEND_UNIVERSAL,
 }
 
-export const isAppleSilicon =
+const isAppleSilicon =
     process.platform === 'darwin' && os.cpus()[0].model.includes('Apple');
 
 const minDelay = 500;
@@ -92,16 +92,16 @@ export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
 
             if (nrfjprog === NrfjprogStatus.NOT_INSTALLED)
                 status = VsCodeStatus.MISSING_NRFJPROG;
-            else if (nrfjprog === NrfjprogStatus.M1_VERSION)
-                status = VsCodeStatus.NRFJPROG_INSTALL_INTEL;
+            else if (nrfjprog === NrfjprogStatus.RECOMMEND_UNIVERSAL)
+                status = VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL;
             else status = VsCodeStatus.INSTALLED;
 
             if (isAppleSilicon) {
                 const vscode = await spawnAsync(
                     'file "$(dirname "$(readlink $(which code))")/../../../MacOS/Electron"'
                 );
-                if (checkExecArchitecture(vscode) !== 'x86_64')
-                    status = VsCodeStatus.INSTALL_INTEL;
+                if (checkExecArchitecture(vscode) === 'x86_64')
+                    status = VsCodeStatus.RECOMMEND_UNIVERSAL;
             }
         }
     } catch {
@@ -158,11 +158,11 @@ export const getNrfjprogStatus = async () => {
         try {
             if (isAppleSilicon) {
                 const stdout = await spawnAsync('file $(which JLinkExe)');
-                if (checkExecArchitecture(stdout) !== 'x86_64')
-                    return NrfjprogStatus.M1_VERSION;
+                if (checkExecArchitecture(stdout) === 'x86_64')
+                    return NrfjprogStatus.RECOMMEND_UNIVERSAL;
             }
         } catch {
-            return NrfjprogStatus.M1_VERSION;
+            return NrfjprogStatus.RECOMMEND_UNIVERSAL;
         }
         return NrfjprogStatus.INSTALLED;
     } catch {
