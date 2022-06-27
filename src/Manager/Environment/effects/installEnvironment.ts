@@ -17,6 +17,7 @@ import {
     persistedShowVsCodeDialogDuringInstall,
     setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
+import { showReduxConfirmDialogAction } from '../../../ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { getVsCodeStatus } from '../../../VsCodeDialog/vscode';
@@ -29,6 +30,7 @@ import { getLatestToolchain } from '../../managerSlice';
 import { isLegacyEnvironment } from '../environmentReducer';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
+import ensureMacCommandLineToolsInstall from './ensureMacCommandLineToolsInstall';
 import { installToolchain } from './installToolchain';
 import { removeUnfinishedInstallOnAbort } from './removeEnvironment';
 
@@ -85,6 +87,19 @@ export const install =
             );
             if (abortController.signal.aborted) {
                 removeUnfinishedInstallOnAbort(dispatch, version, toolchainDir);
+                return;
+            }
+            if (!ensureMacCommandLineToolsInstall()) {
+                dispatch(
+                    showReduxConfirmDialogAction({
+                        callback: () => {},
+                        title: 'Please install Command Line Tools',
+                        content:
+                            'Please run ```xcode-select --install``` to install the command line tools.',
+                        hideCancel: true,
+                        confirmLabel: 'Confirm',
+                    })
+                );
             }
         } catch (error) {
             const message = describeError(error);
