@@ -4,6 +4,7 @@
 
 -   Mac: M1 support.
 -   Linux: Gnome-terminal support.
+-   Mac: Prompt user to install XCode Command Line Tools when missing.
 -   `Cancel` button to abort the toolchain installation.
 -   Log verbose west output.
 
