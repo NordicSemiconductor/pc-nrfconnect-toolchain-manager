@@ -17,6 +17,7 @@ export interface ConfirmDialogState {
     onOptional?: (isCancelled: boolean) => void;
     optionalLabel?: string;
     hideCancel?: boolean;
+    hasSelectableContent?: boolean;
 }
 
 const initialState: ConfirmDialogState = {

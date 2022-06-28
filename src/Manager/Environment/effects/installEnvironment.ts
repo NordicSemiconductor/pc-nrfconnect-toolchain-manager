@@ -17,7 +17,6 @@ import {
     persistedShowVsCodeDialogDuringInstall,
     setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
-import { showReduxConfirmDialogAction } from '../../../ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { getVsCodeStatus } from '../../../VsCodeDialog/vscode';
@@ -28,9 +27,9 @@ import {
 } from '../../../VsCodeDialog/vscodeSlice';
 import { getLatestToolchain } from '../../managerSlice';
 import { isLegacyEnvironment } from '../environmentReducer';
+import checkXcodeCommandLineTools from './checkXcodeCommandLineTools';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
-import ensureMacCommandLineToolsInstall from './ensureMacCommandLineToolsInstall';
 import { installToolchain } from './installToolchain';
 import { removeUnfinishedInstallOnAbort } from './removeEnvironment';
 
@@ -89,21 +88,8 @@ export const install =
                 removeUnfinishedInstallOnAbort(dispatch, version, toolchainDir);
                 return;
             }
-            if (!ensureMacCommandLineToolsInstall()) {
-                dispatch(
-                    showReduxConfirmDialogAction({
-                        callback: () => {},
-                        title: 'Missing Command Line Tools for Xcode',
-                        content:
-                            'The Command Line Tools for Xcode are needed to ' +
-                            'use the nRF Connect SDK toolchain. Please ' +
-                            'install them by running `xcode-select ' +
-                            '--install` in a terminal.',
-                        hideCancel: true,
-                        confirmLabel: 'Confirm',
-                    })
-                );
-            }
+
+            checkXcodeCommandLineTools(dispatch);
         } catch (error) {
             const message = describeError(error);
             dispatch(ErrorDialogActions.showDialog(`${message}`));
