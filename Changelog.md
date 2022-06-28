@@ -1,29 +1,29 @@
-## 1.1.0 - 2022-06-27
+## 1.1.0 - 2022-06-28
 
 ### Added
 
--   Mac: M1 support.
 -   Linux: Gnome-terminal support.
--   Mac: Prompt user to install XCode Command Line Tools when missing.
--   `Cancel` button to abort the toolchain installation.
--   Log verbose west output.
+-   macOS: Support universal version especially for M1.3
+-   macOS: Detect missing Xcode Command Line Tools.
+-   Enabled to cancel toolchain installations.
 
 ### Changed
 
--   Mac: The universal version of VS Code is now recommended to M1 users.
--   Mac: The universal version of JLink is now recommended to M1 users
+-   macOS: The universal versions of VS Code and JLink are recommended to M1
+    users.
 
 ### Fixed
 
--   Windows: Previously installed SDK environments disappeared if users never
-    changed the installation directory.
--   Windows: New toolchain installs failed if previous manual toolchain installs
-    were present.
 -   Progress status did not display entire repository name.
--   Windows: Toolchain installs failed if previous manual toolchain installs
-    were present.
--   Linux: West update froze.
--   Windows: `ZEPHYR_BASE` was not set when launching terminal.
+-   Installation halted while updating repositories.
+-   Windows:
+    -   Previously installed SDK environments disappeared if users never changed
+        the installation directory.
+    -   New toolchain installs failed if previous manual toolchain installs were
+        present.
+    -   Toolchain installs failed if previous manual toolchain installs were
+        present.
+    -   `ZEPHYR_BASE` was not set when launching terminal.
 
 ### Known Issues
 
