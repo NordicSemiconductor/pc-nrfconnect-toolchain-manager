@@ -7,12 +7,15 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
+import { classNames } from 'pc-nrfconnect-shared';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import {
     hideReduxConfirmDialogAction,
     reduxConfirmDialogSelector,
 } from './reduxConfirmDialogSlice';
+
+import styles from './reduxConfirmDialog.module.scss';
 
 export default () => {
     const dispatch = useDispatch();
@@ -25,6 +28,7 @@ export default () => {
         cancelLabel,
         onOptional,
         optionalLabel,
+        hasSelectableContent,
     } = useSelector(reduxConfirmDialogSelector);
 
     const cancelProps = hideCancel
@@ -64,7 +68,13 @@ export default () => {
             {...cancelProps}
             {...optionalProps}
         >
-            <ReactMarkdown>{content}</ReactMarkdown>
+            <ReactMarkdown
+                className={classNames(
+                    hasSelectableContent && styles.selectable
+                )}
+            >
+                {content}
+            </ReactMarkdown>
         </ConfirmationDialog>
     );
 };

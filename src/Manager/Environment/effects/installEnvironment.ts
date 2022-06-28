@@ -99,6 +99,7 @@ export const install =
                             'use the nRF Connect SDK toolchain. Please ' +
                             'install them by running `xcode-select ' +
                             '--install` in a terminal.',
+                        hasSelectableContent: true,
                         hideCancel: true,
                         confirmLabel: 'Confirm',
                     })
