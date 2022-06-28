@@ -93,9 +93,12 @@ export const install =
                 dispatch(
                     showReduxConfirmDialogAction({
                         callback: () => {},
-                        title: 'Please install Command Line Tools',
+                        title: 'Missing Command Line Tools for Xcode',
                         content:
-                            'Please run ```xcode-select --install``` to install the command line tools.',
+                            'The Command Line Tools for Xcode are needed to ' +
+                            'use the nRF Connect SDK toolchain. Please ' +
+                            'install them by running `xcode-select ' +
+                            '--install` in a terminal.',
                         hideCancel: true,
                         confirmLabel: 'Confirm',
                     })
