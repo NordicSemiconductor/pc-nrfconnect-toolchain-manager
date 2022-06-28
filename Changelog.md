@@ -3,8 +3,8 @@
 ### Added
 
 -   Linux: Gnome-terminal support.
--   macOS: Support universal version especially for M1.3
--   macOS: Detect missing Xcode Command Line Tools.
+-   macOS: Support universal versions of some tools, especially for M1.
+-   macOS: Detect missing Command Line Tools for Xcode.
 -   Enabled to cancel toolchain installations.
 
 ### Changed
