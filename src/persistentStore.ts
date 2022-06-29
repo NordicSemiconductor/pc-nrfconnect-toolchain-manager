@@ -6,11 +6,35 @@
 
 import os from 'os';
 import path from 'path';
-import { getPersistentStore as store } from 'pc-nrfconnect-shared';
+import {
+    getPersistentStore as store,
+    logger,
+    usageData,
+} from 'pc-nrfconnect-shared';
 
 import getNrfutilConfig from './Manager/nrfutil/config';
+import nrfutilToolchainManager from './Manager/nrfutil/nrfutilToolchainManager';
 
-export const defaultInstallDir = getNrfutilConfig().install_dir;
+// Set fallback value in case nrfutil can't supply the value.
+let installDir =
+    {
+        win32: path.resolve('\\', 'ncs'),
+        darwin: '/opt/nordic/ncs',
+        linux: path.resolve(os.homedir(), 'ncs'),
+    }[<string>process.platform] ?? path.resolve(os.homedir(), 'ncs');
+
+try {
+    installDir = getNrfutilConfig().install_dir;
+} catch (error) {
+    usageData.sendErrorReport(
+        'Unable to get nrfutil-toolchain-manager config.'
+    );
+    logger.error(
+        `Please check if ${nrfutilToolchainManager()} is executable on your system.`
+    );
+}
+
+export const defaultInstallDir = installDir;
 export const oldDefaultInstallDirOnWindows = path.resolve(os.homedir(), 'ncs');
 
 export const persistedInstallDir = (): string =>

@@ -1,3 +1,9 @@
+## 1.1.1 - 2022-06-29
+
+### Changed
+
+-   Show feedback if running nrfutil-toolchain-manager fails.
+
 ## 1.1.0 - 2022-06-28
 
 ### Added
