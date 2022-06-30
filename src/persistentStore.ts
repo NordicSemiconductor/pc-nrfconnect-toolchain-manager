@@ -26,12 +26,15 @@ let installDir =
 try {
     installDir = getNrfutilConfig().install_dir;
 } catch (error) {
-    usageData.sendErrorReport(
-        'Unable to get nrfutil-toolchain-manager config.'
-    );
-    logger.error(
-        `Please check if ${nrfutilToolchainManager()} is executable on your system.`
-    );
+    // Use a timeout as usageData is not yet ready at this point.
+    setTimeout(() => {
+        usageData.sendErrorReport(
+            'Unable to get nrfutil-toolchain-manager config.'
+        );
+        logger.error(
+            `Please check if ${nrfutilToolchainManager()} is executable on your system.`
+        );
+    });
 }
 
 export const defaultInstallDir = installDir;
