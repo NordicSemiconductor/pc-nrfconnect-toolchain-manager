@@ -169,7 +169,7 @@ const downloadIndex = (dispatch: Dispatch) => {
 
 export default (dispatch: Dispatch): void => {
     logger.info('Initializing environments...');
-    logNrfutilVersion();
+    logNrfutilVersion(dispatch);
     const dir = path.dirname(installDir());
     if (
         process.platform === 'darwin' &&
