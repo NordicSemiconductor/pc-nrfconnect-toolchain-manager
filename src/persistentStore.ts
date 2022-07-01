@@ -15,29 +15,32 @@ import {
 import getNrfutilConfig from './Manager/nrfutil/config';
 import nrfutilToolchainManager from './Manager/nrfutil/nrfutilToolchainManager';
 
-// Set fallback value in case nrfutil can't supply the value.
-let installDir =
-    {
+const fallbackInstallDir = () =>
+    ({
         win32: path.resolve('\\', 'ncs'),
         darwin: '/opt/nordic/ncs',
         linux: path.resolve(os.homedir(), 'ncs'),
-    }[<string>process.platform] ?? path.resolve(os.homedir(), 'ncs');
+    }[<string>process.platform] ?? path.resolve(os.homedir(), 'ncs'));
 
-try {
-    installDir = getNrfutilConfig().install_dir;
-} catch (error) {
-    // Use a timeout as usageData is not yet ready at this point.
-    setTimeout(() => {
-        usageData.sendErrorReport(
-            'Unable to get nrfutil-toolchain-manager config.'
-        );
-        logger.error(
-            `Please check if ${nrfutilToolchainManager()} is executable on your system.`
-        );
-    });
-}
+const installDir = () => {
+    try {
+        return getNrfutilConfig().install_dir;
+    } catch (error) {
+        // Use a timeout as usageData is not yet ready at this point.
+        setTimeout(() => {
+            usageData.sendErrorReport(
+                'Unable to get nrfutil-toolchain-manager config.'
+            );
+            logger.error(
+                `Please check if ${nrfutilToolchainManager()} is executable on your system.`
+            );
+        });
 
-export const defaultInstallDir = installDir;
+        return fallbackInstallDir();
+    }
+};
+
+export const defaultInstallDir = installDir();
 export const oldDefaultInstallDirOnWindows = path.resolve(os.homedir(), 'ncs');
 
 export const persistedInstallDir = (): string =>
