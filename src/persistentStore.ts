@@ -18,7 +18,7 @@ import nrfutilToolchainManager from './Manager/nrfutil/nrfutilToolchainManager';
 const fallbackInstallDir = () =>
     ({
         win32: path.resolve('\\', 'ncs'),
-        darwin: '/opt/nordic/ncs',
+        darwin: path.resolve(path.sep, 'opt', 'nordic', 'ncs'),
         linux: path.resolve(os.homedir(), 'ncs'),
     }[<string>process.platform] ?? path.resolve(os.homedir(), 'ncs'));
 
