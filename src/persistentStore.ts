@@ -17,10 +17,10 @@ import nrfutilToolchainManager from './Manager/nrfutil/nrfutilToolchainManager';
 
 const fallbackInstallDir = () =>
     ({
-        win32: path.resolve('\\', 'ncs'),
-        darwin: path.resolve(path.sep, 'opt', 'nordic', 'ncs'),
-        linux: path.resolve(os.homedir(), 'ncs'),
-    }[<string>process.platform] ?? path.resolve(os.homedir(), 'ncs'));
+        win32: ['\\', 'ncs'],
+        darwin: [path.sep, 'opt', 'nordic', 'ncs'],
+        linux: [os.homedir(), 'ncs'],
+    }[<string>process.platform] ?? [os.homedir(), 'ncs']);
 
 const installDir = () => {
     try {
@@ -36,7 +36,7 @@ const installDir = () => {
             );
         });
 
-        return fallbackInstallDir();
+        return path.resolve(...fallbackInstallDir());
     }
 };
 
