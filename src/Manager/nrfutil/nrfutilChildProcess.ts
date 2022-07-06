@@ -5,6 +5,8 @@
  */
 
 import { exec, execSync, spawn, spawnSync } from 'child_process';
+import path from 'path';
+import { getAppFile } from 'pc-nrfconnect-shared';
 
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
@@ -23,6 +25,16 @@ const updateEnv = (envToAdd?: PartialEnv, envKeysToRemove?: string[]) => {
     envKeysToRemove?.forEach(key => {
         delete env[key];
     });
+
+    if (process.platform === 'win32')
+        env.PATH += `:${getAppFile(
+            path.join(
+                'resources',
+                'nrfutil-toolchain-manager',
+                'win32',
+                'vcruntime140.dll'
+            )
+        )}`;
 
     return env;
 };
