@@ -4,10 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { spawnSync } from 'child_process';
-
 import { persistedInstallDir as installDir } from '../../persistentStore';
-import nrfutilToolchainManager from './nrfutilToolchainManager';
+import { nrfutilSpawnSync } from './nrfutilChildProcess';
 
 interface InstalledToolchain {
     path: string;
@@ -15,13 +13,12 @@ interface InstalledToolchain {
 }
 
 export default () => {
-    const tcm = spawnSync(
-        nrfutilToolchainManager(),
-        ['--json', 'list', '--install-dir', installDir()],
-        {
-            encoding: 'utf8',
-        }
-    );
+    const tcm = nrfutilSpawnSync([
+        '--json',
+        'list',
+        '--install-dir',
+        installDir(),
+    ]);
     const { data } = JSON.parse(tcm.stdout);
     return data.toolchains as InstalledToolchain[];
 };

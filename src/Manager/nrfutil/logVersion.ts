@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { spawnSync } from 'child_process';
 import { logger } from 'pc-nrfconnect-shared';
 
 import { Dispatch } from '../../state';
+import { nrfutilSpawnSync } from './nrfutilChildProcess';
 import { showNrfUtilDialogAction } from './nrfUtilDialogSlice';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
@@ -23,13 +23,7 @@ interface VersionInformation {
 
 export default (dispatch: Dispatch) => {
     try {
-        const tcm = spawnSync(
-            nrfutilToolchainManager(),
-            ['--json', '--version'],
-            {
-                encoding: 'utf8',
-            }
-        );
+        const tcm = nrfutilSpawnSync(['--json', '--version']);
 
         const version = JSON.parse(tcm.stdout).data as VersionInformation;
 

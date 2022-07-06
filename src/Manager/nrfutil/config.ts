@@ -4,9 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { spawnSync } from 'child_process';
-
-import nrfutilToolchainManager from './nrfutilToolchainManager';
+import { nrfutilSpawnSync } from './nrfutilChildProcess';
 
 interface Config {
     current_toolchain: null | {
@@ -18,9 +16,7 @@ interface Config {
 }
 
 const config = () => {
-    const tcm = spawnSync(nrfutilToolchainManager(), ['--json', 'config'], {
-        encoding: 'utf8',
-    });
+    const tcm = nrfutilSpawnSync(['--json', 'config']);
     const { data } = JSON.parse(tcm.stdout);
 
     return data as Config;
