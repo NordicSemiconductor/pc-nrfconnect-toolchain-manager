@@ -19,7 +19,7 @@ const updateEnv = (envToAdd?: PartialEnv, envKeysToRemove?: string[]) => {
 
     if (envToAdd)
         Object.keys(envToAdd).forEach(key => {
-            env[key] = `${env[key]}:${envToAdd[key]}`;
+            env[key] = `${env[key]}${path.delimiter}${envToAdd[key]}`;
         });
 
     envKeysToRemove?.forEach(key => {
@@ -27,7 +27,7 @@ const updateEnv = (envToAdd?: PartialEnv, envKeysToRemove?: string[]) => {
     });
 
     if (process.platform === 'win32')
-        env.PATH += `:${getAppFile(
+        env.PATH += `${path.delimiter}${getAppFile(
             path.join(
                 'resources',
                 'nrfutil-toolchain-manager',
