@@ -2,9 +2,9 @@
 
 ### Fixed
 
--   Toolchain Manager potentially crashed if directory names of environments
-    older than v2.0.0 were changed.
--   Windows: Missing Microsoft Visual C++ Redistributable.
+-   Toolchain Manager potentially crashed if unexpected directory names were
+    present in install directory.
+-   Windows: Missing Microsoft Visual C++ Redistributable caused crash.
 -   Dialog regarding missing Microsoft Visual C++ Redistributable included a
     link which did not open in the browser.
 
