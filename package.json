@@ -1,6 +1,6 @@
 {
     "name": "pc-nrfconnect-toolchain-manager",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "Install and manage tools to develop with the nRF Connect SDK (NCS)",
     "displayName": "Toolchain Manager",
     "repository": {
@@ -33,7 +33,7 @@
     "devDependencies": {
         "@types/fs-extra": "^9.0.12",
         "@types/node": "^14.14.33",
-        "pc-nrfconnect-shared": "git+https://github.com/NordicSemiconductor/pc-nrfconnect-shared.git#v6.3.4",
+        "pc-nrfconnect-shared": "git+https://github.com/NordicSemiconductor/pc-nrfconnect-shared.git#v6.4.1",
         "sudo-prompt": "^9.2.1",
         "tree-kill": "^1.2.2"
     },
