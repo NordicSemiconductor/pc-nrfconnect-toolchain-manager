@@ -27,7 +27,21 @@ const NrfUtilDialog: FC = () => {
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <ReactMarkdown>{content}</ReactMarkdown>
+                <ReactMarkdown
+                    renderers={{
+                        link: ({ href, children }) => (
+                            <a
+                                href={href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {children}
+                            </a>
+                        ),
+                    }}
+                >
+                    {content}
+                </ReactMarkdown>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="outline-primary" onClick={close}>

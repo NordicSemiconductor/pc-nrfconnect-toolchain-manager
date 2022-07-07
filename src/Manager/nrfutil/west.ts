@@ -4,24 +4,15 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { spawn } from 'child_process';
 import { mkdirSync } from 'fs';
 import { logger } from 'pc-nrfconnect-shared';
 import treeKill from 'tree-kill';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
 import sdkPath from '../sdkPath';
-import nrfutilToolchainManager from './nrfutilToolchainManager';
+import { nrfutilSpawn } from './nrfutilChildProcess';
 
 const noop = () => {};
-
-const removeFromEnv = (keysToRemove: string[]) => {
-    const env = { ...process.env };
-    keysToRemove.forEach(key => {
-        delete env[key];
-    });
-    return env;
-};
 
 const west = (
     westParams: string[],
@@ -38,8 +29,7 @@ const west = (
             recursive: true,
         });
 
-        const tcm = spawn(
-            nrfutilToolchainManager(),
+        const tcm = nrfutilSpawn(
             [
                 'launch',
                 '--chdir',
@@ -53,7 +43,8 @@ const west = (
                 '-v',
                 ...westParams,
             ],
-            { env: removeFromEnv(['ZEPHYR_BASE']) }
+            undefined,
+            ['ZEPHYR_BASE']
         );
 
         const abortListener = () => treeKill(tcm.pid);

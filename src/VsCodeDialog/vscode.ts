@@ -171,9 +171,12 @@ export const getNrfjprogStatus = async () => {
 };
 
 const pathEnvVariable = () => {
-    if (process.platform !== 'darwin') return process.env.PATH;
+    if (process.platform !== 'darwin') return process.env;
 
-    return `/usr/local/bin:${process.env.PATH}`;
+    return {
+        ...process.env,
+        PATH: `/usr/local/bin:${process.env.PATH}`,
+    };
 };
 
 const checkExecArchitecture = (stdout: string) => {
@@ -188,10 +191,7 @@ const spawnAsync = (cmd: string, params?: string[]) =>
     new Promise<string>((resolve, reject) => {
         const codeProcess = spawn(cmd, params, {
             shell: true,
-            env: {
-                ...process.env,
-                PATH: pathEnvVariable(),
-            },
+            env: pathEnvVariable(),
         });
         let stdout = '';
         let stderr = '';

@@ -4,12 +4,11 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { spawn } from 'child_process';
 import treeKill from 'tree-kill';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
 import handleChunk from './handleChunk';
-import nrfutilToolchainManager from './nrfutilToolchainManager';
+import { nrfutilSpawn } from './nrfutilChildProcess';
 import type { TaskEvent } from './task';
 
 export default (
@@ -18,7 +17,7 @@ export default (
     signal: AbortSignal
 ) =>
     new Promise<void>((resolve, reject) => {
-        const tcm = spawn(nrfutilToolchainManager(), [
+        const tcm = nrfutilSpawn([
             '--json',
             'install',
             '--install-dir',

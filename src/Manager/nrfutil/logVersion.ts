@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { spawnSync } from 'child_process';
 import { logger } from 'pc-nrfconnect-shared';
 
 import { Dispatch } from '../../state';
+import { nrfutilSpawnSync } from './nrfutilChildProcess';
 import { showNrfUtilDialogAction } from './nrfUtilDialogSlice';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
@@ -23,13 +23,7 @@ interface VersionInformation {
 
 export default (dispatch: Dispatch) => {
     try {
-        const tcm = spawnSync(
-            nrfutilToolchainManager(),
-            ['--json', '--version'],
-            {
-                encoding: 'utf8',
-            }
-        );
+        const tcm = nrfutilSpawnSync(['--json', '--version']);
 
         const version = JSON.parse(tcm.stdout).data as VersionInformation;
 
@@ -46,7 +40,7 @@ export default (dispatch: Dispatch) => {
                     `\n\nPlease verify that you are able to launch **${nrfutilToolchainManager()}** on your system.` +
                     `${
                         process.platform === 'win32'
-                            ? '\n\nA known issue is that some systems do not have the vc redistributable installed. [https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)'
+                            ? '\n\nA known issue is that some systems do not have the vc redistributable (x64) installed. [https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)'
                             : ''
                     }`,
             })
