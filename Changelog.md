@@ -1,3 +1,10 @@
+## 1.1.2 - 2022-07-07
+
+### Fixed
+
+-   Toolchain Manager potentially crashed if directory names of environments
+    older than v2.0.0 were changed.
+
 ## 1.1.1 - 2022-07-04
 
 ### Changed
