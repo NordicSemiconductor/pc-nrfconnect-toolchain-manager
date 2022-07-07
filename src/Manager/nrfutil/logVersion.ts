@@ -40,7 +40,7 @@ export default (dispatch: Dispatch) => {
                     `\n\nPlease verify that you are able to launch **${nrfutilToolchainManager()}** on your system.` +
                     `${
                         process.platform === 'win32'
-                            ? '\n\nA known issue is that some systems do not have the vc redistributable installed. [https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)'
+                            ? '\n\nA known issue is that some systems do not have the vc redistributable (x64) installed. [https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)'
                             : ''
                     }`,
             })
