@@ -11,71 +11,73 @@ import { getAppFile } from 'pc-nrfconnect-shared';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
 interface PartialEnv {
-    [key: string]: string[];
+    [key: string]: string;
 }
 
-const updateEnv = (envToAdd?: PartialEnv, envKeysToRemove?: string[]) => {
+const vcRuntimeDllPath = getAppFile(
+    path.join(
+        'resources',
+        'nrfutil-toolchain-manager',
+        'win32',
+        'vcruntime140.dll'
+    )
+);
+
+const updateEnv = (
+    envToSet: PartialEnv = {},
+    envKeysToRemove: string[] = []
+) => {
     const { env } = process;
 
-    if (envToAdd)
-        Object.keys(envToAdd).forEach(key => {
-            env[key] = [env[key], ...envToAdd[key]]
-                .filter(Boolean)
-                .join(path.delimiter);
-        });
+    Object.entries(envToSet).forEach(([key, entry]) => {
+        env[key] = entry;
+    });
 
-    envKeysToRemove?.forEach(key => {
+    envKeysToRemove.forEach(key => {
         delete env[key];
     });
 
     if (process.platform === 'win32')
-        env.PATH += `${path.delimiter}${getAppFile(
-            path.join(
-                'resources',
-                'nrfutil-toolchain-manager',
-                'win32',
-                'vcruntime140.dll'
-            )
-        )}`;
+        env.PATH = `${vcRuntimeDllPath}${path.delimiter}${env.PATH}`;
 
     return env;
 };
 
 export const nrfutilSpawnSync = (
     args: string[],
-    envToAdd?: PartialEnv,
+    envToSet?: PartialEnv,
     envKeysToRemove?: string[]
 ) =>
     spawnSync(nrfutilToolchainManager(), args, {
         encoding: 'utf8',
-        env: updateEnv(envToAdd, envKeysToRemove),
+        env: updateEnv(envToSet, envKeysToRemove),
     });
 
 export const nrfutilSpawn = (
     args: string[],
-    envToAdd?: PartialEnv,
+    envToSet?: PartialEnv,
     envKeysToRemove?: string[]
 ) =>
     spawn(nrfutilToolchainManager(), args, {
-        env: updateEnv(envToAdd, envKeysToRemove),
+        env: updateEnv(envToSet, envKeysToRemove),
     });
 
 export const nrfutilExec = (
     command: string,
-    envToAdd?: PartialEnv,
+    envToSet?: PartialEnv,
     envKeysToRemove?: string[]
 ) =>
     exec(command, {
         encoding: 'utf-8',
-        env: updateEnv(envToAdd, envKeysToRemove),
+        env: updateEnv(envToSet, envKeysToRemove),
     });
 
 export const nrfutilExecSync = (
     command: string,
-    envToAdd?: PartialEnv,
+    envToSet?: PartialEnv,
     envKeysToRemove?: string[]
 ) =>
     execSync(command, {
         encoding: 'utf-8',
-        env: updateEnv(envToAdd, envKeysToRemove),
+        env: updateEnv(envToSet, envKeysToRemove),
     });
