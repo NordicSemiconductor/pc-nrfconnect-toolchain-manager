@@ -19,7 +19,9 @@ const updateEnv = (envToAdd?: PartialEnv, envKeysToRemove?: string[]) => {
 
     if (envToAdd)
         Object.keys(envToAdd).forEach(key => {
-            env[key] = `${env[key]}${path.delimiter}${envToAdd[key]}`;
+            env[key] = [env[key], envToAdd[key]]
+                .filter(Boolean)
+                .join(path.delimiter);
         });
 
     envKeysToRemove?.forEach(key => {
