@@ -1,6 +1,6 @@
 {
     "name": "pc-nrfconnect-toolchain-manager",
-    "version": "1.1.2",
+    "version": "1.1.3",
     "description": "Install and manage tools to develop with the nRF Connect SDK (NCS)",
     "displayName": "Toolchain Manager",
     "repository": {
