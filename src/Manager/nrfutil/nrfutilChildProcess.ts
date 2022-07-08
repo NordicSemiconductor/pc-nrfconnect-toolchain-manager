@@ -11,7 +11,7 @@ import { getAppFile } from 'pc-nrfconnect-shared';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
 interface PartialEnv {
-    [key: string]: string;
+    [key: string]: string[];
 }
 
 const updateEnv = (envToAdd?: PartialEnv, envKeysToRemove?: string[]) => {
@@ -19,7 +19,7 @@ const updateEnv = (envToAdd?: PartialEnv, envKeysToRemove?: string[]) => {
 
     if (envToAdd)
         Object.keys(envToAdd).forEach(key => {
-            env[key] = [env[key], envToAdd[key]]
+            env[key] = [env[key], ...envToAdd[key]]
                 .filter(Boolean)
                 .join(path.delimiter);
         });
