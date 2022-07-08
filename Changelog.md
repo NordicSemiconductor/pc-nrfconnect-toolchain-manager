@@ -1,3 +1,9 @@
+## 1.1.3 - 2022-07-08
+
+### Fixed
+
+-   `ZEPHYR_BASE` was undefined.
+
 ## 1.1.2 - 2022-07-07
 
 ### Fixed
