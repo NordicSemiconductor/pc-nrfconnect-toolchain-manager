@@ -2,7 +2,7 @@
 
 ### Fixed
 
--   `ZEPHYR_BASE` was undefined.
+-   `ZEPHYR_BASE` environment variable was not set.
 
 ## 1.1.2 - 2022-07-07
 
