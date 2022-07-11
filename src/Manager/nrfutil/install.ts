@@ -18,7 +18,6 @@ export default (
 ) =>
     new Promise<void>((resolve, reject) => {
         const tcm = nrfutilSpawn([
-            '--json',
             'install',
             '--install-dir',
             installDir(),

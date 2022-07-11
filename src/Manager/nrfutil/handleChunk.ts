@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { stripAndPrintNrfutilLogOutput } from './nrfutilChildProcess';
 import type { TaskEvent } from './task';
 
 export default (onUpdate: (update: TaskEvent) => void) => {
@@ -14,7 +15,9 @@ export default (onUpdate: (update: TaskEvent) => void) => {
         while (buffer.includes('\n')) {
             const message = buffer.split('\n')[0];
             buffer = buffer.substring(message.length + 1);
-            onUpdate(JSON.parse(message));
+
+            const strippedLog = stripAndPrintNrfutilLogOutput(message);
+            if (strippedLog?.length > 0) onUpdate(JSON.parse(strippedLog));
         }
     };
 };

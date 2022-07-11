@@ -5,7 +5,10 @@
  */
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
-import { nrfutilSpawnSync } from './nrfutilChildProcess';
+import {
+    nrfutilSpawnSync,
+    stripAndPrintNrfutilLogOutput,
+} from './nrfutilChildProcess';
 
 interface InstalledToolchain {
     path: string;
@@ -13,12 +16,7 @@ interface InstalledToolchain {
 }
 
 export default () => {
-    const tcm = nrfutilSpawnSync([
-        '--json',
-        'list',
-        '--install-dir',
-        installDir(),
-    ]);
-    const { data } = JSON.parse(tcm.stdout);
+    const tcm = nrfutilSpawnSync(['list', '--install-dir', installDir()]);
+    const { data } = JSON.parse(stripAndPrintNrfutilLogOutput(tcm.stdout));
     return data.toolchains as InstalledToolchain[];
 };

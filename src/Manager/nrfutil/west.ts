@@ -10,7 +10,10 @@ import treeKill from 'tree-kill';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
 import sdkPath from '../sdkPath';
-import { nrfutilSpawn } from './nrfutilChildProcess';
+import {
+    nrfutilSpawn,
+    stripAndPrintNrfutilLogOutput,
+} from './nrfutilChildProcess';
 
 const noop = () => {};
 
@@ -53,7 +56,8 @@ const west = (
         tcm.stderr.on('data', err => logger.debug(err));
         tcm.stdout.on('data', data => {
             logger.debug(data.toString().trimEnd());
-            onUpdate(data);
+            const strippedLog = stripAndPrintNrfutilLogOutput(data.toString());
+            if (strippedLog?.length > 0) onUpdate(strippedLog);
         });
         tcm.on('close', code => {
             signal.removeEventListener('abort', abortListener);

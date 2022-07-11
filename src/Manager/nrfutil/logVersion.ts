@@ -7,7 +7,10 @@
 import { logger } from 'pc-nrfconnect-shared';
 
 import { Dispatch } from '../../state';
-import { nrfutilSpawnSync } from './nrfutilChildProcess';
+import {
+    nrfutilSpawnSync,
+    stripAndPrintNrfutilLogOutput,
+} from './nrfutilChildProcess';
 import { showNrfUtilDialogAction } from './nrfUtilDialogSlice';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
@@ -23,9 +26,10 @@ interface VersionInformation {
 
 export default (dispatch: Dispatch) => {
     try {
-        const tcm = nrfutilSpawnSync(['--json', '--version']);
+        const tcm = nrfutilSpawnSync(['--version']);
 
-        const version = JSON.parse(tcm.stdout).data as VersionInformation;
+        const version = JSON.parse(stripAndPrintNrfutilLogOutput(tcm.stdout))
+            .data as VersionInformation;
 
         logger.info(
             `${version.name} ${version.version} (${version.commit_hash} ${version.commit_date})`
