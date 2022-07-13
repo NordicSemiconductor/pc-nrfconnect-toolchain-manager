@@ -14,14 +14,15 @@ interface PartialEnv {
     [key: string]: string;
 }
 
-const vcRuntimeDllPath = getAppFile(
-    path.join(
-        'resources',
-        'nrfutil-toolchain-manager',
-        'win32',
-        'vcruntime140.dll'
-    )
-);
+const vcRuntimeDllPath = () =>
+    getAppFile(
+        path.join(
+            'resources',
+            'nrfutil-toolchain-manager',
+            'win32',
+            'vcruntime140.dll'
+        )
+    );
 
 const updateEnv = (
     envToSet: PartialEnv = {},
@@ -38,7 +39,7 @@ const updateEnv = (
     });
 
     if (process.platform === 'win32')
-        env.PATH = `${vcRuntimeDllPath}${path.delimiter}${env.PATH}`;
+        env.PATH = `${vcRuntimeDllPath()}${path.delimiter}${env.PATH}`;
 
     return env;
 };
