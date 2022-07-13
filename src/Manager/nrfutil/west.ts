@@ -55,9 +55,12 @@ const west = (
 
         tcm.stderr.on('data', err => logger.debug(err));
         tcm.stdout.on('data', data => {
-            logger.debug(data.toString().trimEnd());
             const strippedLog = stripAndPrintNrfutilLogOutput(data.toString());
-            if (strippedLog?.length > 0) onUpdate(strippedLog);
+
+            if (strippedLog?.length > 0) {
+                logger.debug(strippedLog.trimEnd());
+                onUpdate(strippedLog);
+            }
         });
         tcm.on('close', code => {
             signal.removeEventListener('abort', abortListener);

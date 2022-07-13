@@ -67,24 +67,24 @@ export const stripAndPrintNrfutilLogOutput = (output: string) =>
                     switch (outputObject.data.level.toString()) {
                         case 'INFO':
                             logger.info(
-                                `[nrfutil]${outputObject.data.message}`
+                                `[nrfutil] ${outputObject.data.message}`
                             );
                             break;
                         case 'WARN':
                             logger.warn(
-                                `[nrfutil]${outputObject.data.message}`
+                                `[nrfutil] ${outputObject.data.message}`
                             );
                             break;
                         case 'ERROR':
                             logger.error(
-                                `[nrfutil]${outputObject.data.message}`
+                                `[nrfutil] ${outputObject.data.message}`
                             );
                             break;
                         case 'TRACE':
                         case 'DEBUG':
                         default:
                             logger.debug(
-                                `[nrfutil]${outputObject.data.message}`
+                                `[nrfutil] ${outputObject.data.message}`
                             );
                     }
                     return false;
