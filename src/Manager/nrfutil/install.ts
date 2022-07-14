@@ -7,7 +7,6 @@
 import treeKill from 'tree-kill';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
-import handleChunk from './handleChunk';
 import { nrfutilSpawn } from './nrfutilChildProcess';
 import type { TaskEvent } from './task';
 
@@ -17,12 +16,10 @@ export default (
     signal: AbortSignal
 ) =>
     new Promise<void>((resolve, reject) => {
-        const tcm = nrfutilSpawn([
-            'install',
-            '--install-dir',
-            installDir(),
-            version,
-        ]);
+        const tcm = nrfutilSpawn(
+            ['install', '--install-dir', installDir(), version],
+            (line: string) => onUpdate(JSON.parse(line))
+        );
 
         const abortListener = () => treeKill(tcm.pid);
         signal.addEventListener('abort', abortListener);
@@ -31,7 +28,6 @@ export default (
         tcm.stderr.on('data', (data: Buffer) => {
             error += data.toString();
         });
-        tcm.stdout.on('data', handleChunk(onUpdate));
         tcm.on('close', code => {
             signal.removeEventListener('abort', abortListener);
             if (code === 0 || signal.aborted) {

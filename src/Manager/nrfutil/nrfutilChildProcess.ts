@@ -8,6 +8,7 @@ import { exec, execSync, spawn, spawnSync } from 'child_process';
 import path from 'path';
 import { getAppFile, isLoggingVerbose, logger } from 'pc-nrfconnect-shared';
 
+import handleChunk from './handleChunk';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
 interface PartialEnv {
@@ -97,24 +98,36 @@ export const stripAndPrintNrfutilLogOutput = (output: string) =>
         })
         .join('\n');
 
-export const nrfutilSpawnSync = (
+export const nrfutilSpawnSync = <T>(
     args: string[],
     envToSet?: PartialEnv,
     envKeysToRemove?: string[]
-) =>
-    spawnSync(nrfutilToolchainManager(), updateArgs(args), {
+) => {
+    const tcm = spawnSync(nrfutilToolchainManager(), updateArgs(args), {
         encoding: 'utf8',
         env: updateEnv(envToSet, envKeysToRemove),
     });
 
+    return JSON.parse(stripAndPrintNrfutilLogOutput(tcm.stdout)).data as T;
+};
+
 export const nrfutilSpawn = (
     args: string[],
+    onData: (line: string) => void,
     envToSet?: PartialEnv,
     envKeysToRemove?: string[]
-) =>
-    spawn(nrfutilToolchainManager(), updateArgs(args), {
+) => {
+    const childProcess = spawn(nrfutilToolchainManager(), updateArgs(args), {
         env: updateEnv(envToSet, envKeysToRemove),
     });
+
+    childProcess.stdout.on(
+        'data',
+        handleChunk(onData, stripAndPrintNrfutilLogOutput)
+    );
+
+    return childProcess;
+};
 
 export const nrfutilExec = (
     command: string,

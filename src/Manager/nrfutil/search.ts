@@ -5,18 +5,15 @@
  */
 
 import type { Toolchain } from '../../state';
-import {
-    nrfutilSpawnSync,
-    stripAndPrintNrfutilLogOutput,
-} from './nrfutilChildProcess';
+import { nrfutilSpawnSync } from './nrfutilChildProcess';
 
 interface ToolchainSearch {
+    sdks: InstallableEnvironment[];
+}
+
+interface InstallableEnvironment {
     toolchains: Toolchain[];
     version: string;
 }
 
-export default () => {
-    const tcm = nrfutilSpawnSync(['search']);
-    const { data } = JSON.parse(stripAndPrintNrfutilLogOutput(tcm.stdout));
-    return data.sdks as ToolchainSearch[];
-};
+export default () => nrfutilSpawnSync<ToolchainSearch>(['search']).sdks;

@@ -5,12 +5,14 @@
  */
 
 import handleChunk from './handleChunk';
-import { TaskEvent } from './task';
 
 test('parse chunks into messages', () => {
     const handleChunks = (chunks: string[]) => {
-        const messages: TaskEvent[] = [];
-        const handler = handleChunk(message => messages.push(message));
+        const messages: string[] = [];
+        const handler = handleChunk(
+            line => messages.push(line),
+            line => line
+        );
         chunks.forEach(chunk => handler(Buffer.from(chunk, 'utf-8')));
         return messages;
     };

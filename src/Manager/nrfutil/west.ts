@@ -10,10 +10,7 @@ import treeKill from 'tree-kill';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
 import sdkPath from '../sdkPath';
-import {
-    nrfutilSpawn,
-    stripAndPrintNrfutilLogOutput,
-} from './nrfutilChildProcess';
+import { nrfutilSpawn } from './nrfutilChildProcess';
 
 const noop = () => {};
 
@@ -32,6 +29,11 @@ const west = (
             recursive: true,
         });
 
+        const onData = (line: string): void => {
+            logger.debug(line.trimEnd());
+            onUpdate(line);
+        };
+
         const tcm = nrfutilSpawn(
             [
                 'launch',
@@ -46,6 +48,7 @@ const west = (
                 '-v',
                 ...westParams,
             ],
+            onData,
             undefined,
             ['ZEPHYR_BASE']
         );
@@ -54,14 +57,6 @@ const west = (
         signal.addEventListener('abort', abortListener);
 
         tcm.stderr.on('data', err => logger.debug(err));
-        tcm.stdout.on('data', data => {
-            const strippedLog = stripAndPrintNrfutilLogOutput(data.toString());
-
-            if (strippedLog?.length > 0) {
-                logger.debug(strippedLog.trimEnd());
-                onUpdate(strippedLog);
-            }
-        });
         tcm.on('close', code => {
             signal.removeEventListener('abort', abortListener);
 
