@@ -18,7 +18,7 @@ export default (
             buffer = buffer.substring(message.length + 1);
 
             const strippedLog = filterLine(message);
-            if (strippedLog?.length > 0) {
+            if (strippedLog.length > 0) {
                 onData(strippedLog);
             }
         }
