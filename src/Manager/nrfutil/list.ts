@@ -7,18 +7,15 @@
 import { persistedInstallDir as installDir } from '../../persistentStore';
 import { nrfutilSpawnSync } from './nrfutilChildProcess';
 
+interface Toolchains {
+    toolchains: InstalledToolchain[];
+}
+
 interface InstalledToolchain {
     path: string;
     ncs_version: string;
 }
 
-export default () => {
-    const tcm = nrfutilSpawnSync([
-        '--json',
-        'list',
-        '--install-dir',
-        installDir(),
-    ]);
-    const { data } = JSON.parse(tcm.stdout);
-    return data.toolchains as InstalledToolchain[];
-};
+export default () =>
+    nrfutilSpawnSync<Toolchains>(['list', '--install-dir', installDir()])
+        .toolchains;

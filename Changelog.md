@@ -1,3 +1,9 @@
+## 1.2.0
+
+### Added
+
+-   Verbose log setting from `About` pane now enables additional nrfutil log.
+
 ## 1.1.3 - 2022-07-08
 
 ### Fixed

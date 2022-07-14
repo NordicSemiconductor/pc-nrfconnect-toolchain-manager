@@ -15,11 +15,6 @@ interface Config {
     toolchain_index_url_override: null | string;
 }
 
-const config = () => {
-    const tcm = nrfutilSpawnSync(['--json', 'config']);
-    const { data } = JSON.parse(tcm.stdout);
-
-    return data as Config;
-};
+const config = () => nrfutilSpawnSync<Config>(['config']);
 
 export default config;

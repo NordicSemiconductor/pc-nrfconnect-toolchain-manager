@@ -23,9 +23,7 @@ interface VersionInformation {
 
 export default (dispatch: Dispatch) => {
     try {
-        const tcm = nrfutilSpawnSync(['--json', '--version']);
-
-        const version = JSON.parse(tcm.stdout).data as VersionInformation;
+        const version = nrfutilSpawnSync<VersionInformation>(['--version']);
 
         logger.info(
             `${version.name} ${version.version} (${version.commit_hash} ${version.commit_date})`

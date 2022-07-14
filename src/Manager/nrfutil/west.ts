@@ -29,6 +29,11 @@ const west = (
             recursive: true,
         });
 
+        const onData = (line: string): void => {
+            logger.debug(line.trimEnd());
+            onUpdate(line);
+        };
+
         const tcm = nrfutilSpawn(
             [
                 'launch',
@@ -43,6 +48,7 @@ const west = (
                 '-v',
                 ...westParams,
             ],
+            onData,
             undefined,
             ['ZEPHYR_BASE']
         );
@@ -51,10 +57,6 @@ const west = (
         signal.addEventListener('abort', abortListener);
 
         tcm.stderr.on('data', err => logger.debug(err));
-        tcm.stdout.on('data', data => {
-            logger.debug(data.toString().trimEnd());
-            onUpdate(data);
-        });
         tcm.on('close', code => {
             signal.removeEventListener('abort', abortListener);
 
