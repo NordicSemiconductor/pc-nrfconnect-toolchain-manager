@@ -4,6 +4,10 @@
 
 -   Verbose log setting from `About` pane now enables additional nrfutil log.
 
+### Fixed
+
+-   Local toolchain installs were not displayed with no internet access.
+
 ## 1.1.3 - 2022-07-08
 
 ### Fixed

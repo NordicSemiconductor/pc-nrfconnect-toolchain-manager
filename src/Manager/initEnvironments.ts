@@ -71,17 +71,33 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
 };
 
 const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
+    let installed: Environment[];
     try {
-        const installed = listToolchains()
+        installed = listToolchains()
             .filter(toolchain => !isLegacyEnvironment(toolchain.ncs_version))
-            .map<Environment>(toolchain => ({
-                version: toolchain.ncs_version,
-                toolchainDir: toolchain.path,
-                toolchains: [],
-                type: 'nrfUtil',
-                isInstalled: true,
-                abortController: new AbortController(),
-            }));
+            .map<Environment>(toolchain => {
+                const environment = {
+                    version: toolchain.ncs_version,
+                    toolchainDir: toolchain.path,
+                    toolchains: [],
+                    type: 'nrfUtil' as 'nrfUtil' | 'legacy',
+                    isInstalled: true,
+                    abortController: new AbortController(),
+                    isWestPresent: isWestPresent(
+                        toolchain.ncs_version,
+                        toolchain.path
+                    ),
+                };
+                dispatch(addLocallyExistingEnvironment(environment));
+                logger.info(
+                    `Toolchain ${environment.version} has been added to the list`
+                );
+                return environment as Environment;
+            });
+    } catch (e) {
+        logger.error(`Failed to list local toolchain installations.`);
+    }
+    try {
         searchToolchains()
             .filter(environment => !isLegacyEnvironment(environment.version))
             .map<Environment>(environment => {
