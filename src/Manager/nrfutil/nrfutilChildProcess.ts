@@ -29,7 +29,7 @@ const updateEnv = (
     envToSet: PartialEnv = {},
     envKeysToRemove: string[] = []
 ) => {
-    const { env } = process;
+    const env = { ...process.env };
 
     Object.entries(envToSet).forEach(([key, entry]) => {
         env[key] = entry;
