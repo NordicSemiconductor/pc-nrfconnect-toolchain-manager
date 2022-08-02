@@ -108,24 +108,6 @@ const managerSlice = createSlice({
         addEnvironment: (state, action: PayloadAction<Environment>) => {
             state.environments = append(state.environments, action.payload);
         },
-        addLocallyExistingEnvironment: (
-            state,
-            action: PayloadAction<{
-                type: 'legacy' | 'nrfUtil';
-                version: string;
-                toolchainDir: string;
-                isWestPresent: boolean;
-                isInstalled: boolean;
-                abortController: AbortController;
-            }>
-        ) => {
-            const environment: Environment = {
-                ...action.payload,
-                toolchains: [],
-                abortController: new AbortController(),
-            };
-            state.environments = append(state.environments, environment);
-        },
     },
     extraReducers: {
         [REMOVE_ENVIRONMENT]: (
@@ -148,7 +130,6 @@ export const {
         showInstallPackageDialog,
         selectEnvironment,
         addEnvironment,
-        addLocallyExistingEnvironment,
     },
 } = managerSlice;
 

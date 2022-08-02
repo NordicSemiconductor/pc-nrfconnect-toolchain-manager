@@ -19,11 +19,7 @@ import { Dispatch, Environment } from '../state';
 import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
 import { isLegacyEnvironment } from './Environment/environmentReducer';
-import {
-    addEnvironment,
-    addLocallyExistingEnvironment,
-    clearEnvironments,
-} from './managerSlice';
+import { addEnvironment, clearEnvironments } from './managerSlice';
 import listToolchains from './nrfutil/list';
 import logNrfutilVersion from './nrfutil/logVersion';
 import searchToolchains from './nrfutil/search';
@@ -53,13 +49,14 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
                     }`
                 );
                 dispatch(
-                    addLocallyExistingEnvironment({
+                    addEnvironment({
                         type: 'legacy',
                         version,
                         toolchainDir,
                         isWestPresent: westPresent,
                         isInstalled: true,
                         abortController: new AbortController(),
+                        toolchains: [],
                     })
                 );
             });
@@ -76,7 +73,7 @@ const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
         installed = listToolchains()
             .filter(toolchain => !isLegacyEnvironment(toolchain.ncs_version))
             .map<Environment>(toolchain => {
-                const environment = {
+                const environment: Environment = {
                     version: toolchain.ncs_version,
                     toolchainDir: toolchain.path,
                     toolchains: [],
@@ -88,11 +85,11 @@ const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
                         toolchain.path
                     ),
                 };
-                dispatch(addLocallyExistingEnvironment(environment));
+                dispatch(addEnvironment(environment));
                 logger.info(
                     `Toolchain ${environment.version} has been added to the list`
                 );
-                return environment as Environment;
+                return environment;
             });
     } catch (e) {
         logger.error(`Failed to list local toolchain installations.`);
