@@ -15,7 +15,7 @@ import {
 import { persistedInstallDir as installDir } from '../../../persistentStore';
 import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';
-import { addLocallyExistingEnvironment } from '../../managerSlice';
+import { addEnvironment } from '../../managerSlice';
 import {
     finishInstallToolchain,
     startInstallToolchain,
@@ -57,13 +57,14 @@ export const installPackage =
             fse.mkdirpSync(toolchainDir);
 
             dispatch(
-                addLocallyExistingEnvironment({
+                addEnvironment({
                     type: 'legacy',
                     version,
                     toolchainDir,
                     isInstalled: false,
                     isWestPresent: false,
                     abortController: new AbortController(),
+                    toolchains: [],
                 })
             );
             dispatch(startInstallToolchain(version));

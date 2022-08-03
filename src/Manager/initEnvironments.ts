@@ -19,11 +19,7 @@ import { Dispatch, Environment } from '../state';
 import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
 import { isLegacyEnvironment } from './Environment/environmentReducer';
-import {
-    addEnvironment,
-    addLocallyExistingEnvironment,
-    clearEnvironments,
-} from './managerSlice';
+import { addEnvironment, clearEnvironments } from './managerSlice';
 import listToolchains from './nrfutil/list';
 import logNrfutilVersion from './nrfutil/logVersion';
 import searchToolchains from './nrfutil/search';
@@ -53,13 +49,14 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
                     }`
                 );
                 dispatch(
-                    addLocallyExistingEnvironment({
+                    addEnvironment({
                         type: 'legacy',
                         version,
                         toolchainDir,
                         isWestPresent: westPresent,
                         isInstalled: true,
                         abortController: new AbortController(),
+                        toolchains: [],
                     })
                 );
             });
@@ -71,17 +68,33 @@ const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
 };
 
 const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
+    let installed: Environment[];
     try {
-        const installed = listToolchains()
+        installed = listToolchains()
             .filter(toolchain => !isLegacyEnvironment(toolchain.ncs_version))
-            .map<Environment>(toolchain => ({
-                version: toolchain.ncs_version,
-                toolchainDir: toolchain.path,
-                toolchains: [],
-                type: 'nrfUtil',
-                isInstalled: true,
-                abortController: new AbortController(),
-            }));
+            .map<Environment>(toolchain => {
+                const environment: Environment = {
+                    version: toolchain.ncs_version,
+                    toolchainDir: toolchain.path,
+                    toolchains: [],
+                    type: 'nrfUtil' as 'nrfUtil' | 'legacy',
+                    isInstalled: true,
+                    abortController: new AbortController(),
+                    isWestPresent: isWestPresent(
+                        toolchain.ncs_version,
+                        toolchain.path
+                    ),
+                };
+                dispatch(addEnvironment(environment));
+                logger.info(
+                    `Toolchain ${environment.version} has been added to the list`
+                );
+                return environment;
+            });
+    } catch (e) {
+        logger.error(`Failed to list local toolchain installations.`);
+    }
+    try {
         searchToolchains()
             .filter(environment => !isLegacyEnvironment(environment.version))
             .map<Environment>(environment => {
