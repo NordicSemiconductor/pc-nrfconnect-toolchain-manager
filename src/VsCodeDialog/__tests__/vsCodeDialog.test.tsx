@@ -7,7 +7,7 @@
 import React from 'react';
 
 import { addEnvironment } from '../../Manager/managerSlice';
-import { render } from '../../testUtils';
+import { render, screen } from '../../testUtils';
 import VsCodeDialog from '../VsCodeDialog';
 import {
     setVsCodeExtensions,
@@ -45,7 +45,7 @@ const vsCodeExtensions = (size: number, installedCount: number) => {
 
 describe('Default loading view when showing VS Code Dialog', () => {
     it('should display a "checking" dialog', async () => {
-        const screen = render(<VsCodeDialog />, [showVsCodeDialog()]);
+        render(<VsCodeDialog />, [showVsCodeDialog()]);
 
         expect(
             await screen.findByText(
@@ -58,7 +58,7 @@ describe('Default loading view when showing VS Code Dialog', () => {
 
 describe('VS Code not installed when showing VS Code Dialog', () => {
     it('should display a "Install VS Code" dialog', async () => {
-        const screen = render(<VsCodeDialog />, [
+        render(<VsCodeDialog />, [
             ...vsCodeDialogActions(VsCodeStatus.NOT_INSTALLED),
         ]);
 
@@ -73,7 +73,7 @@ describe('VS Code not installed when showing VS Code Dialog', () => {
 
 describe('VS Code installed but some extensions missing when showing VS Code Dialog', () => {
     it('should display a "Install VS Code extensions" dialog', async () => {
-        const screen = render(<VsCodeDialog />, [
+        render(<VsCodeDialog />, [
             ...vsCodeDialogActions(VsCodeStatus.MISSING_EXTENSIONS),
         ]);
 
@@ -88,7 +88,7 @@ describe('VS Code installed but some extensions missing when showing VS Code Dia
 
 describe('VS Code installed but some extensions missing when showing VS Code Dialog', () => {
     it('should display the correct status icons and buttons', async () => {
-        const screen = render(<VsCodeDialog />, [
+        render(<VsCodeDialog />, [
             ...vsCodeDialogActions(VsCodeStatus.MISSING_EXTENSIONS),
             setVsCodeExtensions(vsCodeExtensions(5, 2)),
         ]);
@@ -109,7 +109,7 @@ describe('VS Code installed but some extensions missing when showing VS Code Dia
 
 describe('Missing VS Code extensions were installed through the dialog', () => {
     it('should display the correct status icons and buttons', async () => {
-        const screen = render(<VsCodeDialog />, [
+        render(<VsCodeDialog />, [
             ...vsCodeDialogActions(VsCodeStatus.MISSING_EXTENSIONS),
             setVsCodeExtensions(vsCodeExtensions(2, 2)),
         ]);
@@ -120,7 +120,7 @@ describe('Missing VS Code extensions were installed through the dialog', () => {
 
 describe('Missing VS Code extensions were installed through the dialog but failed', () => {
     it('should display error status icons and alert', async () => {
-        const screen = render(<VsCodeDialog />, [
+        render(<VsCodeDialog />, [
             ...vsCodeDialogActions(VsCodeStatus.MISSING_EXTENSIONS),
             setVsCodeExtensions([
                 {
@@ -146,7 +146,7 @@ describe('Missing VS Code extensions were installed through the dialog but faile
 
 describe('VS Code is installed but nRF Command line tools are missing', () => {
     it('should display a "Install nRF Command line tools" dialog', async () => {
-        const screen = render(<VsCodeDialog />, [
+        render(<VsCodeDialog />, [
             ...vsCodeDialogActions(VsCodeStatus.MISSING_NRFJPROG),
         ]);
 
@@ -160,7 +160,7 @@ describe('VS Code is installed but nRF Command line tools are missing', () => {
 
 describe('VS Code not installed when installing a toolchain for the first time', () => {
     it('should display a "While the toolchain is installing ... install VS Code" dialog', async () => {
-        const screen = render(<VsCodeDialog />, [
+        render(<VsCodeDialog />, [
             addEnvironment({
                 type: 'legacy',
                 version: 'v0.0',
