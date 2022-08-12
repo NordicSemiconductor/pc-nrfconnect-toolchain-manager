@@ -14,9 +14,10 @@ import { readdirSync } from 'fs';
 import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
+import { persistedInstallDir } from '../../persistentStore';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
-import { showConfirmRemoveDialog } from '../managerSlice';
+import { getLatestToolchain, showConfirmRemoveDialog } from '../managerSlice';
 import { showNrfUtilDialogAction } from '../nrfutil/nrfUtilDialogSlice';
 import {
     launchGnomeTerminal,
@@ -25,9 +26,10 @@ import {
 } from '../nrfutil/terminal';
 import sdkPath from '../sdkPath';
 import { cloneNcs } from './effects/cloneNcs';
-import { install } from './effects/installEnvironment';
+import { installToolchain } from './effects/installToolchain';
 import {
     isInstalled,
+    isLegacyEnvironment,
     toolchainDir as getToolchainDir,
     version as getVersion,
 } from './environmentReducer';
@@ -202,7 +204,28 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
             >
                 Update SDK
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => dispatch(install(environment, true))}>
+            <Dropdown.Item
+                onClick={() =>
+                    dispatch(
+                        installToolchain(
+                            environment.version,
+                            getLatestToolchain(environment.toolchains),
+                            isLegacyEnvironment(version)
+                                ? path.resolve(
+                                      persistedInstallDir(),
+                                      version,
+                                      'toolchain'
+                                  )
+                                : path.resolve(
+                                      persistedInstallDir(),
+                                      'toolchains',
+                                      version
+                                  ),
+                            environment.abortController.signal
+                        )
+                    )
+                }
+            >
                 Update toolchain
             </Dropdown.Item>
             <Dropdown.Divider />

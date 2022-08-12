@@ -52,28 +52,41 @@ export const installToolchain =
                 usageData.sendErrorReport(message);
             }
         } else {
-            await installNrfutilToolchain(
-                version,
-                update => {
-                    switch (update.type) {
-                        case 'task_begin':
-                            dispatch(
-                                setProgress(version, describe(update.data.task))
-                            );
-                            break;
-                        case 'task_progress':
-                            dispatch(
-                                setProgress(
-                                    version,
-                                    describe(update.data.task),
-                                    update.data.progress.progressPercentage
-                                )
-                            );
-                            break;
-                    }
-                },
-                signal
-            );
+            try {
+                await installNrfutilToolchain(
+                    version,
+                    update => {
+                        switch (update.type) {
+                            case 'task_begin':
+                                dispatch(
+                                    setProgress(
+                                        version,
+                                        describe(update.data.task)
+                                    )
+                                );
+                                break;
+                            case 'task_progress':
+                                dispatch(
+                                    setProgress(
+                                        version,
+                                        describe(update.data.task),
+                                        update.data.progress.progressPercentage
+                                    )
+                                );
+                                break;
+                        }
+                    },
+                    signal
+                );
+            } catch (e) {
+                console.log(e as Error);
+                // This error should be reclassified as a warning/info in a newer version of nrfutil
+                if (!(e as Error).toString().includes('already exists')) {
+                    const message = describeError(e);
+                    dispatch(ErrorDialogActions.showDialog(`${message}`));
+                    usageData.sendErrorReport(`${message}`);
+                }
+            }
         }
 
         dispatch(finishInstallToolchain(version, toolchainDir));

@@ -6,7 +6,6 @@
 
 import { shell } from '@electron/remote';
 import fs from 'fs';
-import { rm } from 'fs/promises';
 import path from 'path';
 
 import { showReduxConfirmDialogAction } from '../../../ReduxConfirmDialog/reduxConfirmDialogSlice';
