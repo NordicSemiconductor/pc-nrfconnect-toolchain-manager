@@ -1,3 +1,10 @@
+## Unreleased
+
+### Changed
+
+-   The `First Steps` button for SDK environments v2.0.0 and newer now link to
+    an external resource.
+
 ## 1.2.0
 
 ### Added
