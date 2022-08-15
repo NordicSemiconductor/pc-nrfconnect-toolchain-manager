@@ -4,6 +4,7 @@
 
 -   The `First Steps` button for SDK environments v2.0.0 and newer now link to
     an external resource.
+-   `Update toolchain` does not additionally update the SDK anymore.
 
 ## 1.2.0
 

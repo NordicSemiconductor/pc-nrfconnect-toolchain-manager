@@ -6,7 +6,6 @@
 
 import { shell } from '@electron/remote';
 import fs from 'fs';
-import { rm } from 'fs/promises';
 import path from 'path';
 
 import { showReduxConfirmDialogAction } from '../../../ReduxConfirmDialog/reduxConfirmDialogSlice';
@@ -42,11 +41,6 @@ export const ensureCleanTargetDir =
                     );
                 }
                 await dispatch(ensureCleanTargetDir(version, toolchainDir));
-            }
-        } else {
-            const manifestPath = path.resolve(toolchainDir, 'manifest.json');
-            if (fs.existsSync(manifestPath)) {
-                await rm(manifestPath);
             }
         }
     };
