@@ -29,7 +29,6 @@ const EXTENSIONS = [
         id: 'nordic-semiconductor.nrf-connect',
         name: 'nRF Connect',
     },
-    { id: 'marus25.cortex-debug', name: 'Cortex-Debug' },
     {
         id: 'nordic-semiconductor.nrf-terminal',
         name: 'nRF Terminal',
