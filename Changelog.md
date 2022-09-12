@@ -6,6 +6,10 @@
     an external resource.
 -   `Update toolchain` does not additionally update the SDK anymore.
 
+### Removed
+
+-   Cortex Debug was removed from the list of recommended VS Code extensions.
+
 ## 1.2.0
 
 ### Added
