@@ -1,4 +1,8 @@
-## Unreleased
+## 1.2.0
+
+### Added
+
+-   Verbose log setting from `About` pane now enables additional nrfutil log.
 
 ### Changed
 
@@ -6,19 +10,14 @@
     an external resource.
 -   `Update toolchain` does not additionally update the SDK anymore.
 
-### Removed
-
--   Cortex Debug was removed from the list of recommended VS Code extensions.
-
-## 1.2.0
-
-### Added
-
--   Verbose log setting from `About` pane now enables additional nrfutil log.
-
 ### Fixed
 
 -   Local toolchain installs were not displayed with no internet access.
+-   Windows: Duplicate entries were added to PATH.
+
+### Removed
+
+-   Cortex Debug was removed from the list of recommended VS Code extensions.
 
 ## 1.1.3 - 2022-07-08
 
