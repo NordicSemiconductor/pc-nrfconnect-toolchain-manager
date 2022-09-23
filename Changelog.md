@@ -14,6 +14,8 @@
 
 -   Local toolchain installs were not displayed with no internet access.
 -   Windows: Duplicate entries were added to PATH.
+-   macOS: Installing SDK v2.0.1 included the wrong toolchain for Apple Silicon
+    users.
 
 ### Removed
 
