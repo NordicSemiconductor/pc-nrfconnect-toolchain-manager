@@ -11,7 +11,7 @@ import { getAppFile, logger } from 'pc-nrfconnect-shared';
 
 const getPlatform = () => {
     if (process.platform === 'darwin' && os.cpus()[0].model.includes('Apple'))
-        return 'darwinM1';
+        return 'apple-silicon';
     return process.platform;
 };
 
