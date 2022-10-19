@@ -1,3 +1,9 @@
+## 1.2.1 - 2022-19-10
+
+### Fixed
+
+Issue with application not loading with error `nrfl create_context failed: 50`
+
 ## 1.2.0
 
 ### Added
