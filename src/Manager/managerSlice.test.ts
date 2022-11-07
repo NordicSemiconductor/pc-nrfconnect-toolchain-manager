@@ -61,8 +61,6 @@ describe('managerReducer', () => {
             addEnvironment(anEnvironment),
         ]);
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         expect(environmentsByVersion(withAnEnvironment)).toStrictEqual([
             anEnvironment,
         ]);
@@ -80,8 +78,6 @@ describe('managerReducer', () => {
             addEnvironment(anUpdatedEnvironment),
         ]);
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         expect(environmentsByVersion(withAnUpdatedEnvironment)).toStrictEqual([
             anUpdatedEnvironment,
         ]);
@@ -105,14 +101,10 @@ describe('managerReducer', () => {
             ]
         );
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         expect(environmentsByVersion(withAllEnvironments)).toStrictEqual(
             listOfAllEnvironments
         );
         expect(
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             environmentsByVersion(withAllEnvironmentsAddedInDifferentOrder)
         ).toStrictEqual(listOfAllEnvironments);
     });
