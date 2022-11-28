@@ -40,7 +40,7 @@ const ShowFirstSteps = ({ environment }: Props) => {
                     label="First steps"
                     title="Show how to build a sample project (External website)"
                     variant="secondary"
-                    href="https://nrfconnect.github.io/vscode-nrf-connect/connect/create_app.html"
+                    href="https://nrfconnect.github.io/vscode-nrf-connect/get_started/build_app_ncs.html"
                     target="_blank"
                 />
             )}{' '}
