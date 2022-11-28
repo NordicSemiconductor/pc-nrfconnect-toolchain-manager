@@ -21,30 +21,26 @@ const ShowFirstSteps = ({ environment }: Props) => {
     const dispatch = useDispatch();
     if (isOnlyAvailable(environment)) return null;
 
-    return (
-        <>
-            {isLegacyEnvironment(environment.version) ? (
-                <Button
-                    icon="x-mdi-dog-service"
-                    onClick={() => {
-                        dispatch(selectEnvironment(version(environment)));
-                        dispatch(showFirstSteps());
-                    }}
-                    label="First steps"
-                    title="Show how to build a sample project"
-                    variant="secondary"
-                />
-            ) : (
-                <Button
-                    icon="x-mdi-dog-service"
-                    label="First steps"
-                    title="Show how to build a sample project (External website)"
-                    variant="secondary"
-                    href="https://nrfconnect.github.io/vscode-nrf-connect/connect/create_app.html"
-                    target="_blank"
-                />
-            )}{' '}
-        </>
+    return isLegacyEnvironment(environment.version) ? (
+        <Button
+            icon="x-mdi-dog-service"
+            onClick={() => {
+                dispatch(selectEnvironment(version(environment)));
+                dispatch(showFirstSteps());
+            }}
+            label="First steps"
+            title="Show how to build a sample project"
+            variant="secondary"
+        />
+    ) : (
+        <Button
+            icon="x-mdi-dog-service"
+            label="First steps"
+            title="Show how to build a sample project (External website)"
+            variant="secondary"
+            href="https://nrfconnect.github.io/vscode-nrf-connect/get_started/build_app_ncs.html"
+            target="_blank"
+        />
     );
 };
 
