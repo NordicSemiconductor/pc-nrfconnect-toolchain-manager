@@ -39,68 +39,64 @@ export const downloadToolchain =
             const writeStream = fs.createWriteStream(packageLocation);
 
             const downloadTimeStart = new Date();
-            net.request({ url })
-                .on('response', response => {
-                    const totalLength = response.headers[
-                        'content-length'
-                    ] as unknown as number;
-                    let currentLength = 0;
-                    response.on('data', data => {
-                        hash.update(data);
-                        writeStream.write(data);
 
-                        currentLength += data.length;
-                        dispatch(
-                            reportProgress(
-                                version,
-                                currentLength,
-                                totalLength,
-                                DOWNLOAD
-                            )
-                        );
-                    });
-                    response.on('end', () => {
-                        writeStream.end(() => {
-                            const hex = hash.digest('hex');
-                            if (sha512 && hex !== sha512) {
-                                return reject(
-                                    new Error(
-                                        `Checksum verification failed ${url}`
-                                    )
-                                );
-                            }
-                            usageData.sendUsageData(
-                                EventAction.DOWNLOAD_TOOLCHAIN_SUCCESS,
-                                url
-                            );
-                            usageData.sendUsageData(
-                                EventAction.DOWNLOAD_TOOLCHAIN_TIME,
-                                `${calculateTimeConsumed(
-                                    downloadTimeStart
-                                )} min; ${url}`
-                            );
-                            logger.info(
-                                `Finished downloading version ${version} of the toolchain after approximately ${calculateTimeConsumed(
-                                    downloadTimeStart
-                                )} minute(s)`
-                            );
-                            return resolve(packageLocation);
-                        });
-                    });
-                    response.on('error', (error: Error) =>
-                        reject(
-                            new Error(
-                                `Error when reading ${url}: ${error.message}`
-                            )
+            const request = net.request({ url });
+            request.setHeader('Accept-Encoding', 'identity');
+            request.on('response', response => {
+                const totalLength = response.headers[
+                    'content-length'
+                ] as unknown as number;
+                let currentLength = 0;
+                response.on('data', data => {
+                    hash.update(data);
+                    writeStream.write(data);
+
+                    currentLength += data.length;
+                    dispatch(
+                        reportProgress(
+                            version,
+                            currentLength,
+                            totalLength,
+                            DOWNLOAD
                         )
                     );
-                })
-                .on('error', error =>
+                });
+                response.on('end', () => {
+                    writeStream.end(() => {
+                        const hex = hash.digest('hex');
+                        if (sha512 && hex !== sha512) {
+                            return reject(
+                                new Error(`Checksum verification failed ${url}`)
+                            );
+                        }
+                        usageData.sendUsageData(
+                            EventAction.DOWNLOAD_TOOLCHAIN_SUCCESS,
+                            url
+                        );
+                        usageData.sendUsageData(
+                            EventAction.DOWNLOAD_TOOLCHAIN_TIME,
+                            `${calculateTimeConsumed(
+                                downloadTimeStart
+                            )} min; ${url}`
+                        );
+                        logger.info(
+                            `Finished downloading version ${version} of the toolchain after approximately ${calculateTimeConsumed(
+                                downloadTimeStart
+                            )} minute(s)`
+                        );
+                        return resolve(packageLocation);
+                    });
+                });
+                response.on('error', (error: Error) =>
                     reject(
-                        new Error(`Unable to download ${url}: ${error.message}`)
+                        new Error(`Error when reading ${url}: ${error.message}`)
                     )
-                )
-                .end();
+                );
+            });
+            request.on('error', error =>
+                reject(new Error(`Unable to download ${url}: ${error.message}`))
+            );
+            request.end();
         });
 
 export default downloadToolchain;
