@@ -3,7 +3,11 @@
 ### Changed
 
 -   Updated link to First Steps documentation.
--   Made compatible with nRF Connect for Desktop v3.13.
+-   Made compatible with nRF Connect for Desktop v4.0.0.
+
+### Fixed
+
+-   For some older toolchains no download progress was printed.
 
 ## 1.2.1 - 2022-19-10
 

@@ -78,7 +78,7 @@ export const checkOpenVsCodeWithDelay = () => (dispatch: Dispatch) => {
 export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
     let status = VsCodeStatus.NOT_CHECKED;
     try {
-        const extensions = await listInstalledExtensions();
+        const extensions = await listInstalledExtensions(true);
         dispatch(setVsCodeExtensions(extensions));
         if (
             extensions.some(
@@ -136,9 +136,11 @@ const installExtension = (identifier: string) => async (dispatch: Dispatch) => {
     }
 };
 
-export const listInstalledExtensions = async (): Promise<VsCodeExtension[]> => {
+export const listInstalledExtensions = async (
+    suppressOutputOnError?: boolean
+): Promise<VsCodeExtension[]> => {
     const installedExtensions = (
-        await spawnAsync('code', ['--list-extensions'])
+        await spawnAsync('code', ['--list-extensions'], suppressOutputOnError)
     )
         .trim()
         .split('\n');
@@ -153,7 +155,7 @@ export const listInstalledExtensions = async (): Promise<VsCodeExtension[]> => {
 
 export const getNrfjprogStatus = async () => {
     try {
-        await spawnAsync('nrfjprog');
+        await spawnAsync('nrfjprog', undefined, true);
         try {
             if (isAppleSilicon) {
                 const stdout = await spawnAsync('file $(which JLinkExe)');
@@ -186,7 +188,11 @@ const checkExecArchitecture = (stdout: string) => {
     return 'arm';
 };
 
-const spawnAsync = (cmd: string, params?: string[]) =>
+const spawnAsync = (
+    cmd: string,
+    params?: string[],
+    suppressOutputOnError = false
+) =>
     new Promise<string>((resolve, reject) => {
         const codeProcess = spawn(cmd, params, {
             shell: true,
@@ -202,7 +208,7 @@ const spawnAsync = (cmd: string, params?: string[]) =>
         });
 
         codeProcess.on('close', (code, signal) => {
-            if (stderr) console.log(stderr);
+            if (stderr && !suppressOutputOnError) console.log(stderr);
             if (code === 0 && signal === null) {
                 return resolve(stdout);
             }
