@@ -12,13 +12,21 @@ export const DOWNLOAD = 0;
 export const UNPACK = 50;
 
 export const reportProgress =
-    (version: string, currentValue: number, maxValue: number, half: number) =>
+    (
+        version: string,
+        currentValue: number,
+        maxValue: number | undefined,
+        half: number
+    ) =>
     (dispatch: Dispatch, getState: () => RootState) => {
         const prevProgress = progress(getEnvironment(getState(), version));
-        const newProgress = Math.min(
-            100,
-            Math.round((currentValue / maxValue) * 50) + half
-        );
+        const newProgress =
+            maxValue == null
+                ? undefined
+                : Math.min(
+                      100,
+                      Math.round((currentValue / maxValue) * 50) + half
+                  );
 
         if (newProgress !== prevProgress) {
             const stage = half === DOWNLOAD ? 'Downloading' : 'Installing';

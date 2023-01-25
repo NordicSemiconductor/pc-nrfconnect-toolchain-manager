@@ -45,9 +45,9 @@ export const downloadToolchain =
             request.on('response', response => {
                 const totalLength = response.headers[
                     'content-length'
-                ] as unknown as number;
+                ] as unknown as number | undefined;
                 let currentLength = 0;
-                response.on('data', data => {
+                response.on('data', (data: Buffer) => {
                     hash.update(data);
                     writeStream.write(data);
 
