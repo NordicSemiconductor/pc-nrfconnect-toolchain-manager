@@ -1,4 +1,4 @@
-## Unreleased
+## 1.2.2 - Unreleased
 
 ### Changed
 

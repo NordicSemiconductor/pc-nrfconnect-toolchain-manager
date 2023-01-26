@@ -39,8 +39,15 @@ const updateEnv = (
         delete env[key];
     });
 
-    if (process.platform === 'win32')
-        env.PATH = `${vcRuntimeDllPath()}${path.delimiter}${env.PATH}`;
+    if (process.platform === 'win32') {
+        // For some reason only `env.Path` exists after spreading process.env above,
+        // despite process.env including `path`, `Path` and `PATH`.
+        // After spawning a process however, windows only recognizes `PATH` in the env
+        // We extract process.env.PATH here to make it explicit
+        const PATH = process.env.PATH;
+
+        env.PATH = `${vcRuntimeDllPath()}${path.delimiter}${PATH}`;
+    }
 
     return env;
 };
