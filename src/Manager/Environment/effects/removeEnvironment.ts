@@ -33,7 +33,7 @@ const removeNrfutilEnvironment = (version: string) => {
     } catch (err) {
         throw new Error(
             `Failed to remove ${sdkPath(version)}, ${err}. ` +
-                `The installation for ${version} is likely broken and has to be removed manually by the user.`
+                `Please remove the installation for ${version} manually as it is broken.`
         );
     }
 };
