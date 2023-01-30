@@ -26,11 +26,13 @@ import { removeDir } from './removeDir';
 const removeLegacyEnvironment = (toolchainDir: string) =>
     removeDir(path.dirname(toolchainDir));
 
-const removeNrfutilEnvironment = (version: string) =>
-    Promise.all([removeDir(sdkPath(version)), removeToolchain(version)]);
+const removeNrfutilEnvironment = (version: string) => {
+    removeDir(sdkPath(version));
+    removeToolchain(version);
+};
 
 export const removeEnvironment =
-    (environment: Environment) => async (dispatch: Dispatch) => {
+    (environment: Environment) => (dispatch: Dispatch) => {
         const { toolchainDir, version } = environment;
         logger.info(`Removing ${version} at ${toolchainDir}`);
         usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
@@ -39,9 +41,9 @@ export const removeEnvironment =
 
         try {
             if (isLegacyEnvironment(version)) {
-                await removeLegacyEnvironment(toolchainDir);
+                removeLegacyEnvironment(toolchainDir);
             } else {
-                await removeNrfutilEnvironment(version);
+                removeNrfutilEnvironment(version);
             }
         } catch (err) {
             dispatch(

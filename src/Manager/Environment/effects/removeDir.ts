@@ -7,11 +7,11 @@
 import fse from 'fs-extra';
 import path from 'path';
 
-export const removeDir = async (srcDir: string) => {
+export const removeDir = (srcDir: string) => {
     const toBeDeletedDir = path.resolve(srcDir, '..', 'toBeDeleted');
     try {
-        await fse.rename(srcDir, toBeDeletedDir);
-        await fse.remove(toBeDeletedDir);
+        fse.renameSync(srcDir, toBeDeletedDir);
+        fse.removeSync(toBeDeletedDir);
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
         const errorMsg =
