@@ -28,7 +28,14 @@ const removeLegacyEnvironment = (toolchainDir: string) =>
 
 const removeNrfutilEnvironment = (version: string) => {
     removeDir(sdkPath(version));
-    removeToolchain(version);
+    try {
+        removeToolchain(version);
+    } catch (err) {
+        throw new Error(
+            `Failed to remove ${sdkPath(version)}, ${err}. ` +
+                `The installation for ${version} is likely broken and has to be removed manually by the user.`
+        );
+    }
 };
 
 export const removeEnvironment =
