@@ -7,7 +7,7 @@
 import { existsSync } from 'fs';
 import { rm } from 'fs/promises';
 import path from 'path';
-import { logger, usageData } from 'pc-nrfconnect-shared';
+import { ErrorDialogActions, logger, usageData } from 'pc-nrfconnect-shared';
 
 import { Dispatch, Environment } from '../../../state';
 import EventAction from '../../../usageDataActions';
@@ -23,14 +23,11 @@ import {
 } from '../environmentReducer';
 import { removeDir } from './removeDir';
 
-const removeLegacyEnvironment = (dispatch: Dispatch, toolchainDir: string) =>
-    removeDir(dispatch, path.dirname(toolchainDir));
+const removeLegacyEnvironment = (toolchainDir: string) =>
+    removeDir(path.dirname(toolchainDir));
 
-const removeNrfutilEnvironment = (dispatch: Dispatch, version: string) =>
-    Promise.all([
-        removeToolchain(version),
-        removeDir(dispatch, sdkPath(version)),
-    ]);
+const removeNrfutilEnvironment = (version: string) =>
+    Promise.all([removeDir(sdkPath(version)), removeToolchain(version)]);
 
 export const removeEnvironment =
     (environment: Environment) => async (dispatch: Dispatch) => {
@@ -40,10 +37,19 @@ export const removeEnvironment =
 
         dispatch(startRemoving(version));
 
-        if (isLegacyEnvironment(version)) {
-            await removeLegacyEnvironment(dispatch, toolchainDir);
-        } else {
-            await removeNrfutilEnvironment(dispatch, version);
+        try {
+            if (isLegacyEnvironment(version)) {
+                await removeLegacyEnvironment(toolchainDir);
+            } else {
+                await removeNrfutilEnvironment(version);
+            }
+        } catch (err) {
+            dispatch(
+                ErrorDialogActions.showDialog(`${(err as Error).message}`)
+            );
+            usageData.sendErrorReport((err as Error).message);
+            dispatch(finishRemoving(version));
+            return;
         }
 
         logger.info(`Finished removing ${version} at ${toolchainDir}`);

@@ -8,6 +8,7 @@
 ### Fixed
 
 -   For some older toolchains no download progress was printed.
+-   Removing toolchains never appeared to stop when it produced and error.
 
 ## 1.2.1 - 2022-19-10
 
