@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import fse from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 export const removeDir = (srcDir: string) => {
     const toBeDeletedDir = path.resolve(srcDir, '..', 'toBeDeleted');
     try {
-        fse.renameSync(srcDir, toBeDeletedDir);
-        fse.removeSync(toBeDeletedDir);
+        fs.renameSync(srcDir, toBeDeletedDir);
+        fs.rmSync(toBeDeletedDir, { recursive: true, force: true });
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
         const errorMsg =
