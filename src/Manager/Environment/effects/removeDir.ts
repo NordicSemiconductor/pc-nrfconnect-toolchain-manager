@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import fs from 'fs';
+import { rename, rm } from 'fs/promises';
 import path from 'path';
 
-export const removeDir = (srcDir: string) => {
+export const removeDir = async (srcDir: string) => {
     const toBeDeletedDir = path.resolve(srcDir, '..', 'toBeDeleted');
     try {
-        fs.renameSync(srcDir, toBeDeletedDir);
-        fs.rmSync(toBeDeletedDir, { recursive: true, force: true });
+        await rename(srcDir, toBeDeletedDir);
+        await rm(toBeDeletedDir);
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
         const errorMsg =

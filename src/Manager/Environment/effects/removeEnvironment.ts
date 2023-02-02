@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { existsSync, renameSync, rmSync } from 'fs';
-import { rm } from 'fs/promises';
+import { existsSync } from 'fs';
+import { rename, rm } from 'fs/promises';
 import path from 'path';
 import { ErrorDialogActions, logger, usageData } from 'pc-nrfconnect-shared';
 
@@ -29,17 +29,18 @@ const removeLegacyEnvironment = (toolchainDir: string) =>
 
 const renamedPath = (origPath: string) =>
     path.resolve(origPath, '..', 'toBeDeleted');
-const removeNrfutilEnvironment = (version: string) => {
+
+const removeNrfutilEnvironment = async (version: string) => {
     let currentPath;
     try {
         currentPath = sdkPath(version);
-        renameSync(currentPath, renamedPath(currentPath));
-        renameSync(renamedPath(currentPath), currentPath);
+        await rename(currentPath, renamedPath(currentPath));
+        await rename(renamedPath(currentPath), currentPath);
 
         // Toolchain folder is deleted through Nrfutil so it requires the original path.
         currentPath = toolchainPath(version);
-        renameSync(currentPath, renamedPath(currentPath));
-        renameSync(renamedPath(currentPath), currentPath);
+        await rename(currentPath, renamedPath(currentPath));
+        await rename(renamedPath(currentPath), currentPath);
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
         const errorMsg =
@@ -51,8 +52,8 @@ const removeNrfutilEnvironment = (version: string) => {
     }
 
     try {
-        rmSync(sdkPath(version), { recursive: true, force: true });
-        removeToolchain(version);
+        await rm(sdkPath(version), { recursive: true, force: true });
+        await removeToolchain(version);
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
         throw new Error(
@@ -65,7 +66,7 @@ const removeNrfutilEnvironment = (version: string) => {
 };
 
 export const removeEnvironment =
-    (environment: Environment) => (dispatch: Dispatch) => {
+    (environment: Environment) => async (dispatch: Dispatch) => {
         const { toolchainDir, version } = environment;
         logger.info(`Removing ${version} at ${toolchainDir}`);
         usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
@@ -74,9 +75,9 @@ export const removeEnvironment =
 
         try {
             if (isLegacyEnvironment(version)) {
-                removeLegacyEnvironment(toolchainDir);
+                await removeLegacyEnvironment(toolchainDir);
             } else {
-                removeNrfutilEnvironment(version);
+                await removeNrfutilEnvironment(version);
             }
             logger.info(`Finished removing ${version} at ${toolchainDir}`);
             dispatch(removeEnvironmentReducer(version));

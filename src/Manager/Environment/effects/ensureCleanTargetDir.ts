@@ -34,7 +34,7 @@ export const ensureCleanTargetDir =
             if (toBeDeleted) {
                 try {
                     await dispatch(confirmRemoveDir(toBeDeleted));
-                    removeDir(toBeDeleted);
+                    await removeDir(toBeDeleted);
                 } catch (err) {
                     throw new Error(
                         `${toBeDeleted} must be removed to continue installation`
