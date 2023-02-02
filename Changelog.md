@@ -9,6 +9,7 @@
 
 -   For some older toolchains no download progress was printed.
 -   Removing toolchains never appeared to stop when it produced an error.
+-   Failing to install a toolchain did not remove the broken installation.
 
 ## 1.2.1 - 2022-19-10
 

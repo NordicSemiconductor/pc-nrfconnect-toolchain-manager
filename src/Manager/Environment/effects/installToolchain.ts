@@ -80,11 +80,10 @@ export const installToolchain =
                 );
             } catch (e) {
                 console.log(e as Error);
+                dispatch(finishInstallToolchain(version, toolchainDir));
                 // This error should be reclassified as a warning/info in a newer version of nrfutil
                 if (!(e as Error).toString().includes('already exists')) {
-                    const message = describeError(e);
-                    dispatch(ErrorDialogActions.showDialog(`${message}`));
-                    usageData.sendErrorReport(`${message}`);
+                    throw e;
                 }
             }
         }
