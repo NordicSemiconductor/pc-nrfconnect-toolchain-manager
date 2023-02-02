@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import path from 'path';
 import {
     describeError,
     ErrorDialogActions,
@@ -13,7 +12,6 @@ import {
 } from 'pc-nrfconnect-shared';
 
 import {
-    persistedInstallDir as installDir,
     persistedShowVsCodeDialogDuringInstall,
     setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
@@ -26,7 +24,7 @@ import {
     VsCodeStatus,
 } from '../../../VsCodeDialog/vscodeSlice';
 import { getLatestToolchain } from '../../managerSlice';
-import { isLegacyEnvironment } from '../environmentReducer';
+import toolchainPath from '../../toolchainPath';
 import checkXcodeCommandLineTools from './checkXcodeCommandLineTools';
 import { cloneNcs } from './cloneNcs';
 import { ensureCleanTargetDir } from './ensureCleanTargetDir';
@@ -41,9 +39,7 @@ export const install =
     async (dispatch: Dispatch) => {
         logger.info(`Start to install toolchain ${version}`);
         const toolchain = getLatestToolchain(toolchains);
-        const toolchainDir = isLegacyEnvironment(version)
-            ? path.resolve(installDir(), version, 'toolchain')
-            : path.resolve(installDir(), 'toolchains', version);
+        const toolchainDir = toolchainPath(version);
         logger.info(`Installing ${toolchain?.name} at ${toolchainDir}`);
         logger.debug(`Install with toolchain version ${toolchain?.version}`);
         logger.debug(`Install with sha512 ${toolchain?.sha512}`);
