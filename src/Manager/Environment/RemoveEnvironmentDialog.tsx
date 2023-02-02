@@ -31,7 +31,7 @@ export default () => {
                 dispatch(removeEnvironment(environment));
             }}
         >
-            Are you sure to remove <code>{version(environment)}</code>{' '}
+            Are you sure you want to remove <code>{version(environment)}</code>{' '}
             environment?
         </ConfirmationDialog>
     );
