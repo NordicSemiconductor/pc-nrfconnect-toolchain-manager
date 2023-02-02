@@ -80,15 +80,19 @@ export const install =
                     abortController.signal
                 )
             );
-            if (abortController.signal.aborted) {
-                removeUnfinishedInstallOnAbort(dispatch, version, toolchainDir);
-                return;
-            }
-
-            checkXcodeCommandLineTools(dispatch);
         } catch (error) {
-            const message = describeError(error);
-            dispatch(ErrorDialogActions.showDialog(`${message}`));
-            usageData.sendErrorReport(`${message}`);
+            removeUnfinishedInstallOnAbort(dispatch, version, toolchainDir);
+            dispatch(ErrorDialogActions.showDialog((error as Error).message));
+            usageData.sendErrorReport((error as Error).message);
+        }
+
+        if (abortController.signal.aborted) {
+            removeUnfinishedInstallOnAbort(dispatch, version, toolchainDir);
+        } else {
+            try {
+                checkXcodeCommandLineTools(dispatch);
+            } catch (error) {
+                logger.error(describeError(error));
+            }
         }
     };
