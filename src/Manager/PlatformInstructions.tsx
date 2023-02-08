@@ -23,17 +23,11 @@ export default () => {
     if (!isLinux) return null;
 
     return (
-        <>
-            <Alert variant="warning">
-                <b>
-                    Toolchains older than version 2.0.0 must be installed
-                    manually.{' '}
-                </b>
-                <OnlineDocs label="Installation instructions for Linux" />
-            </Alert>
-            <Alert variant="warning">
-                <b>Tested on Ubuntu 20.04 (other distributions not tested).</b>
-            </Alert>
-        </>
+        <Alert variant="warning">
+            <b>
+                Toolchains older than version 2.0.0 must be installed manually.
+            </b>
+            <OnlineDocs label="Installation instructions for Linux" />
+        </Alert>
     );
 };
