@@ -11,7 +11,7 @@ export const removeDir = async (srcDir: string) => {
     const toBeDeletedDir = path.resolve(srcDir, '..', 'toBeDeleted');
     try {
         await rename(srcDir, toBeDeletedDir);
-        await rm(toBeDeletedDir);
+        await rm(toBeDeletedDir, { recursive: true, force: true });
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
         const errorMsg =
