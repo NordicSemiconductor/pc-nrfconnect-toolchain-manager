@@ -1,4 +1,4 @@
-## 1.2.2 - 2023-02-12
+## 1.2.2 - 2023-02-13
 
 ### Changed
 
@@ -11,7 +11,7 @@
 -   Removing toolchains never appeared to stop when it produced an error.
 -   Failing to install a toolchain did not remove the broken installation.
 
-## 1.2.1 - 2022-19-10
+## 1.2.1 - 2022-09-10
 
 ### Fixed
 
