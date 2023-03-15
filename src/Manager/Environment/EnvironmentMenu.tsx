@@ -18,6 +18,7 @@ import { persistedInstallDir } from '../../persistentStore';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import { getLatestToolchain, showConfirmRemoveDialog } from '../managerSlice';
+import { saveEnvScript } from '../nrfutil/env';
 import { showNrfUtilDialogAction } from '../nrfutil/nrfUtilDialogSlice';
 import {
     launchGnomeTerminal,
@@ -152,6 +153,11 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                     </Dropdown.Item>
                     <Dropdown.Item onClick={() => openCmd(environment)}>
                         Open command prompt
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                        onClick={() => saveEnvScript(environment.version)}
+                    >
+                        Generate environment script...
                     </Dropdown.Item>
                 </>
             )}
