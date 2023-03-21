@@ -13,3 +13,10 @@ declare module '*.svg' {
     const url: string;
     export default url;
 }
+
+declare module '*.module.scss' {
+    const properties: {
+        [property: string]: string;
+    };
+    export = properties;
+}
