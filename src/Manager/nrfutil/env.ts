@@ -33,7 +33,6 @@ export const saveEnvScript = (version: string, cmd: boolean) => {
             cmd
                 ? { name: 'Cmd', extensions: ['cmd'] }
                 : { name: 'sh', extensions: ['sh'] },
-            { name: 'All Files', extensions: ['*'] },
         ],
     };
 
