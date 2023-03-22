@@ -15,17 +15,21 @@ import toolchainPath from '../toolchainPath';
 import { nrfutilExecSync } from './nrfutilChildProcess';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
-export const getEnvAsScript = (version: string) =>
+export const getEnvAsScript = (version: string, cmd: boolean) =>
     nrfutilExecSync(
-        `"${nrfutilToolchainManager()}" env --ncs-version "${version}" --install-dir "${installDir()}" --as-script`
+        `"${nrfutilToolchainManager()}" env --ncs-version "${version}" --install-dir "${installDir()}" --as-script ${
+            cmd ? 'cmd' : 'sh'
+        }`
     );
 
-export const saveEnvScript = (version: string) => {
+export const saveEnvScript = (version: string, cmd: boolean) => {
     const options = {
         title: 'Create environment script',
         defaultPath: path.resolve(toolchainPath(version), 'env.cmd'),
         filters: [
-            { name: 'Cmd', extensions: ['cmd'] },
+            cmd
+                ? { name: 'Cmd', extensions: ['cmd'] }
+                : { name: 'sh', extensions: ['sh'] },
             { name: 'All Files', extensions: ['*'] },
         ],
     };
@@ -34,7 +38,7 @@ export const saveEnvScript = (version: string) => {
     const save = ({ filePath }: Electron.SaveDialogReturnValue) => {
         if (filePath) {
             try {
-                const envScript = getEnvAsScript(version);
+                const envScript = getEnvAsScript(version, cmd);
 
                 fs.writeFile(filePath, envScript, err => {
                     if (err) {
