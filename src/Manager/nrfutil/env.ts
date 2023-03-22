@@ -25,7 +25,10 @@ export const getEnvAsScript = (version: string, cmd: boolean) =>
 export const saveEnvScript = (version: string, cmd: boolean) => {
     const options = {
         title: 'Create environment script',
-        defaultPath: path.resolve(toolchainPath(version), 'env.cmd'),
+        defaultPath: path.resolve(
+            toolchainPath(version),
+            `env.${cmd ? 'cmd' : 'sh'}`
+        ),
         filters: [
             cmd
                 ? { name: 'Cmd', extensions: ['cmd'] }
