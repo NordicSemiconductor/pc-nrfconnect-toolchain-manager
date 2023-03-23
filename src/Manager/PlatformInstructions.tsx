@@ -26,7 +26,7 @@ export default () => {
         <Alert variant="warning">
             <b>
                 Toolchains older than version 2.0.0 must be installed manually.
-            </b>
+            </b>{' '}
             <OnlineDocs label="Installation instructions for Linux" />
         </Alert>
     );
