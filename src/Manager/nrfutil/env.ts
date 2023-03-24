@@ -5,6 +5,7 @@
  */
 
 import { dialog } from '@electron/remote';
+import { SaveDialogReturnValue } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import logger from 'pc-nrfconnect-shared/src/logging';
@@ -36,8 +37,7 @@ export const saveEnvScript = (version: string, cmd: boolean) => {
         ],
     };
 
-    // eslint-disable-next-line no-undef
-    const save = ({ filePath }: Electron.SaveDialogReturnValue) => {
+    const save = ({ filePath }: SaveDialogReturnValue) => {
         if (filePath) {
             try {
                 const envScript = getEnvAsScript(version, cmd);
