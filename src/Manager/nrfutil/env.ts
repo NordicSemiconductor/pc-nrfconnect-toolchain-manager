@@ -31,8 +31,8 @@ export const saveEnvScript = (version: string, cmd: boolean) => {
         ),
         filters: [
             cmd
-                ? { name: 'Cmd', extensions: ['cmd'] }
-                : { name: 'sh', extensions: ['sh'] },
+                ? { name: 'CMD script', extensions: ['cmd'] }
+                : { name: 'Shell script', extensions: ['sh'] },
         ],
     };
 
