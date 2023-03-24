@@ -6,7 +6,12 @@
 
 import { exec, execSync, spawn, spawnSync } from 'child_process';
 import path from 'path';
-import { getAppFile, isLoggingVerbose, logger } from 'pc-nrfconnect-shared';
+import {
+    getAppDataDir,
+    getAppFile,
+    isLoggingVerbose,
+    logger,
+} from 'pc-nrfconnect-shared';
 
 import handleChunk from './handleChunk';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
@@ -48,6 +53,9 @@ const updateEnv = (
 
         env.PATH = `${vcRuntimeDllPath()}${path.delimiter}${PATH}`;
     }
+
+    // Add Toolchain Manager specific config path to avoid conflicts with user config
+    env.NRFUTIL_HOME = getAppDataDir();
 
     return env;
 };
