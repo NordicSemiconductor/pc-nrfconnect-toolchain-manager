@@ -12,16 +12,24 @@ import logger from 'pc-nrfconnect-shared/src/logging';
 import describeError from 'pc-nrfconnect-shared/src/logging/describeError';
 
 import { persistedInstallDir as installDir } from '../../persistentStore';
+import sdkPath from '../sdkPath';
 import toolchainPath from '../toolchainPath';
 import { nrfutilExecSync } from './nrfutilChildProcess';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
 
-export const getEnvAsScript = (version: string, cmd: boolean) =>
-    nrfutilExecSync(
+export const getEnvAsScript = (version: string, cmd: boolean) => {
+    const script = nrfutilExecSync(
         `"${nrfutilToolchainManager()}" env --ncs-version "${version}" --install-dir "${installDir()}" --as-script ${
             cmd ? 'cmd' : 'sh'
         }`
     );
+    const zephyrBase = `${cmd ? 'SET' : 'export'} ZEPHYR_BASE=${sdkPath(
+        version,
+        'zephyr'
+    )}\n`;
+
+    return [script, zephyrBase].join('');
+};
 
 export const saveEnvScript = (version: string, cmd: boolean) => {
     const options = {
