@@ -1,3 +1,9 @@
+## Unreleased
+
+### Added
+
+-   Option to generate environment script.
+
 ## 1.2.2 - 2023-02-13
 
 ### Changed
