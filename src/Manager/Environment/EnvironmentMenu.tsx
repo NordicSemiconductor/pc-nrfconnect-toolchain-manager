@@ -154,58 +154,46 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                     <Dropdown.Item onClick={() => openCmd(environment)}>
                         Open command prompt
                     </Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item
-                        onClick={() =>
-                            saveEnvScript(environment.version, false)
-                        }
-                    >
-                        Generate bash environment script...
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                        onClick={() => saveEnvScript(environment.version, true)}
-                    >
-                        Generate command prompt environment script...
-                    </Dropdown.Item>
                 </>
             )}
             {process.platform !== 'win32' && (
-                <>
-                    <Dropdown.Item
-                        onClick={() => {
-                            if (isLegacyEnv) {
-                                // @ts-expect-error We don't support all platforms
-                                launchLegacyTerminal[platform](
-                                    toolchainDir,
-                                    version
-                                );
-                            } else if (process.platform === 'darwin') {
-                                launchTerminal(environment.version);
-                            } else if (hasGnomeTerminal()) {
-                                launchGnomeTerminal(environment.version);
-                            } else
-                                dispatch(
-                                    showNrfUtilDialogAction({
-                                        title: 'Terminal not supported',
-                                        content:
-                                            'Toolchain manager currently only supports GNOME terminal on Linux.\n\n' +
-                                            'Alternatively you can use the nRF Connect for VS Code extension to open a terminal from within VS code.\n',
-                                    })
-                                );
-                        }}
-                    >
-                        Open Terminal
-                    </Dropdown.Item>
-                    <Dropdown.Divider />
-                    <Dropdown.Item
-                        onClick={() =>
-                            saveEnvScript(environment.version, false)
-                        }
-                    >
-                        Generate environment script...
-                    </Dropdown.Item>
-                </>
+                <Dropdown.Item
+                    onClick={() => {
+                        if (isLegacyEnv) {
+                            // @ts-expect-error We don't support all platforms
+                            launchLegacyTerminal[platform](
+                                toolchainDir,
+                                version
+                            );
+                        } else if (process.platform === 'darwin') {
+                            launchTerminal(environment.version);
+                        } else if (hasGnomeTerminal()) {
+                            launchGnomeTerminal(environment.version);
+                        } else
+                            dispatch(
+                                showNrfUtilDialogAction({
+                                    title: 'Terminal not supported',
+                                    content:
+                                        'Toolchain manager currently only supports GNOME terminal on Linux.\n\n' +
+                                        'Alternatively you can use the nRF Connect for VS Code extension to open a terminal from within VS code.\n',
+                                })
+                            );
+                    }}
+                >
+                    Open Terminal
+                </Dropdown.Item>
             )}
+            <Dropdown.Divider />
+            <Dropdown.Item
+                onClick={() =>
+                    saveEnvScript(
+                        environment.version,
+                        process.platform === 'win32' ? 'undecided' : 'sh'
+                    )
+                }
+            >
+                Generate environment script...
+            </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={() => openDirectory(sdkDir())}>
                 Open SDK directory

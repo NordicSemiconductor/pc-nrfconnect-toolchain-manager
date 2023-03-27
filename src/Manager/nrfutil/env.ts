@@ -31,24 +31,44 @@ export const getEnvAsScript = (version: string, cmd: boolean) => {
     return [script, zephyrBase].join('');
 };
 
-export const saveEnvScript = (version: string, cmd: boolean) => {
+type FileFormat = 'cmd' | 'sh' | 'undecided';
+
+const getFileFormatFilter = (fileFormat: FileFormat) => {
+    if (fileFormat === 'cmd') {
+        [{ name: 'CMD script', extensions: ['cmd'] }];
+    } else if (fileFormat === 'sh') {
+        [{ name: 'Shell script', extensions: ['sh'] }];
+    } else {
+        return [
+            { name: 'Shell script', extensions: ['sh'] },
+            { name: 'CMD script', extensions: ['cmd'] },
+        ];
+    }
+};
+
+export const saveEnvScript = (version: string, fileFormat: FileFormat) => {
     const options = {
         title: 'Create environment script',
         defaultPath: path.resolve(
             toolchainPath(version),
-            `env.${cmd ? 'cmd' : 'sh'}`
+            `env.${fileFormat === 'undecided' ? 'sh' : fileFormat}`
         ),
-        filters: [
-            cmd
-                ? { name: 'CMD script', extensions: ['cmd'] }
-                : { name: 'Shell script', extensions: ['sh'] },
-        ],
+        filters: getFileFormatFilter(fileFormat),
     };
 
     const save = ({ filePath }: SaveDialogReturnValue) => {
         if (filePath) {
             try {
-                const envScript = getEnvAsScript(version, cmd);
+                let envScript;
+
+                if (filePath.endsWith('cmd')) {
+                    envScript = getEnvAsScript(version, true);
+                } else if (filePath.endsWith('sh')) {
+                    envScript = getEnvAsScript(version, false);
+                } else {
+                    logger.error('Failed to save file: Invalid file format');
+                    return;
+                }
 
                 fs.writeFile(filePath, envScript, err => {
                     if (err) {
