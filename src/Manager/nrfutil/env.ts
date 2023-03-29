@@ -79,11 +79,6 @@ export const saveEnvScript = (version: string, fileFormat: FileFormat) => {
                     }
                     logger.info(`File is successfully saved at ${filePath}`);
                 });
-                fs.chmod(filePath, '755', err => {
-                    if (err) {
-                        logger.warn('Failed to save file as executable.');
-                    }
-                });
             } catch (e) {
                 logger.error(
                     `Failed to generate environment script: ${describeError(e)}`
