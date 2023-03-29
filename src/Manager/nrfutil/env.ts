@@ -61,9 +61,12 @@ export const saveEnvScript = (version: string, fileFormat: FileFormat) => {
             try {
                 let envScript;
 
-                if (filePath.endsWith('cmd')) {
+                if (process.platform === 'win32' && filePath.endsWith('cmd')) {
                     envScript = getEnvAsScript(version, true);
-                } else if (filePath.endsWith('sh')) {
+                } else if (
+                    process.platform !== 'win32' ||
+                    filePath.endsWith('sh')
+                ) {
                     envScript = getEnvAsScript(version, false);
                 } else {
                     logger.error('Failed to save file: Invalid file format');
