@@ -18,6 +18,7 @@ import { persistedInstallDir } from '../../persistentStore';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import { getLatestToolchain, showConfirmRemoveDialog } from '../managerSlice';
+import { saveEnvScript } from '../nrfutil/env';
 import { showNrfUtilDialogAction } from '../nrfutil/nrfUtilDialogSlice';
 import {
     launchGnomeTerminal,
@@ -182,6 +183,17 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                     Open Terminal
                 </Dropdown.Item>
             )}
+            <Dropdown.Divider />
+            <Dropdown.Item
+                onClick={() =>
+                    saveEnvScript(
+                        environment.version,
+                        process.platform === 'win32' ? 'undecided' : 'sh'
+                    )
+                }
+            >
+                Generate environment script...
+            </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={() => openDirectory(sdkDir())}>
                 Open SDK directory
