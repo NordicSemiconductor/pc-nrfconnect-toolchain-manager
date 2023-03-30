@@ -130,7 +130,6 @@ async function updateLegacy(
             break;
         }
         case 'darwin': {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { ZEPHYR_BASE, ...env } = process.env;
             const gitversion = fs
                 .readdirSync(`${toolchainDir}/Cellar/git`)
