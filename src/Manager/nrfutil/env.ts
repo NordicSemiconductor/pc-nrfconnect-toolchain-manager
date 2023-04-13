@@ -40,8 +40,8 @@ const getFileFormatFilter = (fileFormat: FileFormat) => {
         [{ name: 'Shell script', extensions: ['sh'] }];
     } else {
         return [
-            { name: 'Shell script', extensions: ['sh'] },
             { name: 'CMD script', extensions: ['cmd'] },
+            { name: 'Shell script', extensions: ['sh'] },
         ];
     }
 };
@@ -51,7 +51,7 @@ export const saveEnvScript = (version: string, fileFormat: FileFormat) => {
         title: 'Create environment script',
         defaultPath: path.resolve(
             toolchainPath(version),
-            `env.${fileFormat === 'undecided' ? 'sh' : fileFormat}`
+            `env.${fileFormat === 'undecided' ? 'cmd' : fileFormat}`
         ),
         filters: getFileFormatFilter(fileFormat),
     };
