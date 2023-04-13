@@ -192,7 +192,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                     )
                 }
             >
-                Generate environment script...
+                Generate environment script
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={() => openDirectory(sdkDir())}>
