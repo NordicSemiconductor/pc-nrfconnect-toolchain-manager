@@ -1,3 +1,10 @@
+## 1.2.4 - 2023-04-13
+
+### Removed
+
+-   `Generate environment script` option has been removed from toolchains older
+    than v2.0.0.
+
 ## 1.2.3 - 2023-04-13
 
 ### Added
