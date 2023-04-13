@@ -184,17 +184,23 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                 </Dropdown.Item>
             )}
             <Dropdown.Divider />
-            <Dropdown.Item
-                onClick={() =>
-                    saveEnvScript(
-                        environment.version,
-                        process.platform === 'win32' ? 'undecided' : 'sh'
-                    )
-                }
-            >
-                Generate environment script
-            </Dropdown.Item>
-            <Dropdown.Divider />
+            {!isLegacyEnv && (
+                <>
+                    <Dropdown.Item
+                        onClick={() =>
+                            saveEnvScript(
+                                environment.version,
+                                process.platform === 'win32'
+                                    ? 'undecided'
+                                    : 'sh'
+                            )
+                        }
+                    >
+                        Generate environment script
+                    </Dropdown.Item>
+                    <Dropdown.Divider />
+                </>
+            )}
             <Dropdown.Item onClick={() => openDirectory(sdkDir())}>
                 Open SDK directory
             </Dropdown.Item>
