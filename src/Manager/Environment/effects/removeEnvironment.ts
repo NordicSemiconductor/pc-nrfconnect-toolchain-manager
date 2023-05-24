@@ -31,20 +31,15 @@ const renamedPath = (origPath: string) =>
     path.resolve(origPath, '..', 'toBeDeleted');
 
 const removeNrfutilEnvironment = async (version: string) => {
-    let currentPath;
+    let pathToRemove;
     try {
-        currentPath = sdkPath(version);
-        await rename(currentPath, renamedPath(currentPath));
-        await rename(renamedPath(currentPath), currentPath);
-
-        // Toolchain folder is deleted through Nrfutil so it requires the original path.
-        currentPath = toolchainPath(version);
-        await rename(currentPath, renamedPath(currentPath));
-        await rename(renamedPath(currentPath), currentPath);
+        pathToRemove = sdkPath(version);
+        await rename(pathToRemove, renamedPath(pathToRemove));
+        await rename(renamedPath(pathToRemove), pathToRemove);
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
         const errorMsg =
-            `Failed to remove ${currentPath}, ${message}. ` +
+            `Failed to remove ${pathToRemove}, ${message}. ` +
             'Please close any application or window that might keep this ' +
             'environment locked, then try to remove it again.';
 
