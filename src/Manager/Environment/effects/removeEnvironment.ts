@@ -71,10 +71,15 @@ export const removeEnvironment =
         try {
             if (isLegacyEnvironment(version)) {
                 await removeLegacyEnvironment(toolchainDir);
+                logger.info(`Finished removing ${version} at ${toolchainDir}`);
             } else {
                 await removeNrfutilEnvironment(version);
+                logger.info(
+                    `Finished removing ${version} at ${toolchainDir} and ${sdkPath(
+                        version
+                    )}`
+                );
             }
-            logger.info(`Finished removing ${version} at ${toolchainDir}`);
             dispatch(removeEnvironmentReducer(version));
         } catch (err) {
             dispatch(ErrorDialogActions.showDialog((err as Error).message));
