@@ -14,10 +14,8 @@ import { readdirSync } from 'fs';
 import path from 'path';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import { persistedInstallDir } from '../../persistentStore';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
-import { getLatestToolchain, showConfirmRemoveDialog } from '../managerSlice';
 import { showConfirmRemoveDialog } from '../managerSlice';
 import { saveEnvScript } from '../nrfutil/env';
 import { showNrfUtilDialogAction } from '../nrfutil/nrfUtilDialogSlice';
