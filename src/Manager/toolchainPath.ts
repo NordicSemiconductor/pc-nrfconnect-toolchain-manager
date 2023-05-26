@@ -9,8 +9,8 @@ import path from 'path';
 import { persistedInstallDir } from '../persistentStore';
 import { isLegacyEnvironment } from './Environment/environmentReducer';
 
-// The nrfutil environments should use nrfutil to get the toolchain path as soon as that feature exists.
+// nrfutil toolchains have the dir in the environment object and get it from nrfutil
 export default (version: string, ...params: string[]) =>
     isLegacyEnvironment(version)
         ? path.resolve(persistedInstallDir(), version, 'toolchain', ...params)
-        : path.resolve(persistedInstallDir(), 'toolchains', version, ...params);
+        : '';

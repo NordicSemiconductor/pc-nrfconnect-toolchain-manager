@@ -96,19 +96,19 @@ const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
     }
     try {
         searchToolchains()
-            .filter(environment => !isLegacyEnvironment(environment.version))
-            .map<Environment>(environment => {
+            .filter(
+                environmentVersion => !isLegacyEnvironment(environmentVersion)
+            )
+            .map<Environment>(environmentVersion => {
                 const installedEnvironment = installed.find(
-                    env => env.version === environment.version
+                    env => env.version === environmentVersion
                 );
-                if (installedEnvironment)
-                    return {
-                        ...installedEnvironment,
-                        ...environment,
-                        type: 'nrfUtil',
-                    };
+
+                if (installedEnvironment) return installedEnvironment;
+
                 return {
-                    ...environment,
+                    version: environmentVersion,
+                    toolchains: [],
                     toolchainDir: '',
                     type: 'nrfUtil',
                     isInstalled: false,

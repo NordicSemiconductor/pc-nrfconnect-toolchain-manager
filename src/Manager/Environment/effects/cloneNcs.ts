@@ -14,6 +14,7 @@ import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { westExport, westInit, westUpdate } from '../../nrfutil/west';
 import sdkPath from '../../sdkPath';
+import toolchainPath from '../../toolchainPath';
 import {
     finishCloningSdk,
     isLegacyEnvironment,
@@ -23,12 +24,7 @@ import {
 import { calculateTimeConsumed, isWestPresent } from './helpers';
 
 export const cloneNcs =
-    (
-        version: string,
-        toolchainDir: string,
-        justUpdate: boolean,
-        signal: AbortSignal
-    ) =>
+    (version: string, justUpdate: boolean, signal: AbortSignal) =>
     async (dispatch: Dispatch) => {
         if (signal.aborted) {
             return;
@@ -41,6 +37,7 @@ export const cloneNcs =
             `${version}; ${process.platform}; ${process.arch}`
         );
         const cloneTimeStart = new Date();
+        const toolchainDir = toolchainPath(version);
 
         try {
             if (!justUpdate) {

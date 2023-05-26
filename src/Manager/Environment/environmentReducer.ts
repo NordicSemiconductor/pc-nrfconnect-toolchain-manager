@@ -120,7 +120,9 @@ export default (environment: Environment, { type, ...action }: AnyAction) => {
             return {
                 ...environment,
                 isRemoving: true,
+                isInstallingToolchain: false,
                 isInstalled: false,
+                toolchainDir: undefined,
                 isWestPresent: false,
                 isCloningSdk: false,
                 progress: 0,

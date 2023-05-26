@@ -10,10 +10,14 @@ import {
     ErrorDialogActions,
     usageData,
 } from 'pc-nrfconnect-shared';
+import logger from 'pc-nrfconnect-shared/src/logging';
 
-import { Dispatch, Toolchain } from '../../../state';
+import { Dispatch, RootState, Toolchain } from '../../../state';
+import EventAction from '../../../usageDataActions';
+import { getEnvironment, getLatestToolchain } from '../../managerSlice';
 import installNrfutilToolchain from '../../nrfutil/install';
 import { describe } from '../../nrfutil/task';
+import toolchainPath from '../../toolchainPath';
 import {
     finishInstallToolchain,
     isLegacyEnvironment,
@@ -25,13 +29,8 @@ import { downloadToolchain } from './downloadToolchain';
 import { unpack } from './unpack';
 
 export const installToolchain =
-    (
-        version: string,
-        toolchain: Toolchain,
-        toolchainDir: string,
-        signal: AbortSignal
-    ) =>
-    async (dispatch: Dispatch) => {
+    (version: string, signal: AbortSignal) =>
+    async (dispatch: Dispatch, getState: () => RootState) => {
         if (signal.aborted) {
             return;
         }
@@ -39,54 +38,65 @@ export const installToolchain =
         dispatch(startInstallToolchain(version));
 
         if (isLegacyEnvironment(version)) {
-            try {
-                fse.mkdirpSync(toolchainDir);
-                const packageLocation = await dispatch(
-                    downloadToolchain(version, toolchain)
-                );
-                await dispatch(unpack(version, packageLocation, toolchainDir));
-                updateConfigFile(toolchainDir);
-            } catch (error) {
-                const message = describeError(error);
-                dispatch(ErrorDialogActions.showDialog(message));
-                usageData.sendErrorReport(message);
+            const toolchain = getLatestToolchain(
+                dispatch(getEnvironment(getState(), version)).toolchains
+            );
+            if (toolchain === undefined) {
+                throw new Error('No toolchain found');
             }
-        } else {
-            try {
-                await installNrfutilToolchain(
-                    version,
-                    update => {
-                        switch (update.type) {
-                            case 'task_begin':
-                                dispatch(
-                                    setProgress(
-                                        version,
-                                        describe(update.data.task)
-                                    )
-                                );
-                                break;
-                            case 'task_progress':
-                                dispatch(
-                                    setProgress(
-                                        version,
-                                        describe(update.data.task),
-                                        update.data.progress.progressPercentage
-                                    )
-                                );
-                                break;
-                        }
-                    },
-                    signal
-                );
-            } catch (e) {
-                console.log(e as Error);
-                dispatch(finishInstallToolchain(version, toolchainDir));
-                // This error should be reclassified as a warning/info in a newer version of nrfutil
-                if (!(e as Error).toString().includes('already exists')) {
-                    throw e;
-                }
-            }
-        }
+            const toolchainDir = toolchainPath(version);
+            logger.info(`Installing ${toolchain?.name} at ${toolchainDir}`);
+            logger.debug(
+                `Install with toolchain version ${toolchain?.version}`
+            );
+            logger.debug(`Install with sha512 ${toolchain?.sha512}`);
+            fse.mkdirpSync(toolchainDir);
+            const packageLocation = await dispatch(
+                downloadToolchain(version, toolchain)
+            );
+            await dispatch(unpack(version, packageLocation, toolchainDir));
+            updateConfigFile(toolchainDir);
 
-        dispatch(finishInstallToolchain(version, toolchainDir));
+            usageData.sendUsageData(
+                EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
+                `${version} ${toolchain?.version}`
+            );
+            dispatch(finishInstallToolchain(version, toolchainDir));
+        } else {
+            await installNrfutilToolchain(
+                version,
+                update => {
+                    switch (update.type) {
+                        case 'task_begin':
+                            dispatch(
+                                setProgress(version, describe(update.data.task))
+                            );
+                            break;
+                        case 'task_progress':
+                            dispatch(
+                                setProgress(
+                                    version,
+                                    describe(update.data.task),
+                                    update.data.progress.progressPercentage
+                                )
+                            );
+                            break;
+                        case 'task_end':
+                            if (update.data.task.name === 'install_toolchain') {
+                                usageData.sendUsageData(
+                                    EventAction.INSTALL_TOOLCHAIN_FROM_NRFUTIL,
+                                    `${version}; ${update.data.task.data.install_path}`
+                                );
+                                dispatch(
+                                    finishInstallToolchain(
+                                        version,
+                                        update.data.task.data.install_path
+                                    )
+                                );
+                            }
+                    }
+                },
+                signal
+            );
+        }
     };

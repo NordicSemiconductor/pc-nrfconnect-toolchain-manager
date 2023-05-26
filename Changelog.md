@@ -1,3 +1,9 @@
+## 1.2.5 - Unreleased
+
+### Added
+
+-   NCS v2.4.0 support.
+
 ## 1.2.4 - 2023-04-13
 
 ### Removed

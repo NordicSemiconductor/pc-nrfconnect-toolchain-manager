@@ -6,11 +6,20 @@
 
 export type TaskEvent = TaskBegin | TaskProgress | TaskEnd;
 
-interface TaskDescriptor {
+interface InstallTaskDescriptor {
+    id: string;
+    description: string;
+    name: 'install_toolchain';
+    data: {
+        install_path: string;
+    };
+}
+interface GenericTaskDescriptor {
     id: string;
     description: string;
     name: 'download_toolchain' | 'unpack_toolchain' | 'remove_toolchain';
 }
+type TaskDescriptor = InstallTaskDescriptor | GenericTaskDescriptor;
 
 interface TaskBegin {
     type: 'task_begin';
@@ -45,9 +54,11 @@ export const describe = (task: TaskDescriptor) => {
             return 'Downloading toolchain';
         case 'unpack_toolchain':
             return 'Unpacking toolchain';
+        case 'install_toolchain':
+            return 'Installing toolchain';
         case 'remove_toolchain':
             return 'Removing toolchain';
         default:
-            return task.description;
+            return '';
     }
 };
