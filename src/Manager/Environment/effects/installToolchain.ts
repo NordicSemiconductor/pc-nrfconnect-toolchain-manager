@@ -81,9 +81,16 @@ export const installToolchain =
                                 )
                             );
                             break;
+                        case 'task_end':
+                            if (update.data.task.name === 'install_toolchain') {
+                                usageData.sendUsageData(
+                                    EventAction.INSTALL_TOOLCHAIN_FROM_NRFUTIL,
+                                    `${version}; ${update.data.task.data.install_path}`
                                 );
                                 dispatch(
+                                    finishInstallToolchain(
                                         version,
+                                        update.data.task.data.install_path
                                     )
                                 );
                             }
