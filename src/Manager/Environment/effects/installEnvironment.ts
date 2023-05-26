@@ -54,20 +54,20 @@ export const install =
             await dispatch(
                 cloneNcs(version, justUpdate, abortController.signal)
             );
+
+            if (abortController.signal.aborted) {
+                dispatch(removeUnfinishedInstallOnAbort(version));
+            } else {
+                try {
+                    checkXcodeCommandLineTools(dispatch);
+                } catch (error) {
+                    logger.error(describeError(error));
+                }
+            }
         } catch (error) {
-            removeUnfinishedInstallOnAbort(dispatch, version);
+            dispatch(removeUnfinishedInstallOnAbort(version));
             const message = describeError(error);
             dispatch(ErrorDialogActions.showDialog(message));
             usageData.sendErrorReport(message);
-        }
-
-        if (abortController.signal.aborted) {
-            removeUnfinishedInstallOnAbort(dispatch, version);
-        } else {
-            try {
-                checkXcodeCommandLineTools(dispatch);
-            } catch (error) {
-                logger.error(describeError(error));
-            }
         }
     };

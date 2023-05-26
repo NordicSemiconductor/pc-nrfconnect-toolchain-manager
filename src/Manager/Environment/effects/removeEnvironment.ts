@@ -8,9 +8,11 @@ import { existsSync } from 'fs';
 import { rename, rm } from 'fs/promises';
 import path from 'path';
 import { ErrorDialogActions, logger, usageData } from 'pc-nrfconnect-shared';
+import { TDispatch } from 'pc-nrfconnect-shared/src/state';
 
-import { Dispatch, Environment } from '../../../state';
+import { Dispatch, Environment, RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
+import { getEnvironment } from '../../managerSlice';
 import removeToolchain from '../../nrfutil/remove';
 import sdkPath from '../../sdkPath';
 import toolchainPath from '../../toolchainPath';
@@ -92,35 +94,38 @@ export const removeEnvironment =
         dispatch(finishRemoving(version));
     };
 
-export const removeUnfinishedInstallOnAbort = async (
-    dispatch: Dispatch,
-    version: string
-) => {
-    dispatch(startCancelInstall(version));
-    const toolchainDir = toolchainPath(version);
-    // nrfutil removes this on a failed install
-    // We also do not have access to a toolchain path without nrfutil
-    if (isLegacyEnvironment(version) && existsSync(toolchainDir)) {
-        try {
-            await rm(toolchainDir, { recursive: true, force: true });
-            logger.info(
-                `Successfully removed toolchain directory: ${toolchainDir}`
-            );
-        } catch (err) {
-            logger.error(err);
+export const removeUnfinishedInstallOnAbort =
+    (version: string) =>
+    async (dispatch: TDispatch, getState: () => RootState) => {
+        dispatch(startCancelInstall(version));
+        const toolchainDir = isLegacyEnvironment(version)
+            ? dispatch(getEnvironment(getState(), version)).toolchainDir
+            : toolchainPath(version);
+        if (existsSync(toolchainDir)) {
+            try {
+                if (isLegacyEnvironment(version)) {
+                    await rm(toolchainDir, { recursive: true, force: true });
+                } else {
+                    await removeNrfutilEnvironment(version, toolchainDir);
+                }
+                logger.info(
+                    `Successfully removed toolchain directory: ${toolchainDir}`
+                );
+            } catch (err) {
+                logger.error(err);
+            }
         }
-    }
-    if (existsSync(sdkPath(version))) {
-        try {
-            await rm(sdkPath(version), { recursive: true, force: true });
-            logger.info(
-                `Successfully removed SDK with version ${version} from ${sdkPath(
-                    version
-                )}`
-            );
-        } catch (err) {
-            logger.error(err);
+        if (existsSync(sdkPath(version))) {
+            try {
+                await rm(sdkPath(version), { recursive: true, force: true });
+                logger.info(
+                    `Successfully removed SDK with version ${version} from ${sdkPath(
+                        version
+                    )}`
+                );
+            } catch (err) {
+                logger.error(err);
+            }
         }
-    }
-    dispatch(finishCancelInstall(version));
-};
+        dispatch(finishCancelInstall(version));
+    };
