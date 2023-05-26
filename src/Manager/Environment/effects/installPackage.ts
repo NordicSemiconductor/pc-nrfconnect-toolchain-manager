@@ -79,12 +79,7 @@ export const installPackage =
             updateConfigFile(toolchainDir);
             dispatch(finishInstallToolchain(version, toolchainDir));
             await dispatch(
-                cloneNcs(
-                    version,
-                    toolchainDir,
-                    false,
-                    new AbortController().signal
-                )
+                cloneNcs(version, false, new AbortController().signal)
             );
         } catch (error) {
             const message = describeError(error);

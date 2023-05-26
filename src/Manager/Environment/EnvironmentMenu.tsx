@@ -213,7 +213,6 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                     dispatch(
                         cloneNcs(
                             version,
-                            toolchainDir,
                             true,
                             environment.abortController.signal
                         )
@@ -227,18 +226,6 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                     dispatch(
                         installToolchain(
                             environment.version,
-                            getLatestToolchain(environment.toolchains),
-                            isLegacyEnvironment(version)
-                                ? path.resolve(
-                                      persistedInstallDir(),
-                                      version,
-                                      'toolchain'
-                                  )
-                                : path.resolve(
-                                      persistedInstallDir(),
-                                      'toolchains',
-                                      version
-                                  ),
                             environment.abortController.signal
                         )
                     )

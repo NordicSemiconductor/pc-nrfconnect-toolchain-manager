@@ -30,7 +30,10 @@ const removeLegacyEnvironment = (toolchainDir: string) =>
 const renamedPath = (origPath: string) =>
     path.resolve(origPath, '..', 'toBeDeleted');
 
-const removeNrfutilEnvironment = async (version: string) => {
+const removeNrfutilEnvironment = async (
+    version: string,
+    toolchainDir: string
+) => {
     let pathToRemove;
     try {
         pathToRemove = sdkPath(version);
@@ -55,7 +58,7 @@ const removeNrfutilEnvironment = async (version: string) => {
             `Unexpected error when removing SDK ${version}, ${message}. ` +
                 `Please remove the installation in ${sdkPath(
                     version
-                )} and ${toolchainPath(version)} manually as it is broken.`
+                )} and ${toolchainDir} manually as it is broken.`
         );
     }
 };
@@ -73,7 +76,7 @@ export const removeEnvironment =
                 await removeLegacyEnvironment(toolchainDir);
                 logger.info(`Finished removing ${version} at ${toolchainDir}`);
             } else {
-                await removeNrfutilEnvironment(version);
+                await removeNrfutilEnvironment(version, toolchainDir);
                 logger.info(
                     `Finished removing ${version} at ${toolchainDir} and ${sdkPath(
                         version
@@ -91,11 +94,13 @@ export const removeEnvironment =
 
 export const removeUnfinishedInstallOnAbort = async (
     dispatch: Dispatch,
-    version: string,
-    toolchainDir: string
+    version: string
 ) => {
     dispatch(startCancelInstall(version));
-    if (existsSync(toolchainDir)) {
+    const toolchainDir = toolchainPath(version);
+    // nrfutil removes this on a failed install
+    // We also do not have access to a toolchain path without nrfutil
+    if (isLegacyEnvironment(version) && existsSync(toolchainDir)) {
         try {
             await rm(toolchainDir, { recursive: true, force: true });
             logger.info(
