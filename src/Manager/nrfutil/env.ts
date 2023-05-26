@@ -46,11 +46,15 @@ const getFileFormatFilter = (fileFormat: FileFormat) => {
     }
 };
 
-export const saveEnvScript = (version: string, fileFormat: FileFormat) => {
+export const saveEnvScript = (
+    version: string,
+    fileFormat: FileFormat,
+    defaultPath = ''
+) => {
     const options = {
         title: 'Create environment script',
         defaultPath: path.resolve(
-            toolchainPath(version),
+            defaultPath,
             `env.${fileFormat === 'undecided' ? 'cmd' : fileFormat}`
         ),
         filters: getFileFormatFilter(fileFormat),

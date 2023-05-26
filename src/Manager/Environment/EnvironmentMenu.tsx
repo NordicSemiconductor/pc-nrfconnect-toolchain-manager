@@ -18,6 +18,7 @@ import { persistedInstallDir } from '../../persistentStore';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import { getLatestToolchain, showConfirmRemoveDialog } from '../managerSlice';
+import { showConfirmRemoveDialog } from '../managerSlice';
 import { saveEnvScript } from '../nrfutil/env';
 import { showNrfUtilDialogAction } from '../nrfutil/nrfUtilDialogSlice';
 import {
@@ -26,6 +27,7 @@ import {
     launchWinBash,
 } from '../nrfutil/terminal';
 import sdkPath from '../sdkPath';
+import toolchainPath from '../toolchainPath';
 import { cloneNcs } from './effects/cloneNcs';
 import { installToolchain } from './effects/installToolchain';
 import {
@@ -192,7 +194,10 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                                 environment.version,
                                 process.platform === 'win32'
                                     ? 'undecided'
-                                    : 'sh'
+                                    : 'sh',
+                                isLegacyEnvironment(environment.version)
+                                    ? toolchainPath(environment.version)
+                                    : environment.toolchainDir
                             )
                         }
                     >
