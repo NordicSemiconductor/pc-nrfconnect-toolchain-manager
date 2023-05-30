@@ -4,6 +4,10 @@
 
 -   NCS v2.4.0 support.
 
+### Changed
+
+-   Only one SDK can be installed/removed at a time.
+
 ## 1.2.4 - 2023-04-13
 
 ### Removed

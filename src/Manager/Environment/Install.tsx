@@ -5,10 +5,11 @@
  */
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { showConfirmInstallDirDialog } from '../../InstallDir/installDirSlice';
 import { Environment } from '../../state';
+import { isAnyToolchainInProgress } from '../managerSlice';
 import Button from './Button';
 import { install } from './effects/installEnvironment';
 import { isOnlyAvailable, version } from './environmentReducer';
@@ -17,6 +18,7 @@ type Props = { environment: Environment };
 
 const Install = ({ environment }: Props) => {
     const dispatch = useDispatch();
+    const anyInProgress = useSelector(isAnyToolchainInProgress);
 
     const { platform } = process;
     const onClick = (() => {
@@ -32,14 +34,13 @@ const Install = ({ environment }: Props) => {
         }
     })();
 
-    if (!isOnlyAvailable(environment)) return null;
-
-    return (
+    return !isOnlyAvailable(environment) ? null : (
         <Button
             icon="x-mdi-briefcase-download-outline"
             onClick={onClick}
             label="Install"
             variant="secondary"
+            disabled={anyInProgress}
         />
     );
 };

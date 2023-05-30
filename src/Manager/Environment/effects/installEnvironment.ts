@@ -16,14 +16,12 @@ import {
     setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
 import { Dispatch, Environment } from '../../../state';
-import EventAction from '../../../usageDataActions';
 import { getVsCodeStatus } from '../../../VsCodeDialog/vscode';
 import {
     setVsCodeStatus,
     showVsCodeDialog,
     VsCodeStatus,
 } from '../../../VsCodeDialog/vscodeSlice';
-import { getLatestToolchain } from '../../managerSlice';
 import toolchainPath from '../../toolchainPath';
 import checkXcodeCommandLineTools from './checkXcodeCommandLineTools';
 import { cloneNcs } from './cloneNcs';

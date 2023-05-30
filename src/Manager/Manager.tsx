@@ -106,7 +106,7 @@ export default () => {
                     className="mdi x-mdi-briefcase-plus-outline pr-0 pt-0"
                     onClick={() => dispatch(showInstallPackageDialog(''))}
                 >
-                    Install package from other source
+                    Install 1.x package from other source
                 </Button>
             </ButtonToolbar>
             <RemoveEnvironmentDialog />
