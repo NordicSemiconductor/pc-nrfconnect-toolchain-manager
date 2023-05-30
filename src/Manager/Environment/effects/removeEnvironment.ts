@@ -99,8 +99,8 @@ export const removeUnfinishedInstallOnAbort =
     async (dispatch: TDispatch, getState: () => RootState) => {
         dispatch(startCancelInstall(version));
         const toolchainDir = isLegacyEnvironment(version)
-            ? dispatch(getEnvironment(getState(), version)).toolchainDir
-            : toolchainPath(version);
+            ? toolchainPath(version)
+            : dispatch(getEnvironment(getState(), version)).toolchainDir;
         if (existsSync(toolchainDir)) {
             try {
                 if (isLegacyEnvironment(version)) {
