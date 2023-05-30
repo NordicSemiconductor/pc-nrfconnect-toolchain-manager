@@ -122,7 +122,6 @@ export default (environment: Environment, { type, ...action }: AnyAction) => {
                 isRemoving: true,
                 isInstallingToolchain: false,
                 isInstalled: false,
-                toolchainDir: undefined,
                 isWestPresent: false,
                 isCloningSdk: false,
                 progress: 0,
@@ -132,6 +131,7 @@ export default (environment: Environment, { type, ...action }: AnyAction) => {
             return {
                 ...environment,
                 isRemoving: false,
+                toolchainDir: undefined,
                 stage: undefined,
                 abortController: new AbortController(),
             };
