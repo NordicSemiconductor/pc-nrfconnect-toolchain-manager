@@ -7,7 +7,7 @@
 import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { exec, ExecException, execSync } from 'child_process';
 import { shell } from 'electron';
 import { readdirSync } from 'fs';
@@ -16,7 +16,10 @@ import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
-import { showConfirmRemoveDialog } from '../managerSlice';
+import {
+    isAnyToolchainInProgress,
+    showConfirmRemoveDialog,
+} from '../managerSlice';
 import { saveEnvScript } from '../nrfutil/env';
 import { showNrfUtilDialogAction } from '../nrfutil/nrfUtilDialogSlice';
 import {
@@ -136,6 +139,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
         isLegacyEnv ? path.dirname(toolchainDir) : sdkPath(environment.version);
     const version = getVersion(environment);
     const { platform } = process;
+    const anyToolchainInProgress = useSelector(isAnyToolchainInProgress);
 
     return (
         <DropdownButton
@@ -238,6 +242,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item
+                disabled={anyToolchainInProgress}
                 onClick={() => dispatch(showConfirmRemoveDialog(version))}
             >
                 Remove
