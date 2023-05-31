@@ -1,12 +1,9 @@
-## 1.2.5 - Unreleased
-
-### Added
-
--   NCS v2.4.0 support.
+## 1.2.5 - 2023-06-01
 
 ### Changed
 
--   Only one SDK can be installed/removed at a time.
+-   Backend changes to support nRF Connect SDK v2.4.0 and future releases.
+-   Only one environment can be installed/removed at a time.
 
 ## 1.2.4 - 2023-04-13
 
