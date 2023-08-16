@@ -1,3 +1,9 @@
+## 1.2.6 - Unreleased
+
+### Added
+
+-   Deprecation warning.
+
 ## 1.2.5 - 2023-06-01
 
 ### Changed
