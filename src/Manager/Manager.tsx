@@ -27,6 +27,7 @@ import {
 } from '../VsCodeDialog/vscode';
 import VsCodeDialog from '../VsCodeDialog/VsCodeDialog';
 import { VsCodeStatus } from '../VsCodeDialog/vscodeSlice';
+import DeprecationWarning from './DeprecationWarning';
 import detectMultipleInstallDirs from './detectMultipleInstallDirs';
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
@@ -98,6 +99,7 @@ export default () => {
             }}
             className="toolchain-manager-main-window"
         >
+            <DeprecationWarning />
             <PlatformInstructions />
             <Environments />
             <ButtonToolbar className="pt-3 flex-row justify-content-end">
