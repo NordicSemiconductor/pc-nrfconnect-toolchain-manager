@@ -1,6 +1,6 @@
 {
     "name": "pc-nrfconnect-toolchain-manager",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "description": "Install and manage tools to develop with the nRF Connect SDK (NCS)",
     "displayName": "Toolchain Manager",
     "homepage": "https://github.com/NordicPlayground/pc-nrfconnect-toolchain-manager",
@@ -47,15 +47,11 @@
         "extract-zip": "^2.0.1",
         "fs-extra": "^8.1.0"
     },
-    "bundledDependencies": [
-        "extract-zip",
-        "fs-extra"
-    ],
     "eslintConfig": {
         "extends": "./node_modules/pc-nrfconnect-shared/config/eslintrc.js"
     },
     "prettier": "./node_modules/pc-nrfconnect-shared/config/prettier.config.js",
-    "bundleDependencies": [
+    "bundledDependencies": [
         "extract-zip",
         "fs-extra"
     ]
