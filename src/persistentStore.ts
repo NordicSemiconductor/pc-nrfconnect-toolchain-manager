@@ -92,3 +92,8 @@ export const persistedShowVsCodeDialogDuringInstall = () =>
     store().get('showVsCodeDialogDuringInstall', true);
 export const setPersistedShowVsCodeDialogDuringInstall = (visible: boolean) =>
     store().set('showVsCodeDialogDuringInstall', visible);
+
+export const showDeprecationWarning = () =>
+    store().get('showDeprecationWarning', true);
+export const setShowDeprecationWarning = (visible: boolean) =>
+    store().set('showDeprecationWarning', visible);

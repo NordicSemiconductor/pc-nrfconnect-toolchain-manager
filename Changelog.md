@@ -1,3 +1,10 @@
+## 1.2.6 - 2023-8-30
+
+### Added
+
+-   Deprecation warning, this application will be deprecated from nRF Connect
+    for Desktop.
+
 ## 1.2.5 - 2023-06-01
 
 ### Changed
