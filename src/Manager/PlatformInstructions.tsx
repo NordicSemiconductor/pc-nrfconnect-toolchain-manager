@@ -5,7 +5,7 @@
  */
 
 import React, { FC } from 'react';
-import { Alert } from 'pc-nrfconnect-shared';
+import Alert from 'react-bootstrap/Alert';
 
 const isLinux = process.platform === 'linux';
 
