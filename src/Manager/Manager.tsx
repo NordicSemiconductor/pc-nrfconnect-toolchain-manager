@@ -10,7 +10,6 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import DeprecationWarning from '../DeprecationWarning';
 import FirstInstallInstructions from '../FirstInstall/FirstInstallInstructions';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
 import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
@@ -99,7 +98,6 @@ export default () => {
             }}
             className="toolchain-manager-main-window"
         >
-            <DeprecationWarning />
             <PlatformInstructions />
             <Environments />
             <ButtonToolbar className="pt-3 flex-row justify-content-end">
