@@ -1,3 +1,9 @@
+## 1.2.6 - 2023-10-11
+
+### Changed
+
+-   Updated the link for the first steps.
+
 ## 1.2.5 - 2023-06-01
 
 ### Changed
