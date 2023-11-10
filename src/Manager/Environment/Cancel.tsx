@@ -15,8 +15,9 @@ type Props = { environment: Environment };
 
 const Cancel = ({ environment }: Props) => {
     const onCancel = () => {
-        environment.abortController.abort();
-        usageData.sendUsageData('Cancel installation', environment.version);
+        usageData.sendUsageData('Cancel installation', {
+            version: environment.version,
+        });
     };
 
     if (

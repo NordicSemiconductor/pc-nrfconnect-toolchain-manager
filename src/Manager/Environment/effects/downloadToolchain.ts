@@ -31,7 +31,7 @@ export const downloadToolchain =
 
             const url = uri || toolchainUrl(name || '');
             const filename = name || path.basename(url);
-            usageData.sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, url);
+            usageData.sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, { url });
 
             const downloadDir = path.resolve(installDir(), 'downloads');
             const packageLocation = path.resolve(downloadDir, filename);
@@ -69,20 +69,19 @@ export const downloadToolchain =
                                 new Error(`Checksum verification failed ${url}`)
                             );
                         }
+                        const timeInMin =
+                            calculateTimeConsumed(downloadTimeStart);
+
                         usageData.sendUsageData(
                             EventAction.DOWNLOAD_TOOLCHAIN_SUCCESS,
-                            url
+                            { url }
                         );
                         usageData.sendUsageData(
                             EventAction.DOWNLOAD_TOOLCHAIN_TIME,
-                            `${calculateTimeConsumed(
-                                downloadTimeStart
-                            )} min; ${url}`
+                            { timeInMin, url }
                         );
                         logger.info(
-                            `Finished downloading version ${version} of the toolchain after approximately ${calculateTimeConsumed(
-                                downloadTimeStart
-                            )} minute(s)`
+                            `Finished downloading version ${version} of the toolchain after approximately ${timeInMin} minute(s)`
                         );
                         return resolve(packageLocation);
                     });

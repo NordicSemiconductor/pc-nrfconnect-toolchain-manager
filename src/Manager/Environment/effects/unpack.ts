@@ -20,10 +20,11 @@ export const unpack =
     (version: string, src: string, dest: string) =>
     async (dispatch: Dispatch) => {
         logger.info(`Unpacking toolchain ${version}`);
-        usageData.sendUsageData(
-            EventAction.UNPACK_TOOLCHAIN,
-            `${version}; ${process.platform}; ${process.arch}`
-        );
+        usageData.sendUsageData(EventAction.UNPACK_TOOLCHAIN, {
+            version,
+            platform: process.platform,
+            arch: process.arch,
+        });
         const unpackTimeStart = new Date();
         dispatch(setProgress(version, 'Installing...', 50));
         switch (process.platform) {
@@ -66,17 +67,23 @@ export const unpack =
             default:
         }
 
-        const unpackInfo = `${version}; ${process.platform}; ${process.arch}`;
-        usageData.sendUsageData(
-            EventAction.UNPACK_TOOLCHAIN_SUCCESS,
-            unpackInfo
-        );
-        usageData.sendUsageData(
-            EventAction.UNPACK_TOOLCHAIN_TIME,
-            `${calculateTimeConsumed(unpackTimeStart)} min; ${unpackInfo}`
-        );
+        const timeInMin = calculateTimeConsumed(unpackTimeStart);
+        usageData.sendUsageData(EventAction.UNPACK_TOOLCHAIN_SUCCESS, {
+            timeInMin,
+            version,
+            platform: process.platform,
+            arch: process.arch,
+        });
+        usageData.sendUsageData(EventAction.UNPACK_TOOLCHAIN_TIME, {
+            timeInMin,
+            version,
+            platform: process.platform,
+            arch: process.arch,
+        });
         logger.info(
-            `Finished unpacking version ${unpackInfo} of the toolchain after approximately ${calculateTimeConsumed(
+            `Finished unpacking version ${version}; ${process.platform}; ${
+                process.arch
+            } of the toolchain after approximately ${calculateTimeConsumed(
                 unpackTimeStart
             )} minute(s)`
         );

@@ -58,10 +58,10 @@ export const installToolchain =
             await dispatch(unpack(version, packageLocation, toolchainDir));
             updateConfigFile(toolchainDir);
 
-            usageData.sendUsageData(
-                EventAction.INSTALL_TOOLCHAIN_FROM_INDEX,
-                `${version} ${toolchain?.version}`
-            );
+            usageData.sendUsageData(EventAction.INSTALL_TOOLCHAIN_FROM_INDEX, {
+                version,
+                toolchainVersion: toolchain?.version,
+            });
             dispatch(finishInstallToolchain(version, toolchainDir));
         } else {
             await installNrfutilToolchain(

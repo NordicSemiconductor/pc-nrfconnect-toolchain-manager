@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import React from 'react';
-import { App } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import { App, usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import Manager from './Manager/Manager';
 import appReducer from './reducers';
@@ -13,9 +12,7 @@ import Settings from './Settings/Settings';
 
 import './style.scss';
 
-export default () => (
-    <App
-        reportUsageData
+usageData.enableTelemetry();
         appReducer={appReducer}
         deviceSelect={null}
         sidePanel={null}

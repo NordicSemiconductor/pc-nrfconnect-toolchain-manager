@@ -217,6 +217,8 @@ const spawnAsync = (
     });
 
 export const openVsCode = () => {
-    usageData.sendUsageData(EventAction.OPEN_VS_CODE, process.platform);
+    usageData.sendUsageData(EventAction.OPEN_VS_CODE, {
+        platform: process.platform,
+    });
     spawnAsync('code');
 };

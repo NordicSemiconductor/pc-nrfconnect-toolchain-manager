@@ -36,10 +36,11 @@ export const cloneNcs =
         dispatch(startCloningSdk(version));
         logger.info(`Cloning nRF Connect SDK ${version}`);
 
-        usageData.sendUsageData(
-            EventAction.CLONE_NCS,
-            `${version}; ${process.platform}; ${process.arch}`
-        );
+        usageData.sendUsageData(EventAction.CLONE_NCS, {
+            version,
+            platform: process.platform,
+            arch: process.arch,
+        });
         const cloneTimeStart = new Date();
         const toolchainDir = toolchainPath(version);
 
@@ -71,18 +72,18 @@ export const cloneNcs =
             finishCloningSdk(version, isWestPresent(version, toolchainDir))
         );
 
-        usageData.sendUsageData(
-            EventAction.CLONE_NCS_SUCCESS,
-            `${version}; ${process.platform}; ${process.arch}`
-        );
-        usageData.sendUsageData(
-            EventAction.CLONE_NCS_TIME,
-            `${calculateTimeConsumed(cloneTimeStart)} min; ${version}`
-        );
+        const timeInMin = calculateTimeConsumed(cloneTimeStart);
+        usageData.sendUsageData(EventAction.CLONE_NCS_SUCCESS, {
+            version,
+            platform: process.platform,
+            arch: process.arch,
+        });
+        usageData.sendUsageData(EventAction.CLONE_NCS_TIME, {
+            timeInMin,
+            version,
+        });
         logger.info(
-            `Finished cloning version ${version} of the nRF Connect SDK after approximately ${calculateTimeConsumed(
-                cloneTimeStart
-            )} minute(s)`
+            `Finished cloning version ${version} of the nRF Connect SDK after approximately ${timeInMin} minute(s)`
         );
     };
 

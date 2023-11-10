@@ -24,48 +24,12 @@ import listToolchains from './nrfutil/list';
 import logNrfutilVersion from './nrfutil/logVersion';
 import searchToolchains from './nrfutil/search';
 
-const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
-    try {
-        fs.readdirSync(installDir(), { withFileTypes: true })
-            .filter(dirEnt => dirEnt.isDirectory())
-            .map(({ name }) => ({
-                version: name,
-                toolchainDir: path.resolve(installDir(), name, 'toolchain'),
-            }))
-            .filter(({ toolchainDir }) =>
-                fs.existsSync(path.resolve(toolchainDir, 'ncsmgr/manifest.env'))
-            )
-            .forEach(({ version, toolchainDir }) => {
-                const westPresent = isWestPresent(version, toolchainDir);
-                logger.info(
-                    `Locally exsisting environment found at ${toolchainDir}`
-                );
-                logger.info(`With version: ${version}`);
-                logger.info(`With west found: ${westPresent ? 'yes' : 'no'}`);
-                usageData.sendUsageData(
-                    EventAction.REPORT_LOCAL_ENVS,
-                    `${version}; ${
-                        westPresent ? 'west found' : 'west not found'
-                    }`
-                );
-                dispatch(
-                    addEnvironment({
-                        type: 'legacy',
+                    usageData.sendUsageData(EventAction.REPORT_LOCAL_ENVS, {
                         version,
-                        toolchainDir,
-                        isWestPresent: westPresent,
-                        isInstalled: true,
-                        abortController: new AbortController(),
-                        toolchains: [],
-                    })
-                );
-            });
-    } catch (e) {
-        usageData.sendErrorReport(
-            `Fail to detect locally existing environments with error: ${e}`
-        );
-    }
-};
+                        westPresent: westPresent
+                            ? 'west found'
+                            : 'west not found',
+                    });
 
 const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
     let installed: Environment[];

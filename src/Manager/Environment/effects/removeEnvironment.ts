@@ -73,7 +73,7 @@ export const removeEnvironment =
     (environment: Environment) => async (dispatch: Dispatch) => {
         const { toolchainDir, version } = environment;
         logger.info(`Removing ${version} at ${toolchainDir}`);
-        usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
+        usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, { version });
 
         dispatch(startRemoving(version));
 

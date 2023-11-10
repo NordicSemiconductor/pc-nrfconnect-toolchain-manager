@@ -29,9 +29,9 @@ import { unpack } from './unpack';
 export const installPackage =
     (urlOrFilePath: string) => async (dispatch: Dispatch) => {
         usageData.sendUsageData(
-            EventAction.INSTALL_TOOLCHAIN_FROM_PATH,
-            `${urlOrFilePath}`
-        );
+        usageData.sendUsageData(EventAction.INSTALL_TOOLCHAIN_FROM_PATH, {
+            urlOrFilePath,
+        });
         const match =
             /ncs-toolchain-(v?.+?)([-_]\d{8}-[^.]+).[zip|dmg|snap]/.exec(
                 urlOrFilePath

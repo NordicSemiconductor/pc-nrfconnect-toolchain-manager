@@ -194,7 +194,9 @@ export const updateConfigFile = (toolchainDir: string) => {
 
 export const openSegger = async (toolchainDir: string) => {
     logger.info('Open Segger Embedded Studio');
-    usageData.sendUsageData(EventAction.OPEN_SES, process.platform);
+    usageData.sendUsageData(EventAction.OPEN_SES, {
+        platform: process.platform,
+    });
     await Promise.all([
         updateSettingsFile('settings.xml', toolchainDir),
         updateSettingsFile('settings.xml.bak', toolchainDir),
