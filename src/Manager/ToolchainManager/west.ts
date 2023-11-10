@@ -34,21 +34,20 @@ const west = async (
     onUpdate: (update: string) => void = () => {}
 ) => {
     const box = await getToolChainManagerSandbox();
-    const args: string[] = [];
 
     const chdir = sdkPath(ncsVersion);
     mkdirSync(chdir, {
         recursive: true,
     });
 
-    args.push('--chdir');
-    args.push(chdir);
-
-    args.push('--ncs-version');
-    args.push(ncsVersion);
-
-    args.push('--install-dir');
-    args.push(installDir);
+    const args: string[] = [
+        '--chdir',
+        chdir,
+        '--ncs-version',
+        ncsVersion,
+        '--install-dir',
+        installDir,
+    ];
 
     const onData = (line: string): void => {
         getNrfutilLogger()?.debug(line.trimEnd());

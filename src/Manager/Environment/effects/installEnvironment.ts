@@ -64,10 +64,6 @@ export const install =
             await dispatch(cloneNcs(version, justUpdate, abortController));
 
             if (!abortController.signal.aborted) {
-                abortController.signal.removeEventListener(
-                    'abort',
-                    abortAction
-                );
                 try {
                     dispatch(checkXcodeCommandLineTools());
                 } catch (error) {
@@ -81,4 +77,6 @@ export const install =
                 usageData.sendErrorReport(message);
             }
         }
+
+        abortController.signal.removeEventListener('abort', abortAction);
     };

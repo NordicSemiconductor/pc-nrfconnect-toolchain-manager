@@ -15,20 +15,14 @@ const launchTerminalGeneric = async (
     launchWith?: string
 ) => {
     const box = await getToolChainManagerSandbox();
-    const argsTemp: string[] = [];
-
-    if (chdir) {
-        argsTemp.push('--chdir');
-        argsTemp.push(chdir);
-    }
-
-    if (ncsVersion) {
-        argsTemp.push('--ncs-version');
-        argsTemp.push(ncsVersion);
-    }
-
-    argsTemp.push('--install-dir');
-    argsTemp.push(installDir);
+    const argsTemp: string[] = [
+        '--chdir',
+        chdir,
+        '--ncs-version',
+        ncsVersion,
+        '--install-dir',
+        installDir,
+    ];
 
     if (launchWith) {
         box.execCommand(

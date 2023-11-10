@@ -15,16 +15,14 @@ export default async (
     controller?: AbortController
 ) => {
     const box = await getToolChainManagerSandbox();
-    const args: string[] = [];
-
-    args.push('--as-script');
-    args.push(asScript);
-
-    args.push('--ncs-version');
-    args.push(ncsVersion);
-
-    args.push('--install-dir');
-    args.push(installDir);
+    const args: string[] = [
+        '--as-script',
+        asScript,
+        '--ncs-version',
+        ncsVersion,
+        '--install-dir',
+        installDir,
+    ];
 
     let result: string | undefined;
 

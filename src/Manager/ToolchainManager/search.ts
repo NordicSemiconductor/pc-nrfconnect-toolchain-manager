@@ -16,11 +16,11 @@ export default async (
     controller?: AbortController
 ) => {
     const box = await getToolChainManagerSandbox();
-    const args: string[] = [];
+    const args: string[] = ['--install-dir', installDir];
 
-    args.push('--install-dir');
-    args.push(installDir);
-    args.push('--show-all');
+    if (showAll) {
+        args.push('--show-all');
+    }
 
     return box.singleInfoOperationOptionalData<ToolchainSearch>(
         'search',

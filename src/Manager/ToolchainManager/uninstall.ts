@@ -15,10 +15,12 @@ export default async (
     controller?: AbortController
 ) => {
     const box = await getToolChainManagerSandbox();
-    const args: string[] = [`--ncs-version`, ncsVersion];
-
-    args.push('--install-dir');
-    args.push(installDir);
+    const args: string[] = [
+        `--ncs-version`,
+        ncsVersion,
+        '--install-dir',
+        installDir,
+    ];
 
     await box.spawnNrfutilSubcommand(
         'uninstall',
