@@ -14,6 +14,7 @@ import { shell } from 'electron';
 import { readdirSync } from 'fs';
 import path from 'path';
 
+import { getAbortController } from '../../globalAbortControler';
 import { persistedInstallDir } from '../../persistentStore';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
@@ -227,13 +228,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
             <Dropdown.Divider />
             <Dropdown.Item
                 onClick={() =>
-                    dispatch(
-                        cloneNcs(
-                            version,
-                            true,
-                            environment.abortController.signal
-                        )
-                    )
+                    dispatch(cloneNcs(version, true, getAbortController()))
                 }
             >
                 Update SDK
@@ -243,7 +238,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                     dispatch(
                         installToolchain(
                             environment.version,
-                            environment.abortController.signal
+                            getAbortController()
                         )
                     )
                 }

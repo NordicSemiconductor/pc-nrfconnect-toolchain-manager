@@ -92,7 +92,6 @@ const downloadIndexByNrfUtil =
                         toolchains: [],
                         type: 'nrfUtil' as 'nrfUtil' | 'legacy',
                         isInstalled: true,
-                        abortController: new AbortController(),
                         isWestPresent: isWestPresent(
                             toolchain.ncs_version,
                             toolchain.path
@@ -165,7 +164,6 @@ const downloadIndex = (): AppThunk<RootState> => dispatch => {
                         dispatch(
                             addEnvironment({
                                 ...environment,
-                                abortController: new AbortController(),
                                 type: 'legacy',
                             })
                         );

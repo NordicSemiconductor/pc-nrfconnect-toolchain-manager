@@ -35,7 +35,6 @@ const exampleEnvironment: Environment = {
     version: 'v1.2.0',
     toolchainDir: '',
     toolchains: [],
-    abortController: new AbortController(),
 };
 
 describe('getLatestToolchain', () => {

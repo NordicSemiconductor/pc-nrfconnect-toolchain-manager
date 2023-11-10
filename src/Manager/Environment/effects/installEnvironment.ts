@@ -12,6 +12,7 @@ import {
     usageData,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
+import { getAbortController } from '../../../globalAbortControler';
 import {
     persistedShowVsCodeDialogDuringInstall,
     setPersistedShowVsCodeDialogDuringInstall,
@@ -36,6 +37,7 @@ export const install =
         justUpdate: boolean
     ): AppThunk<RootState, Promise<void>> =>
     async dispatch => {
+        const abortController = getAbortController();
         logger.info(`Start to install toolchain ${version}`);
 
         if (persistedShowVsCodeDialogDuringInstall()) {
@@ -48,24 +50,35 @@ export const install =
             setPersistedShowVsCodeDialogDuringInstall(false);
         }
 
+        const abortAction = () => {
+            dispatch(removeUnfinishedInstallOnAbort(version));
+        };
+
+        abortController.signal.addEventListener('abort', abortAction);
+
         try {
             await dispatch(
                 ensureCleanTargetDir(version, toolchainPath(version))
             );
-            await dispatch(installToolchain(version, abortController.signal));
-            await dispatch(
-                cloneNcs(version, justUpdate, abortController.signal)
-            );
+            await dispatch(installToolchain(version, abortController));
+            await dispatch(cloneNcs(version, justUpdate, abortController));
 
+            if (!abortController.signal.aborted) {
+                abortController.signal.removeEventListener(
+                    'abort',
+                    abortAction
+                );
+                try {
                     dispatch(checkXcodeCommandLineTools());
                 } catch (error) {
                     logger.error(describeError(error));
                 }
             }
         } catch (error) {
-            dispatch(removeUnfinishedInstallOnAbort(version));
-            const message = describeError(error);
-            dispatch(ErrorDialogActions.showDialog(message));
-            usageData.sendErrorReport(message);
+            if (!abortController.signal.aborted) {
+                const message = describeError(error);
+                dispatch(ErrorDialogActions.showDialog(message));
+                usageData.sendErrorReport(message);
+            }
         }
     };

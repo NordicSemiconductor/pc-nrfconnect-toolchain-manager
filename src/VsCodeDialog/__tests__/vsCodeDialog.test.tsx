@@ -173,7 +173,6 @@ describe('VS Code not installed when installing a toolchain for the first time',
                 isRemoving: false,
                 progress: 0,
                 stage: 'Downloading',
-                abortController: new AbortController(),
             }),
             ...vsCodeDialogActions(VsCodeStatus.NOT_INSTALLED),
         ]);
