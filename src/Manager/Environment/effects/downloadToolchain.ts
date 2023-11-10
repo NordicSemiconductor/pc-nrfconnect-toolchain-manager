@@ -5,11 +5,11 @@
  */
 
 import { net } from '@electron/remote';
+import { logger, usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { createHash } from 'crypto';
 import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
-import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import {
     persistedInstallDir as installDir,

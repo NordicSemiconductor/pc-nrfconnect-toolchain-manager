@@ -8,11 +8,11 @@ import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { useDispatch, useSelector } from 'react-redux';
+import { logger, usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { exec, ExecException, execSync } from 'child_process';
 import { shell } from 'electron';
 import { readdirSync } from 'fs';
 import path from 'path';
-import { logger, usageData } from 'pc-nrfconnect-shared';
 
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';

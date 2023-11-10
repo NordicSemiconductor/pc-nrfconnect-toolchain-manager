@@ -10,7 +10,7 @@ import {
     describeError,
     ErrorDialogActions,
     usageData,
-} from 'pc-nrfconnect-shared';
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import { persistedInstallDir as installDir } from '../../../persistentStore';
 import { Dispatch } from '../../../state';

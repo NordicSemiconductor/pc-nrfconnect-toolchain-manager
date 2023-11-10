@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { usageData } from 'pc-nrfconnect-shared';
+import { usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import { Environment } from '../../state';
 import Button from './Button';

@@ -9,7 +9,7 @@ import {
     ErrorDialogActions,
     logger,
     usageData,
-} from 'pc-nrfconnect-shared';
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import {
     persistedShowVsCodeDialogDuringInstall,

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { logger, usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import fse from 'fs-extra';
 import {
     describeError,

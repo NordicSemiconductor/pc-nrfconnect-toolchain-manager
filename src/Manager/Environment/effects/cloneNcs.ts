@@ -4,11 +4,15 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import {
+    ErrorDialogActions,
+    logger,
+    usageData,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { ChildProcess, spawn } from 'child_process';
 import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
-import { ErrorDialogActions, logger, usageData } from 'pc-nrfconnect-shared';
 
 import { Dispatch } from '../../../state';
 import EventAction from '../../../usageDataActions';

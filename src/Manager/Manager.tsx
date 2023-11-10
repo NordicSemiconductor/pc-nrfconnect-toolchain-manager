@@ -8,7 +8,7 @@ import React, { useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import { useDispatch, useSelector } from 'react-redux';
-import { logger, usageData } from 'pc-nrfconnect-shared';
+import { logger, usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import FirstInstallInstructions from '../FirstInstall/FirstInstallInstructions';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
