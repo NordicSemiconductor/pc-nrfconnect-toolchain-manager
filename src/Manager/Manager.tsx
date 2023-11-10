@@ -105,7 +105,7 @@ export default () => {
         >
             <PlatformInstructions />
             <Environments />
-            <ButtonToolbar className="pt-3 flex-row justify-content-end">
+            <ButtonToolbar className="justify-content-end flex-row pt-3">
                 <Button
                     variant="link"
                     className="mdi x-mdi-briefcase-plus-outline pr-0 pt-0"
