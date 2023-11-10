@@ -13,7 +13,6 @@ import { Spinner } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import Button from '../Manager/Environment/Button';
 import { isInProgress } from '../Manager/Environment/environmentReducer';
 import { isAnyToolchainInProgress } from '../Manager/managerSlice';
-import { TDispatch } from '../thunk';
 import {
     checkOpenVsCodeWithDelay,
     getNrfjprogStatus,

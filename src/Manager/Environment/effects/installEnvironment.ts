@@ -5,6 +5,7 @@
  */
 
 import {
+    AppThunk,
     describeError,
     ErrorDialogActions,
     logger,
@@ -15,7 +16,7 @@ import {
     persistedShowVsCodeDialogDuringInstall,
     setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
-import { Dispatch, Environment } from '../../../state';
+import { Environment, RootState } from '../../../state';
 import { getVsCodeStatus } from '../../../VsCodeDialog/vscode';
 import {
     setVsCodeStatus,
@@ -30,8 +31,11 @@ import { installToolchain } from './installToolchain';
 import { removeUnfinishedInstallOnAbort } from './removeEnvironment';
 
 export const install =
-    ({ version, type, abortController }: Environment, justUpdate: boolean) =>
-    async (dispatch: Dispatch) => {
+    (
+        { version }: Environment,
+        justUpdate: boolean
+    ): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
         logger.info(`Start to install toolchain ${version}`);
 
         if (persistedShowVsCodeDialogDuringInstall()) {
@@ -53,11 +57,7 @@ export const install =
                 cloneNcs(version, justUpdate, abortController.signal)
             );
 
-            if (abortController.signal.aborted) {
-                dispatch(removeUnfinishedInstallOnAbort(version));
-            } else {
-                try {
-                    checkXcodeCommandLineTools(dispatch);
+                    dispatch(checkXcodeCommandLineTools());
                 } catch (error) {
                     logger.error(describeError(error));
                 }

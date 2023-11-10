@@ -4,21 +4,29 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { logger, usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import {
+    AppThunk,
+    logger,
+    usageData,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { execSync } from 'child_process';
 import extract from 'extract-zip';
 import fse from 'fs-extra';
 import path from 'path';
 
-import { Dispatch } from '../../../state';
+import { RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { setProgress } from '../environmentReducer';
 import { calculateTimeConsumed } from './helpers';
 import { reportProgress, UNPACK } from './reportProgress';
 
 export const unpack =
-    (version: string, src: string, dest: string) =>
-    async (dispatch: Dispatch) => {
+    (
+        version: string,
+        src: string,
+        dest: string
+    ): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
         logger.info(`Unpacking toolchain ${version}`);
         usageData.sendUsageData(EventAction.UNPACK_TOOLCHAIN, {
             version,

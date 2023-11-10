@@ -5,6 +5,7 @@
  */
 
 import {
+    AppThunk,
     ErrorDialogActions,
     logger,
     usageData,
@@ -14,9 +15,8 @@ import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
 
-import { Dispatch } from '../../../state';
+import { RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
-import { westExport, westInit, westUpdate } from '../../nrfutil/west';
 import sdkPath from '../../sdkPath';
 import toolchainPath from '../../toolchainPath';
 import {
@@ -28,9 +28,13 @@ import {
 import { calculateTimeConsumed, isWestPresent } from './helpers';
 
 export const cloneNcs =
-    (version: string, justUpdate: boolean, signal: AbortSignal) =>
-    async (dispatch: Dispatch) => {
-        if (signal.aborted) {
+    (
+        version: string,
+        justUpdate: boolean,
+        controller: AbortController
+    ): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
+        if (controller.signal.aborted) {
             return;
         }
         dispatch(startCloningSdk(version));
@@ -49,14 +53,14 @@ export const cloneNcs =
                 if (isLegacyEnvironment(version)) {
                     await initLegacy(toolchainDir);
                 } else {
-                    await initNrfUtil(version, signal, dispatch);
+                    await dispatch(initNrfUtil(version, controller));
                 }
             }
 
             if (isLegacyEnvironment(version)) {
-                await updateLegacy(justUpdate, toolchainDir, dispatch, version);
+                await dispatch(updateLegacy(justUpdate, toolchainDir, version));
             } else {
-                await updateNrfUtil(version, dispatch, signal);
+                await dispatch(updateNrfUtil(version, controller));
             }
         } catch (error) {
             const errorMsg = `Failed to clone the repositories: ${error}`;
@@ -64,7 +68,7 @@ export const cloneNcs =
             usageData.sendErrorReport(errorMsg);
         }
 
-        if (signal.aborted) {
+        if (controller.signal.aborted) {
             return;
         }
 
@@ -91,87 +95,92 @@ async function initLegacy(toolchainDir: string) {
     await fse.remove(path.resolve(path.dirname(toolchainDir), '.west'));
 }
 
-async function initNrfUtil(
-    version: string,
-    signal: AbortSignal,
-    dispatch: Dispatch
-) {
-    await fse.remove(path.resolve(sdkPath(version), '.west'));
-    dispatch(setProgress(version, 'Initializing environment...'));
-    logger.info(`Initializing environment for ${version}`);
-    await westInit(version, signal);
-}
+const initNrfUtil =
+    (
+        version: string,
+        controller: AbortController
+    ): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
+        await fse.remove(path.resolve(sdkPath(version), '.west'));
+        dispatch(setProgress(version, 'Initializing environment...'));
+        logger.info(`Initializing environment for ${version}`);
+        await westInit(version, controller);
+    };
 
-async function updateNrfUtil(
-    version: string,
-    dispatch: Dispatch,
-    signal: AbortSignal
-) {
-    await westUpdate(version, signal, update => {
-        updateProgress(update, dispatch, version);
-    });
-    await westExport(version, signal);
-}
-
-async function updateLegacy(
-    justUpdate: boolean,
-    toolchainDir: string,
-    dispatch: Dispatch,
-    version: string
-) {
-    let ncsMgr: ChildProcess;
-    const update = justUpdate ? '--just-update' : '';
-    switch (process.platform) {
-        case 'win32': {
-            ncsMgr = spawn(path.resolve(toolchainDir, 'bin', 'bash.exe'), [
-                '-l',
-                '-c',
-                `unset ZEPHYR_BASE ; ncsmgr/ncsmgr init-ncs ${update}`,
-            ]);
-
-            break;
-        }
-        case 'darwin': {
-            const { ZEPHYR_BASE, ...env } = process.env;
-            const gitversion = fs
-                .readdirSync(`${toolchainDir}/Cellar/git`)
-                .pop();
-            env.PATH = `${toolchainDir}/bin:${process.env.PATH}`;
-            env.GIT_EXEC_PATH = `${toolchainDir}/Cellar/git/${gitversion}/libexec/git-core`;
-            env.HOME = `${process.env.HOME}`;
-
-            ncsMgr = spawn(
-                `${toolchainDir}/ncsmgr/ncsmgr`,
-                ['init-ncs', `${update}`],
-                { env }
-            );
-            break;
-        }
-        default:
-    }
-
-    dispatch(setProgress(version, 'Initializing environment...'));
-    logger.info(`Initializing environment for ${version}`);
-    let err = '';
-    await new Promise<void>((resolve, reject) => {
-        ncsMgr.stdout?.on('data', data => {
-            updateProgress(data, dispatch, version);
+const updateNrfUtil =
+    (
+        version: string,
+        controller: AbortController
+    ): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
+        await westUpdate(version, controller, update => {
+            dispatch(updateProgress(update, version));
         });
-        ncsMgr.stderr?.on('data', data => {
-            err += `${data}`;
-        });
-        ncsMgr.on('exit', code => (code ? reject(err) : resolve()));
-    });
-}
+        await westExport(version, controller);
+    };
 
-function updateProgress(
-    data: Buffer | string,
-    dispatch: Dispatch,
-    version: string
-) {
-    const repo = (/=== updating ([^\s]+)/.exec(data.toString()) || []).pop();
-    if (repo) {
-        dispatch(setProgress(version, `Updating ${repo} repository...`));
-        logger.info(`Updating ${repo} repository for ${version}`);
-    }
-}
+const updateLegacy =
+    (
+        justUpdate: boolean,
+        toolchainDir: string,
+        version: string
+    ): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
+        let ncsMgr: ChildProcess;
+        const update = justUpdate ? '--just-update' : '';
+        switch (process.platform) {
+            case 'win32': {
+                ncsMgr = spawn(path.resolve(toolchainDir, 'bin', 'bash.exe'), [
+                    '-l',
+                    '-c',
+                    `unset ZEPHYR_BASE ; ncsmgr/ncsmgr init-ncs ${update}`,
+                ]);
+
+                break;
+            }
+            case 'darwin': {
+                const env = { ...process.env };
+                delete env.ZEPHYR_BASE;
+
+                const gitversion = fs
+                    .readdirSync(`${toolchainDir}/Cellar/git`)
+                    .pop();
+                env.PATH = `${toolchainDir}/bin:${process.env.PATH}`;
+                env.GIT_EXEC_PATH = `${toolchainDir}/Cellar/git/${gitversion}/libexec/git-core`;
+                env.HOME = `${process.env.HOME}`;
+
+                ncsMgr = spawn(
+                    `${toolchainDir}/ncsmgr/ncsmgr`,
+                    ['init-ncs', `${update}`],
+                    { env }
+                );
+                break;
+            }
+            default:
+        }
+
+        dispatch(setProgress(version, 'Initializing environment...'));
+        logger.info(`Initializing environment for ${version}`);
+        let err = '';
+        await new Promise<void>((resolve, reject) => {
+            ncsMgr.stdout?.on('data', data => {
+                dispatch(updateProgress(data, version));
+            });
+            ncsMgr.stderr?.on('data', data => {
+                err += `${data}`;
+            });
+            ncsMgr.on('exit', code => (code ? reject(err) : resolve()));
+        });
+    };
+
+const updateProgress =
+    (data: Buffer | string, version: string): AppThunk =>
+    dispatch => {
+        const repo = (
+            /=== updating ([^\s]+)/.exec(data.toString()) || []
+        ).pop();
+        if (repo) {
+            dispatch(setProgress(version, `Updating ${repo} repository...`));
+            logger.info(`Updating ${repo} repository for ${version}`);
+        }
+    };

@@ -8,7 +8,11 @@ import React, { useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import { useDispatch, useSelector } from 'react-redux';
-import { logger, usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import {
+    AppThunk,
+    logger,
+    usageData,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import FirstInstallInstructions from '../FirstInstall/FirstInstallInstructions';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
@@ -16,8 +20,7 @@ import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
 import NrfCard from '../NrfCard/NrfCard';
 import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
 import { isOlderEnvironmentsHidden } from '../Settings/settingsSlice';
-import { Dispatch } from '../state';
-import { TDispatch } from '../thunk';
+import { RootState } from '../state';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import EventAction from '../usageDataActions';
 import {
@@ -69,16 +72,18 @@ const Environments = () => {
 };
 
 export default () => {
-    const dispatch = useDispatch<TDispatch>();
-    useEffect(() => initApp(dispatch), [dispatch]);
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(initApp());
+    }, [dispatch]);
     const showingFirstSteps = useSelector(isShowingFirstSteps);
 
     if (showingFirstSteps) {
         logger.info('Show first install instructions');
-        usageData.sendUsageData(
-            EventAction.SHOW_FIRST_INSTALL_INSTRUCTIONS,
-            `${process.platform}; ${process.arch}`
-        );
+        usageData.sendUsageData(EventAction.SHOW_FIRST_INSTALL_INSTRUCTIONS, {
+            platform: process.platform,
+            arch: process.arch,
+        });
         return <FirstInstallInstructions />;
     }
 
@@ -120,10 +125,10 @@ export default () => {
     );
 };
 
-const initApp = (dispatch: Dispatch) => {
-    detectMultipleInstallDirs(dispatch);
-    initEnvironments(dispatch);
-    reportVsCodeStatus(dispatch);
+const initApp = (): AppThunk<RootState, Promise<void>> => async dispatch => {
+    await dispatch(detectMultipleInstallDirs());
+    await dispatch(initEnvironments());
+    await dispatch(reportVsCodeStatus());
 };
 
 const nrfjprogStatusToString = (status: NrfjprogStatus) => {
@@ -137,23 +142,24 @@ const nrfjprogStatusToString = (status: NrfjprogStatus) => {
     }
 };
 
-const reportVsCodeStatus = async (dispatch: Dispatch) => {
-    const status = await dispatch(getVsCodeStatus());
-    const nrfjprogInstallStatus = await getNrfjprogStatus();
-    const statusString = {
-        [VsCodeStatus.INSTALLED]: 'VS Code installed',
-        [VsCodeStatus.MISSING_EXTENSIONS]: 'Extensions are missing',
-        [VsCodeStatus.MISSING_NRFJPROG]: 'nRFjprog is missing',
-        [VsCodeStatus.NOT_CHECKED]: 'Status not checked',
-        [VsCodeStatus.NOT_INSTALLED]: 'VS Code not installed',
-        [VsCodeStatus.RECOMMEND_UNIVERSAL]: 'VS Code Intel version installed',
-        [VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL]:
-            'nRFjprog Intel version installed',
-    }[status];
+const reportVsCodeStatus =
+    (): AppThunk<RootState, Promise<void>> => async dispatch => {
+        const status = await dispatch(getVsCodeStatus());
+        const nrfjprogInstallStatus = await getNrfjprogStatus();
+        const statusString = {
+            [VsCodeStatus.INSTALLED]: 'VS Code installed',
+            [VsCodeStatus.MISSING_EXTENSIONS]: 'Extensions are missing',
+            [VsCodeStatus.MISSING_NRFJPROG]: 'nRFjprog is missing',
+            [VsCodeStatus.NOT_CHECKED]: 'Status not checked',
+            [VsCodeStatus.NOT_INSTALLED]: 'VS Code not installed',
+            [VsCodeStatus.RECOMMEND_UNIVERSAL]:
+                'VS Code Intel version installed',
+            [VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL]:
+                'nRFjprog Intel version installed',
+        }[status];
 
-    usageData.sendUsageData(EventAction.VS_INSTALLED, statusString);
-    usageData.sendUsageData(
-        EventAction.NRFJPROG_INSTALLED,
-        nrfjprogStatusToString(nrfjprogInstallStatus)
-    );
-};
+        usageData.sendUsageData(EventAction.VS_INSTALLED, { statusString });
+        usageData.sendUsageData(EventAction.NRFJPROG_INSTALLED, {
+            statusString: nrfjprogStatusToString(nrfjprogInstallStatus),
+        });
+    };

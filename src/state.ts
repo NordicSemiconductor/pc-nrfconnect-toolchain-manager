@@ -5,8 +5,6 @@
  */
 
 import { NrfConnectState } from '@nordicsemiconductor/pc-nrfconnect-shared';
-import { AnyAction } from 'redux';
-import { ThunkDispatch } from 'redux-thunk';
 
 import { InstallDirectoryState } from './InstallDir/installDirSlice';
 import { nrfUtilDialogState } from './Manager/nrfutil/nrfUtilDialogSlice';
@@ -63,4 +61,3 @@ export type AppState = {
 };
 
 export type RootState = NrfConnectState<AppState>;
-export type Dispatch = ThunkDispatch<RootState, null, AnyAction>;

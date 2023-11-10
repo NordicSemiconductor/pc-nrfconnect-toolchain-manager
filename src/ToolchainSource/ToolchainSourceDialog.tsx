@@ -26,7 +26,7 @@ export default () => {
     const onConfirm = () => {
         dispatch(setToolchainSource(url));
         dispatch(hideSetToolchainSourceDialog());
-        initEnvironments(dispatch);
+        dispatch(initEnvironments());
     };
 
     return (

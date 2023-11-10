@@ -4,16 +4,15 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import fse from 'fs-extra';
-import path from 'path';
 import {
+    AppThunk,
     describeError,
     ErrorDialogActions,
     usageData,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import { persistedInstallDir as installDir } from '../../../persistentStore';
-import { Dispatch } from '../../../state';
+import { RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { addEnvironment } from '../../managerSlice';
 import {
@@ -27,8 +26,8 @@ import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { unpack } from './unpack';
 
 export const installPackage =
-    (urlOrFilePath: string) => async (dispatch: Dispatch) => {
-        usageData.sendUsageData(
+    (urlOrFilePath: string): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
         usageData.sendUsageData(EventAction.INSTALL_TOOLCHAIN_FROM_PATH, {
             urlOrFilePath,
         });

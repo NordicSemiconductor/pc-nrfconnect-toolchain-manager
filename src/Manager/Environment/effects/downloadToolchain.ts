@@ -5,7 +5,11 @@
  */
 
 import { net } from '@electron/remote';
-import { logger, usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import {
+    AppThunk,
+    logger,
+    usageData,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { createHash } from 'crypto';
 import fs from 'fs';
 import fse from 'fs-extra';
@@ -15,15 +19,18 @@ import {
     persistedInstallDir as installDir,
     toolchainUrl,
 } from '../../../persistentStore';
-import { Dispatch, Toolchain } from '../../../state';
+import { RootState, Toolchain } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { setProgress } from '../environmentReducer';
 import { calculateTimeConsumed } from './helpers';
 import { DOWNLOAD, reportProgress } from './reportProgress';
 
 export const downloadToolchain =
-    (version: string, { name, sha512, uri }: Partial<Toolchain>) =>
-    (dispatch: Dispatch) =>
+    (
+        version: string,
+        { name, sha512, uri }: Partial<Toolchain>
+    ): AppThunk<RootState, Promise<string>> =>
+    dispatch =>
         new Promise<string>((resolve, reject) => {
             logger.info(`Downloading toolchain ${version}`);
             dispatch(setProgress(version, 'Downloading', 0));

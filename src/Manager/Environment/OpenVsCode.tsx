@@ -8,13 +8,12 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Environment } from '../../state';
-import { TDispatch } from '../../thunk';
 import { checkOpenVsCodeWithDelay } from '../../VsCodeDialog/vscode';
 import Button from './Button';
 import { isInProgress, isInstalled } from './environmentReducer';
 
 export const OpenVsCode = ({ environment }: { environment: Environment }) => {
-    const dispatch = useDispatch<TDispatch>();
+    const dispatch = useDispatch();
     if (!isInstalled(environment)) return null;
 
     return (

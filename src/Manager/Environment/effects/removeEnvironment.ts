@@ -5,6 +5,7 @@
  */
 
 import {
+    AppThunk,
     ErrorDialogActions,
     logger,
     usageData,
@@ -12,9 +13,8 @@ import {
 import { existsSync } from 'fs';
 import { rename, rm } from 'fs/promises';
 import path from 'path';
-import { TDispatch } from 'pc-nrfconnect-shared/src/state';
 
-import { Dispatch, Environment, RootState } from '../../../state';
+import { Environment, RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { getEnvironment } from '../../managerSlice';
 import removeToolchain from '../../nrfutil/remove';
@@ -70,7 +70,8 @@ const removeNrfutilEnvironment = async (
 };
 
 export const removeEnvironment =
-    (environment: Environment) => async (dispatch: Dispatch) => {
+    (environment: Environment): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
         const { toolchainDir, version } = environment;
         logger.info(`Removing ${version} at ${toolchainDir}`);
         usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, { version });
@@ -99,8 +100,8 @@ export const removeEnvironment =
     };
 
 export const removeUnfinishedInstallOnAbort =
-    (version: string) =>
-    async (dispatch: TDispatch, getState: () => RootState) => {
+    (version: string): AppThunk<RootState, Promise<void>> =>
+    async (dispatch, getState) => {
         dispatch(startCancelInstall(version));
         const toolchainDir = isLegacyEnvironment(version)
             ? toolchainPath(version)

@@ -4,13 +4,11 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { logger, usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
-import fse from 'fs-extra';
 import {
-    describeError,
-    ErrorDialogActions,
+    AppThunk,
+    logger,
     usageData,
-} from 'pc-nrfconnect-shared';
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 import logger from 'pc-nrfconnect-shared/src/logging';
 
 import { Dispatch, RootState, Toolchain } from '../../../state';
@@ -30,9 +28,12 @@ import { downloadToolchain } from './downloadToolchain';
 import { unpack } from './unpack';
 
 export const installToolchain =
-    (version: string, signal: AbortSignal) =>
-    async (dispatch: Dispatch, getState: () => RootState) => {
-        if (signal.aborted) {
+    (
+        version: string,
+        controller: AbortController
+    ): AppThunk<RootState, Promise<void>> =>
+    async (dispatch, getState) => {
+        if (controller.signal.aborted) {
             return;
         }
 

@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { logger } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import { AppThunk, logger } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
-import { Dispatch } from '../../state';
+import { RootState } from '../../state';
 import { nrfutilSpawnSync } from './nrfutilChildProcess';
 import { showNrfUtilDialogAction } from './nrfUtilDialogSlice';
 import nrfutilToolchainManager from './nrfutilToolchainManager';
@@ -21,7 +21,7 @@ interface VersionInformation {
     version: string;
 }
 
-export default (dispatch: Dispatch) => {
+export default (): AppThunk<RootState, Promise<void>> => async dispatch => {
     try {
         const version = nrfutilSpawnSync<VersionInformation>(['--version']);
 

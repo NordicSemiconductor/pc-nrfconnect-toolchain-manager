@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { logger } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import { AppThunk, logger } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { spawnSync } from 'child_process';
 
 import { showReduxConfirmDialogAction } from '../../../ReduxConfirmDialog/reduxConfirmDialogSlice';
-import { Dispatch } from '../../../state';
+import { RootState } from '../../../state';
 
 const xcodeCommandLineToolsExist = () => {
     const tcm = spawnSync('xcode-select', ['-p'], {
@@ -22,7 +22,7 @@ const xcodeCommandLineToolsExist = () => {
     return tcm.status === 0;
 };
 
-export default (dispatch: Dispatch) => {
+export default (): AppThunk<RootState> => dispatch => {
     if (process.platform !== 'darwin' || xcodeCommandLineToolsExist()) return;
 
     dispatch(

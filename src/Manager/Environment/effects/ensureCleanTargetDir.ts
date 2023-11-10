@@ -5,16 +5,21 @@
  */
 
 import { shell } from '@electron/remote';
+import { AppThunk } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import fs from 'fs';
 import path from 'path';
 
 import { showReduxConfirmDialogAction } from '../../../ReduxConfirmDialog/reduxConfirmDialogSlice';
-import { Dispatch } from '../../../state';
+import { RootState } from '../../../state';
 import { isLegacyEnvironment } from '../environmentReducer';
 import { removeDir } from './removeDir';
 
 export const ensureCleanTargetDir =
-    (version: string, toolchainDir: string) => async (dispatch: Dispatch) => {
+    (
+        version: string,
+        toolchainDir: string
+    ): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
         if (isLegacyEnvironment(version)) {
             let dir = toolchainDir;
             let toBeDeleted = null;
@@ -48,8 +53,8 @@ export const ensureCleanTargetDir =
 export default ensureCleanTargetDir;
 
 const showReduxConfirmDialog =
-    ({ ...args }) =>
-    (dispatch: Dispatch) =>
+    ({ ...args }): AppThunk<RootState> =>
+    dispatch =>
         new Promise<void>((resolve, reject) => {
             dispatch(
                 showReduxConfirmDialogAction({
