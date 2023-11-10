@@ -18,6 +18,7 @@ import path from 'path';
 import { RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import sdkPath from '../../sdkPath';
+import { westExport, westInit, westUpdate } from '../../ToolchainManager/west';
 import toolchainPath from '../../toolchainPath';
 import {
     finishCloningSdk,

@@ -17,6 +17,7 @@ import path from 'path';
 
 import {
     persistedInstallDir as installDir,
+    persistedInstallDir,
     toolchainIndexUrl,
 } from '../persistentStore';
 import { Environment, RootState } from '../state';
@@ -24,8 +25,9 @@ import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
 import { isLegacyEnvironment } from './Environment/environmentReducer';
 import { addEnvironment, clearEnvironments } from './managerSlice';
-import listToolchains from './nrfutil/list';
 import logNrfutilVersion from './nrfutil/logVersion';
+import toolchainManager from './ToolchainManager/toolchainManager';
+
 const detectLocallyExistingEnvironments =
     (): AppThunk<RootState> => dispatch => {
         try {
@@ -77,7 +79,9 @@ const downloadIndexByNrfUtil =
     (): AppThunk<RootState, Promise<void>> => async dispatch => {
         let installed: Environment[];
         try {
-            installed = listToolchains()
+            installed = (
+                await toolchainManager.list(persistedInstallDir())
+            ).toolchains
                 .filter(
                     toolchain => !isLegacyEnvironment(toolchain.ncs_version)
                 )

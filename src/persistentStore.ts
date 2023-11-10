@@ -4,17 +4,13 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import {
-    getPersistentStore as store,
-    logger,
-    usageData,
-} from '@nordicsemiconductor/pc-nrfconnect-shared';
+import { getPersistentStore as store } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import os from 'os';
 import path from 'path';
 
 export const oldDefaultInstallDirOnWindows = path.resolve(os.homedir(), 'ncs');
 
-export const persistedInstallDir = (): string =>
+export const persistedInstallDir = (defaultInstallDir?: string): string =>
     process.platform === 'darwin'
         ? defaultInstallDir ?? ''
         : store().get('installDir', defaultInstallDir ?? '');

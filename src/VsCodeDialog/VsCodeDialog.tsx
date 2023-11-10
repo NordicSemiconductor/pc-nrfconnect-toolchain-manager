@@ -230,7 +230,7 @@ const MissingExtensionsSkipButton = ({
     skipText: boolean;
     handleClose: () => void;
 }) => {
-    const dispatch = useDispatch<TDispatch>();
+    const dispatch = useDispatch();
     return (
         <Button
             icon=""

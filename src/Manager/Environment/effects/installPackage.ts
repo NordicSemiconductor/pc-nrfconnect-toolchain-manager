@@ -10,6 +10,8 @@ import {
     ErrorDialogActions,
     usageData,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import fse from 'fs-extra';
+import path from 'path';
 
 import { persistedInstallDir as installDir } from '../../../persistentStore';
 import { RootState } from '../../../state';

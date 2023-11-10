@@ -14,11 +14,12 @@ import { existsSync } from 'fs';
 import { rename, rm } from 'fs/promises';
 import path from 'path';
 
+import { persistedInstallDir } from '../../../persistentStore';
 import { Environment, RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { getEnvironment } from '../../managerSlice';
-import removeToolchain from '../../nrfutil/remove';
 import sdkPath from '../../sdkPath';
+import toolchainManager from '../../ToolchainManager/toolchainManager';
 import toolchainPath from '../../toolchainPath';
 import {
     finishCancelInstall,
@@ -57,7 +58,7 @@ const removeNrfutilEnvironment = async (
 
     try {
         await rm(sdkPath(version), { recursive: true, force: true });
-        await removeToolchain(version);
+        await toolchainManager.uninstall(version, persistedInstallDir());
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
         throw new Error(

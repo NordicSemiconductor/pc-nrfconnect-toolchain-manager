@@ -14,7 +14,7 @@ import {
     getLatestToolchain,
 } from './managerSlice';
 
-jest.mock('./nrfutil/config', () => ({
+jest.mock('./ToolchainManager/config', () => ({
     __esModule: true,
     default: jest.fn(() => ({})),
 }));

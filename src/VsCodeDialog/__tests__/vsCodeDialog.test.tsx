@@ -17,7 +17,7 @@ import {
     VsCodeStatus,
 } from '../vscodeSlice';
 
-jest.mock('../../Manager/nrfutil/config', () => ({
+jest.mock('../../Manager/ToolchainManager/config', () => ({
     __esModule: true,
     default: jest.fn(() => ({})),
 }));

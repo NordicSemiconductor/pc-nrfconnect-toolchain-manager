@@ -14,20 +14,17 @@ import { shell } from 'electron';
 import { readdirSync } from 'fs';
 import path from 'path';
 
+import { persistedInstallDir } from '../../persistentStore';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import {
     isAnyToolchainInProgress,
     showConfirmRemoveDialog,
 } from '../managerSlice';
-import { saveEnvScript } from '../nrfutil/env';
+import { saveEnvScript } from '../nrfutil/envAsScript';
 import { showNrfUtilDialogAction } from '../nrfutil/nrfUtilDialogSlice';
-import {
-    launchGnomeTerminal,
-    launchTerminal,
-    launchWinBash,
-} from '../nrfutil/terminal';
 import sdkPath from '../sdkPath';
+import toolchainManager from '../ToolchainManager/toolchainManager';
 import toolchainPath from '../toolchainPath';
 import { cloneNcs } from './effects/cloneNcs';
 import { installToolchain } from './effects/installToolchain';
@@ -62,7 +59,10 @@ const openBash = (environment: Environment) => {
         const directory = getToolchainDir(environment);
         exec(`"${path.resolve(directory, 'git-bash.exe')}"`, execCallback);
     } else {
-        launchWinBash(environment.version);
+        toolchainManager.launchWinBash(
+            environment.version,
+            persistedInstallDir()
+        );
     }
 };
 
@@ -80,7 +80,10 @@ const openCmd = (environment: Environment) => {
             execCallback
         );
     } else {
-        launchTerminal(environment.version);
+        toolchainManager.launchTerminal(
+            environment.version,
+            persistedInstallDir()
+        );
     }
 };
 
@@ -171,9 +174,15 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                                 version
                             );
                         } else if (process.platform === 'darwin') {
-                            launchTerminal(environment.version);
+                            toolchainManager.launchTerminal(
+                                environment.version,
+                                persistedInstallDir()
+                            );
                         } else if (hasGnomeTerminal()) {
-                            launchGnomeTerminal(environment.version);
+                            toolchainManager.launchGnomeTerminal(
+                                environment.version,
+                                persistedInstallDir()
+                            );
                         } else
                             dispatch(
                                 showNrfUtilDialogAction({

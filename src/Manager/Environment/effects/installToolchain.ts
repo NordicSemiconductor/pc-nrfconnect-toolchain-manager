@@ -9,13 +9,13 @@ import {
     logger,
     usageData,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
-import logger from 'pc-nrfconnect-shared/src/logging';
+import fse from 'fs-extra';
 
-import { Dispatch, RootState, Toolchain } from '../../../state';
+import { persistedInstallDir } from '../../../persistentStore';
+import { RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { getEnvironment, getLatestToolchain } from '../../managerSlice';
-import installNrfutilToolchain from '../../nrfutil/install';
-import { describe } from '../../nrfutil/task';
+import toolchainManager from '../../ToolchainManager/toolchainManager';
 import toolchainPath from '../../toolchainPath';
 import {
     finishInstallToolchain,
@@ -65,40 +65,29 @@ export const installToolchain =
             });
             dispatch(finishInstallToolchain(version, toolchainDir));
         } else {
-            await installNrfutilToolchain(
+            const result = await toolchainManager.install(
                 version,
-                update => {
-                    switch (update.type) {
-                        case 'task_begin':
-                            dispatch(
-                                setProgress(version, describe(update.data.task))
-                            );
-                            break;
-                        case 'task_progress':
-                            dispatch(
-                                setProgress(
-                                    version,
-                                    describe(update.data.task),
-                                    update.data.progress.progressPercentage
-                                )
-                            );
-                            break;
-                        case 'task_end':
-                            if (update.data.task.name === 'install_toolchain') {
-                                usageData.sendUsageData(
-                                    EventAction.INSTALL_TOOLCHAIN_FROM_NRFUTIL,
-                                    `${version}; ${update.data.task.data.install_path}`
-                                );
-                                dispatch(
-                                    finishInstallToolchain(
-                                        version,
-                                        update.data.task.data.install_path
-                                    )
-                                );
-                            }
-                    }
+                persistedInstallDir(),
+                undefined,
+                (progress, task) => {
+                    dispatch(
+                        setProgress(
+                            version,
+                            task?.description ?? '',
+                            progress.totalProgressPercentage
+                        )
+                    );
                 },
-                signal
+                controller
             );
+
+            usageData.sendUsageData(
+                EventAction.INSTALL_TOOLCHAIN_FROM_NRFUTIL,
+                {
+                    version,
+                    nrfutilToolchainVersion: result.install_path,
+                }
+            );
+            dispatch(finishInstallToolchain(version, result.install_path));
         }
     };
