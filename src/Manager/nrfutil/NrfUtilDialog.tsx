@@ -15,6 +15,18 @@ import {
     nrfUtilDialogSelector,
 } from './nrfUtilDialogSlice';
 
+const overWriteA = ({
+    href,
+    children,
+}: {
+    href?: string;
+    children?: React.ReactNode;
+}) => (
+    <a href={href} target="_blank" rel="noopener noreferrer">
+        {children}
+    </a>
+);
+
 const NrfUtilDialog: FC = () => {
     const dispatch = useDispatch();
     const { isVisible, content, title } = useSelector(nrfUtilDialogSelector);
@@ -28,19 +40,11 @@ const NrfUtilDialog: FC = () => {
             </Modal.Header>
             <Modal.Body>
                 <ReactMarkdown
-                    renderers={{
-                        link: ({ href, children }) => (
-                            <a
-                                href={href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                {children}
-                            </a>
-                        ),
+                    components={{
+                        a: overWriteA,
                     }}
                 >
-                    {content}
+                    {content ?? ''}
                 </ReactMarkdown>
             </Modal.Body>
             <Modal.Footer>

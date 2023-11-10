@@ -73,7 +73,7 @@ export default () => {
                     hasSelectableContent && styles.selectable
                 )}
             >
-                {content}
+                {content ?? ''}
             </ReactMarkdown>
         </ConfirmationDialog>
     );
