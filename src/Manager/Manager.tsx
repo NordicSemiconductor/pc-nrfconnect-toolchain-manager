@@ -88,22 +88,22 @@ const useManagerHooks = () => {
     const installDir = useSelector(currentInstallDir);
 
     useEffect(() => {
-        dispatch(initApp());
-    }, [dispatch, installDir]);
+        const action = async () => {
+            if (!persistedInstallDir()) {
+                const config = await toolchainManager.config();
+                setPersistedInstallDir(config.install_dir);
+                dispatch(setInstallDir(config.install_dir));
+            }
+            dispatch(initApp());
+        };
+
+        action();
+    }, [dispatch]);
 
     useEffect(() => {
         const fallback = isDevelopment ? 'error' : 'off';
         toolchainManager.setLogLevel(verboseLogging ? 'trace' : fallback);
     }, [verboseLogging]);
-
-    useEffect(() => {
-        if (!persistedInstallDir()) {
-            toolchainManager.config().then(config => {
-                setPersistedInstallDir(config.install_dir);
-                dispatch(setInstallDir(config.install_dir));
-            });
-        }
-    }, [dispatch]);
 
     useEffect(() => {
         dispatch(initEnvironments());
