@@ -10,14 +10,24 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     AppThunk,
+    isDevelopment,
+    isLoggingVerbose,
     logger,
     usageData,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import FirstInstallInstructions from '../FirstInstall/FirstInstallInstructions';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
+import {
+    currentInstallDir,
+    setInstallDir,
+} from '../InstallDir/installDirSlice';
 import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
 import NrfCard from '../NrfCard/NrfCard';
+import {
+    persistedInstallDir,
+    setPersistedInstallDir,
+} from '../persistentStore';
 import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
 import { isOlderEnvironmentsHidden } from '../Settings/settingsSlice';
 import { RootState } from '../state';
@@ -41,6 +51,7 @@ import {
 } from './managerSlice';
 import NrfUtilEnvDialog from './nrfutil/NrfUtilDialog';
 import PlatformInstructions from './PlatformInstructions';
+import toolchainManager from './ToolchainManager/toolchainManager';
 import { filterEnvironments } from './versionFilter';
 
 const Environments = () => {
@@ -71,11 +82,38 @@ const Environments = () => {
     );
 };
 
+const useManagerHooks = () => {
+    const dispatch = useDispatch();
+    const verboseLogging = useSelector(isLoggingVerbose);
+    const installDir = useSelector(currentInstallDir);
+
+    useEffect(() => {
+        const action = async () => {
+            if (!persistedInstallDir()) {
+                const config = await toolchainManager.config();
+                setPersistedInstallDir(config.install_dir);
+                dispatch(setInstallDir(config.install_dir));
+            }
+            dispatch(initApp());
+        };
+
+        action();
+    }, [dispatch]);
+
+    useEffect(() => {
+        const fallback = isDevelopment ? 'error' : 'off';
+        toolchainManager.setLogLevel(verboseLogging ? 'trace' : fallback);
+    }, [verboseLogging]);
+
+    useEffect(() => {
+        dispatch(initEnvironments());
+    }, [dispatch, installDir]);
+};
+
 export default () => {
     const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(initApp());
-    }, [dispatch]);
+
+    useManagerHooks();
     const showingFirstSteps = useSelector(isShowingFirstSteps);
 
     if (showingFirstSteps) {
@@ -127,7 +165,6 @@ export default () => {
 
 const initApp = (): AppThunk<RootState, Promise<void>> => async dispatch => {
     await dispatch(detectMultipleInstallDirs());
-    await dispatch(initEnvironments());
     await dispatch(reportVsCodeStatus());
 };
 

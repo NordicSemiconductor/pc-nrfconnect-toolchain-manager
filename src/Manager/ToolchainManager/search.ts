@@ -11,12 +11,17 @@ interface ToolchainSearch {
 }
 
 export default async (
-    installDir: string,
     showAll: boolean,
+    installDir?: string,
     controller?: AbortController
 ) => {
     const box = await getToolChainManagerSandbox();
-    const args: string[] = ['--install-dir', installDir];
+    const args: string[] = [];
+
+    if (installDir) {
+        args.push('--install-dir');
+        args.push(installDir);
+    }
 
     if (showAll) {
         args.push('--show-all');

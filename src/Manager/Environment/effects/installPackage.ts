@@ -14,7 +14,7 @@ import fse from 'fs-extra';
 import path from 'path';
 
 import { getAbortController } from '../../../globalAbortControler';
-import { persistedInstallDir as installDir } from '../../../persistentStore';
+import { persistedInstallDir } from '../../../persistentStore';
 import { RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { addEnvironment } from '../../managerSlice';
@@ -31,6 +31,14 @@ import { unpack } from './unpack';
 export const installPackage =
     (urlOrFilePath: string): AppThunk<RootState, Promise<void>> =>
     async dispatch => {
+        const installDir = persistedInstallDir();
+
+        if (!installDir) {
+            throw new Error(
+                'Cannot install toolchain. No install directory is set.'
+            );
+        }
+
         usageData.sendUsageData(EventAction.INSTALL_TOOLCHAIN_FROM_PATH, {
             urlOrFilePath,
         });
@@ -48,11 +56,7 @@ export const installPackage =
 
         try {
             const version = match[1];
-            const toolchainDir = path.resolve(
-                installDir(),
-                version,
-                'toolchain'
-            );
+            const toolchainDir = path.resolve(installDir, version, 'toolchain');
 
             await dispatch(ensureCleanTargetDir(version, toolchainDir));
 

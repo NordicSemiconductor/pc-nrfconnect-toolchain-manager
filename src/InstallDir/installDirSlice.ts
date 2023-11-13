@@ -17,7 +17,7 @@ const CONFIRM_DIR = Symbol('Confirm the install directory');
 const SET_DIR = Symbol('Set the install directory');
 
 export interface InstallDirectoryState {
-    currentDir: string;
+    currentDir: string | undefined;
     isDialogVisible: boolean;
     dialogFlavour?: symbol;
     versionToInstall?: string;

@@ -58,7 +58,7 @@ export const install =
 
         try {
             await dispatch(
-                ensureCleanTargetDir(version, toolchainPath(version))
+                ensureCleanTargetDir(version, await toolchainPath(version))
             );
             await dispatch(installToolchain(version, abortController));
             await dispatch(cloneNcs(version, justUpdate, abortController));

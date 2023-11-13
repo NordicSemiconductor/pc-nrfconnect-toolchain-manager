@@ -11,7 +11,6 @@ import { AppThunk } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { install } from '../Manager/Environment/effects/installEnvironment';
-import initEnvironments from '../Manager/initEnvironments';
 import { RootState } from '../state';
 import {
     currentInstallDir,
@@ -24,8 +23,8 @@ import {
 
 const selectInstallDir =
     (
-        installDir: string,
-        hideDialog: boolean
+        hideDialog: boolean,
+        installDir?: string
     ): AppThunk<RootState, Promise<void>> =>
     async dispatch => {
         const {
@@ -37,7 +36,6 @@ const selectInstallDir =
         });
         if (filePath) {
             dispatch(setInstallDir(filePath));
-            dispatch(initEnvironments());
             if (hideDialog) {
                 dispatch(hideInstallDirDialog());
             }
@@ -60,11 +58,11 @@ export default () => {
         },
         onCancel: () => dispatch(hideInstallDirDialog()),
         optionalLabel: 'Change directory',
-        onOptional: () => dispatch(selectInstallDir(installDir, false)),
+        onOptional: () => dispatch(selectInstallDir(false, installDir)),
     };
     const changeDirDialogProps = {
         title: 'Change install directory',
-        onConfirm: () => dispatch(selectInstallDir(installDir, true)),
+        onConfirm: () => dispatch(selectInstallDir(true, installDir)),
         onCancel: () => dispatch(hideInstallDirDialog()),
     };
     const dialogProps = isConfirmFlavour

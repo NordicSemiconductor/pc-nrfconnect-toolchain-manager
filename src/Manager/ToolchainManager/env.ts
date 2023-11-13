@@ -11,7 +11,7 @@ import { getToolChainManagerSandbox } from './common';
 export default async (
     asScript: 'cmd' | 'sh',
     ncsVersion: string,
-    installDir: string,
+    installDir?: string,
     controller?: AbortController
 ) => {
     const box = await getToolChainManagerSandbox();
@@ -20,9 +20,12 @@ export default async (
         asScript,
         '--ncs-version',
         ncsVersion,
-        '--install-dir',
-        installDir,
     ];
+
+    if (installDir) {
+        args.push('--install-dir');
+        args.push(installDir);
+    }
 
     let result: string | undefined;
 

@@ -7,22 +7,21 @@
 import sdkPath from '../sdkPath';
 import { getToolChainManagerSandbox } from './common';
 
-const launchTerminalGeneric = async (
+export const launchTerminalGeneric = async (
     chdir: string,
     ncsVersion: string,
-    installDir: string,
+    installDir?: string,
     args?: string[],
     launchWith?: string
 ) => {
     const box = await getToolChainManagerSandbox();
-    const argsTemp: string[] = [
-        '--chdir',
-        chdir,
-        '--ncs-version',
-        ncsVersion,
-        '--install-dir',
-        installDir,
-    ];
+    const argsTemp: string[] = ['--chdir', chdir, '--ncs-version', ncsVersion];
+
+    if (installDir) {
+        argsTemp.push('--install-dir', installDir);
+    }
+
+    const zephyrPath = await sdkPath(ncsVersion, 'zephyr');
 
     if (launchWith) {
         box.execCommand(
@@ -38,7 +37,10 @@ const launchTerminalGeneric = async (
             () => undefined,
             () => {},
             undefined,
-            env => ({ ...env, ZEPHYR_BASE: sdkPath(ncsVersion, 'zephyr') })
+            env => ({
+                ...env,
+                ZEPHYR_BASE: zephyrPath,
+            })
         );
     } else {
         box.execCommand(
@@ -47,13 +49,19 @@ const launchTerminalGeneric = async (
             () => undefined,
             () => {},
             undefined,
-            env => ({ ...env, ZEPHYR_BASE: sdkPath(ncsVersion, 'zephyr') })
+            env => ({
+                ...env,
+                ZEPHYR_BASE: zephyrPath,
+            })
         );
     }
 };
 
-export const launchWinBash = (ncsVersion: string, installDir: string) => {
-    launchTerminalGeneric(sdkPath(ncsVersion), ncsVersion, installDir, [
+export const launchWinBash = async (
+    ncsVersion: string,
+    installDir?: string
+) => {
+    launchTerminalGeneric(await sdkPath(ncsVersion), ncsVersion, installDir, [
         'cmd.exe',
         '/k',
         'start',
@@ -61,15 +69,21 @@ export const launchWinBash = (ncsVersion: string, installDir: string) => {
     ]);
 };
 
-export const launchTerminal = (ncsVersion: string, installDir: string) => {
-    launchTerminalGeneric(sdkPath(ncsVersion), ncsVersion, installDir, [
+export const launchTerminal = async (
+    ncsVersion: string,
+    installDir?: string
+) => {
+    launchTerminalGeneric(await sdkPath(ncsVersion), ncsVersion, installDir, [
         '--terminal',
     ]);
 };
 
-export const launchGnomeTerminal = (ncsVersion: string, installDir: string) => {
+export const launchGnomeTerminal = async (
+    ncsVersion: string,
+    installDir?: string
+) => {
     launchTerminalGeneric(
-        sdkPath(ncsVersion),
+        await sdkPath(ncsVersion),
         ncsVersion,
         installDir,
         ['--shell'],

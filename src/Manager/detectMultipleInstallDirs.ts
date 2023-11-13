@@ -4,41 +4,16 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { AppThunk, usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import { AppThunk } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { readdirSync } from 'fs';
-import os from 'os';
-import path from 'path';
 
 import { setInstallDir } from '../InstallDir/installDirSlice';
 import {
     oldDefaultInstallDirOnWindows,
-    usesDefaultInstallDir,
+    persistedInstallDir,
 } from '../persistentStore';
 import { showReduxConfirmDialogAction } from '../ReduxConfirmDialog/reduxConfirmDialogSlice';
 import { RootState } from '../state';
-import toolchainManager from './ToolchainManager/toolchainManager';
-
-const fallbackInstallDir = () =>
-    ({
-        win32: ['C:', 'ncs'],
-        darwin: [path.sep, 'opt', 'nordic', 'ncs'],
-        linux: [os.homedir(), 'ncs'],
-    }[<string>process.platform] ?? [os.homedir(), 'ncs']);
-
-const installDir = async () => {
-    try {
-        return (await toolchainManager.config()).install_dir;
-    } catch (error) {
-        // Use a timeout as usageData is not yet ready at this point.
-        setTimeout(() => {
-            usageData.sendErrorReport(
-                'Unable to get nrfutil-toolchain-manager config.'
-            );
-        });
-
-        return path.resolve(...fallbackInstallDir());
-    }
-};
 
 const filesIn = (dir: string) => {
     try {
@@ -76,11 +51,11 @@ const showInstallDirConflictDialog = (oldDir: string, newDir: string) =>
         hideCancel: true,
     });
 
-export default (): AppThunk<RootState, Promise<void>> => async dispatch => {
-    if (process.platform !== 'win32' || !usesDefaultInstallDir()) return;
+export default (): AppThunk<RootState> => dispatch => {
+    const newDefaultInstallDir = persistedInstallDir();
+    if (process.platform !== 'win32' || !newDefaultInstallDir) return;
 
     const oldDefaultInstallDir = oldDefaultInstallDirOnWindows;
-    const newDefaultInstallDir = await installDir();
 
     const oldDefaultInstallDirIsUsed = containsFiles(oldDefaultInstallDir);
     const newDefaultInstallDirIsUsed = containsFiles(newDefaultInstallDir);

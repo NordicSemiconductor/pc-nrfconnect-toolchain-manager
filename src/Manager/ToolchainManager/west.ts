@@ -28,26 +28,25 @@ const parser = (onData: (line: string) => void, chunk: Buffer) => {
 
 const west = async (
     ncsVersion: string,
-    installDir: string,
     westParams: string[],
+    installDir?: string,
     controller?: AbortController,
     onUpdate: (update: string) => void = () => {}
 ) => {
     const box = await getToolChainManagerSandbox();
 
-    const chdir = sdkPath(ncsVersion);
+    const chdir = await sdkPath(ncsVersion);
+
     mkdirSync(chdir, {
         recursive: true,
     });
 
-    const args: string[] = [
-        '--chdir',
-        chdir,
-        '--ncs-version',
-        ncsVersion,
-        '--install-dir',
-        installDir,
-    ];
+    const args: string[] = ['--chdir', chdir, '--ncs-version', ncsVersion];
+
+    if (installDir) {
+        args.push('--install-dir');
+        args.push(installDir);
+    }
 
     const onData = (line: string): void => {
         getNrfutilLogger()?.debug(line.trimEnd());
@@ -83,7 +82,6 @@ export const westInit = (
 ) =>
     west(
         version,
-        persistedInstallDir(),
         [
             'init',
             '-m',
@@ -91,6 +89,7 @@ export const westInit = (
             '--mr',
             version,
         ],
+        persistedInstallDir(),
         controller,
         onUpdate
     );
@@ -99,7 +98,7 @@ export const westUpdate = (
     version: string,
     controller: AbortController,
     onUpdate?: (update: string) => void
-) => west(version, persistedInstallDir(), ['update'], controller, onUpdate);
+) => west(version, ['update'], persistedInstallDir(), controller, onUpdate);
 
 export const westExport = (
     version: string,
@@ -108,8 +107,8 @@ export const westExport = (
 ) =>
     west(
         version,
-        persistedInstallDir(),
         ['zephyr-export'],
+        persistedInstallDir(),
         controller,
         onUpdate
     );

@@ -46,7 +46,7 @@ export const installToolchain =
             if (toolchain === undefined) {
                 throw new Error('No toolchain found');
             }
-            const toolchainDir = toolchainPath(version);
+            const toolchainDir = await toolchainPath(version);
             logger.info(`Installing ${toolchain?.name} at ${toolchainDir}`);
             logger.debug(
                 `Install with toolchain version ${toolchain?.version}`

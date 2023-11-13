@@ -15,7 +15,7 @@ interface InstallFinish {
 
 export default async (
     ncsVersion: string,
-    installDir: string,
+    installDir?: string,
     options?: {
         keepOldToolchainSelection?: boolean;
         toolchainIndex: string;
@@ -25,12 +25,12 @@ export default async (
     controller?: AbortController
 ) => {
     const box = await getToolChainManagerSandbox();
-    const args: string[] = [
-        `--ncs-version`,
-        ncsVersion,
-        '--install-dir',
-        installDir,
-    ];
+    const args: string[] = [`--ncs-version`, ncsVersion];
+
+    if (installDir) {
+        args.push('--install-dir');
+        args.push(installDir);
+    }
 
     if (options?.keepOldToolchainSelection) {
         args.push('--keep-old-toolchain-selection');
