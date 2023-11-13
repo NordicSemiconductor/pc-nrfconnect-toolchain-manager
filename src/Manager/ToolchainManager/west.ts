@@ -65,7 +65,6 @@ const west = async (
             data => parser(onData, data),
             stdError => {
                 stdErr += stdError.toString();
-                getNrfutilLogger()?.info(stdError.toString());
             }, // for some reason, west logs to stderr
             controller,
             env => {
