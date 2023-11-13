@@ -11,7 +11,6 @@ import { AppThunk } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { install } from '../Manager/Environment/effects/installEnvironment';
-import initEnvironments from '../Manager/initEnvironments';
 import { RootState } from '../state';
 import {
     currentInstallDir,
@@ -37,7 +36,6 @@ const selectInstallDir =
         });
         if (filePath) {
             dispatch(setInstallDir(filePath));
-            dispatch(initEnvironments());
             if (hideDialog) {
                 dispatch(hideInstallDirDialog());
             }

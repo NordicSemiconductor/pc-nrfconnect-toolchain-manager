@@ -9,7 +9,6 @@ import Form from 'react-bootstrap/Form';
 import { useDispatch, useSelector } from 'react-redux';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
-import initEnvironments from '../Manager/initEnvironments';
 import {
     hideSetToolchainSourceDialog,
     isDialogVisible,
@@ -26,7 +25,6 @@ export default () => {
     const onConfirm = () => {
         dispatch(setToolchainSource(url));
         dispatch(hideSetToolchainSourceDialog());
-        dispatch(initEnvironments());
     };
 
     return (

@@ -14,7 +14,8 @@ import {
     usageData,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
-import { setInstallDir } from './InstallDir/installDirSlice';
+import { currentInstallDir, setInstallDir } from './InstallDir/installDirSlice';
+import initEnvironments from './Manager/initEnvironments';
 import Manager from './Manager/Manager';
 import toolchainManager from './Manager/ToolchainManager/toolchainManager';
 import { persistedInstallDir, setPersistedInstallDir } from './persistentStore';
@@ -28,6 +29,8 @@ usageData.enableTelemetry();
 const ToolchainManagerEffects = () => {
     const dispatch = useDispatch();
     const verboseLogging = useSelector(isLoggingVerbose);
+    const installDir = useSelector(currentInstallDir);
+
     useEffect(() => {
         const fallback = isDevelopment ? 'error' : 'off';
         toolchainManager.setLogLevel(verboseLogging ? 'trace' : fallback);
@@ -41,6 +44,10 @@ const ToolchainManagerEffects = () => {
             });
         }
     }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(initEnvironments());
+    }, [dispatch, installDir]);
 
     return null;
 };

@@ -33,7 +33,6 @@ import { VsCodeStatus } from '../VsCodeDialog/vscodeSlice';
 import detectMultipleInstallDirs from './detectMultipleInstallDirs';
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
-import initEnvironments from './initEnvironments';
 import {
     environmentsByVersion,
     isShowingFirstSteps,
@@ -76,6 +75,7 @@ export default () => {
     useEffect(() => {
         dispatch(initApp());
     }, [dispatch]);
+
     const showingFirstSteps = useSelector(isShowingFirstSteps);
 
     if (showingFirstSteps) {
@@ -127,7 +127,6 @@ export default () => {
 
 const initApp = (): AppThunk<RootState, Promise<void>> => async dispatch => {
     await dispatch(detectMultipleInstallDirs());
-    await dispatch(initEnvironments());
     await dispatch(reportVsCodeStatus());
 };
 
