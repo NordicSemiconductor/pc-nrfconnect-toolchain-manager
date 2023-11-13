@@ -4,9 +4,11 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-let abortController: AbortController = new AbortController();
-abortController.signal.addEventListener('abort', () => {
-    abortController = new AbortController();
-});
+let abortController: AbortController | undefined;
 
-export const getAbortController = () => abortController;
+export const getNewAbortController = () => {
+    abortController = new AbortController();
+    return abortController;
+};
+
+export const getExistingAbortController = () => abortController;
