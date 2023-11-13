@@ -5,8 +5,9 @@
  */
 
 import React from 'react';
-import { usageData } from 'pc-nrfconnect-shared';
+import { usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
+import { getAbortController } from '../../globalAbortControler';
 import { Environment } from '../../state';
 import Button from './Button';
 import { isDoingFreshInstall, isLegacyEnvironment } from './environmentReducer';
@@ -15,8 +16,10 @@ type Props = { environment: Environment };
 
 const Cancel = ({ environment }: Props) => {
     const onCancel = () => {
-        environment.abortController.abort();
-        usageData.sendUsageData('Cancel installation', environment.version);
+        getAbortController().abort();
+        usageData.sendUsageData('Cancel installation', {
+            version: environment.version,
+        });
     };
 
     if (

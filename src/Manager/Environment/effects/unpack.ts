@@ -4,26 +4,35 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import {
+    AppThunk,
+    logger,
+    usageData,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { execSync } from 'child_process';
 import extract from 'extract-zip';
 import fse from 'fs-extra';
 import path from 'path';
-import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import { Dispatch } from '../../../state';
+import { RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { setProgress } from '../environmentReducer';
 import { calculateTimeConsumed } from './helpers';
 import { reportProgress, UNPACK } from './reportProgress';
 
 export const unpack =
-    (version: string, src: string, dest: string) =>
-    async (dispatch: Dispatch) => {
+    (
+        version: string,
+        src: string,
+        dest: string
+    ): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
         logger.info(`Unpacking toolchain ${version}`);
-        usageData.sendUsageData(
-            EventAction.UNPACK_TOOLCHAIN,
-            `${version}; ${process.platform}; ${process.arch}`
-        );
+        usageData.sendUsageData(EventAction.UNPACK_TOOLCHAIN, {
+            version,
+            platform: process.platform,
+            arch: process.arch,
+        });
         const unpackTimeStart = new Date();
         dispatch(setProgress(version, 'Installing...', 50));
         switch (process.platform) {
@@ -66,17 +75,23 @@ export const unpack =
             default:
         }
 
-        const unpackInfo = `${version}; ${process.platform}; ${process.arch}`;
-        usageData.sendUsageData(
-            EventAction.UNPACK_TOOLCHAIN_SUCCESS,
-            unpackInfo
-        );
-        usageData.sendUsageData(
-            EventAction.UNPACK_TOOLCHAIN_TIME,
-            `${calculateTimeConsumed(unpackTimeStart)} min; ${unpackInfo}`
-        );
+        const timeInMin = calculateTimeConsumed(unpackTimeStart);
+        usageData.sendUsageData(EventAction.UNPACK_TOOLCHAIN_SUCCESS, {
+            timeInMin,
+            version,
+            platform: process.platform,
+            arch: process.arch,
+        });
+        usageData.sendUsageData(EventAction.UNPACK_TOOLCHAIN_TIME, {
+            timeInMin,
+            version,
+            platform: process.platform,
+            arch: process.arch,
+        });
         logger.info(
-            `Finished unpacking version ${unpackInfo} of the toolchain after approximately ${calculateTimeConsumed(
+            `Finished unpacking version ${version}; ${process.platform}; ${
+                process.arch
+            } of the toolchain after approximately ${calculateTimeConsumed(
                 unpackTimeStart
             )} minute(s)`
         );

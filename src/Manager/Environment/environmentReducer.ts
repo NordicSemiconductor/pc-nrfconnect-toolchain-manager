@@ -133,7 +133,6 @@ export default (environment: Environment, { type, ...action }: AnyAction) => {
                 isRemoving: false,
                 toolchainDir: undefined,
                 stage: undefined,
-                abortController: new AbortController(),
             };
         default:
             return environment;

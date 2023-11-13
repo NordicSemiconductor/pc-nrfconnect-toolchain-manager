@@ -5,128 +5,157 @@
  */
 
 import { net } from '@electron/remote';
+import {
+    AppThunk,
+    logger,
+    usageData,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
-import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import {
-    persistedInstallDir as installDir,
-    toolchainIndexUrl,
-} from '../persistentStore';
-import { Dispatch, Environment } from '../state';
+import { persistedInstallDir, toolchainIndexUrl } from '../persistentStore';
+import { Environment, RootState } from '../state';
 import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
 import { isLegacyEnvironment } from './Environment/environmentReducer';
 import { addEnvironment, clearEnvironments } from './managerSlice';
-import listToolchains from './nrfutil/list';
 import logNrfutilVersion from './nrfutil/logVersion';
-import searchToolchains from './nrfutil/search';
+import toolchainManager from './ToolchainManager/toolchainManager';
 
-const detectLocallyExistingEnvironments = (dispatch: Dispatch) => {
-    try {
-        fs.readdirSync(installDir(), { withFileTypes: true })
-            .filter(dirEnt => dirEnt.isDirectory())
-            .map(({ name }) => ({
-                version: name,
-                toolchainDir: path.resolve(installDir(), name, 'toolchain'),
-            }))
-            .filter(({ toolchainDir }) =>
-                fs.existsSync(path.resolve(toolchainDir, 'ncsmgr/manifest.env'))
-            )
-            .forEach(({ version, toolchainDir }) => {
-                const westPresent = isWestPresent(version, toolchainDir);
-                logger.info(
-                    `Locally exsisting environment found at ${toolchainDir}`
-                );
-                logger.info(`With version: ${version}`);
-                logger.info(`With west found: ${westPresent ? 'yes' : 'no'}`);
-                usageData.sendUsageData(
-                    EventAction.REPORT_LOCAL_ENVS,
-                    `${version}; ${
-                        westPresent ? 'west found' : 'west not found'
-                    }`
-                );
-                dispatch(
-                    addEnvironment({
-                        type: 'legacy',
+const detectLocallyExistingEnvironments =
+    (): AppThunk<RootState, Promise<void>> => async dispatch => {
+        const installDir = persistedInstallDir();
+        if (!installDir) {
+            return;
+        }
+
+        try {
+            const result = await Promise.all(
+                fs
+                    .readdirSync(installDir, { withFileTypes: true })
+                    .filter(dirEnt => dirEnt.isDirectory())
+                    .map(async ({ name }) => ({
+                        version: name,
+                        toolchainDir: path.resolve(
+                            installDir,
+                            name,
+                            'toolchain'
+                        ),
+                        westPresent: await isWestPresent(
+                            name,
+                            path.resolve(installDir, name, 'toolchain')
+                        ),
+                    }))
+            );
+
+            result
+                .filter(({ toolchainDir }) =>
+                    fs.existsSync(
+                        path.resolve(toolchainDir, 'ncsmgr/manifest.env')
+                    )
+                )
+                .forEach(({ version, toolchainDir, westPresent }) => {
+                    logger.info(
+                        `Locally exsisting environment found at ${toolchainDir}`
+                    );
+                    logger.info(`With version: ${version}`);
+                    logger.info(
+                        `With west found: ${westPresent ? 'yes' : 'no'}`
+                    );
+                    usageData.sendUsageData(EventAction.REPORT_LOCAL_ENVS, {
                         version,
-                        toolchainDir,
-                        isWestPresent: westPresent,
-                        isInstalled: true,
-                        abortController: new AbortController(),
-                        toolchains: [],
+                        westPresent: westPresent
+                            ? 'west found'
+                            : 'west not found',
+                    });
+                    dispatch(
+                        addEnvironment({
+                            type: 'legacy',
+                            version,
+                            toolchainDir,
+                            isWestPresent: westPresent,
+                            isInstalled: true,
+                            toolchains: [],
+                        })
+                    );
+                });
+        } catch (e) {
+            usageData.sendErrorReport(
+                `Fail to detect locally existing environments with error: ${e}`
+            );
+        }
+    };
+
+const downloadIndexByNrfUtil =
+    (): AppThunk<RootState, Promise<void>> => async dispatch => {
+        let installed: Environment[];
+        try {
+            installed = await Promise.all(
+                (
+                    await toolchainManager.list(persistedInstallDir())
+                ).toolchains
+                    .filter(
+                        toolchain => !isLegacyEnvironment(toolchain.ncs_version)
+                    )
+                    .map<Promise<Environment>>(async toolchain => {
+                        const environment: Environment = {
+                            version: toolchain.ncs_version,
+                            toolchainDir: toolchain.path,
+                            toolchains: [],
+                            type: 'nrfUtil' as 'nrfUtil' | 'legacy',
+                            isInstalled: true,
+                            isWestPresent: await isWestPresent(
+                                toolchain.ncs_version,
+                                toolchain.path
+                            ),
+                        };
+                        dispatch(addEnvironment(environment));
+                        logger.info(
+                            `Toolchain ${environment.version} has been added to the list`
+                        );
+                        return environment;
                     })
-                );
-            });
-    } catch (e) {
-        usageData.sendErrorReport(
-            `Fail to detect locally existing environments with error: ${e}`
-        );
-    }
-};
+            );
+        } catch (e) {
+            logger.error(`Failed to list local toolchain installations.`);
+        }
+        try {
+            (
+                await toolchainManager.search(true, persistedInstallDir())
+            ).ncs_versions
+                .filter(
+                    environmentVersion =>
+                        !isLegacyEnvironment(environmentVersion)
+                )
+                .map<Environment>(environmentVersion => {
+                    const installedEnvironment = installed.find(
+                        env => env.version === environmentVersion
+                    );
 
-const downloadIndexByNrfUtil = (dispatch: Dispatch) => {
-    let installed: Environment[];
-    try {
-        installed = listToolchains()
-            .filter(toolchain => !isLegacyEnvironment(toolchain.ncs_version))
-            .map<Environment>(toolchain => {
-                const environment: Environment = {
-                    version: toolchain.ncs_version,
-                    toolchainDir: toolchain.path,
-                    toolchains: [],
-                    type: 'nrfUtil' as 'nrfUtil' | 'legacy',
-                    isInstalled: true,
-                    abortController: new AbortController(),
-                    isWestPresent: isWestPresent(
-                        toolchain.ncs_version,
-                        toolchain.path
-                    ),
-                };
-                dispatch(addEnvironment(environment));
-                logger.info(
-                    `Toolchain ${environment.version} has been added to the list`
-                );
-                return environment;
-            });
-    } catch (e) {
-        logger.error(`Failed to list local toolchain installations.`);
-    }
-    try {
-        searchToolchains()
-            .filter(
-                environmentVersion => !isLegacyEnvironment(environmentVersion)
-            )
-            .map<Environment>(environmentVersion => {
-                const installedEnvironment = installed.find(
-                    env => env.version === environmentVersion
-                );
+                    if (installedEnvironment) return installedEnvironment;
 
-                if (installedEnvironment) return installedEnvironment;
+                    return {
+                        version: environmentVersion,
+                        toolchains: [],
+                        toolchainDir: '',
+                        type: 'nrfUtil',
+                        isInstalled: false,
+                    };
+                })
+                .forEach(environment => {
+                    dispatch(addEnvironment(environment));
+                    logger.info(
+                        `Toolchain ${environment.version} has been added to the list`
+                    );
+                });
+        } catch (e) {
+            logger.error(`Failed to download toolchain index file`);
+        }
+    };
 
-                return {
-                    version: environmentVersion,
-                    toolchains: [],
-                    toolchainDir: '',
-                    type: 'nrfUtil',
-                    isInstalled: false,
-                    abortController: new AbortController(),
-                };
-            })
-            .forEach(environment => {
-                dispatch(addEnvironment(environment));
-                logger.info(
-                    `Toolchain ${environment.version} has been added to the list`
-                );
-            });
-    } catch (e) {
-        logger.error(`Failed to download toolchain index file`);
-    }
-};
-
-const downloadIndex = (dispatch: Dispatch) => {
+const downloadIndex = (): AppThunk<RootState> => dispatch => {
     const request = net.request({ url: toolchainIndexUrl() });
     request.setHeader('pragma', 'no-cache');
     request.on('response', response => {
@@ -150,7 +179,6 @@ const downloadIndex = (dispatch: Dispatch) => {
                         dispatch(
                             addEnvironment({
                                 ...environment,
-                                abortController: new AbortController(),
                                 type: 'legacy',
                             })
                         );
@@ -180,10 +208,15 @@ const downloadIndex = (dispatch: Dispatch) => {
     request.end();
 };
 
-export default (dispatch: Dispatch): void => {
+export default (): AppThunk<RootState, Promise<void>> => async dispatch => {
     logger.info('Initializing environments...');
-    logNrfutilVersion(dispatch);
-    const dir = path.dirname(installDir());
+    const installDir = persistedInstallDir();
+    if (!installDir) {
+        return;
+    }
+    await dispatch(logNrfutilVersion());
+    const dir = path.dirname(installDir);
+
     if (
         process.platform === 'darwin' &&
         // eslint-disable-next-line no-bitwise
@@ -196,11 +229,11 @@ export default (dispatch: Dispatch): void => {
             `osascript -e "do shell script \\"${script} \\" with prompt \\"${prompt} \\" with administrator privileges"`
         );
     }
-    fse.mkdirpSync(installDir());
+    fse.mkdirpSync(installDir);
     dispatch(clearEnvironments());
-    detectLocallyExistingEnvironments(dispatch);
+    await dispatch(detectLocallyExistingEnvironments());
     if (process.platform !== 'linux') {
-        downloadIndex(dispatch);
+        dispatch(downloadIndex());
     }
-    downloadIndexByNrfUtil(dispatch);
+    await dispatch(downloadIndexByNrfUtil());
 };

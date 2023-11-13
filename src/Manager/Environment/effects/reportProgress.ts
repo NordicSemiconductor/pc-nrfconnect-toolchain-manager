@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { Dispatch, RootState } from '../../../state';
+import { AppThunk } from '@nordicsemiconductor/pc-nrfconnect-shared';
+
+import { RootState } from '../../../state';
 import { getEnvironment } from '../../managerSlice';
 import { progress, setProgress } from '../environmentReducer';
 
@@ -17,8 +19,8 @@ export const reportProgress =
         currentValue: number,
         maxValue: number | undefined,
         half: number
-    ) =>
-    (dispatch: Dispatch, getState: () => RootState) => {
+    ): AppThunk<RootState> =>
+    (dispatch, getState) => {
         const prevProgress = progress(getEnvironment(getState(), version));
         const newProgress =
             maxValue == null

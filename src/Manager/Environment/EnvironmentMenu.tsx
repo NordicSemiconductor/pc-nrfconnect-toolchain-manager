@@ -8,26 +8,24 @@ import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { useDispatch, useSelector } from 'react-redux';
+import { logger, usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { exec, ExecException, execSync } from 'child_process';
 import { shell } from 'electron';
 import { readdirSync } from 'fs';
 import path from 'path';
-import { logger, usageData } from 'pc-nrfconnect-shared';
 
+import { getAbortController } from '../../globalAbortControler';
+import { persistedInstallDir } from '../../persistentStore';
 import { Environment } from '../../state';
 import EventAction from '../../usageDataActions';
 import {
     isAnyToolchainInProgress,
     showConfirmRemoveDialog,
 } from '../managerSlice';
-import { saveEnvScript } from '../nrfutil/env';
+import { saveEnvScript } from '../nrfutil/envAsScript';
 import { showNrfUtilDialogAction } from '../nrfutil/nrfUtilDialogSlice';
-import {
-    launchGnomeTerminal,
-    launchTerminal,
-    launchWinBash,
-} from '../nrfutil/terminal';
 import sdkPath from '../sdkPath';
+import toolchainManager from '../ToolchainManager/toolchainManager';
 import toolchainPath from '../toolchainPath';
 import { cloneNcs } from './effects/cloneNcs';
 import { installToolchain } from './effects/installToolchain';
@@ -53,25 +51,28 @@ const execCallback = (
 
 const openBash = (environment: Environment) => {
     logger.info('Open bash');
-    usageData.sendUsageData(
-        EventAction.OPEN_BASH,
-        `${process.platform}; ${process.arch}`
-    );
+    usageData.sendUsageData(EventAction.OPEN_BASH, {
+        platform: process.platform,
+        arch: process.arch,
+    });
 
     if (environment.type === 'legacy') {
         const directory = getToolchainDir(environment);
         exec(`"${path.resolve(directory, 'git-bash.exe')}"`, execCallback);
     } else {
-        launchWinBash(environment.version);
+        toolchainManager.launchWinBash(
+            environment.version,
+            persistedInstallDir()
+        );
     }
 };
 
 const openCmd = (environment: Environment) => {
     logger.info('Open command prompt');
-    usageData.sendUsageData(
-        EventAction.OPEN_CMD,
-        `${process.platform}; ${process.arch}`
-    );
+    usageData.sendUsageData(EventAction.OPEN_CMD, {
+        platform: process.platform,
+        arch: process.arch,
+    });
 
     if (environment.type === 'legacy') {
         const directory = getToolchainDir(environment);
@@ -80,17 +81,20 @@ const openCmd = (environment: Environment) => {
             execCallback
         );
     } else {
-        launchTerminal(environment.version);
+        toolchainManager.launchTerminal(
+            environment.version,
+            persistedInstallDir()
+        );
     }
 };
 
 const launchLegacyTerminal = {
     darwin: (toolchainDir: string) => {
         logger.info('Open terminal');
-        usageData.sendUsageData(
-            EventAction.OPEN_TERMINAL,
-            `${process.platform}; ${process.arch}`
-        );
+        usageData.sendUsageData(EventAction.OPEN_TERMINAL, {
+            platform: process.platform,
+            arch: process.arch,
+        });
         const gitversion = readdirSync(`${toolchainDir}/Cellar/git`).pop();
         const env = [
             `export PATH=${toolchainDir}/bin:/usr/local/bin:$PATH`,
@@ -114,10 +118,11 @@ END
 
 const openDirectory = (directory: string) => {
     logger.info(`Open directory ${directory}`);
-    usageData.sendUsageData(
-        EventAction.OPEN_DIR,
-        `${process.platform}; ${process.arch}; ${directory}`
-    );
+    usageData.sendUsageData(EventAction.OPEN_DIR, {
+        platform: process.platform,
+        arch: process.arch,
+        directory,
+    });
     shell.openPath(directory);
 };
 
@@ -170,9 +175,15 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                                 version
                             );
                         } else if (process.platform === 'darwin') {
-                            launchTerminal(environment.version);
+                            toolchainManager.launchTerminal(
+                                environment.version,
+                                persistedInstallDir()
+                            );
                         } else if (hasGnomeTerminal()) {
-                            launchGnomeTerminal(environment.version);
+                            toolchainManager.launchGnomeTerminal(
+                                environment.version,
+                                persistedInstallDir()
+                            );
                         } else
                             dispatch(
                                 showNrfUtilDialogAction({
@@ -191,14 +202,14 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
             {!isLegacyEnv && (
                 <>
                     <Dropdown.Item
-                        onClick={() =>
+                        onClick={async () =>
                             saveEnvScript(
                                 environment.version,
                                 process.platform === 'win32'
                                     ? 'undecided'
                                     : 'sh',
                                 isLegacyEnvironment(environment.version)
-                                    ? toolchainPath(environment.version)
+                                    ? await toolchainPath(environment.version)
                                     : environment.toolchainDir
                             )
                         }
@@ -208,7 +219,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                     <Dropdown.Divider />
                 </>
             )}
-            <Dropdown.Item onClick={() => openDirectory(sdkDir())}>
+            <Dropdown.Item onClick={async () => openDirectory(await sdkDir())}>
                 Open SDK directory
             </Dropdown.Item>
             <Dropdown.Item onClick={() => openDirectory(toolchainDir)}>
@@ -217,13 +228,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
             <Dropdown.Divider />
             <Dropdown.Item
                 onClick={() =>
-                    dispatch(
-                        cloneNcs(
-                            version,
-                            true,
-                            environment.abortController.signal
-                        )
-                    )
+                    dispatch(cloneNcs(version, true, getAbortController()))
                 }
             >
                 Update SDK
@@ -233,7 +238,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                     dispatch(
                         installToolchain(
                             environment.version,
-                            environment.abortController.signal
+                            getAbortController()
                         )
                     )
                 }

@@ -4,54 +4,17 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { getPersistentStore as store } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import os from 'os';
 import path from 'path';
-import {
-    getPersistentStore as store,
-    logger,
-    usageData,
-} from 'pc-nrfconnect-shared';
 
-import getNrfutilConfig from './Manager/nrfutil/config';
-import nrfutilToolchainManager from './Manager/nrfutil/nrfutilToolchainManager';
-
-const fallbackInstallDir = () =>
-    ({
-        win32: ['C:', 'ncs'],
-        darwin: [path.sep, 'opt', 'nordic', 'ncs'],
-        linux: [os.homedir(), 'ncs'],
-    }[<string>process.platform] ?? [os.homedir(), 'ncs']);
-
-const installDir = () => {
-    try {
-        return getNrfutilConfig().install_dir;
-    } catch (error) {
-        // Use a timeout as usageData is not yet ready at this point.
-        setTimeout(() => {
-            usageData.sendErrorReport(
-                'Unable to get nrfutil-toolchain-manager config.'
-            );
-            logger.error(
-                `Please check if ${nrfutilToolchainManager()} is executable on your system.`
-            );
-        });
-
-        return path.resolve(...fallbackInstallDir());
-    }
-};
-
-export const defaultInstallDir = installDir();
 export const oldDefaultInstallDirOnWindows = path.resolve(os.homedir(), 'ncs');
 
-export const persistedInstallDir = (): string =>
-    process.platform === 'darwin'
-        ? defaultInstallDir ?? ''
-        : store().get('installDir', defaultInstallDir ?? '');
+export const persistedInstallDir = (): string | undefined =>
+    process.platform === 'darwin' ? undefined : store().get('installDir');
 
 export const setPersistedInstallDir = (dir: string) =>
     store().set('installDir', dir);
-
-export const usesDefaultInstallDir = () => !store().has('installDir');
 
 const indexJson =
     {

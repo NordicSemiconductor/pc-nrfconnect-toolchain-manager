@@ -4,16 +4,18 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import fse from 'fs-extra';
-import path from 'path';
 import {
+    AppThunk,
     describeError,
     ErrorDialogActions,
     usageData,
-} from 'pc-nrfconnect-shared';
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
+import fse from 'fs-extra';
+import path from 'path';
 
-import { persistedInstallDir as installDir } from '../../../persistentStore';
-import { Dispatch } from '../../../state';
+import { getAbortController } from '../../../globalAbortControler';
+import { persistedInstallDir } from '../../../persistentStore';
+import { RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { addEnvironment } from '../../managerSlice';
 import {
@@ -27,11 +29,19 @@ import { ensureCleanTargetDir } from './ensureCleanTargetDir';
 import { unpack } from './unpack';
 
 export const installPackage =
-    (urlOrFilePath: string) => async (dispatch: Dispatch) => {
-        usageData.sendUsageData(
-            EventAction.INSTALL_TOOLCHAIN_FROM_PATH,
-            `${urlOrFilePath}`
-        );
+    (urlOrFilePath: string): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
+        const installDir = persistedInstallDir();
+
+        if (!installDir) {
+            throw new Error(
+                'Cannot install toolchain. No install directory is set.'
+            );
+        }
+
+        usageData.sendUsageData(EventAction.INSTALL_TOOLCHAIN_FROM_PATH, {
+            urlOrFilePath,
+        });
         const match =
             /ncs-toolchain-(v?.+?)([-_]\d{8}-[^.]+).[zip|dmg|snap]/.exec(
                 urlOrFilePath
@@ -46,11 +56,7 @@ export const installPackage =
 
         try {
             const version = match[1];
-            const toolchainDir = path.resolve(
-                installDir(),
-                version,
-                'toolchain'
-            );
+            const toolchainDir = path.resolve(installDir, version, 'toolchain');
 
             await dispatch(ensureCleanTargetDir(version, toolchainDir));
 
@@ -63,7 +69,6 @@ export const installPackage =
                     toolchainDir,
                     isInstalled: false,
                     isWestPresent: false,
-                    abortController: new AbortController(),
                     toolchains: [],
                 })
             );
@@ -78,9 +83,7 @@ export const installPackage =
             await dispatch(unpack(version, filePath, toolchainDir));
             updateConfigFile(toolchainDir);
             dispatch(finishInstallToolchain(version, toolchainDir));
-            await dispatch(
-                cloneNcs(version, false, new AbortController().signal)
-            );
+            await dispatch(cloneNcs(version, false, getAbortController()));
         } catch (error) {
             const message = describeError(error);
             dispatch(ErrorDialogActions.showDialog(`${message}`));

@@ -4,17 +4,22 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import {
+    AppThunk,
+    ErrorDialogActions,
+    logger,
+    usageData,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { existsSync } from 'fs';
 import { rename, rm } from 'fs/promises';
 import path from 'path';
-import { ErrorDialogActions, logger, usageData } from 'pc-nrfconnect-shared';
-import { TDispatch } from 'pc-nrfconnect-shared/src/state';
 
-import { Dispatch, Environment, RootState } from '../../../state';
+import { persistedInstallDir } from '../../../persistentStore';
+import { Environment, RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { getEnvironment } from '../../managerSlice';
-import removeToolchain from '../../nrfutil/remove';
 import sdkPath from '../../sdkPath';
+import toolchainManager from '../../ToolchainManager/toolchainManager';
 import toolchainPath from '../../toolchainPath';
 import {
     finishCancelInstall,
@@ -38,7 +43,7 @@ const removeNrfutilEnvironment = async (
 ) => {
     let pathToRemove;
     try {
-        pathToRemove = sdkPath(version);
+        pathToRemove = await sdkPath(version);
         await rename(pathToRemove, renamedPath(pathToRemove));
         await rename(renamedPath(pathToRemove), pathToRemove);
     } catch (error) {
@@ -52,8 +57,9 @@ const removeNrfutilEnvironment = async (
     }
 
     try {
-        await rm(sdkPath(version), { recursive: true, force: true });
-        await removeToolchain(version);
+        const installDir = await sdkPath(version);
+        await rm(installDir, { recursive: true, force: true });
+        await toolchainManager.uninstall(version, persistedInstallDir());
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
         throw new Error(
@@ -66,10 +72,11 @@ const removeNrfutilEnvironment = async (
 };
 
 export const removeEnvironment =
-    (environment: Environment) => async (dispatch: Dispatch) => {
+    (environment: Environment): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
         const { toolchainDir, version } = environment;
         logger.info(`Removing ${version} at ${toolchainDir}`);
-        usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, `${version}`);
+        usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, { version });
 
         dispatch(startRemoving(version));
 
@@ -79,10 +86,9 @@ export const removeEnvironment =
                 logger.info(`Finished removing ${version} at ${toolchainDir}`);
             } else {
                 await removeNrfutilEnvironment(version, toolchainDir);
+                const installDir = await sdkPath(version);
                 logger.info(
-                    `Finished removing ${version} at ${toolchainDir} and ${sdkPath(
-                        version
-                    )}`
+                    `Finished removing ${version} at ${toolchainDir} and ${installDir}`
                 );
             }
             dispatch(removeEnvironmentReducer(version));
@@ -95,11 +101,11 @@ export const removeEnvironment =
     };
 
 export const removeUnfinishedInstallOnAbort =
-    (version: string) =>
-    async (dispatch: TDispatch, getState: () => RootState) => {
+    (version: string): AppThunk<RootState, Promise<void>> =>
+    async (dispatch, getState) => {
         dispatch(startCancelInstall(version));
         const toolchainDir = isLegacyEnvironment(version)
-            ? toolchainPath(version)
+            ? await toolchainPath(version)
             : dispatch(getEnvironment(getState(), version)).toolchainDir;
         if (existsSync(toolchainDir)) {
             try {
@@ -115,13 +121,13 @@ export const removeUnfinishedInstallOnAbort =
                 logger.error(err);
             }
         }
-        if (existsSync(sdkPath(version))) {
+        const installDir = await sdkPath(version);
+
+        if (existsSync(installDir)) {
             try {
-                await rm(sdkPath(version), { recursive: true, force: true });
+                await rm(installDir, { recursive: true, force: true });
                 logger.info(
-                    `Successfully removed SDK with version ${version} from ${sdkPath(
-                        version
-                    )}`
+                    `Successfully removed SDK with version ${version} from ${installDir}`
                 );
             } catch (err) {
                 logger.error(err);

@@ -7,11 +7,11 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { dialog } from '@electron/remote';
+import { AppThunk } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { install } from '../Manager/Environment/effects/installEnvironment';
-import initEnvironments from '../Manager/initEnvironments';
-import { Dispatch } from '../state';
+import { RootState } from '../state';
 import {
     currentInstallDir,
     environmentToInstall,
@@ -21,26 +21,26 @@ import {
     setInstallDir,
 } from './installDirSlice';
 
-const selectInstallDir = async (
-    dispatch: Dispatch,
-    installDir: string,
-    hideDialog: boolean
-) => {
-    const {
-        filePaths: [filePath],
-    } = await dialog.showOpenDialog({
-        title: 'Select installation directory',
-        defaultPath: installDir,
-        properties: ['openDirectory', 'createDirectory'],
-    });
-    if (filePath) {
-        dispatch(setInstallDir(filePath));
-        initEnvironments(dispatch);
-        if (hideDialog) {
-            dispatch(hideInstallDirDialog());
+const selectInstallDir =
+    (
+        hideDialog: boolean,
+        installDir?: string
+    ): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
+        const {
+            filePaths: [filePath],
+        } = await dialog.showOpenDialog({
+            title: 'Select installation directory',
+            defaultPath: installDir,
+            properties: ['openDirectory', 'createDirectory'],
+        });
+        if (filePath) {
+            dispatch(setInstallDir(filePath));
+            if (hideDialog) {
+                dispatch(hideInstallDirDialog());
+            }
         }
-    }
-};
+    };
 
 export default () => {
     const dispatch = useDispatch();
@@ -58,11 +58,11 @@ export default () => {
         },
         onCancel: () => dispatch(hideInstallDirDialog()),
         optionalLabel: 'Change directory',
-        onOptional: () => selectInstallDir(dispatch, installDir, false),
+        onOptional: () => dispatch(selectInstallDir(false, installDir)),
     };
     const changeDirDialogProps = {
         title: 'Change install directory',
-        onConfirm: () => selectInstallDir(dispatch, installDir, true),
+        onConfirm: () => dispatch(selectInstallDir(true, installDir)),
         onCancel: () => dispatch(hideInstallDirDialog()),
     };
     const dialogProps = isConfirmFlavour

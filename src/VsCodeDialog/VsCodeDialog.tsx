@@ -8,12 +8,11 @@ import React, { useEffect, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
-import { Spinner } from 'pc-nrfconnect-shared';
+import { Spinner } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import Button from '../Manager/Environment/Button';
 import { isInProgress } from '../Manager/Environment/environmentReducer';
 import { isAnyToolchainInProgress } from '../Manager/managerSlice';
-import { TDispatch } from '../thunk';
 import {
     checkOpenVsCodeWithDelay,
     getNrfjprogStatus,
@@ -58,7 +57,7 @@ const VsCodeDialog = () => {
                         <span>
                             Checking if VS Code and dependencies are installed.
                         </span>
-                        <Spinner />
+                        <Spinner size="sm" />
                     </div>
                 )}
                 {status === VsCodeStatus.NOT_INSTALLED && (
@@ -231,7 +230,7 @@ const MissingExtensionsSkipButton = ({
     skipText: boolean;
     handleClose: () => void;
 }) => {
-    const dispatch = useDispatch<TDispatch>();
+    const dispatch = useDispatch();
     return (
         <Button
             icon=""
@@ -287,7 +286,7 @@ const ExtensionStateIcon = (state: VsCodeExtensionState) => {
             );
 
         case VsCodeExtensionState.INSTALLING:
-            return <Spinner />;
+            return <Spinner size="sm" />;
     }
 };
 

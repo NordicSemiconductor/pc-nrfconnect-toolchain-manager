@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { testUtils } from 'pc-nrfconnect-shared/test';
+import { testUtils } from '@nordicsemiconductor/pc-nrfconnect-shared/test';
 
 import appReducer from '../reducers';
 import { Environment } from '../state';
@@ -14,7 +14,7 @@ import {
     getLatestToolchain,
 } from './managerSlice';
 
-jest.mock('./nrfutil/config', () => ({
+jest.mock('./ToolchainManager/config', () => ({
     __esModule: true,
     default: jest.fn(() => ({})),
 }));
@@ -35,7 +35,6 @@ const exampleEnvironment: Environment = {
     version: 'v1.2.0',
     toolchainDir: '',
     toolchains: [],
-    abortController: new AbortController(),
 };
 
 describe('getLatestToolchain', () => {

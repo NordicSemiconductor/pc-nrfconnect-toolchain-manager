@@ -36,7 +36,7 @@ const Environment = ({ environment }: Props) => (
                 as={ButtonToolbar}
                 // @ts-expect-error this property exists
                 xs="auto ml-auto"
-                className="d-flex align-items-center my-3 pl-3 wide-btns"
+                className="d-flex align-items-center wide-btns my-3 pl-3"
             >
                 <ShowFirstSteps environment={environment} />
                 <Install environment={environment} />

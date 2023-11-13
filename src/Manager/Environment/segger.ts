@@ -4,12 +4,16 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import {
+    describeError,
+    logger,
+    usageData,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { exec, ExecException } from 'child_process';
 import fs from 'fs';
 import fse from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import { describeError, logger, usageData } from 'pc-nrfconnect-shared';
 
 import EventAction from '../../usageDataActions';
 
@@ -190,7 +194,9 @@ export const updateConfigFile = (toolchainDir: string) => {
 
 export const openSegger = async (toolchainDir: string) => {
     logger.info('Open Segger Embedded Studio');
-    usageData.sendUsageData(EventAction.OPEN_SES, process.platform);
+    usageData.sendUsageData(EventAction.OPEN_SES, {
+        platform: process.platform,
+    });
     await Promise.all([
         updateSettingsFile('settings.xml', toolchainDir),
         updateSettingsFile('settings.xml.bak', toolchainDir),

@@ -5,17 +5,19 @@
  */
 
 import {
+    AppThunk,
     describeError,
     ErrorDialogActions,
     logger,
     usageData,
-} from 'pc-nrfconnect-shared';
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 
+import { getAbortController } from '../../../globalAbortControler';
 import {
     persistedShowVsCodeDialogDuringInstall,
     setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
-import { Dispatch, Environment } from '../../../state';
+import { Environment, RootState } from '../../../state';
 import { getVsCodeStatus } from '../../../VsCodeDialog/vscode';
 import {
     setVsCodeStatus,
@@ -30,8 +32,12 @@ import { installToolchain } from './installToolchain';
 import { removeUnfinishedInstallOnAbort } from './removeEnvironment';
 
 export const install =
-    ({ version, type, abortController }: Environment, justUpdate: boolean) =>
-    async (dispatch: Dispatch) => {
+    (
+        { version }: Environment,
+        justUpdate: boolean
+    ): AppThunk<RootState, Promise<void>> =>
+    async dispatch => {
+        const abortController = getAbortController();
         logger.info(`Start to install toolchain ${version}`);
 
         if (persistedShowVsCodeDialogDuringInstall()) {
@@ -46,24 +52,27 @@ export const install =
 
         try {
             await dispatch(
-                ensureCleanTargetDir(version, toolchainPath(version))
+                ensureCleanTargetDir(version, await toolchainPath(version))
             );
-            await dispatch(installToolchain(version, abortController.signal));
-            await dispatch(
-                cloneNcs(version, justUpdate, abortController.signal)
-            );
+            await dispatch(installToolchain(version, abortController));
+            await dispatch(cloneNcs(version, justUpdate, abortController));
 
             if (abortController.signal.aborted) {
                 dispatch(removeUnfinishedInstallOnAbort(version));
-            } else {
-                try {
-                    checkXcodeCommandLineTools(dispatch);
-                } catch (error) {
-                    logger.error(describeError(error));
-                }
+                return;
+            }
+
+            try {
+                dispatch(checkXcodeCommandLineTools());
+            } catch (error) {
+                logger.error(describeError(error));
             }
         } catch (error) {
-            dispatch(removeUnfinishedInstallOnAbort(version));
+            if (abortController.signal.aborted) {
+                dispatch(removeUnfinishedInstallOnAbort(version));
+                return;
+            }
+
             const message = describeError(error);
             dispatch(ErrorDialogActions.showDialog(message));
             usageData.sendErrorReport(message);

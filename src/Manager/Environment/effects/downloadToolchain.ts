@@ -5,35 +5,46 @@
  */
 
 import { net } from '@electron/remote';
+import {
+    AppThunk,
+    logger,
+    usageData,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { createHash } from 'crypto';
 import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
-import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import {
-    persistedInstallDir as installDir,
-    toolchainUrl,
-} from '../../../persistentStore';
-import { Dispatch, Toolchain } from '../../../state';
+import { persistedInstallDir, toolchainUrl } from '../../../persistentStore';
+import { RootState, Toolchain } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { setProgress } from '../environmentReducer';
 import { calculateTimeConsumed } from './helpers';
 import { DOWNLOAD, reportProgress } from './reportProgress';
 
 export const downloadToolchain =
-    (version: string, { name, sha512, uri }: Partial<Toolchain>) =>
-    (dispatch: Dispatch) =>
+    (
+        version: string,
+        { name, sha512, uri }: Partial<Toolchain>
+    ): AppThunk<RootState, Promise<string>> =>
+    dispatch =>
         new Promise<string>((resolve, reject) => {
+            const installDir = persistedInstallDir();
+
+            if (!installDir) {
+                reject(new Error('Install directory not found'));
+                return;
+            }
+
             logger.info(`Downloading toolchain ${version}`);
             dispatch(setProgress(version, 'Downloading', 0));
             const hash = createHash('sha512');
 
             const url = uri || toolchainUrl(name || '');
             const filename = name || path.basename(url);
-            usageData.sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, url);
+            usageData.sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, { url });
 
-            const downloadDir = path.resolve(installDir(), 'downloads');
+            const downloadDir = path.resolve(installDir, 'downloads');
             const packageLocation = path.resolve(downloadDir, filename);
             fse.mkdirpSync(downloadDir);
             const writeStream = fs.createWriteStream(packageLocation);
@@ -69,20 +80,19 @@ export const downloadToolchain =
                                 new Error(`Checksum verification failed ${url}`)
                             );
                         }
+                        const timeInMin =
+                            calculateTimeConsumed(downloadTimeStart);
+
                         usageData.sendUsageData(
                             EventAction.DOWNLOAD_TOOLCHAIN_SUCCESS,
-                            url
+                            { url }
                         );
                         usageData.sendUsageData(
                             EventAction.DOWNLOAD_TOOLCHAIN_TIME,
-                            `${calculateTimeConsumed(
-                                downloadTimeStart
-                            )} min; ${url}`
+                            { timeInMin, url }
                         );
                         logger.info(
-                            `Finished downloading version ${version} of the toolchain after approximately ${calculateTimeConsumed(
-                                downloadTimeStart
-                            )} minute(s)`
+                            `Finished downloading version ${version} of the toolchain after approximately ${timeInMin} minute(s)`
                         );
                         return resolve(packageLocation);
                     });

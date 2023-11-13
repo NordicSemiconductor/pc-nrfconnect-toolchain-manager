@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { AppThunk } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { readdirSync } from 'fs';
 
 import { setInstallDir } from '../InstallDir/installDirSlice';
 import {
-    defaultInstallDir,
     oldDefaultInstallDirOnWindows,
-    usesDefaultInstallDir,
+    persistedInstallDir,
 } from '../persistentStore';
 import { showReduxConfirmDialogAction } from '../ReduxConfirmDialog/reduxConfirmDialogSlice';
-import { Dispatch } from '../state';
+import { RootState } from '../state';
 
 const filesIn = (dir: string) => {
     try {
@@ -51,11 +51,11 @@ const showInstallDirConflictDialog = (oldDir: string, newDir: string) =>
         hideCancel: true,
     });
 
-export default (dispatch: Dispatch) => {
-    if (process.platform !== 'win32' || !usesDefaultInstallDir()) return;
+export default (): AppThunk<RootState> => dispatch => {
+    const newDefaultInstallDir = persistedInstallDir();
+    if (process.platform !== 'win32' || !newDefaultInstallDir) return;
 
     const oldDefaultInstallDir = oldDefaultInstallDirOnWindows;
-    const newDefaultInstallDir = defaultInstallDir;
 
     const oldDefaultInstallDirIsUsed = containsFiles(oldDefaultInstallDir);
     const newDefaultInstallDirIsUsed = containsFiles(newDefaultInstallDir);

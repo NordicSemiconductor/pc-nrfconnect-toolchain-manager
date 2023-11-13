@@ -7,7 +7,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
-import { classNames } from 'pc-nrfconnect-shared';
+import { classNames } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import {
@@ -73,7 +73,7 @@ export default () => {
                     hasSelectableContent && styles.selectable
                 )}
             >
-                {content}
+                {content ?? ''}
             </ReactMarkdown>
         </ConfirmationDialog>
     );

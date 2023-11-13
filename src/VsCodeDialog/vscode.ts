@@ -4,11 +4,15 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import {
+    AppThunk,
+    logger,
+    usageData,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { spawn } from 'child_process';
 import os from 'os';
-import { logger, usageData } from 'pc-nrfconnect-shared';
 
-import { Dispatch, RootState } from '../state';
+import { RootState } from '../state';
 import EventAction from '../usageDataActions';
 import {
     hideVsCodeDialog,
@@ -56,7 +60,7 @@ const isAppleSilicon =
     process.platform === 'darwin' && os.cpus()[0].model.includes('Apple');
 
 const minDelay = 500;
-export const checkOpenVsCodeWithDelay = () => (dispatch: Dispatch) => {
+export const checkOpenVsCodeWithDelay = (): AppThunk<RootState> => dispatch => {
     dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
     dispatch(showVsCodeDialog());
 
@@ -75,66 +79,71 @@ export const checkOpenVsCodeWithDelay = () => (dispatch: Dispatch) => {
     });
 };
 
-export const getVsCodeStatus = () => async (dispatch: Dispatch) => {
-    let status = VsCodeStatus.NOT_CHECKED;
-    try {
-        const extensions = await listInstalledExtensions(true);
-        dispatch(setVsCodeExtensions(extensions));
-        if (
-            extensions.some(
-                extension => extension.state !== VsCodeExtensionState.INSTALLED
+export const getVsCodeStatus =
+    (): AppThunk<RootState, Promise<VsCodeStatus>> => async dispatch => {
+        let status = VsCodeStatus.NOT_CHECKED;
+        try {
+            const extensions = await listInstalledExtensions(true);
+            dispatch(setVsCodeExtensions(extensions));
+            if (
+                extensions.some(
+                    extension =>
+                        extension.state !== VsCodeExtensionState.INSTALLED
+                )
             )
-        )
-            status = VsCodeStatus.MISSING_EXTENSIONS;
-        else {
-            const nrfjprog = await getNrfjprogStatus();
+                status = VsCodeStatus.MISSING_EXTENSIONS;
+            else {
+                const nrfjprog = await getNrfjprogStatus();
 
-            if (nrfjprog === NrfjprogStatus.NOT_INSTALLED)
-                status = VsCodeStatus.MISSING_NRFJPROG;
-            else if (nrfjprog === NrfjprogStatus.RECOMMEND_UNIVERSAL)
-                status = VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL;
-            else status = VsCodeStatus.INSTALLED;
+                if (nrfjprog === NrfjprogStatus.NOT_INSTALLED)
+                    status = VsCodeStatus.MISSING_NRFJPROG;
+                else if (nrfjprog === NrfjprogStatus.RECOMMEND_UNIVERSAL)
+                    status = VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL;
+                else status = VsCodeStatus.INSTALLED;
 
-            if (isAppleSilicon) {
-                const vscode = await spawnAsync(
-                    'file "$(dirname "$(readlink $(which code))")/../../../MacOS/Electron"'
-                );
-                if (checkExecArchitecture(vscode) === 'x86_64')
-                    status = VsCodeStatus.RECOMMEND_UNIVERSAL;
+                if (isAppleSilicon) {
+                    const vscode = await spawnAsync(
+                        'file "$(dirname "$(readlink $(which code))")/../../../MacOS/Electron"'
+                    );
+                    if (checkExecArchitecture(vscode) === 'x86_64')
+                        status = VsCodeStatus.RECOMMEND_UNIVERSAL;
+                }
             }
+        } catch {
+            status = VsCodeStatus.NOT_INSTALLED;
         }
-    } catch {
-        status = VsCodeStatus.NOT_INSTALLED;
-    }
-    return Promise.resolve(status);
-};
+        return Promise.resolve(status);
+    };
 
 export const installExtensions =
-    () => (dispatch: Dispatch, getState: () => RootState) =>
+    (): AppThunk<RootState> => (dispatch, getState) =>
         vsCodeExtensions(getState()).forEach(extension => {
             if (extension.state !== VsCodeExtensionState.INSTALLED)
                 dispatch(installExtension(extension.identifier));
         });
 
 const onExtensionInstallFailed =
-    (identifier: string) => (dispatch: Dispatch) => {
+    (identifier: string): AppThunk<RootState> =>
+    dispatch => {
         dispatch(installExtensionFailed(identifier));
         logger.error(`Failed to install extension ${identifier}`);
     };
 
-const installExtension = (identifier: string) => async (dispatch: Dispatch) => {
-    try {
-        dispatch(startInstallingExtension(identifier));
-        await spawnAsync('code', ['--install-extension', identifier]);
-        const installedExtensions = await listInstalledExtensions();
-        if (installedExtensions.some(e => e.identifier === identifier)) {
-            dispatch(installedExtension(identifier));
-            logger.info(`Installed extension ${identifier}`);
-        } else onExtensionInstallFailed(identifier);
-    } catch {
-        onExtensionInstallFailed(identifier);
-    }
-};
+const installExtension =
+    (identifier: string): AppThunk<RootState> =>
+    async dispatch => {
+        try {
+            dispatch(startInstallingExtension(identifier));
+            await spawnAsync('code', ['--install-extension', identifier]);
+            const installedExtensions = await listInstalledExtensions();
+            if (installedExtensions.some(e => e.identifier === identifier)) {
+                dispatch(installedExtension(identifier));
+                logger.info(`Installed extension ${identifier}`);
+            } else onExtensionInstallFailed(identifier);
+        } catch {
+            onExtensionInstallFailed(identifier);
+        }
+    };
 
 export const listInstalledExtensions = async (
     suppressOutputOnError?: boolean
@@ -217,6 +226,8 @@ const spawnAsync = (
     });
 
 export const openVsCode = () => {
-    usageData.sendUsageData(EventAction.OPEN_VS_CODE, process.platform);
+    usageData.sendUsageData(EventAction.OPEN_VS_CODE, {
+        platform: process.platform,
+    });
     spawnAsync('code');
 };
