@@ -15,10 +15,11 @@ interface InstalledToolchain {
     ncs_version: string;
 }
 
-export default async (installDir: string, controller?: AbortController) => {
+export default async (installDir?: string, controller?: AbortController) => {
     const box = await getToolChainManagerSandbox();
-    return box.singleInfoOperationOptionalData<Toolchains>('list', controller, [
-        '--install-dir',
-        installDir,
-    ]);
+    return box.singleInfoOperationOptionalData<Toolchains>(
+        'list',
+        controller,
+        installDir ? ['--install-dir', installDir] : []
+    );
 };

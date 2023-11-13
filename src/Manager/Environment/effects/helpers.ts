@@ -10,10 +10,11 @@ import path from 'path';
 import sdkPath from '../../sdkPath';
 import { isLegacyEnvironment } from '../environmentReducer';
 
-export const isWestPresent = (version: string, toolchainDir: string) => {
+export const isWestPresent = async (version: string, toolchainDir: string) => {
+    const installDir = await sdkPath(version);
     if (isLegacyEnvironment(version))
         return fs.existsSync(path.resolve(toolchainDir, '../.west/config'));
-    return fs.existsSync(path.resolve(sdkPath(version), '.west/config'));
+    return fs.existsSync(path.resolve(installDir, '.west/config'));
 };
 
 export const calculateTimeConsumed = (timeStart: Date) =>

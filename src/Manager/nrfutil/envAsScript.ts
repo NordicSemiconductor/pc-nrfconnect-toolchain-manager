@@ -23,10 +23,9 @@ export const getEnvAsScript = async (version: string, cmd: boolean) => {
         version,
         persistedInstallDir()
     );
-    const zephyrBase = `${cmd ? 'SET' : 'export'} ZEPHYR_BASE=${sdkPath(
-        version,
-        'zephyr'
-    )}\n`;
+
+    const zephyrPath = await sdkPath(version, 'zephyr');
+    const zephyrBase = `${cmd ? 'SET' : 'export'} ZEPHYR_BASE=${zephyrPath}\n`;
 
     return [script, zephyrBase].join('');
 };

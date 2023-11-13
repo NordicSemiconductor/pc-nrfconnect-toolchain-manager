@@ -15,11 +15,7 @@ import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
 
-import {
-    persistedInstallDir as installDir,
-    persistedInstallDir,
-    toolchainIndexUrl,
-} from '../persistentStore';
+import { persistedInstallDir, toolchainIndexUrl } from '../persistentStore';
 import { Environment, RootState } from '../state';
 import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
@@ -29,21 +25,38 @@ import logNrfutilVersion from './nrfutil/logVersion';
 import toolchainManager from './ToolchainManager/toolchainManager';
 
 const detectLocallyExistingEnvironments =
-    (): AppThunk<RootState> => dispatch => {
+    (): AppThunk<RootState, Promise<void>> => async dispatch => {
+        const installDir = persistedInstallDir();
+        if (!installDir) {
+            return;
+        }
+
         try {
-            fs.readdirSync(installDir(), { withFileTypes: true })
-                .filter(dirEnt => dirEnt.isDirectory())
-                .map(({ name }) => ({
-                    version: name,
-                    toolchainDir: path.resolve(installDir(), name, 'toolchain'),
-                }))
+            const result = await Promise.all(
+                fs
+                    .readdirSync(installDir, { withFileTypes: true })
+                    .filter(dirEnt => dirEnt.isDirectory())
+                    .map(async ({ name }) => ({
+                        version: name,
+                        toolchainDir: path.resolve(
+                            installDir,
+                            name,
+                            'toolchain'
+                        ),
+                        westPresent: await isWestPresent(
+                            name,
+                            path.resolve(installDir, name, 'toolchain')
+                        ),
+                    }))
+            );
+
+            result
                 .filter(({ toolchainDir }) =>
                     fs.existsSync(
                         path.resolve(toolchainDir, 'ncsmgr/manifest.env')
                     )
                 )
-                .forEach(({ version, toolchainDir }) => {
-                    const westPresent = isWestPresent(version, toolchainDir);
+                .forEach(({ version, toolchainDir, westPresent }) => {
                     logger.info(
                         `Locally exsisting environment found at ${toolchainDir}`
                     );
@@ -79,36 +92,38 @@ const downloadIndexByNrfUtil =
     (): AppThunk<RootState, Promise<void>> => async dispatch => {
         let installed: Environment[];
         try {
-            installed = (
-                await toolchainManager.list(persistedInstallDir())
-            ).toolchains
-                .filter(
-                    toolchain => !isLegacyEnvironment(toolchain.ncs_version)
-                )
-                .map<Environment>(toolchain => {
-                    const environment: Environment = {
-                        version: toolchain.ncs_version,
-                        toolchainDir: toolchain.path,
-                        toolchains: [],
-                        type: 'nrfUtil' as 'nrfUtil' | 'legacy',
-                        isInstalled: true,
-                        isWestPresent: isWestPresent(
-                            toolchain.ncs_version,
-                            toolchain.path
-                        ),
-                    };
-                    dispatch(addEnvironment(environment));
-                    logger.info(
-                        `Toolchain ${environment.version} has been added to the list`
-                    );
-                    return environment;
-                });
+            installed = await Promise.all(
+                (
+                    await toolchainManager.list(persistedInstallDir())
+                ).toolchains
+                    .filter(
+                        toolchain => !isLegacyEnvironment(toolchain.ncs_version)
+                    )
+                    .map<Promise<Environment>>(async toolchain => {
+                        const environment: Environment = {
+                            version: toolchain.ncs_version,
+                            toolchainDir: toolchain.path,
+                            toolchains: [],
+                            type: 'nrfUtil' as 'nrfUtil' | 'legacy',
+                            isInstalled: true,
+                            isWestPresent: await isWestPresent(
+                                toolchain.ncs_version,
+                                toolchain.path
+                            ),
+                        };
+                        dispatch(addEnvironment(environment));
+                        logger.info(
+                            `Toolchain ${environment.version} has been added to the list`
+                        );
+                        return environment;
+                    })
+            );
         } catch (e) {
             logger.error(`Failed to list local toolchain installations.`);
         }
         try {
             (
-                await toolchainManager.search(persistedInstallDir(), true)
+                await toolchainManager.search(true, persistedInstallDir())
             ).ncs_versions
                 .filter(
                     environmentVersion =>
@@ -195,8 +210,13 @@ const downloadIndex = (): AppThunk<RootState> => dispatch => {
 
 export default (): AppThunk<RootState, Promise<void>> => async dispatch => {
     logger.info('Initializing environments...');
+    const installDir = persistedInstallDir();
+    if (!installDir) {
+        return;
+    }
     await dispatch(logNrfutilVersion());
-    const dir = path.dirname(installDir());
+    const dir = path.dirname(installDir);
+
     if (
         process.platform === 'darwin' &&
         // eslint-disable-next-line no-bitwise
@@ -209,11 +229,11 @@ export default (): AppThunk<RootState, Promise<void>> => async dispatch => {
             `osascript -e "do shell script \\"${script} \\" with prompt \\"${prompt} \\" with administrator privileges"`
         );
     }
-    fse.mkdirpSync(installDir());
+    fse.mkdirpSync(installDir);
     dispatch(clearEnvironments());
-    dispatch(detectLocallyExistingEnvironments());
+    await dispatch(detectLocallyExistingEnvironments());
     if (process.platform !== 'linux') {
         dispatch(downloadIndex());
     }
-    dispatch(downloadIndexByNrfUtil());
+    await dispatch(downloadIndexByNrfUtil());
 };

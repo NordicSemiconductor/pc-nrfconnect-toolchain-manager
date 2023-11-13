@@ -10,17 +10,17 @@ import { getToolChainManagerSandbox } from './common';
 
 export default async (
     ncsVersion: string,
-    installDir: string,
+    installDir?: string,
     onProgress?: (progress: Progress) => void,
     controller?: AbortController
 ) => {
     const box = await getToolChainManagerSandbox();
-    const args: string[] = [
-        `--ncs-version`,
-        ncsVersion,
-        '--install-dir',
-        installDir,
-    ];
+    const args: string[] = [`--ncs-version`, ncsVersion];
+
+    if (installDir) {
+        args.push('--install-dir');
+        args.push(installDir);
+    }
 
     await box.spawnNrfutilSubcommand(
         'uninstall',

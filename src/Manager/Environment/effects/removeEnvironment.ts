@@ -43,7 +43,7 @@ const removeNrfutilEnvironment = async (
 ) => {
     let pathToRemove;
     try {
-        pathToRemove = sdkPath(version);
+        pathToRemove = await sdkPath(version);
         await rename(pathToRemove, renamedPath(pathToRemove));
         await rename(renamedPath(pathToRemove), pathToRemove);
     } catch (error) {
@@ -57,7 +57,8 @@ const removeNrfutilEnvironment = async (
     }
 
     try {
-        await rm(sdkPath(version), { recursive: true, force: true });
+        const installDir = await sdkPath(version);
+        await rm(installDir, { recursive: true, force: true });
         await toolchainManager.uninstall(version, persistedInstallDir());
     } catch (error) {
         const [, , message] = `${error}`.split(/[:,] /);
@@ -85,10 +86,9 @@ export const removeEnvironment =
                 logger.info(`Finished removing ${version} at ${toolchainDir}`);
             } else {
                 await removeNrfutilEnvironment(version, toolchainDir);
+                const installDir = await sdkPath(version);
                 logger.info(
-                    `Finished removing ${version} at ${toolchainDir} and ${sdkPath(
-                        version
-                    )}`
+                    `Finished removing ${version} at ${toolchainDir} and ${installDir}`
                 );
             }
             dispatch(removeEnvironmentReducer(version));
@@ -105,7 +105,7 @@ export const removeUnfinishedInstallOnAbort =
     async (dispatch, getState) => {
         dispatch(startCancelInstall(version));
         const toolchainDir = isLegacyEnvironment(version)
-            ? toolchainPath(version)
+            ? await toolchainPath(version)
             : dispatch(getEnvironment(getState(), version)).toolchainDir;
         if (existsSync(toolchainDir)) {
             try {
@@ -121,13 +121,13 @@ export const removeUnfinishedInstallOnAbort =
                 logger.error(err);
             }
         }
-        if (existsSync(sdkPath(version))) {
+        const installDir = await sdkPath(version);
+
+        if (existsSync(installDir)) {
             try {
-                await rm(sdkPath(version), { recursive: true, force: true });
+                await rm(installDir, { recursive: true, force: true });
                 logger.info(
-                    `Successfully removed SDK with version ${version} from ${sdkPath(
-                        version
-                    )}`
+                    `Successfully removed SDK with version ${version} from ${installDir}`
                 );
             } catch (err) {
                 logger.error(err);

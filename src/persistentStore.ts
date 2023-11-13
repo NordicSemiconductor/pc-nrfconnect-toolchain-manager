@@ -10,15 +10,11 @@ import path from 'path';
 
 export const oldDefaultInstallDirOnWindows = path.resolve(os.homedir(), 'ncs');
 
-export const persistedInstallDir = (defaultInstallDir?: string): string =>
-    process.platform === 'darwin'
-        ? defaultInstallDir ?? ''
-        : store().get('installDir', defaultInstallDir ?? '');
+export const persistedInstallDir = (): string | undefined =>
+    process.platform === 'darwin' ? undefined : store().get('installDir');
 
 export const setPersistedInstallDir = (dir: string) =>
     store().set('installDir', dir);
-
-export const usesDefaultInstallDir = () => !store().has('installDir');
 
 const indexJson =
     {

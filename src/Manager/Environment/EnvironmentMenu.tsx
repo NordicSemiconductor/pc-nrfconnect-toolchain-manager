@@ -202,14 +202,14 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
             {!isLegacyEnv && (
                 <>
                     <Dropdown.Item
-                        onClick={() =>
+                        onClick={async () =>
                             saveEnvScript(
                                 environment.version,
                                 process.platform === 'win32'
                                     ? 'undecided'
                                     : 'sh',
                                 isLegacyEnvironment(environment.version)
-                                    ? toolchainPath(environment.version)
+                                    ? await toolchainPath(environment.version)
                                     : environment.toolchainDir
                             )
                         }
@@ -219,7 +219,7 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
                     <Dropdown.Divider />
                 </>
             )}
-            <Dropdown.Item onClick={() => openDirectory(sdkDir())}>
+            <Dropdown.Item onClick={async () => openDirectory(await sdkDir())}>
                 Open SDK directory
             </Dropdown.Item>
             <Dropdown.Item onClick={() => openDirectory(toolchainDir)}>

@@ -15,10 +15,7 @@ import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
 
-import {
-    persistedInstallDir as installDir,
-    toolchainUrl,
-} from '../../../persistentStore';
+import { persistedInstallDir, toolchainUrl } from '../../../persistentStore';
 import { RootState, Toolchain } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { setProgress } from '../environmentReducer';
@@ -32,6 +29,13 @@ export const downloadToolchain =
     ): AppThunk<RootState, Promise<string>> =>
     dispatch =>
         new Promise<string>((resolve, reject) => {
+            const installDir = persistedInstallDir();
+
+            if (!installDir) {
+                reject(new Error('Install directory not found'));
+                return;
+            }
+
             logger.info(`Downloading toolchain ${version}`);
             dispatch(setProgress(version, 'Downloading', 0));
             const hash = createHash('sha512');
@@ -40,7 +44,7 @@ export const downloadToolchain =
             const filename = name || path.basename(url);
             usageData.sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, { url });
 
-            const downloadDir = path.resolve(installDir(), 'downloads');
+            const downloadDir = path.resolve(installDir, 'downloads');
             const packageLocation = path.resolve(downloadDir, filename);
             fse.mkdirpSync(downloadDir);
             const writeStream = fs.createWriteStream(packageLocation);

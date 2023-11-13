@@ -24,8 +24,8 @@ import {
 
 const selectInstallDir =
     (
-        installDir: string,
-        hideDialog: boolean
+        hideDialog: boolean,
+        installDir?: string
     ): AppThunk<RootState, Promise<void>> =>
     async dispatch => {
         const {
@@ -60,11 +60,11 @@ export default () => {
         },
         onCancel: () => dispatch(hideInstallDirDialog()),
         optionalLabel: 'Change directory',
-        onOptional: () => dispatch(selectInstallDir(installDir, false)),
+        onOptional: () => dispatch(selectInstallDir(false, installDir)),
     };
     const changeDirDialogProps = {
         title: 'Change install directory',
-        onConfirm: () => dispatch(selectInstallDir(installDir, true)),
+        onConfirm: () => dispatch(selectInstallDir(true, installDir)),
         onCancel: () => dispatch(hideInstallDirDialog()),
     };
     const dialogProps = isConfirmFlavour

@@ -47,7 +47,7 @@ export const cloneNcs =
             arch: process.arch,
         });
         const cloneTimeStart = new Date();
-        const toolchainDir = toolchainPath(version);
+        const toolchainDir = await toolchainPath(version);
 
         try {
             if (!justUpdate) {
@@ -74,7 +74,10 @@ export const cloneNcs =
         }
 
         dispatch(
-            finishCloningSdk(version, isWestPresent(version, toolchainDir))
+            finishCloningSdk(
+                version,
+                await isWestPresent(version, toolchainDir)
+            )
         );
 
         const timeInMin = calculateTimeConsumed(cloneTimeStart);
@@ -102,7 +105,7 @@ const initNrfUtil =
         controller: AbortController
     ): AppThunk<RootState, Promise<void>> =>
     async dispatch => {
-        await fse.remove(path.resolve(sdkPath(version), '.west'));
+        await fse.remove(path.resolve(await sdkPath(version), '.west'));
         dispatch(setProgress(version, 'Initializing environment...'));
         logger.info(`Initializing environment for ${version}`);
         await westInit(version, controller);
