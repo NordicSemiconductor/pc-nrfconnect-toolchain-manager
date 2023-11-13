@@ -50,12 +50,6 @@ export const install =
             setPersistedShowVsCodeDialogDuringInstall(false);
         }
 
-        const abortAction = () => {
-            dispatch(removeUnfinishedInstallOnAbort(version));
-        };
-
-        abortController.signal.addEventListener('abort', abortAction);
-
         try {
             await dispatch(
                 ensureCleanTargetDir(version, await toolchainPath(version))
@@ -63,20 +57,24 @@ export const install =
             await dispatch(installToolchain(version, abortController));
             await dispatch(cloneNcs(version, justUpdate, abortController));
 
-            if (!abortController.signal.aborted) {
-                try {
-                    dispatch(checkXcodeCommandLineTools());
-                } catch (error) {
-                    logger.error(describeError(error));
-                }
+            if (abortController.signal.aborted) {
+                dispatch(removeUnfinishedInstallOnAbort(version));
+                return;
+            }
+
+            try {
+                dispatch(checkXcodeCommandLineTools());
+            } catch (error) {
+                logger.error(describeError(error));
             }
         } catch (error) {
-            if (!abortController.signal.aborted) {
-                const message = describeError(error);
-                dispatch(ErrorDialogActions.showDialog(message));
-                usageData.sendErrorReport(message);
+            if (abortController.signal.aborted) {
+                dispatch(removeUnfinishedInstallOnAbort(version));
+                return;
             }
-        }
 
-        abortController.signal.removeEventListener('abort', abortAction);
+            const message = describeError(error);
+            dispatch(ErrorDialogActions.showDialog(message));
+            usageData.sendErrorReport(message);
+        }
     };

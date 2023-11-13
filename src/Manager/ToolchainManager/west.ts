@@ -33,6 +33,10 @@ const west = async (
     controller?: AbortController,
     onUpdate: (update: string) => void = () => {}
 ) => {
+    if (controller?.signal.aborted) {
+        return;
+    }
+
     const box = await getToolChainManagerSandbox();
 
     const chdir = await sdkPath(ncsVersion);
