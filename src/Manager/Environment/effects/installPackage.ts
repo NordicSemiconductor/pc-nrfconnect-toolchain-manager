@@ -13,7 +13,7 @@ import {
 import fse from 'fs-extra';
 import path from 'path';
 
-import { getAbortController } from '../../../globalAbortControler';
+import { getNewAbortController } from '../../../globalAbortControler';
 import { persistedInstallDir } from '../../../persistentStore';
 import { RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
@@ -83,7 +83,7 @@ export const installPackage =
             await dispatch(unpack(version, filePath, toolchainDir));
             updateConfigFile(toolchainDir);
             dispatch(finishInstallToolchain(version, toolchainDir));
-            await dispatch(cloneNcs(version, false, getAbortController()));
+            await dispatch(cloneNcs(version, false, getNewAbortController()));
         } catch (error) {
             const message = describeError(error);
             dispatch(ErrorDialogActions.showDialog(`${message}`));

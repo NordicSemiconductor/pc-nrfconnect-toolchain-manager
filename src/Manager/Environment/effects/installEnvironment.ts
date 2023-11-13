@@ -12,7 +12,7 @@ import {
     usageData,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
-import { getAbortController } from '../../../globalAbortControler';
+import { getNewAbortController } from '../../../globalAbortControler';
 import {
     persistedShowVsCodeDialogDuringInstall,
     setPersistedShowVsCodeDialogDuringInstall,
@@ -37,7 +37,7 @@ export const install =
         justUpdate: boolean
     ): AppThunk<RootState, Promise<void>> =>
     async dispatch => {
-        const abortController = getAbortController();
+        const abortController = getNewAbortController();
         logger.info(`Start to install toolchain ${version}`);
 
         if (persistedShowVsCodeDialogDuringInstall()) {

@@ -8,6 +8,10 @@ import { getUserDataDir } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { NrfutilSandbox } from '@nordicsemiconductor/pc-nrfconnect-shared/nrfutil';
 import { getNrfutilLogger } from '@nordicsemiconductor/pc-nrfconnect-shared/nrfutil/nrfutilLogger';
 import sandbox from '@nordicsemiconductor/pc-nrfconnect-shared/nrfutil/sandbox';
+import {
+    getIsLoggingVerbose,
+    persistIsLoggingVerbose,
+} from '@nordicsemiconductor/pc-nrfconnect-shared/src/utils/persistentStore';
 
 let toolchainManagerSandbox: NrfutilSandbox | undefined;
 let promiseToolChainManagerSandbox: Promise<NrfutilSandbox> | undefined;
@@ -61,9 +65,13 @@ export const getToolChainManagerSandbox = async () => {
             }
         });
 
+        const fallbackLevel =
+            process.env.NODE_ENV === 'production' ? 'off' : 'error';
         toolchainManagerSandbox.setLogLevel(
-            process.env.NODE_ENV === 'production' ? 'off' : 'error'
+            getIsLoggingVerbose() ? 'trace' : fallbackLevel
         );
+        // Only the first reset after selecting "reset with verbose logging" is relevant
+        persistIsLoggingVerbose(false);
     }
 
     const box = await promiseToolChainManagerSandbox;
