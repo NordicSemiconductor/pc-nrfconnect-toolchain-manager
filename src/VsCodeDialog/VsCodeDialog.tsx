@@ -286,7 +286,7 @@ const ExtensionStateIcon = (state: VsCodeExtensionState) => {
             );
 
         case VsCodeExtensionState.INSTALLING:
-            return <Spinner size="sm" />;
+            return <Spinner size="sm" className="tw-ml-0.5 tw-mr-1.5" />;
     }
 };
 
