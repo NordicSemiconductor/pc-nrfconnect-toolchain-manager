@@ -227,9 +227,15 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item
-                onClick={() =>
-                    dispatch(cloneNcs(version, true, getNewAbortController()))
-                }
+                onClick={() => {
+                    try {
+                        dispatch(
+                            cloneNcs(version, true, getNewAbortController())
+                        );
+                    } catch (error) {
+                        // do nothing
+                    }
+                }}
             >
                 Update SDK
             </Dropdown.Item>
