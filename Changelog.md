@@ -1,3 +1,9 @@
+## 1.3.0 - UNRELEASED
+
+### Changed
+
+-   Backend changes to support nRF Connect for Desktop 4.3.0.
+
 ## 1.2.6 - 2023-10-12
 
 ### Changed

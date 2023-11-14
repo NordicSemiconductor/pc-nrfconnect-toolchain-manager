@@ -68,11 +68,7 @@ export const install =
                 logger.error(describeError(error));
             }
         } catch (error) {
-            if (abortController.signal.aborted) {
-                dispatch(removeUnfinishedInstallOnAbort(version));
-                return;
-            }
-
+            dispatch(removeUnfinishedInstallOnAbort(version));
             const message = describeError(error);
             dispatch(ErrorDialogActions.showDialog(message));
             usageData.sendErrorReport(message);
