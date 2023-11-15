@@ -8,5 +8,4 @@ const baseConfig = require('@nordicsemiconductor/pc-nrfconnect-shared/config/tai
 
 module.exports = {
     ...baseConfig,
-    corePlugins: { preflight: true },
 };
