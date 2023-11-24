@@ -47,6 +47,7 @@ export type Manager = {
     isShowingFirstSteps: boolean;
     versionToRemove: string;
     selectedVersion?: string;
+    environmentsListInitialized?: boolean;
 };
 
 export type AppState = {

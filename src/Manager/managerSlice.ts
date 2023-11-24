@@ -107,6 +107,7 @@ const managerSlice = createSlice({
         },
         addEnvironment: (state, action: PayloadAction<Environment>) => {
             state.environments = append(state.environments, action.payload);
+            state.environmentsListInitialized = true;
         },
     },
     extraReducers: {
@@ -147,6 +148,9 @@ export const getLatestToolchain = (toolchains: Toolchain[]) =>
 
 export const isRemoveDirDialogVisible = ({ app }: RootState) =>
     app.manager.isRemoveDirDialogVisible;
+
+export const isEnvironmentsListInitialized = ({ app }: RootState) =>
+    app.manager.environmentsListInitialized;
 
 export const isInstallPackageDialogVisible = ({ app }: RootState) =>
     app.manager.isInstallPackageDialogVisible;

@@ -13,6 +13,7 @@ import {
     isDevelopment,
     isLoggingVerbose,
     logger,
+    Spinner,
     usageData,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
@@ -46,6 +47,7 @@ import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
 import initEnvironments from './initEnvironments';
 import {
     environmentsByVersion,
+    isEnvironmentsListInitialized,
     isShowingFirstSteps,
     showInstallPackageDialog,
 } from './managerSlice';
@@ -123,6 +125,18 @@ export default () => {
             arch: process.arch,
         });
         return <FirstInstallInstructions />;
+    }
+
+    const environmentsListInitialized = useSelector(
+        isEnvironmentsListInitialized
+    );
+
+    if (!environmentsListInitialized) {
+        return (
+            <div className="tw-flex tw-justify-center">
+                <Spinner size="lg" />
+            </div>
+        );
     }
 
     return (
