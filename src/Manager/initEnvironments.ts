@@ -22,6 +22,7 @@ import { isWestPresent } from './Environment/effects/helpers';
 import { isLegacyEnvironment } from './Environment/environmentReducer';
 import { addEnvironment, clearEnvironments } from './managerSlice';
 import logNrfutilVersion from './nrfutil/logVersion';
+import config from './ToolchainManager/config';
 import toolchainManager from './ToolchainManager/toolchainManager';
 
 const detectLocallyExistingEnvironments =
@@ -210,10 +211,7 @@ const downloadIndex = (): AppThunk<RootState> => dispatch => {
 
 export default (): AppThunk<RootState, Promise<void>> => async dispatch => {
     logger.info('Initializing environments...');
-    const installDir = persistedInstallDir();
-    if (!installDir) {
-        return;
-    }
+    const installDir = persistedInstallDir() ?? (await config()).install_dir;
     await dispatch(logNrfutilVersion());
     const dir = path.dirname(installDir);
 
