@@ -18,6 +18,7 @@ import { persistedInstallDir } from '../../../persistentStore';
 import { RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { addEnvironment } from '../../managerSlice';
+import config from '../../ToolchainManager/config';
 import {
     finishInstallToolchain,
     startInstallToolchain,
@@ -31,7 +32,8 @@ import { unpack } from './unpack';
 export const installPackage =
     (urlOrFilePath: string): AppThunk<RootState, Promise<void>> =>
     async dispatch => {
-        const installDir = persistedInstallDir();
+        const installDir =
+            persistedInstallDir() ?? (await config()).install_dir;
 
         if (!installDir) {
             throw new Error(
