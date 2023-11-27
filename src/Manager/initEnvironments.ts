@@ -27,10 +27,8 @@ import toolchainManager from './ToolchainManager/toolchainManager';
 
 const detectLocallyExistingEnvironments =
     (): AppThunk<RootState, Promise<void>> => async dispatch => {
-        const installDir = persistedInstallDir();
-        if (!installDir) {
-            return;
-        }
+        const installDir =
+            persistedInstallDir() ?? (await config()).install_dir;
 
         try {
             const result = await Promise.all(
