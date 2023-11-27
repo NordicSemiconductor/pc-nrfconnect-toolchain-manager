@@ -69,8 +69,11 @@ export const install =
             }
         } catch (error) {
             dispatch(removeUnfinishedInstallOnAbort(version));
-            const message = describeError(error);
-            dispatch(ErrorDialogActions.showDialog(message));
-            usageData.sendErrorReport(message);
+            // nrfutil sandbox will throw if aborted
+            if (!abortController.signal.aborted) {
+                const message = describeError(error);
+                dispatch(ErrorDialogActions.showDialog(message));
+                usageData.sendErrorReport(message);
+            }
         }
     };
