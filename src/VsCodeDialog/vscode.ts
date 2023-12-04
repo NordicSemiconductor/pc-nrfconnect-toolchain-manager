@@ -122,12 +122,6 @@ export const installExtensions =
                 dispatch(installExtension(extension.identifier));
         });
 
-const onExtensionInstallFailed =
-    (identifier: string): AppThunk<RootState> =>
-    dispatch => {
-        dispatch(installExtensionFailed(identifier));
-        logger.error(`Failed to install extension ${identifier}`);
-    };
 
 const installExtension =
     (identifier: string): AppThunk<RootState> =>
@@ -139,10 +133,13 @@ const installExtension =
             if (installedExtensions.some(e => e.identifier === identifier)) {
                 dispatch(installedExtension(identifier));
                 logger.info(`Installed extension ${identifier}`);
-            } else onExtensionInstallFailed(identifier);
+                return;
+            }
         } catch {
-            onExtensionInstallFailed(identifier);
+            // Do nothing
         }
+        dispatch(installExtensionFailed(identifier));
+        logger.error(`Failed to install extension ${identifier}`);
     };
 
 export const listInstalledExtensions = async (
