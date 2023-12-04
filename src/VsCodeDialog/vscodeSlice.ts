@@ -61,13 +61,14 @@ const slice = createSlice({
         setVsCodeExtensions: (state, action) => {
             state.extensions = action.payload;
         },
-        startInstallingExtension(state, action) {
-            const extension = state.extensions.find(
-                e => e.identifier === action.payload
-            );
-            if (extension) extension.state = VsCodeExtensionState.INSTALLING;
+        startInstallingExtensions: state => {
+            state.extensions.forEach(extension => {
+                if (extension.state !== VsCodeExtensionState.INSTALLED) {
+                    extension.state = VsCodeExtensionState.INSTALLING;
+                }
+            });
         },
-        installedExtension(state, action) {
+        installedExtension: (state, action) => {
             usageData.sendUsageData(
                 EventAction.INSTALL_VS_EXTENSION,
                 action.payload
@@ -78,7 +79,7 @@ const slice = createSlice({
             );
             if (extension) extension.state = VsCodeExtensionState.INSTALLED;
         },
-        installExtensionFailed(state, action) {
+        installExtensionFailed: (state, action) => {
             const extension = state.extensions.find(
                 e => e.identifier === action.payload
             );
@@ -93,7 +94,7 @@ export const {
         showVsCodeDialog,
         setVsCodeStatus,
         setVsCodeExtensions,
-        startInstallingExtension,
+        startInstallingExtensions,
         installedExtension,
         installExtensionFailed,
         hideVsCodeDialog,
