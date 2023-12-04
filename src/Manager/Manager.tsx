@@ -26,7 +26,7 @@ import {
 import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
 import NrfCard from '../NrfCard/NrfCard';
 import {
-    persistedInstallDir,
+    persistedInstallDirOfToolChainDefault as persistedInstallDirOrToolChainDefault,
     setPersistedInstallDir,
 } from '../persistentStore';
 import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
@@ -91,11 +91,9 @@ const useManagerHooks = () => {
 
     useEffect(() => {
         const action = async () => {
-            if (!persistedInstallDir()) {
-                const config = await toolchainManager.config();
-                setPersistedInstallDir(config.install_dir);
-                dispatch(setInstallDir(config.install_dir));
-            }
+            const dir = await persistedInstallDirOrToolChainDefault();
+            setPersistedInstallDir(dir);
+            dispatch(setInstallDir(dir));
             dispatch(initApp());
         };
 
@@ -108,7 +106,9 @@ const useManagerHooks = () => {
     }, [verboseLogging]);
 
     useEffect(() => {
-        dispatch(initEnvironments());
+        if (installDir) {
+            dispatch(initEnvironments());
+        }
     }, [dispatch, installDir]);
 };
 

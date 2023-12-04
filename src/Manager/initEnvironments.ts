@@ -15,20 +15,22 @@ import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
 
-import { persistedInstallDir, toolchainIndexUrl } from '../persistentStore';
+import {
+    persistedInstallDir,
+    persistedInstallDirOfToolChainDefault,
+    toolchainIndexUrl,
+} from '../persistentStore';
 import { Environment, RootState } from '../state';
 import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
 import { isLegacyEnvironment } from './Environment/environmentReducer';
 import { addEnvironment, clearEnvironments } from './managerSlice';
 import logNrfutilVersion from './nrfutil/logVersion';
-import config from './ToolchainManager/config';
 import toolchainManager from './ToolchainManager/toolchainManager';
 
 const detectLocallyExistingEnvironments =
     (): AppThunk<RootState, Promise<void>> => async dispatch => {
-        const installDir =
-            persistedInstallDir() ?? (await config()).install_dir;
+        const installDir = await persistedInstallDirOfToolChainDefault();
 
         try {
             const result = await Promise.all(
@@ -209,7 +211,7 @@ const downloadIndex = (): AppThunk<RootState> => dispatch => {
 
 export default (): AppThunk<RootState, Promise<void>> => async dispatch => {
     logger.info('Initializing environments...');
-    const installDir = persistedInstallDir() ?? (await config()).install_dir;
+    const installDir = await persistedInstallDirOfToolChainDefault();
     await dispatch(logNrfutilVersion());
     const dir = path.dirname(installDir);
 
