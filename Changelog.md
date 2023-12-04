@@ -2,6 +2,7 @@
 
 ### Changed
 
+-   Updated VS Code Dialog UI look and feel.
 -   Backend changes to support nRF Connect for Desktop 4.3.0.
 
 ## 1.2.6 - 2023-10-12
