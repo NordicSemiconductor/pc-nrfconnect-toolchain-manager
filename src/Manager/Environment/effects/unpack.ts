@@ -18,6 +18,7 @@ import { RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { setProgress } from '../environmentReducer';
 import { calculateTimeConsumed } from './helpers';
+import { removeDir } from './removeDir';
 import { reportProgress, UNPACK } from './reportProgress';
 
 export const unpack =
@@ -62,6 +63,7 @@ export const unpack =
                     .toString()
                     .trim();
                 let n = 0;
+                removeDir(dest);
                 await fse.copy(path.join(volume, 'toolchain'), dest, {
                     filter: () => {
                         n += 1;
