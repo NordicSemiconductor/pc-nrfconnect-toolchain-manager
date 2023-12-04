@@ -6,12 +6,13 @@
 
 import React, { useEffect, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
-import { Spinner } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import {
+    Dialog,
+    DialogButton,
+    Spinner,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 
-import Button from '../Manager/Environment/Button';
-import { isInProgress } from '../Manager/Environment/environmentReducer';
 import { isAnyToolchainInProgress } from '../Manager/managerSlice';
 import {
     checkOpenVsCodeWithDelay,
@@ -45,13 +46,9 @@ const VsCodeDialog = () => {
     const handleClose = () => dispatch(hideVsCodeDialog());
 
     return (
-        <Modal show onHide={handleClose} backdrop="static" size="lg">
-            <Modal.Header closeButton={!isInProgress}>
-                <Modal.Title data-testid="title">
-                    {getTitle(status)}
-                </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
+        <Dialog isVisible onHide={handleClose} size="lg">
+            <Dialog.Header title={getTitle(status)} />
+            <Dialog.Body>
                 {status === VsCodeStatus.NOT_CHECKED && (
                     <div className="vscode-dialog-checking-install">
                         <span>
@@ -154,8 +151,8 @@ const VsCodeDialog = () => {
                         complete the installation.
                     </>
                 )}
-            </Modal.Body>
-            <Modal.Footer>
+            </Dialog.Body>
+            <Dialog.Footer>
                 {status === VsCodeStatus.MISSING_EXTENSIONS && (
                     <>
                         <MissingExtensionsSkipButton
@@ -172,19 +169,19 @@ const VsCodeDialog = () => {
                 {(status === VsCodeStatus.RECOMMEND_UNIVERSAL ||
                     status === VsCodeStatus.MISSING_NRFJPROG ||
                     status === VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL) && (
-                    <Button
-                        icon=""
-                        label="Skip"
+                    <DialogButton
                         onClick={() => {
                             openVsCode();
                             handleClose();
                         }}
                         variant="secondary"
-                    />
+                    >
+                        Skip
+                    </DialogButton>
                 )}
                 <CloseButton handleClose={handleClose} />
-            </Modal.Footer>
-        </Modal>
+            </Dialog.Footer>
+        </Dialog>
     );
 };
 
@@ -208,18 +205,20 @@ const getTitle = (status: VsCodeStatus) => {
 };
 
 const CloseButton = ({ handleClose }: { handleClose: () => void }) => (
-    <Button icon="" label="Close" onClick={handleClose} variant="secondary" />
+    <DialogButton onClick={handleClose} variant="secondary">
+        Close
+    </DialogButton>
 );
 
 const InstallMissingButton = () => {
     const dispatch = useDispatch();
     return (
-        <Button
-            icon=""
-            label="Install missing extensions"
+        <DialogButton
             onClick={() => dispatch(installExtensions())}
             variant="primary"
-        />
+        >
+            Install missing extensions
+        </DialogButton>
     );
 };
 
@@ -232,9 +231,7 @@ const MissingExtensionsSkipButton = ({
 }) => {
     const dispatch = useDispatch();
     return (
-        <Button
-            icon=""
-            label={skipText ? 'Skip' : 'Open VS Code'}
+        <DialogButton
             onClick={() => {
                 if (skipText) {
                     getNrfjprogStatus().then(state => {
@@ -256,7 +253,9 @@ const MissingExtensionsSkipButton = ({
                 } else dispatch(checkOpenVsCodeWithDelay());
             }}
             variant={skipText ? 'secondary' : 'primary'}
-        />
+        >
+            {skipText ? 'Skip' : 'Open VS Code'}
+        </DialogButton>
     );
 };
 
