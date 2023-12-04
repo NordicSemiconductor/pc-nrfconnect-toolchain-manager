@@ -118,6 +118,10 @@ export default () => {
     useManagerHooks();
     const showingFirstSteps = useSelector(isShowingFirstSteps);
 
+    const environmentsListInitialized = useSelector(
+        isEnvironmentsListInitialized
+    );
+
     if (showingFirstSteps) {
         logger.info('Show first install instructions');
         usageData.sendUsageData(EventAction.SHOW_FIRST_INSTALL_INSTRUCTIONS, {
@@ -126,10 +130,6 @@ export default () => {
         });
         return <FirstInstallInstructions />;
     }
-
-    const environmentsListInitialized = useSelector(
-        isEnvironmentsListInitialized
-    );
 
     if (!environmentsListInitialized) {
         return (
