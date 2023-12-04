@@ -21,7 +21,7 @@ import {
     setVsCodeExtensions,
     setVsCodeStatus,
     showVsCodeDialog,
-    startInstallingExtension,
+    startInstallingExtensions,
     VsCodeExtension,
     vsCodeExtensions,
     VsCodeExtensionState,
@@ -116,33 +116,40 @@ export const getVsCodeStatus =
     };
 
 export const installExtensions =
-    (): AppThunk<RootState> => (dispatch, getState) =>
-        vsCodeExtensions(getState()).forEach(extension => {
+    (): AppThunk<RootState> => (dispatch, getState) => {
+        dispatch(startInstallingExtensions());
+        return vsCodeExtensions(getState()).reduce((promise, extension) => {
             if (extension.state !== VsCodeExtensionState.INSTALLED)
-                dispatch(installExtension(extension.identifier));
-        });
-
-const onExtensionInstallFailed =
-    (identifier: string): AppThunk<RootState> =>
-    dispatch => {
-        dispatch(installExtensionFailed(identifier));
-        logger.error(`Failed to install extension ${identifier}`);
+                return promise.then(
+                    () =>
+                        new Promise(resolve => {
+                            dispatch(
+                                installExtension(extension.identifier)
+                            ).then(() => {
+                                resolve();
+                            });
+                        })
+                );
+            return promise;
+        }, Promise.resolve());
     };
 
 const installExtension =
-    (identifier: string): AppThunk<RootState> =>
+    (identifier: string): AppThunk<RootState, Promise<void>> =>
     async dispatch => {
         try {
-            dispatch(startInstallingExtension(identifier));
             await spawnAsync('code', ['--install-extension', identifier]);
             const installedExtensions = await listInstalledExtensions();
             if (installedExtensions.some(e => e.identifier === identifier)) {
                 dispatch(installedExtension(identifier));
                 logger.info(`Installed extension ${identifier}`);
-            } else onExtensionInstallFailed(identifier);
+                return;
+            }
         } catch {
-            onExtensionInstallFailed(identifier);
+            // Do nothing
         }
+        dispatch(installExtensionFailed(identifier));
+        logger.error(`Failed to install extension ${identifier}`);
     };
 
 export const listInstalledExtensions = async (

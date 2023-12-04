@@ -4,6 +4,13 @@
 
 -   Backend changes to support nRF Connect for Desktop 4.3.0.
 
+### Fixed
+
+-   VS Code extensions which failed to install would not be displayed as such in
+    the UI.
+-   Fixed an issue which sometimes caused VS Code extensions to fail to install
+    correctly.
+
 ## 1.2.6 - 2023-10-12
 
 ### Changed
