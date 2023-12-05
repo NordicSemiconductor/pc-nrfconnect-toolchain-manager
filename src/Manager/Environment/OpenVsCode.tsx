@@ -8,7 +8,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 
 import { Environment } from '../../state';
-import { checkOpenVsCodeWithDelay } from '../../VsCodeDialog/vscode';
+import { openVsCode } from '../../VsCodeDialog/vscode';
 import Button from './Button';
 import { isInProgress, isInstalled } from './environmentReducer';
 
@@ -24,7 +24,7 @@ export const OpenVsCode = ({ environment }: { environment: Environment }) => {
             variant="primary"
             disabled={isInProgress(environment)}
             onClick={() => {
-                dispatch(checkOpenVsCodeWithDelay());
+                dispatch(openVsCode());
             }}
         />
     );
