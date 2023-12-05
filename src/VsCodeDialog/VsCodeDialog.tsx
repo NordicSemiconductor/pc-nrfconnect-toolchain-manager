@@ -15,7 +15,6 @@ import {
 
 import { isAnyToolchainInProgress } from '../Manager/managerSlice';
 import {
-    checkOpenVsCodeWithDelay,
     getNrfjprogStatus,
     installExtensions,
     NrfjprogStatus,
@@ -38,6 +37,9 @@ const VsCodeDialog = () => {
     const dispatch = useDispatch();
     const status = useSelector(vsCodeStatus);
     const extensions = useSelector(vsCodeExtensions);
+    const allExtensionsInstalled = !extensions.some(
+        extension => extension.state !== VsCodeExtensionState.INSTALLED
+    );
     const visible = useSelector(isDialogVisible);
     const toolchainInProgress = useSelector(isAnyToolchainInProgress);
 
@@ -70,8 +72,7 @@ const VsCodeDialog = () => {
                                 >
                                     install VS Code
                                 </a>
-                                . After the toolchain succesfully installed,
-                                restart nRF Connect for Desktop.
+                                .
                             </>
                         ) : (
                             <>
@@ -83,8 +84,8 @@ const VsCodeDialog = () => {
                                     href={installLink()}
                                 >
                                     Install VS Code
-                                </a>{' '}
-                                and restart nRF Connect for Desktop.
+                                </a>
+                                .
                             </>
                         )}
                         {process.platform === 'darwin' && (
@@ -153,17 +154,27 @@ const VsCodeDialog = () => {
                 )}
             </Dialog.Body>
             <Dialog.Footer>
+                {status === VsCodeStatus.NOT_INSTALLED && (
+                    <DialogButton variant="primary" onClick={() => {}}>
+                        Retry
+                    </DialogButton>
+                )}
                 {status === VsCodeStatus.MISSING_EXTENSIONS && (
                     <>
-                        <MissingExtensionsSkipButton
-                            skipText={extensions.some(
-                                e => e.state !== VsCodeExtensionState.INSTALLED
-                            )}
-                            handleClose={handleClose}
-                        />
-                        {extensions.some(
-                            e => e.state !== VsCodeExtensionState.INSTALLED
-                        ) && <InstallMissingButton />}
+                        {allExtensionsInstalled && (
+                            <DialogButton
+                                variant="primary"
+                                onClick={() => dispatch(openVsCode())}
+                            >
+                                Open VS Code
+                            </DialogButton>
+                        )}
+                        {!allExtensionsInstalled && (
+                            <>
+                                <MissingExtensionsSkipButton />
+                                <InstallMissingButton />
+                            </>
+                        )}
                     </>
                 )}
                 {(status === VsCodeStatus.RECOMMEND_UNIVERSAL ||
@@ -171,8 +182,7 @@ const VsCodeDialog = () => {
                     status === VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL) && (
                     <DialogButton
                         onClick={() => {
-                            openVsCode();
-                            handleClose();
+                            dispatch(openVsCode());
                         }}
                         variant="secondary"
                     >
@@ -222,39 +232,30 @@ const InstallMissingButton = () => {
     );
 };
 
-const MissingExtensionsSkipButton = ({
-    skipText,
-    handleClose,
-}: {
-    skipText: boolean;
-    handleClose: () => void;
-}) => {
+const MissingExtensionsSkipButton = () => {
     const dispatch = useDispatch();
     return (
         <DialogButton
             onClick={() => {
-                if (skipText) {
-                    getNrfjprogStatus().then(state => {
-                        if (state === NrfjprogStatus.NOT_INSTALLED)
-                            dispatch(
-                                setVsCodeStatus(VsCodeStatus.MISSING_NRFJPROG)
-                            );
-                        else if (state === NrfjprogStatus.RECOMMEND_UNIVERSAL)
-                            dispatch(
-                                setVsCodeStatus(
-                                    VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL
-                                )
-                            );
-                        else {
-                            handleClose();
-                            openVsCode();
-                        }
-                    });
-                } else dispatch(checkOpenVsCodeWithDelay());
+                getNrfjprogStatus().then(state => {
+                    if (state === NrfjprogStatus.NOT_INSTALLED)
+                        dispatch(
+                            setVsCodeStatus(VsCodeStatus.MISSING_NRFJPROG)
+                        );
+                    else if (state === NrfjprogStatus.RECOMMEND_UNIVERSAL)
+                        dispatch(
+                            setVsCodeStatus(
+                                VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL
+                            )
+                        );
+                    else {
+                        dispatch(openVsCode());
+                    }
+                });
             }}
-            variant={skipText ? 'secondary' : 'primary'}
+            variant="secondary"
         >
-            {skipText ? 'Skip' : 'Open VS Code'}
+            Skip
         </DialogButton>
     );
 };

@@ -18,7 +18,7 @@ import {
     setPersistedShowVsCodeDialogDuringInstall,
 } from '../../../persistentStore';
 import { Environment, RootState } from '../../../state';
-import { getVsCodeStatus } from '../../../VsCodeDialog/vscode';
+import { isVsCodeInstalled } from '../../../VsCodeDialog/vscode';
 import {
     setVsCodeStatus,
     showVsCodeDialog,
@@ -41,12 +41,10 @@ export const install =
         logger.info(`Start to install toolchain ${version}`);
 
         if (persistedShowVsCodeDialogDuringInstall()) {
-            dispatch(getVsCodeStatus()).then(status => {
-                dispatch(setVsCodeStatus(status));
-                if (status === VsCodeStatus.NOT_INSTALLED) {
-                    dispatch(showVsCodeDialog());
-                }
-            });
+            if (!(await isVsCodeInstalled())) {
+                dispatch(setVsCodeStatus(VsCodeStatus.NOT_INSTALLED));
+                dispatch(showVsCodeDialog());
+            }
             setPersistedShowVsCodeDialogDuringInstall(false);
         }
 

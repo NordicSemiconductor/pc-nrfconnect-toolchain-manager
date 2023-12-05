@@ -4,13 +4,16 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { app } from '@electron/remote';
 import {
     AppThunk,
     logger,
     usageData,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { spawn } from 'child_process';
+import { existsSync } from 'fs';
 import os from 'os';
+import { dirname, join } from 'path';
 
 import { RootState } from '../state';
 import EventAction from '../usageDataActions';
@@ -60,16 +63,20 @@ const isAppleSilicon =
     process.platform === 'darwin' && os.cpus()[0].model.includes('Apple');
 
 const minDelay = 500;
-export const checkOpenVsCodeWithDelay = (): AppThunk<RootState> => dispatch => {
+export const openVsCode = (): AppThunk<RootState> => dispatch => {
+    dispatch(hideVsCodeDialog());
     dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
-    dispatch(showVsCodeDialog());
 
     const start = new Date();
     dispatch(getVsCodeStatus()).then(status => {
         if (status === VsCodeStatus.INSTALLED) {
+            usageData.sendUsageData(EventAction.OPEN_VS_CODE, {
+                platform: process.platform,
+            });
             dispatch(hideVsCodeDialog());
-            openVsCode();
+            spawnAsync('code');
         } else {
+            dispatch(showVsCodeDialog());
             const end = new Date();
             const diff = minDelay - (+end - +start) / 1000;
             if (diff > 0)
@@ -81,8 +88,20 @@ export const checkOpenVsCodeWithDelay = (): AppThunk<RootState> => dispatch => {
 
 export const getVsCodeStatus =
     (): AppThunk<RootState, Promise<VsCodeStatus>> => async dispatch => {
-        let status = VsCodeStatus.NOT_CHECKED;
         try {
+            if (!(await isVsCodeInstalled())) {
+                return VsCodeStatus.NOT_INSTALLED;
+            }
+
+            if (isAppleSilicon) {
+                const vscode = await spawnAsync(
+                    'file "$(dirname "$(readlink $(which code))")/../../../MacOS/Electron"'
+                );
+                if (checkExecArchitecture(vscode) === 'x86_64') {
+                    return VsCodeStatus.RECOMMEND_UNIVERSAL;
+                }
+            }
+
             const extensions = await listInstalledExtensions(true);
             dispatch(setVsCodeExtensions(extensions));
             if (
@@ -90,29 +109,21 @@ export const getVsCodeStatus =
                     extension =>
                         extension.state !== VsCodeExtensionState.INSTALLED
                 )
-            )
-                status = VsCodeStatus.MISSING_EXTENSIONS;
-            else {
-                const nrfjprog = await getNrfjprogStatus();
+            ) {
+                return VsCodeStatus.MISSING_EXTENSIONS;
+            }
 
-                if (nrfjprog === NrfjprogStatus.NOT_INSTALLED)
-                    status = VsCodeStatus.MISSING_NRFJPROG;
-                else if (nrfjprog === NrfjprogStatus.RECOMMEND_UNIVERSAL)
-                    status = VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL;
-                else status = VsCodeStatus.INSTALLED;
-
-                if (isAppleSilicon) {
-                    const vscode = await spawnAsync(
-                        'file "$(dirname "$(readlink $(which code))")/../../../MacOS/Electron"'
-                    );
-                    if (checkExecArchitecture(vscode) === 'x86_64')
-                        status = VsCodeStatus.RECOMMEND_UNIVERSAL;
-                }
+            const nrfjprog = await getNrfjprogStatus();
+            if (nrfjprog === NrfjprogStatus.NOT_INSTALLED) {
+                return VsCodeStatus.MISSING_NRFJPROG;
+            }
+            if (nrfjprog === NrfjprogStatus.RECOMMEND_UNIVERSAL) {
+                return VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL;
             }
         } catch {
-            status = VsCodeStatus.NOT_INSTALLED;
+            return VsCodeStatus.NOT_INSTALLED;
         }
-        return Promise.resolve(status);
+        return VsCodeStatus.INSTALLED;
     };
 
 export const installExtensions =
@@ -232,9 +243,38 @@ const spawnAsync = (
         });
     });
 
-export const openVsCode = () => {
-    usageData.sendUsageData(EventAction.OPEN_VS_CODE, {
-        platform: process.platform,
-    });
-    spawnAsync('code');
+const isVsCodeInstalledOnLinux = () =>
+    app.getApplicationNameForProtocol('vscode://') !== '';
+
+const isVsCodeInstalledOnMacOS = async () => {
+    try {
+        const { path } = await app.getApplicationInfoForProtocol('vscode://');
+
+        return existsSync(path);
+    } catch (error) {
+        return false;
+    }
+};
+
+const isVsCodeInstalledOnWindows = async () => {
+    try {
+        const { path } = await app.getApplicationInfoForProtocol('vscode://');
+
+        return existsSync(join(dirname(path), 'bin', 'code'));
+    } catch (error) {
+        return false;
+    }
+};
+
+export const isVsCodeInstalled = () => {
+    switch (process.platform) {
+        case 'linux':
+            return isVsCodeInstalledOnLinux();
+        case 'darwin':
+            return isVsCodeInstalledOnMacOS();
+        case 'win32':
+            return isVsCodeInstalledOnWindows();
+        default:
+            throw new Error(`Unsupported platform ${process.platform}`);
+    }
 };
