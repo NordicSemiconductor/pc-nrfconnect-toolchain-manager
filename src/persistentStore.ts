@@ -8,7 +8,26 @@ import { getPersistentStore as store } from '@nordicsemiconductor/pc-nrfconnect-
 import os from 'os';
 import path from 'path';
 
+import config from './Manager/ToolchainManager/config';
+
 export const oldDefaultInstallDirOnWindows = path.resolve(os.homedir(), 'ncs');
+
+let cachedDefaultInstallPath: string | undefined;
+
+export const persistedInstallDirOfToolChainDefault =
+    async (): Promise<string> => {
+        cachedDefaultInstallPath =
+            process.platform === 'darwin'
+                ? cachedDefaultInstallPath ?? undefined
+                : store().get('installDir');
+
+        if (!cachedDefaultInstallPath) {
+            cachedDefaultInstallPath = (await config()).install_dir;
+            return cachedDefaultInstallPath;
+        }
+
+        return cachedDefaultInstallPath;
+    };
 
 export const persistedInstallDir = (): string | undefined =>
     process.platform === 'darwin' ? undefined : store().get('installDir');

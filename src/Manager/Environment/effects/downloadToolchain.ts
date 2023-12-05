@@ -15,16 +15,17 @@ import fs from 'fs';
 import fse from 'fs-extra';
 import path from 'path';
 
-import { persistedInstallDir, toolchainUrl } from '../../../persistentStore';
+import {
+    persistedInstallDirOfToolChainDefault,
+    toolchainUrl,
+} from '../../../persistentStore';
 import { RootState, Toolchain } from '../../../state';
 import EventAction from '../../../usageDataActions';
-import config from '../../ToolchainManager/config';
 import { setProgress } from '../environmentReducer';
 import { calculateTimeConsumed } from './helpers';
 import { DOWNLOAD, reportProgress } from './reportProgress';
 
-const getInstallDir = async () =>
-    persistedInstallDir() ?? (await config()).install_dir;
+const getInstallDir = () => persistedInstallDirOfToolChainDefault();
 
 export const downloadToolchain =
     (

@@ -11,6 +11,7 @@
     the UI.
 -   Fixed an issue which sometimes caused VS Code extensions to fail to install
     correctly.
+-   Fixed an issue where updating 1.x toolchains would get stuck unpacking
 
 ## 1.2.6 - 2023-10-12
 

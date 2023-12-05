@@ -14,11 +14,10 @@ import fse from 'fs-extra';
 import path from 'path';
 
 import { getNewAbortController } from '../../../globalAbortControler';
-import { persistedInstallDir } from '../../../persistentStore';
+import { persistedInstallDirOfToolChainDefault } from '../../../persistentStore';
 import { RootState } from '../../../state';
 import EventAction from '../../../usageDataActions';
 import { addEnvironment } from '../../managerSlice';
-import config from '../../ToolchainManager/config';
 import {
     finishInstallToolchain,
     startInstallToolchain,
@@ -32,8 +31,7 @@ import { unpack } from './unpack';
 export const installPackage =
     (urlOrFilePath: string): AppThunk<RootState, Promise<void>> =>
     async dispatch => {
-        const installDir =
-            persistedInstallDir() ?? (await config()).install_dir;
+        const installDir = await persistedInstallDirOfToolChainDefault();
 
         if (!installDir) {
             throw new Error(

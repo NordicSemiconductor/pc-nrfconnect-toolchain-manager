@@ -6,12 +6,11 @@
 
 import path from 'path';
 
-import { persistedInstallDir } from '../persistentStore';
-import config from './ToolchainManager/config';
+import { persistedInstallDirOfToolChainDefault } from '../persistentStore';
 
 export default async (version: string, ...params: string[]) =>
     path.resolve(
-        persistedInstallDir() ?? (await config()).install_dir,
+        await persistedInstallDirOfToolChainDefault(),
         version,
         ...params
     );
