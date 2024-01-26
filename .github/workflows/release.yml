@@ -23,4 +23,8 @@ on:
 jobs:
     release:
         uses: NordicSemiconductor/pc-nrfconnect-shared/.github/workflows/release.yml@github/release-workflow
+        with:
+            run_id: ${{ inputs.run_id }}
+            tag: ${{ inputs.tag }}
+            source: ${{ inputs.source }}
         secrets: inherit
