@@ -21,6 +21,6 @@ on:
                     - official
 
 jobs:
-    check_labels:
+    release:
         uses: NordicSemiconductor/pc-nrfconnect-shared/.github/workflows/release.yml@main
         secrets: inherit

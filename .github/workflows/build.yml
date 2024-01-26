@@ -10,6 +10,6 @@ on:
             - main
 
 jobs:
-    check_labels:
+    build:
         uses: NordicSemiconductor/pc-nrfconnect-shared/.github/workflows/build.yml@main
         secrets: inherit
