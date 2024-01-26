@@ -1,0 +1,26 @@
+name: Release
+
+on:
+    workflow_dispatch:
+        inputs:
+            run_id:
+                description: 'The workflow id where the artifacts were uploaded'
+                required: true
+                type: string
+            tag:
+                description: 'Tag to be used (e.g. v1.2.3)'
+                required: true
+                type: string
+            source:
+                description: 'What source to release to'
+                required: true
+                type: choice
+                options:
+                    - release-test
+                    - internal
+                    - official
+
+jobs:
+    release:
+        uses: NordicSemiconductor/pc-nrfconnect-shared/.github/workflows/release.yml@main
+        secrets: inherit
