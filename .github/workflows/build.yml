@@ -1,4 +1,4 @@
-name: Check labels
+name: Build
 
 on:
     pull_request:
@@ -10,5 +10,5 @@ on:
 
 jobs:
     check_labels:
-        uses: NordicSemiconductor/pc-nrfconnect-shared/.github/workflows/build.yml@feat/reusable-workflow-for-apps
+        uses: NordicSemiconductor/pc-nrfconnect-shared/.github/workflows/build.yml@main
         secrets: inherit
