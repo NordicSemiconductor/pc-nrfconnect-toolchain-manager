@@ -1,0 +1,14 @@
+name: Check labels
+
+on:
+    pull_request:
+        branches:
+            - main
+    push:
+        branches:
+            - main
+
+jobs:
+    check_labels:
+        uses: NordicSemiconductor/pc-nrfconnect-shared/.github/workflows/build.yml@feat/reusable-workflow-for-apps
+        secrets: inherit
