@@ -8,7 +8,7 @@ import { net } from '@electron/remote';
 import {
     AppThunk,
     logger,
-    usageData,
+    telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { execSync } from 'child_process';
 import fs from 'fs';
@@ -65,7 +65,7 @@ const detectLocallyExistingEnvironments =
                     logger.info(
                         `With west found: ${westPresent ? 'yes' : 'no'}`
                     );
-                    usageData.sendUsageData(EventAction.REPORT_LOCAL_ENVS, {
+                    telemetry.sendEvent(EventAction.REPORT_LOCAL_ENVS, {
                         version,
                         westPresent: westPresent
                             ? 'west found'
@@ -83,7 +83,7 @@ const detectLocallyExistingEnvironments =
                     );
                 });
         } catch (e) {
-            usageData.sendErrorReport(
+            telemetry.sendErrorReport(
                 `Fail to detect locally existing environments with error: ${e}`
             );
         }
@@ -163,7 +163,7 @@ const downloadIndex = (): AppThunk<RootState> => dispatch => {
         let result = '';
         response.on('end', () => {
             if (response.statusCode !== 200) {
-                usageData.sendErrorReport(
+                telemetry.sendErrorReport(
                     `Unable to download ${toolchainIndexUrl()}. Got status code ${
                         response.statusCode
                     }`
@@ -189,7 +189,7 @@ const downloadIndex = (): AppThunk<RootState> => dispatch => {
                     }
                 );
             } catch (e) {
-                usageData.sendErrorReport(
+                telemetry.sendErrorReport(
                     `Fail to parse index json file with error: ${e}`
                 );
             }
@@ -202,7 +202,7 @@ const downloadIndex = (): AppThunk<RootState> => dispatch => {
         });
     });
     request.on('error', e => {
-        usageData.sendErrorReport(
+        telemetry.sendErrorReport(
             `Fail to detect locally existing environments with error: ${e}`
         );
     });

@@ -8,7 +8,7 @@ import {
     AppThunk,
     describeError,
     ErrorDialogActions,
-    usageData,
+    telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import fse from 'fs-extra';
 import path from 'path';
@@ -39,7 +39,7 @@ export const installPackage =
             );
         }
 
-        usageData.sendUsageData(EventAction.INSTALL_TOOLCHAIN_FROM_PATH, {
+        telemetry.sendEvent(EventAction.INSTALL_TOOLCHAIN_FROM_PATH, {
             urlOrFilePath,
         });
         const match =
@@ -50,7 +50,7 @@ export const installPackage =
             const errorMsg =
                 'Filename is not recognized as a toolchain package.';
             dispatch(ErrorDialogActions.showDialog(errorMsg));
-            usageData.sendErrorReport(errorMsg);
+            telemetry.sendErrorReport(errorMsg);
             return;
         }
 
@@ -87,6 +87,6 @@ export const installPackage =
         } catch (error) {
             const message = describeError(error);
             dispatch(ErrorDialogActions.showDialog(`${message}`));
-            usageData.sendErrorReport(`${message}`);
+            telemetry.sendErrorReport(`${message}`);
         }
     };

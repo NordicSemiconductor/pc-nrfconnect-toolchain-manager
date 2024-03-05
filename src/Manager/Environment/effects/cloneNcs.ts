@@ -8,7 +8,7 @@ import {
     AppThunk,
     ErrorDialogActions,
     logger,
-    usageData,
+    telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { ChildProcess, spawn } from 'child_process';
 import fs from 'fs';
@@ -41,7 +41,7 @@ export const cloneNcs =
         dispatch(startCloningSdk(version));
         logger.info(`Cloning nRF Connect SDK ${version}`);
 
-        usageData.sendUsageData(EventAction.CLONE_NCS, {
+        telemetry.sendEvent(EventAction.CLONE_NCS, {
             version,
             platform: process.platform,
             arch: process.arch,
@@ -73,7 +73,7 @@ export const cloneNcs =
 
             const errorMsg = `Failed to clone the repositories: ${error}`;
             dispatch(ErrorDialogActions.showDialog(errorMsg));
-            usageData.sendErrorReport(errorMsg);
+            telemetry.sendErrorReport(errorMsg);
             throw error;
         }
 
@@ -89,12 +89,12 @@ export const cloneNcs =
         );
 
         const timeInMin = calculateTimeConsumed(cloneTimeStart);
-        usageData.sendUsageData(EventAction.CLONE_NCS_SUCCESS, {
+        telemetry.sendEvent(EventAction.CLONE_NCS_SUCCESS, {
             version,
             platform: process.platform,
             arch: process.arch,
         });
-        usageData.sendUsageData(EventAction.CLONE_NCS_TIME, {
+        telemetry.sendEvent(EventAction.CLONE_NCS_TIME, {
             timeInMin,
             version,
         });

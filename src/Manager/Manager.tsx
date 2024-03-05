@@ -14,7 +14,7 @@ import {
     isLoggingVerbose,
     logger,
     Spinner,
-    usageData,
+    telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import FirstInstallInstructions from '../FirstInstall/FirstInstallInstructions';
@@ -124,7 +124,7 @@ export default () => {
 
     if (showingFirstSteps) {
         logger.info('Show first install instructions');
-        usageData.sendUsageData(EventAction.SHOW_FIRST_INSTALL_INSTRUCTIONS, {
+        telemetry.sendEvent(EventAction.SHOW_FIRST_INSTALL_INSTRUCTIONS, {
             platform: process.platform,
             arch: process.arch,
         });
@@ -209,8 +209,8 @@ const reportVsCodeStatus =
                 'nRFjprog Intel version installed',
         }[status];
 
-        usageData.sendUsageData(EventAction.VS_INSTALLED, { statusString });
-        usageData.sendUsageData(EventAction.NRFJPROG_INSTALLED, {
+        telemetry.sendEvent(EventAction.VS_INSTALLED, { statusString });
+        telemetry.sendEvent(EventAction.NRFJPROG_INSTALLED, {
             statusString: nrfjprogStatusToString(nrfjprogInstallStatus),
         });
     };

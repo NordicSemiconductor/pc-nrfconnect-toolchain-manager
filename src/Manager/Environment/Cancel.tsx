@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import { telemetry } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import { getExistingAbortController } from '../../globalAbortControler';
 import { Environment } from '../../state';
@@ -17,7 +17,7 @@ type Props = { environment: Environment };
 const Cancel = ({ environment }: Props) => {
     const onCancel = () => {
         getExistingAbortController()?.abort();
-        usageData.sendUsageData('Cancel installation', {
+        telemetry.sendEvent('Cancel installation', {
             version: environment.version,
         });
     };

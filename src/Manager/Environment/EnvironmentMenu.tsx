@@ -8,7 +8,7 @@ import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { useDispatch, useSelector } from 'react-redux';
-import { logger, usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import { logger, telemetry } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { exec, ExecException, execSync } from 'child_process';
 import { shell } from 'electron';
 import { readdirSync } from 'fs';
@@ -44,14 +44,14 @@ const execCallback = (
     stderr: string
 ) => {
     logger.info('Terminal has closed');
-    if (error) usageData.sendErrorReport(error.message);
-    if (stderr) usageData.sendErrorReport(stderr);
+    if (error) telemetry.sendErrorReport(error.message);
+    if (stderr) telemetry.sendErrorReport(stderr);
     if (stdout) logger.debug(stdout);
 };
 
 const openBash = (environment: Environment) => {
     logger.info('Open bash');
-    usageData.sendUsageData(EventAction.OPEN_BASH, {
+    telemetry.sendEvent(EventAction.OPEN_BASH, {
         platform: process.platform,
         arch: process.arch,
     });
@@ -69,7 +69,7 @@ const openBash = (environment: Environment) => {
 
 const openCmd = (environment: Environment) => {
     logger.info('Open command prompt');
-    usageData.sendUsageData(EventAction.OPEN_CMD, {
+    telemetry.sendEvent(EventAction.OPEN_CMD, {
         platform: process.platform,
         arch: process.arch,
     });
@@ -91,7 +91,7 @@ const openCmd = (environment: Environment) => {
 const launchLegacyTerminal = {
     darwin: (toolchainDir: string) => {
         logger.info('Open terminal');
-        usageData.sendUsageData(EventAction.OPEN_TERMINAL, {
+        telemetry.sendEvent(EventAction.OPEN_TERMINAL, {
             platform: process.platform,
             arch: process.arch,
         });
@@ -118,7 +118,7 @@ END
 
 const openDirectory = (directory: string) => {
     logger.info(`Open directory ${directory}`);
-    usageData.sendUsageData(EventAction.OPEN_DIR, {
+    telemetry.sendEvent(EventAction.OPEN_DIR, {
         platform: process.platform,
         arch: process.arch,
         directory,

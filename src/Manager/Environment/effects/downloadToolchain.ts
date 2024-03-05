@@ -8,7 +8,7 @@ import { net } from '@electron/remote';
 import {
     AppThunk,
     logger,
-    usageData,
+    telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { createHash } from 'crypto';
 import fs from 'fs';
@@ -42,7 +42,7 @@ export const downloadToolchain =
 
                     const url = uri || toolchainUrl(name || '');
                     const filename = name || path.basename(url);
-                    usageData.sendUsageData(EventAction.DOWNLOAD_TOOLCHAIN, {
+                    telemetry.sendEvent(EventAction.DOWNLOAD_TOOLCHAIN, {
                         url,
                     });
 
@@ -87,11 +87,11 @@ export const downloadToolchain =
                                 const timeInMin =
                                     calculateTimeConsumed(downloadTimeStart);
 
-                                usageData.sendUsageData(
+                                telemetry.sendEvent(
                                     EventAction.DOWNLOAD_TOOLCHAIN_SUCCESS,
                                     { url }
                                 );
-                                usageData.sendUsageData(
+                                telemetry.sendEvent(
                                     EventAction.DOWNLOAD_TOOLCHAIN_TIME,
                                     { timeInMin, url }
                                 );

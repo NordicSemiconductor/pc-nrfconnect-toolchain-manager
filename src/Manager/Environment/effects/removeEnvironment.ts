@@ -8,7 +8,7 @@ import {
     AppThunk,
     ErrorDialogActions,
     logger,
-    usageData,
+    telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { existsSync } from 'fs';
 import { rename, rm } from 'fs/promises';
@@ -76,7 +76,7 @@ export const removeEnvironment =
     async dispatch => {
         const { toolchainDir, version } = environment;
         logger.info(`Removing ${version} at ${toolchainDir}`);
-        usageData.sendUsageData(EventAction.REMOVE_TOOLCHAIN, { version });
+        telemetry.sendEvent(EventAction.REMOVE_TOOLCHAIN, { version });
 
         dispatch(startRemoving(version));
 
@@ -94,7 +94,7 @@ export const removeEnvironment =
             dispatch(removeEnvironmentReducer(version));
         } catch (err) {
             dispatch(ErrorDialogActions.showDialog((err as Error).message));
-            usageData.sendErrorReport((err as Error).message);
+            telemetry.sendErrorReport((err as Error).message);
         }
 
         dispatch(finishRemoving(version));

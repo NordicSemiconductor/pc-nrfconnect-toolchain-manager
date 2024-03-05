@@ -7,7 +7,7 @@
 import {
     AppThunk,
     logger,
-    usageData,
+    telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import fse from 'fs-extra';
 
@@ -59,7 +59,7 @@ export const installToolchain =
             await dispatch(unpack(version, packageLocation, toolchainDir));
             updateConfigFile(toolchainDir);
 
-            usageData.sendUsageData(EventAction.INSTALL_TOOLCHAIN_FROM_INDEX, {
+            telemetry.sendEvent(EventAction.INSTALL_TOOLCHAIN_FROM_INDEX, {
                 version,
                 toolchainVersion: toolchain?.version,
             });
@@ -81,13 +81,10 @@ export const installToolchain =
                 controller
             );
 
-            usageData.sendUsageData(
-                EventAction.INSTALL_TOOLCHAIN_FROM_NRFUTIL,
-                {
-                    version,
-                    nrfutilToolchainVersion: result.install_path,
-                }
-            );
+            telemetry.sendEvent(EventAction.INSTALL_TOOLCHAIN_FROM_NRFUTIL, {
+                version,
+                nrfutilToolchainVersion: result.install_path,
+            });
             dispatch(finishInstallToolchain(version, result.install_path));
         }
     };
