@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { getToolChainManagerSandbox } from './common';
+import { getModule } from '@nordicsemiconductor/pc-nrfconnect-shared/nrfutil';
 
 interface Config {
     install_dir: string;
 }
 
 export default async (controller?: AbortController) => {
-    const box = await getToolChainManagerSandbox();
+    const box = await getModule('toolchain-manager');
     const args: string[] = [`--show`];
 
     return box.singleInfoOperationOptionalData<Config>(

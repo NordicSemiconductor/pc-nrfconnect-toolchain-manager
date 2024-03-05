@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { getModule } from '@nordicsemiconductor/pc-nrfconnect-shared/nrfutil';
+
 import sdkPath from '../sdkPath';
-import { getToolChainManagerSandbox } from './common';
 
 export const launchTerminalGeneric = async (
     chdir: string,
@@ -14,7 +15,7 @@ export const launchTerminalGeneric = async (
     args?: string[],
     launchWith?: string
 ) => {
-    const box = await getToolChainManagerSandbox();
+    const box = await getModule('toolchain-manager');
     const argsTemp: string[] = ['--chdir', chdir, '--ncs-version', ncsVersion];
 
     if (installDir) {
