@@ -9,7 +9,7 @@ import {
     describeError,
     ErrorDialogActions,
     logger,
-    usageData,
+    telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import { getNewAbortController } from '../../../globalAbortControler';
@@ -71,7 +71,7 @@ export const install =
             if (!abortController.signal.aborted) {
                 const message = describeError(error);
                 dispatch(ErrorDialogActions.showDialog(message));
-                usageData.sendErrorReport(message);
+                telemetry.sendErrorReport(message);
             }
         }
     };

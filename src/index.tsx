@@ -8,7 +8,7 @@ import React from 'react';
 import {
     App,
     render,
-    usageData,
+    telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import Manager from './Manager/Manager';
@@ -17,7 +17,7 @@ import Settings from './Settings/Settings';
 
 import './style.scss';
 
-usageData.enableTelemetry();
+telemetry.enableTelemetry();
 
 render(
     <App

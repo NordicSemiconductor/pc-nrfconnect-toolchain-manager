@@ -7,7 +7,7 @@
 import {
     AppThunk,
     logger,
-    usageData,
+    telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { execSync } from 'child_process';
 import extract from 'extract-zip';
@@ -29,7 +29,7 @@ export const unpack =
     ): AppThunk<RootState, Promise<void>> =>
     async dispatch => {
         logger.info(`Unpacking toolchain ${version}`);
-        usageData.sendUsageData(EventAction.UNPACK_TOOLCHAIN, {
+        telemetry.sendEvent(EventAction.UNPACK_TOOLCHAIN, {
             version,
             platform: process.platform,
             arch: process.arch,
@@ -78,13 +78,13 @@ export const unpack =
         }
 
         const timeInMin = calculateTimeConsumed(unpackTimeStart);
-        usageData.sendUsageData(EventAction.UNPACK_TOOLCHAIN_SUCCESS, {
+        telemetry.sendEvent(EventAction.UNPACK_TOOLCHAIN_SUCCESS, {
             timeInMin,
             version,
             platform: process.platform,
             arch: process.arch,
         });
-        usageData.sendUsageData(EventAction.UNPACK_TOOLCHAIN_TIME, {
+        telemetry.sendEvent(EventAction.UNPACK_TOOLCHAIN_TIME, {
             timeInMin,
             version,
             platform: process.platform,

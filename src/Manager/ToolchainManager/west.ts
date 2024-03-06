@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
+import { getModule } from '@nordicsemiconductor/pc-nrfconnect-shared/nrfutil';
 import { getNrfutilLogger } from '@nordicsemiconductor/pc-nrfconnect-shared/nrfutil/nrfutilLogger';
 import { mkdirSync } from 'fs';
 
 import { persistedInstallDir } from '../../persistentStore';
 import sdkPath from '../sdkPath';
-import { getToolChainManagerSandbox } from './common';
 
 const parser = (onData: (line: string) => void, chunk: Buffer) => {
     let buffer = chunk.toString('utf8');
@@ -37,7 +37,7 @@ const west = async (
         return;
     }
 
-    const box = await getToolChainManagerSandbox();
+    const box = await getModule('toolchain-manager');
 
     const chdir = await sdkPath(ncsVersion);
 

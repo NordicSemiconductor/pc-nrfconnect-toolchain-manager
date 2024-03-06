@@ -8,7 +8,7 @@ import { app } from '@electron/remote';
 import {
     AppThunk,
     logger,
-    usageData,
+    telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { spawn } from 'child_process';
 import { existsSync } from 'fs';
@@ -70,7 +70,7 @@ export const openVsCode = (): AppThunk<RootState> => dispatch => {
     const start = new Date();
     dispatch(getVsCodeStatus()).then(status => {
         if (status === VsCodeStatus.INSTALLED) {
-            usageData.sendUsageData(EventAction.OPEN_VS_CODE, {
+            telemetry.sendEvent(EventAction.OPEN_VS_CODE, {
                 platform: process.platform,
             });
             dispatch(hideVsCodeDialog());

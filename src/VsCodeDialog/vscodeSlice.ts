@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { usageData } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import { telemetry } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { createSlice } from '@reduxjs/toolkit';
 
 import type { RootState } from '../state';
@@ -69,7 +69,7 @@ const slice = createSlice({
             });
         },
         installedExtension: (state, action) => {
-            usageData.sendUsageData(
+            telemetry.sendEvent(
                 EventAction.INSTALL_VS_EXTENSION,
                 action.payload
             );

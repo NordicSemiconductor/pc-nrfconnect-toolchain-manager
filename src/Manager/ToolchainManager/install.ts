@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { Progress } from '@nordicsemiconductor/pc-nrfconnect-shared/nrfutil';
+import {
+    getModule,
+    Progress,
+} from '@nordicsemiconductor/pc-nrfconnect-shared/nrfutil';
 import { Task } from '@nordicsemiconductor/pc-nrfconnect-shared/nrfutil/sandboxTypes';
-
-import { getToolChainManagerSandbox } from './common';
 
 interface InstallFinish {
     install_path: string;
@@ -24,7 +25,7 @@ export default async (
     onProgress?: (progress: Progress, task?: Task) => void,
     controller?: AbortController
 ) => {
-    const box = await getToolChainManagerSandbox();
+    const box = await getModule('toolchain-manager');
     const args: string[] = [`--ncs-version`, ncsVersion];
 
     if (installDir) {

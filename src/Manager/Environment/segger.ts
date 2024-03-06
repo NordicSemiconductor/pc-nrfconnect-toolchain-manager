@@ -7,7 +7,7 @@
 import {
     describeError,
     logger,
-    usageData,
+    telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { exec, ExecException } from 'child_process';
 import fs from 'fs';
@@ -146,7 +146,7 @@ const readFile = (filePath: string): string | null => {
     } catch (error) {
         // The file may be just not there yet, so we treat this case not as an error
         const message = describeError(error);
-        usageData.sendErrorReport(message);
+        telemetry.sendErrorReport(message);
         return null;
     }
 };
@@ -188,13 +188,13 @@ export const updateConfigFile = (toolchainDir: string) => {
         }
     } catch (error) {
         const message = describeError(error);
-        usageData.sendErrorReport(message);
+        telemetry.sendErrorReport(message);
     }
 };
 
 export const openSegger = async (toolchainDir: string) => {
     logger.info('Open Segger Embedded Studio');
-    usageData.sendUsageData(EventAction.OPEN_SES, {
+    telemetry.sendEvent(EventAction.OPEN_SES, {
         platform: process.platform,
     });
     await Promise.all([
@@ -209,8 +209,8 @@ export const openSegger = async (toolchainDir: string) => {
         stderr: string
     ) => {
         logger.info('Segger Embedded Studio has closed');
-        if (error) usageData.sendErrorReport(error.message);
-        if (stderr) usageData.sendErrorReport(stderr);
+        if (error) telemetry.sendErrorReport(error.message);
+        if (stderr) telemetry.sendErrorReport(stderr);
         if (stdout) logger.debug(stdout);
     };
 
