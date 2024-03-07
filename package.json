@@ -16,7 +16,7 @@
     "nrfConnectForDesktop": {
         "nrfutil": {
             "toolchain-manager": [
-                "0.14.1"
+                "0.14.2"
             ]
         },
         "html": "dist/index.html"
