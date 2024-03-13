@@ -1,9 +1,9 @@
 ## 1.3.1 - 2024-03-13
 
-## Added
+### Added
 
--   Persist state of `show log` panel
--   Feedback tab
+-   Persist state of Show Log panel.
+-   Feedback tab.
 
 ## 1.3.0 - 2023-12-07
 
