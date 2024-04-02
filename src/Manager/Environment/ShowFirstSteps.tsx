@@ -38,7 +38,7 @@ const ShowFirstSteps = ({ environment }: Props) => {
             label="First steps"
             title="Show how to build a sample project (External website)"
             variant="secondary"
-            href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/create_application.html"
+            href="https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/create_application.html"
             target="_blank"
         />
     );

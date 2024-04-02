@@ -13,7 +13,7 @@ const OnlineDocs: FC<{ label: string }> = ({ label }) => (
     <a
         target="_blank"
         rel="noopener noreferrer"
-        href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/gs_installing.html"
+        href="https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/install_ncs.html"
     >
         {label}
     </a>
