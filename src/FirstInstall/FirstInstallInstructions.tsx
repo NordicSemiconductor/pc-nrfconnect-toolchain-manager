@@ -279,7 +279,7 @@ const SEGGER = ({ version }: { version: string }) => (
                         <a
                             target="_blank"
                             rel="noopener noreferrer"
-                            href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/samples/nrf9160/spm/README.html#secure-partition-manager"
+                            href="https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/security/tfm.html"
                         >
                             SPM
                         </a>
@@ -299,7 +299,7 @@ const SEGGER = ({ version }: { version: string }) => (
                             <a
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                href="https://infocenter.nordicsemi.com/topic/ug_nrf91_dk/UG/nrf91_DK/mcu_device_programming.html"
+                                href="https://docs.nordicsemi.com/bundle/ug_nrf91_dk/page/UG/nrf91_DK/mcu_device_programming.html"
                             >
                                 Device programming section in the nRF9160 DK
                                 User Guide

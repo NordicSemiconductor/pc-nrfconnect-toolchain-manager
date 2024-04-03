@@ -4,9 +4,10 @@
 
 ## Installation
 
-See the
-[InfoCenter](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fstruct_nrftools%2Fstruct%2Fnrftools_nrfconnect.html)
-pages for information on how to install the application.
+nRF Connect Toolchain Manager is installed from nRF Connect from Desktop. For
+detailed steps, see
+[Installing nRF Connect for Desktop apps](https://docs.nordicsemi.com/bundle/nrf-connect-desktop/page/installing_apps.html)
+in the nRF Connect from Desktop documentation.
 
 ## Development
 
@@ -22,7 +23,7 @@ Please report issues on the [DevZone](https://devzone.nordicsemi.com) portal.
 ## Contributing
 
 See the
-[infos on contributing](https://nordicsemiconductor.github.io/pc-nrfconnect-docs/contributing)
+[information on contributing](https://nordicsemiconductor.github.io/pc-nrfconnect-docs/contributing)
 for details.
 
 ## License
