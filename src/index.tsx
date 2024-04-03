@@ -29,6 +29,5 @@ render(
             { name: 'Settings', Main: Settings },
         ]}
         showLogByDefault={false}
-        feedback
     />
 );
