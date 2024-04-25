@@ -9,6 +9,7 @@ import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+    Alert,
     AppThunk,
     isDevelopment,
     isLoggingVerbose,
@@ -155,6 +156,17 @@ export default () => {
             }}
             className="toolchain-manager-main-window"
         >
+            <Alert variant="info">
+                VS Code users should use the nRF VSCode Extension to install the
+                Toolchain and SDK{' '}
+                <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/installation/install_ncs.html"
+                >
+                    <b>read more</b>
+                </a>
+            </Alert>
             <PlatformInstructions />
             <Environments />
             <ButtonToolbar className="justify-content-end flex-row pt-3">
