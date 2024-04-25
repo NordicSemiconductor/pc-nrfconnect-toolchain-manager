@@ -11,7 +11,7 @@
     "author": "Nordic Semiconductor ASA",
     "license": "SEE LICENSE IN LICENSE",
     "engines": {
-        "nrfconnect": ">=4.3.0"
+        "nrfconnect": ">=5.0.0"
     },
     "nrfConnectForDesktop": {
         "nrfutil": {
@@ -45,7 +45,7 @@
         "nordic-publish": "node ./dist/nordic-publish.js"
     },
     "devDependencies": {
-        "@nordicsemiconductor/pc-nrfconnect-shared": "^170.0.0",
+        "@nordicsemiconductor/pc-nrfconnect-shared": "^173.0.0",
         "@types/fs-extra": "^9.0.12",
         "@types/node": "^14.14.33",
         "sudo-prompt": "^9.2.1"
