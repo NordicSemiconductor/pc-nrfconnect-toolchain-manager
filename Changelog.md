@@ -1,5 +1,9 @@
 ## 1.3.2 - UNRELEASED
 
+### Added
+
+-   Support for Apple silicon.
+
 ### Changed
 
 -   Moved feedback tab to a dialog which can be opened by going to the about tab

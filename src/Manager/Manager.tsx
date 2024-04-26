@@ -9,6 +9,7 @@ import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+    Alert,
     AppThunk,
     isDevelopment,
     isLoggingVerbose,
@@ -155,6 +156,20 @@ export default () => {
             }}
             className="toolchain-manager-main-window"
         >
+            <Alert variant="info">
+                Since the nRF Connect SDK v2.0.0, the nRF Connect for VS Code
+                extension is the recommended IDE for managing the nRF Connect
+                SDK Toolchain and working with the nRF Connect SDK. The
+                extension also provides support for the command line
+                environment.{' '}
+                <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://marketplace.visualstudio.com/items?itemName=nordic-semiconductor.nrf-connect-extension-pack"
+                >
+                    <b>Install the extension</b>
+                </a>
+            </Alert>
             <PlatformInstructions />
             <Environments />
             <ButtonToolbar className="justify-content-end flex-row pt-3">
