@@ -162,9 +162,9 @@ export default () => {
                 <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    href="https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/installation/install_ncs.html"
+                    href="https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/install_ncs.html"
                 >
-                    <b>read more</b>
+                    <b>Read more</b>
                 </a>
             </Alert>
             <PlatformInstructions />

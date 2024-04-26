@@ -2,7 +2,7 @@
 
 ### Added
 
--   Support for Apple silicon
+-   Support for Apple silicon.
 
 ### Changed
 
