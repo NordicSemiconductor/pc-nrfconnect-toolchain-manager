@@ -157,14 +157,17 @@ export default () => {
             className="toolchain-manager-main-window"
         >
             <Alert variant="info">
-                VS Code users should use the nRF VSCode Extension to install the
-                Toolchain and SDK{' '}
+                Since the nRF Connect SDK v2.0.0, the nRF Connect for VS Code
+                extension is the recommended IDE for managing the nRF Connect
+                SDK Toolchain and working with the nRF Connect SDK. The
+                extension also provides support for the command line
+                environment.{' '}
                 <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    href="https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/installation/install_ncs.html"
+                    href="https://marketplace.visualstudio.com/items?itemName=nordic-semiconductor.nrf-connect-extension-pack"
                 >
-                    <b>Read more</b>
+                    <b>Install the extension</b>
                 </a>
             </Alert>
             <PlatformInstructions />
