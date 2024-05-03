@@ -1,8 +1,9 @@
-## 1.3.2 - UNRELEASED
+## 1.4.0 - UNRELEASED
 
 ### Added
 
 -   Support for Apple silicon.
+-   Show Toolchain architecture on Mac OS.
 
 ### Changed
 
