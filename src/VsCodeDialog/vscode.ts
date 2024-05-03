@@ -15,6 +15,7 @@ import { existsSync } from 'fs';
 import os from 'os';
 import { dirname, join } from 'path';
 
+import { checkExecArchitecture } from '../helpers';
 import { RootState } from '../state';
 import EventAction from '../usageDataActions';
 import {
@@ -205,14 +206,6 @@ const pathEnvVariable = () => {
         ...process.env,
         PATH: `/usr/local/bin:${process.env.PATH}`,
     };
-};
-
-const checkExecArchitecture = (stdout: string) => {
-    const universalMatch = 'Mach-O universal binary with 2 architectures';
-    const intelMatch = 'Mach-O 64-bit executable x86_64';
-    if (stdout.includes(universalMatch)) return 'universal';
-    if (stdout.includes(intelMatch)) return 'x86_64';
-    return 'arm';
 };
 
 const spawnAsync = (
