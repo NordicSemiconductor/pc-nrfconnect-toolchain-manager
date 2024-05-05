@@ -14,9 +14,12 @@ import { Environment } from '../../state';
 
 import './style.scss';
 
+const isAppleSilicon =
+    process.platform === 'darwin' && execSync('uname -m').includes('arm64');
+
 const Name: FC<{ environment: Environment }> = ({ environment }) => {
     let arch = '';
-    if (process.platform === 'darwin' && environment.isInstalled) {
+    if (isAppleSilicon && environment.isInstalled) {
         try {
             const toolchain = execSync(
                 `file $(find  ${path.join(
