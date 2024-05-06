@@ -45,7 +45,7 @@
         "nordic-publish": "node ./dist/nordic-publish.js"
     },
     "devDependencies": {
-        "@nordicsemiconductor/pc-nrfconnect-shared": "^173.0.0",
+        "@nordicsemiconductor/pc-nrfconnect-shared": "^176.0.0",
         "@types/fs-extra": "^9.0.12",
         "@types/node": "^14.14.33",
         "sudo-prompt": "^9.2.1"
