@@ -9,13 +9,10 @@ import Row from 'react-bootstrap/Row';
 import { execSync } from 'child_process';
 import path from 'path';
 
-import { checkExecArchitecture } from '../../helpers';
+import { checkExecArchitecture, isAppleSilicon } from '../../helpers';
 import { Environment } from '../../state';
 
 import './style.scss';
-
-const isAppleSilicon =
-    process.platform === 'darwin' && execSync('uname -m').includes('arm64');
 
 const Name: FC<{ environment: Environment }> = ({ environment }) => {
     let arch = '';

@@ -12,10 +12,9 @@ import {
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { spawn } from 'child_process';
 import { existsSync } from 'fs';
-import os from 'os';
 import { dirname, join } from 'path';
 
-import { checkExecArchitecture } from '../helpers';
+import { checkExecArchitecture, isAppleSilicon } from '../helpers';
 import { RootState } from '../state';
 import EventAction from '../usageDataActions';
 import {
@@ -59,9 +58,6 @@ export enum NrfjprogStatus {
     INSTALLED,
     RECOMMEND_UNIVERSAL,
 }
-
-const isAppleSilicon =
-    process.platform === 'darwin' && os.cpus()[0].model.includes('Apple');
 
 const minDelay = 500;
 export const openVsCode = (): AppThunk<RootState> => dispatch => {
