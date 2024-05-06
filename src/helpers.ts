@@ -13,7 +13,7 @@ export const checkExecArchitecture = (stdout: string) => {
     if (stdout.includes(universalMatch)) return 'universal';
     if (stdout.includes(intelMatch)) return 'x86_64';
     if (stdout.includes(armMatch)) return 'arm64';
-    return 'Unknown';
+    return 'unknown architecture';
 };
 
 export const isAppleSilicon =

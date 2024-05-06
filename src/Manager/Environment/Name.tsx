@@ -28,7 +28,7 @@ const Name: FC<{ environment: Environment }> = ({ environment }) => {
 
             arch = checkExecArchitecture(toolchain.toString());
         } catch {
-            arch = 'unknown';
+            arch = 'unknown architecture';
         }
     }
     return (
