@@ -2,7 +2,7 @@
 
 ### Changed
 
--   Updated nrfutil toolchain-manager to v0.14.4
+-   Updated nRF Util's `toolchain-manager` package to v0.14.4.
 
 ## 1.4.0 - 2024-05-13
 
