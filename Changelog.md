@@ -1,3 +1,9 @@
+## 1.4.1 - 2024-06-07
+
+### Changed
+
+-   Updated nrfutil toolchain-manager to v0.14.4
+
 ## 1.4.0 - 2024-05-13
 
 ### Added
