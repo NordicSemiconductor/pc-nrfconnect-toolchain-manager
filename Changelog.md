@@ -1,3 +1,10 @@
+## 1.4.2 - Unreleased
+
+### Fixed
+
+-   Confirmation dialogs that may pop up when installing the SDK will hide any
+    existing open dialogs until closed instead of showing on top of ach other.
+
 ## 1.4.1 - 2024-06-07
 
 ### Changed
