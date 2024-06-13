@@ -7,9 +7,12 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
-import { classNames } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import {
+    classNames,
+    DialogButton,
+    GenericDialog,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 
-import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import {
     hideReduxConfirmDialogAction,
     reduxConfirmDialogSelector,
@@ -32,7 +35,7 @@ export default () => {
     } = useSelector(reduxConfirmDialogSelector);
 
     const cancelProps = hideCancel
-        ? {}
+        ? undefined
         : {
               cancelLabel,
               onCancel: () => {
@@ -42,7 +45,7 @@ export default () => {
           };
 
     const confirmProps = {
-        confirmLabel,
+        confirmLabel: confirmLabel ?? 'OK',
         onConfirm: () => {
             dispatch(hideReduxConfirmDialogAction());
             callback ? callback(false) : undefined;
@@ -58,10 +61,33 @@ export default () => {
                   onOptional!(false);
               },
           }
-        : {};
+        : undefined;
 
     return (
-        <ConfirmationDialog
+        <GenericDialog
+            footer={
+                <>
+                    <DialogButton
+                        variant="primary"
+                        onClick={confirmProps.onConfirm}
+                    >
+                        {confirmProps.confirmLabel}
+                    </DialogButton>
+                    {optionalProps && (
+                        <DialogButton onClick={optionalProps.onOptional}>
+                            {optionalProps.optionalLabel}
+                        </DialogButton>
+                    )}
+                    {cancelProps && (
+                        <DialogButton
+                            variant="primary"
+                            onClick={cancelProps.onCancel}
+                        >
+                            {cancelProps.cancelLabel}
+                        </DialogButton>
+                    )}
+                </>
+            }
             isVisible={!!callback}
             title={title ?? ''}
             {...confirmProps}
@@ -75,6 +101,6 @@ export default () => {
             >
                 {content ?? ''}
             </ReactMarkdown>
-        </ConfirmationDialog>
+        </GenericDialog>
     );
 };

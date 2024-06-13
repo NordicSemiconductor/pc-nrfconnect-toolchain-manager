@@ -8,8 +8,8 @@ import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { useDispatch, useSelector } from 'react-redux';
 import { dialog } from '@electron/remote';
+import { ConfirmationDialog } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
-import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { installPackage } from '../Manager/Environment/effects/installPackage';
 import {
     dndPackage,
