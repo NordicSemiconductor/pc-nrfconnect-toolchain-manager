@@ -1,3 +1,14 @@
+## 1.4.2 - Unreleased
+
+### Changed
+
+-   Open VSCode Button now opens VSCode in the SDK Path
+
+### Fixed
+
+-   Skipping installing vsCode extension will now open VScode and not reopen the
+    same dialog
+
 ## 1.4.1 - 2024-06-07
 
 ### Changed
