@@ -249,7 +249,7 @@ const MissingExtensionsSkipButton = () => {
                             )
                         );
                     else {
-                        dispatch(openVsCode());
+                        dispatch(openVsCode(true));
                     }
                 });
             }}

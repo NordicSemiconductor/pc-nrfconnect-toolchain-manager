@@ -60,28 +60,36 @@ export enum NrfjprogStatus {
 }
 
 const minDelay = 500;
-export const openVsCode = (): AppThunk<RootState> => dispatch => {
-    dispatch(hideVsCodeDialog());
-    dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
+export const openVsCode =
+    (skipCheck?: boolean): AppThunk<RootState> =>
+    dispatch => {
+        dispatch(hideVsCodeDialog());
+        dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
 
-    const start = new Date();
-    dispatch(getVsCodeStatus()).then(status => {
-        if (status === VsCodeStatus.INSTALLED) {
-            telemetry.sendEvent(EventAction.OPEN_VS_CODE, {
-                platform: process.platform,
-            });
+        if (skipCheck) {
             dispatch(hideVsCodeDialog());
             spawnAsync('code');
-        } else {
-            dispatch(showVsCodeDialog());
-            const end = new Date();
-            const diff = minDelay - (+end - +start) / 1000;
-            if (diff > 0)
-                setTimeout(() => dispatch(setVsCodeStatus(status)), diff);
-            else dispatch(setVsCodeStatus(status));
+            return;
         }
-    });
-};
+
+        const start = new Date();
+        dispatch(getVsCodeStatus()).then(status => {
+            if (status === VsCodeStatus.INSTALLED) {
+                telemetry.sendEvent(EventAction.OPEN_VS_CODE, {
+                    platform: process.platform,
+                });
+                dispatch(hideVsCodeDialog());
+                spawnAsync('code');
+            } else {
+                dispatch(showVsCodeDialog());
+                const end = new Date();
+                const diff = minDelay - (+end - +start) / 1000;
+                if (diff > 0)
+                    setTimeout(() => dispatch(setVsCodeStatus(status)), diff);
+                else dispatch(setVsCodeStatus(status));
+            }
+        });
+    };
 
 export const getVsCodeStatus =
     (): AppThunk<RootState, Promise<VsCodeStatus>> => async dispatch => {
