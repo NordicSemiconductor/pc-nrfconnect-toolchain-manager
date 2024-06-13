@@ -164,7 +164,9 @@ const VsCodeDialog = () => {
                         {allExtensionsInstalled && (
                             <DialogButton
                                 variant="primary"
-                                onClick={() => dispatch(openVsCode())}
+                                onClick={() => {
+                                    dispatch(openVsCode());
+                                }}
                             >
                                 Open VS Code
                             </DialogButton>

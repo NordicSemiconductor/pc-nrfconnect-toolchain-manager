@@ -18,10 +18,12 @@ import { checkExecArchitecture, isAppleSilicon } from '../helpers';
 import { RootState } from '../state';
 import EventAction from '../usageDataActions';
 import {
+    getVsCodeOpenDir,
     hideVsCodeDialog,
     installedExtension,
     installExtensionFailed,
     setVsCodeExtensions,
+    setVsCodeOpenDir,
     setVsCodeStatus,
     showVsCodeDialog,
     startInstallingExtensions,
@@ -62,13 +64,15 @@ export enum NrfjprogStatus {
 const minDelay = 500;
 export const openVsCode =
     (skipCheck?: boolean): AppThunk<RootState> =>
-    dispatch => {
+    (dispatch, getState) => {
         dispatch(hideVsCodeDialog());
         dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
+        const sdkPath = getVsCodeOpenDir(getState());
 
         if (skipCheck) {
             dispatch(hideVsCodeDialog());
-            spawnAsync('code');
+            spawnAsync('code', [sdkPath]);
+            dispatch(setVsCodeOpenDir('.'));
             return;
         }
 
@@ -79,7 +83,8 @@ export const openVsCode =
                     platform: process.platform,
                 });
                 dispatch(hideVsCodeDialog());
-                spawnAsync('code');
+                spawnAsync('code', [sdkPath]);
+                dispatch(setVsCodeOpenDir('.'));
             } else {
                 dispatch(showVsCodeDialog());
                 const end = new Date();
