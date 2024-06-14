@@ -6,15 +6,27 @@
 
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import path from 'path';
 
 import { Environment } from '../../state';
 import { openVsCode } from '../../VsCodeDialog/vscode';
+import { setVsCodeOpenDir } from '../../VsCodeDialog/vscodeSlice';
+import sdkPath from '../sdkPath';
 import Button from './Button';
-import { isInProgress, isInstalled } from './environmentReducer';
+import {
+    isInProgress,
+    isInstalled,
+    toolchainDir as getToolchainDir,
+} from './environmentReducer';
 
 export const OpenVsCode = ({ environment }: { environment: Environment }) => {
     const dispatch = useDispatch();
     if (!isInstalled(environment)) return null;
+
+    const toolchainDir = getToolchainDir(environment);
+    const isLegacyEnv = environment.type === 'legacy';
+    const sdkDir = () =>
+        isLegacyEnv ? path.dirname(toolchainDir) : sdkPath(environment.version);
 
     return (
         <Button
@@ -23,7 +35,8 @@ export const OpenVsCode = ({ environment }: { environment: Environment }) => {
             title="Open Visual Studio Code"
             variant="primary"
             disabled={isInProgress(environment)}
-            onClick={() => {
+            onClick={async () => {
+                dispatch(setVsCodeOpenDir(await sdkDir()));
                 dispatch(openVsCode());
             }}
         />

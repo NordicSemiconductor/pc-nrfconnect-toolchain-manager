@@ -37,12 +37,14 @@ export interface VsCodeState {
     status: VsCodeStatus;
     extensions: VsCodeExtension[];
     isDialogVisible: boolean;
+    openDir: string;
 }
 
 const initialState: VsCodeState = {
     status: VsCodeStatus.NOT_CHECKED,
     extensions: [],
     isDialogVisible: false,
+    openDir: '.',
 };
 
 const slice = createSlice({
@@ -60,6 +62,9 @@ const slice = createSlice({
         },
         setVsCodeExtensions: (state, action) => {
             state.extensions = action.payload;
+        },
+        setVsCodeOpenDir: (state, action) => {
+            state.openDir = action.payload;
         },
         startInstallingExtensions: state => {
             state.extensions.forEach(extension => {
@@ -91,6 +96,7 @@ const slice = createSlice({
 export const {
     reducer,
     actions: {
+        setVsCodeOpenDir,
         showVsCodeDialog,
         setVsCodeStatus,
         setVsCodeExtensions,
@@ -101,6 +107,8 @@ export const {
     },
 } = slice;
 
+export const getVsCodeOpenDir = ({ app: { vsCode } }: RootState) =>
+    vsCode.openDir;
 export const vsCodeStatus = ({ app: { vsCode } }: RootState) => vsCode.status;
 export const vsCodeExtensions = ({ app: { vsCode } }: RootState) =>
     vsCode.extensions;

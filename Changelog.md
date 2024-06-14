@@ -1,7 +1,12 @@
 ## 1.4.2 - Unreleased
 
+### Changed
+
+-   Open VSCode Button now opens VSCode in the SDK Path
+
 ### Fixed
 
+-   Skipping installing VS Code extension will not reopen the same dialog.
 -   Multiple confirmation dialogs will not overlap each other and instead
     temporarily hide one of them.
 
