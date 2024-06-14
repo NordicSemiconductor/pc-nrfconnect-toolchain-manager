@@ -18,10 +18,12 @@ import { checkExecArchitecture, isAppleSilicon } from '../helpers';
 import { RootState } from '../state';
 import EventAction from '../usageDataActions';
 import {
+    getVsCodeOpenDir,
     hideVsCodeDialog,
     installedExtension,
     installExtensionFailed,
     setVsCodeExtensions,
+    setVsCodeOpenDir,
     setVsCodeStatus,
     showVsCodeDialog,
     startInstallingExtensions,
@@ -60,28 +62,39 @@ export enum NrfjprogStatus {
 }
 
 const minDelay = 500;
-export const openVsCode = (): AppThunk<RootState> => dispatch => {
-    dispatch(hideVsCodeDialog());
-    dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
+export const openVsCode =
+    (skipCheck?: boolean): AppThunk<RootState> =>
+    (dispatch, getState) => {
+        dispatch(hideVsCodeDialog());
+        dispatch(setVsCodeStatus(VsCodeStatus.NOT_CHECKED));
+        const sdkPath = getVsCodeOpenDir(getState());
 
-    const start = new Date();
-    dispatch(getVsCodeStatus()).then(status => {
-        if (status === VsCodeStatus.INSTALLED) {
-            telemetry.sendEvent(EventAction.OPEN_VS_CODE, {
-                platform: process.platform,
-            });
+        if (skipCheck) {
             dispatch(hideVsCodeDialog());
-            spawnAsync('code');
-        } else {
-            dispatch(showVsCodeDialog());
-            const end = new Date();
-            const diff = minDelay - (+end - +start) / 1000;
-            if (diff > 0)
-                setTimeout(() => dispatch(setVsCodeStatus(status)), diff);
-            else dispatch(setVsCodeStatus(status));
+            spawnAsync('code', [sdkPath]);
+            dispatch(setVsCodeOpenDir('.'));
+            return;
         }
-    });
-};
+
+        const start = new Date();
+        dispatch(getVsCodeStatus()).then(status => {
+            if (status === VsCodeStatus.INSTALLED) {
+                telemetry.sendEvent(EventAction.OPEN_VS_CODE, {
+                    platform: process.platform,
+                });
+                dispatch(hideVsCodeDialog());
+                spawnAsync('code', [sdkPath]);
+                dispatch(setVsCodeOpenDir('.'));
+            } else {
+                dispatch(showVsCodeDialog());
+                const end = new Date();
+                const diff = minDelay - (+end - +start) / 1000;
+                if (diff > 0)
+                    setTimeout(() => dispatch(setVsCodeStatus(status)), diff);
+                else dispatch(setVsCodeStatus(status));
+            }
+        });
+    };
 
 export const getVsCodeStatus =
     (): AppThunk<RootState, Promise<VsCodeStatus>> => async dispatch => {
