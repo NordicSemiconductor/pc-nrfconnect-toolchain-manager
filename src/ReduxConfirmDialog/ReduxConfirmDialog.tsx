@@ -90,9 +90,6 @@ export default () => {
             }
             isVisible={!!callback}
             title={title ?? ''}
-            {...confirmProps}
-            {...cancelProps}
-            {...optionalProps}
         >
             <ReactMarkdown
                 className={classNames(
