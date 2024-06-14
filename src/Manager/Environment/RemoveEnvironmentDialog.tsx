@@ -6,8 +6,8 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ConfirmationDialog } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
-import ConfirmationDialog from '../../ConfirmationDialog/ConfirmationDialog';
 import {
     environmentToRemove,
     hideConfirmRemoveDialog,

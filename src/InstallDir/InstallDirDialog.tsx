@@ -7,9 +7,11 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { dialog } from '@electron/remote';
-import { AppThunk } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import {
+    AppThunk,
+    ConfirmationDialog,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 
-import ConfirmationDialog from '../ConfirmationDialog/ConfirmationDialog';
 import { install } from '../Manager/Environment/effects/installEnvironment';
 import { RootState } from '../state';
 import {

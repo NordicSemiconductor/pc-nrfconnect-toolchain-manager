@@ -112,5 +112,5 @@ export const getVsCodeOpenDir = ({ app: { vsCode } }: RootState) =>
 export const vsCodeStatus = ({ app: { vsCode } }: RootState) => vsCode.status;
 export const vsCodeExtensions = ({ app: { vsCode } }: RootState) =>
     vsCode.extensions;
-export const isDialogVisible = ({ app: { vsCode } }: RootState) =>
-    vsCode.isDialogVisible;
+export const isDialogVisible = (app: RootState) =>
+    app.app.vsCode.isDialogVisible && !app.app.reduxConfirmDialog.callback; // hide dialog while other dialog is in view
