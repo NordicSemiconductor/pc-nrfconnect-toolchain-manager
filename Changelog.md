@@ -2,8 +2,7 @@
 
 ### Fixed
 
--   Confirmation dialogs that may pop up when installing the SDK will hide any
-    existing open dialogs until closed instead of showing on top of ach other.
+-   Multiple confirmation dialogs will not overlap each other and instead temporarily hide one of them.
 
 ## 1.4.1 - 2024-06-07
 
