@@ -17,6 +17,7 @@ import {
     Spinner,
     telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import semver from 'semver';
 
 import FirstInstallInstructions from '../FirstInstall/FirstInstallInstructions';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
@@ -31,7 +32,10 @@ import {
     setPersistedInstallDir,
 } from '../persistentStore';
 import ReduxConfirmDialog from '../ReduxConfirmDialog/ReduxConfirmDialog';
-import { isOlderEnvironmentsHidden } from '../Settings/settingsSlice';
+import {
+    arePreReleaseShown,
+    isOlderEnvironmentsHidden,
+} from '../Settings/settingsSlice';
 import { RootState } from '../state';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import EventAction from '../usageDataActions';
@@ -59,11 +63,19 @@ import { filterEnvironments } from './versionFilter';
 
 const Environments = () => {
     const hideOlderAndPreRelease = useSelector(isOlderEnvironmentsHidden);
+    const showPreReleases = useSelector(arePreReleaseShown);
     const allEnvironments = useSelector(environmentsByVersion);
 
-    const environments = hideOlderAndPreRelease
-        ? filterEnvironments(allEnvironments)
-        : allEnvironments;
+    const environments = (
+        hideOlderAndPreRelease
+            ? filterEnvironments(allEnvironments)
+            : allEnvironments
+    ).filter(
+        environment =>
+            showPreReleases ||
+            !semver.prerelease(environment.version) ||
+            environment.isInstalled
+    );
 
     if (environments.length === 0) {
         return (

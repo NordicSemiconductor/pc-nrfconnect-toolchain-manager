@@ -1,4 +1,8 @@
-## 1.4.2 - Unreleased
+## 1.5.0- Unreleased
+
+### Added
+
+-   Added toggle to hide/show pre release environments. Default is hidden
 
 ### Changed
 
