@@ -8,6 +8,7 @@ import { app } from '@electron/remote';
 import {
     AppThunk,
     logger,
+    openUrl,
     telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import { spawn } from 'child_process';
@@ -71,7 +72,7 @@ export const openVsCode =
 
         if (skipCheck) {
             dispatch(hideVsCodeDialog());
-            spawnAsync('code', [sdkPath]);
+            openUrl(`vscode://file/${sdkPath}`);
             dispatch(setVsCodeOpenDir('.'));
             return;
         }
@@ -83,7 +84,7 @@ export const openVsCode =
                     platform: process.platform,
                 });
                 dispatch(hideVsCodeDialog());
-                spawnAsync('code', [sdkPath]);
+                openUrl(`vscode://file/${sdkPath}`);
                 dispatch(setVsCodeOpenDir('.'));
             } else {
                 dispatch(showVsCodeDialog());
