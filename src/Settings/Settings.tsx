@@ -65,7 +65,7 @@ export default () => {
                         />
                         <div className="tw-text-xs tw-font-light tw-text-gray-400">
                             <div>
-                                Hide environments that are pre-releases and not
+                                Hide pre-release environments that are not
                                 installed
                             </div>
                         </div>
@@ -81,16 +81,16 @@ export default () => {
                                 )
                             }
                             isToggled={olderEnvironmentsHidden}
-                            label="Show only 3 newest minor versions"
+                            label="Show only three newest minor versions"
                             variant="primary"
                         />
 
                         <div className="tw-text-xs tw-font-light tw-text-gray-400">
                             <div>
-                                Hide environments older than 3 minor versions.
+                                Hide environments older than three minor versions.
                             </div>
                             <div>
-                                Hide pre-releases when a corresponding release
+                                Hide pre-release versions when a corresponding release
                                 is official.
                             </div>
                         </div>
