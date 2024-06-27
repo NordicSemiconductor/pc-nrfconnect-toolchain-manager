@@ -1,8 +1,9 @@
-## 1.5.0- Unreleased
+## 1.5.0 - Unreleased
 
 ### Added
 
--   Added toggle to for showing pre-release environments. The environments are hidden by default.
+-   Added toggle to for showing pre-release environments. The environments are
+    hidden by default.
 
 ### Changed
 

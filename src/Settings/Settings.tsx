@@ -87,11 +87,12 @@ export default () => {
 
                         <div className="tw-text-xs tw-font-light tw-text-gray-400">
                             <div>
-                                Hide environments older than three minor versions.
+                                Hide environments older than three minor
+                                versions.
                             </div>
                             <div>
-                                Hide pre-release versions when a corresponding release
-                                is official.
+                                Hide pre-release versions when a corresponding
+                                release is official.
                             </div>
                         </div>
                     </div>
