@@ -2,7 +2,7 @@
 
 ### Added
 
--   Added toggle to hide/show pre release environments. Default is hidden
+-   Added toggle to for showing pre-release environments. The environments are hidden by default.
 
 ### Changed
 
