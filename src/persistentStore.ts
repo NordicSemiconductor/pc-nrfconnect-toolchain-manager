@@ -35,6 +35,12 @@ export const persistedInstallDir = (): string | undefined =>
 export const setPersistedInstallDir = (dir: string) =>
     store().set('installDir', dir);
 
+export const showPreReleases = (): boolean | undefined =>
+    store().get('showPreReleases');
+
+export const setShowPreReleases = (showAll: boolean) =>
+    store().set('showPreReleases', showAll);
+
 const indexJson =
     {
         win32: 'index.json',

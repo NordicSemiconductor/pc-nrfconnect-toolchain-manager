@@ -5,99 +5,99 @@
  */
 
 import React from 'react';
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
 import { useDispatch, useSelector } from 'react-redux';
-import { Toggle } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import {
+    Button,
+    Card,
+    Toggle,
+} from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import {
     currentInstallDir,
     showSetInstallDirDialog,
 } from '../InstallDir/installDirSlice';
-import NrfCard from '../NrfCard/NrfCard';
 import {
-    showSetToolchainSourceDialog,
-    toolchainRootUrl,
-} from '../ToolchainSource/toolchainSourceSlice';
-import {
+    arePreReleaseShown,
     isOlderEnvironmentsHidden,
     showOlderEnvironments,
+    showPreReleases,
 } from './settingsSlice';
 
 export default () => {
     const dispatch = useDispatch();
     const installDir = useSelector(currentInstallDir);
     const disabled = process.platform === 'darwin';
-    const toolchainUrl = useSelector(toolchainRootUrl);
     const olderEnvironmentsHidden = useSelector(isOlderEnvironmentsHidden);
+    const preReleaseShown = useSelector(arePreReleaseShown);
 
     return (
-        <div className="toolchain-manager-main-window">
-            <NrfCard>
-                <Row className="settings-info">
-                    <Col className="ml-3">
-                        <Row className="h4">Installation directory</Row>
-                        <Row className="text-muted">{installDir}</Row>
-                    </Col>
-                    <Col xs="auto">
+        <div>
+            <Card
+                title={
+                    <div className="tw-flex tw-flex-row tw-justify-between">
+                        <div className="tw-flex tw-flex-col tw-justify-between tw-text-left">
+                            <div className="tw-text-lg  tw-text-black">
+                                Installation directory
+                            </div>
+                            <div className="tw-text-xs tw-font-light tw-text-gray-400">
+                                {installDir?.trim()}
+                            </div>
+                        </div>
                         <Button
-                            variant="outline-primary"
+                            variant="secondary"
                             disabled={disabled}
                             onClick={() => dispatch(showSetInstallDirDialog())}
                         >
                             Select directory
                         </Button>
-                    </Col>
-                </Row>
-
-                <Row className="settings-info mt-4">
-                    <Col>
-                        <Form.Group controlId="showOlderEnvironments">
-                            <div className="d-flex">
-                                <Toggle
-                                    onToggle={() =>
-                                        dispatch(
-                                            showOlderEnvironments(
-                                                !olderEnvironmentsHidden
-                                            )
-                                        )
-                                    }
-                                    isToggled={olderEnvironmentsHidden}
-                                    labelRight
-                                    label="Show only 3 newest minor versions"
-                                    variant="primary"
-                                />
-                            </div>
-
-                            <Form.Text className="text-muted">
-                                Hide environments older than 3 minor versions.
-                                <br />
-                                Hide pre-releases when a corresponding release
-                                is official.
-                            </Form.Text>
-                        </Form.Group>
-                    </Col>
-                </Row>
-
-                <Row className="settings-info d-none">
-                    <Col className="ml-3">
-                        <Row className="h4">Toolchain source URL</Row>
-                        <Row className="text-muted">{toolchainUrl}</Row>
-                    </Col>
-                    <Col xs="auto">
-                        <Button
-                            variant="outline-primary"
-                            onClick={() =>
-                                dispatch(showSetToolchainSourceDialog())
+                    </div>
+                }
+            >
+                <div className="tw-flex tw-flex-col tw-gap-2">
+                    <div>
+                        <Toggle
+                            onToggle={() =>
+                                dispatch(showPreReleases(!preReleaseShown))
                             }
-                        >
-                            Change
-                        </Button>
-                    </Col>
-                </Row>
-            </NrfCard>
+                            isToggled={!preReleaseShown}
+                            label="Hide pre-release versions"
+                            variant="primary"
+                        />
+                        <div className="tw-text-xs tw-font-light tw-text-gray-400">
+                            <div>
+                                Hide pre-release environments that are not
+                                installed
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <Toggle
+                            onToggle={() =>
+                                dispatch(
+                                    showOlderEnvironments(
+                                        !olderEnvironmentsHidden
+                                    )
+                                )
+                            }
+                            isToggled={olderEnvironmentsHidden}
+                            label="Show only three newest minor versions"
+                            variant="primary"
+                        />
+
+                        <div className="tw-text-xs tw-font-light tw-text-gray-400">
+                            <div>
+                                Hide environments older than three minor
+                                versions.
+                            </div>
+                            <div>
+                                Hide pre-release versions when a corresponding
+                                release is official.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Card>
         </div>
     );
 };
