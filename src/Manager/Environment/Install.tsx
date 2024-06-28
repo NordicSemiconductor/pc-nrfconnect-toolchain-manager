@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     DialogButton,
+    ExternalLink,
     GenericDialog,
     openUrl,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
@@ -61,13 +62,12 @@ const Install = ({ environment, showExperimentalWarning }: Props) => {
                         </DialogButton>
                         <DialogButton
                             onClick={() => {
-                                setShowExperimentalDialog(false);
                                 openUrl(
-                                    'https://github.com/microsoft/vscode-docs/blob/vnext/release-notes/v1_63.md#pre-release-extensions'
+                                    'https://docs.nordicsemi.com/bundle/nrf-connect-vscode/page/rel_notes_overview.html'
                                 );
                             }}
                         >
-                            How use VSCode pre-release
+                            How use VS Code pre-release
                         </DialogButton>
                         <DialogButton
                             onClick={() => setShowExperimentalDialog(false)}
@@ -80,7 +80,12 @@ const Install = ({ environment, showExperimentalWarning }: Props) => {
                 Support for nRF Connect SDK {environment.version} in nRF Connect
                 for VS Code is experimental. VS Code users that need{' '}
                 {environment.version} should use the preview version of the
-                extension, please refer to VS Code for details.
+                extension, please refer to{' '}
+                <ExternalLink
+                    label="NCS highlights"
+                    href="https://docs.nordicsemi.com/bundle/ncs-2.7.0/page/nrf/releases_and_maturity/releases/release-notes-2.7.0.html#highlights"
+                />{' '}
+                for details.
             </GenericDialog>
             <Button
                 icon="x-mdi-briefcase-download-outline"
