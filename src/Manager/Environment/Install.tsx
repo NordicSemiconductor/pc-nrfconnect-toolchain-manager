@@ -48,7 +48,7 @@ const Install = ({ environment, showExperimentalWarning }: Props) => {
             <GenericDialog
                 isVisible={showExperimentalDialog}
                 headerIcon="alert"
-                title="Experimental Toolchain and SDK"
+                title="Support for Toolchain and SDK experimental in VS Code"
                 footer={
                     <>
                         <DialogButton
@@ -67,7 +67,7 @@ const Install = ({ environment, showExperimentalWarning }: Props) => {
                                 );
                             }}
                         >
-                            How use VS Code pre-release
+                            How to use pre-release extensions
                         </DialogButton>
                         <DialogButton
                             onClick={() => setShowExperimentalDialog(false)}
@@ -77,15 +77,14 @@ const Install = ({ environment, showExperimentalWarning }: Props) => {
                     </>
                 }
             >
-                Support for nRF Connect SDK {environment.version} in nRF Connect
-                for VS Code is experimental. VS Code users that need{' '}
-                {environment.version} should use the preview version of the
-                extension, please refer to{' '}
+                Support for this version in nRF Connect for VS Code is
+                experimental. If you need to use this version, use the
+                pre-release version of the extension. For more information, see{' '}
                 <ExternalLink
-                    label="NCS highlights"
+                    label="nRF Connect SDK v2.7.0 release highlights"
                     href="https://docs.nordicsemi.com/bundle/ncs-2.7.0/page/nrf/releases_and_maturity/releases/release-notes-2.7.0.html#highlights"
-                />{' '}
-                for details.
+                />
+                .
             </GenericDialog>
             <Button
                 icon="x-mdi-briefcase-download-outline"
