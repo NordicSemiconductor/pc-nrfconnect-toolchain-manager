@@ -1,4 +1,4 @@
-## 1.5.0 - Unreleased
+## 1.5.0 - 2024-07-01
 
 ### Added
 
@@ -7,8 +7,8 @@
 
 ### Changed
 
--   Open VSCode Button now opens VSCode in the SDK Path
--   Warning for NCS 2.7 experimental usage with VSCode
+-   Open VSCode Button now opens VSCode in the SDK Path.
+-   Warning for NCS 2.7 experimental usage with VSCode.
 
 ### Fixed
 
