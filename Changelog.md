@@ -1,3 +1,9 @@
+## 1.5.1 - Unreleased
+
+### Changed
+
+-   Updated nRF Util's `toolchain-manager` package to v0.15.0.
+
 ## 1.5.0 - 2024-07-01
 
 ### Added
