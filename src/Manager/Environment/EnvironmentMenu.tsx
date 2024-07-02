@@ -135,8 +135,7 @@ const hasGnomeTerminal = () => {
     }
 };
 
-type EnvironmentMenuProps = { environment: Environment };
-const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
+const EnvironmentMenu = ({ environment }: { environment: Environment }) => {
     const dispatch = useDispatch();
     const toolchainDir = getToolchainDir(environment);
     const isLegacyEnv = environment.type === 'legacy';
@@ -149,7 +148,6 @@ const EnvironmentMenu = ({ environment }: EnvironmentMenuProps) => {
     return (
         <DropdownButton
             id={`environment-${environment.version}`}
-            className="ml-2"
             variant="secondary"
             title=""
             alignRight

@@ -6,6 +6,7 @@
 
 import React from 'react';
 import BootstrapProgressBar from 'react-bootstrap/ProgressBar';
+import { classNames } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import { Environment } from '../../state';
 import {
@@ -41,13 +42,18 @@ const progressOrFullBar = (environment: Environment) =>
 
 type Props = { environment: Environment };
 
-const ProgressBar = ({ environment }: Props) => (
-    <BootstrapProgressBar
-        now={progressOrFullBar(environment)}
-        striped={isInProgress(environment)}
-        animated={isInProgress(environment)}
-        className={className(environment)}
-    />
-);
+const ProgressBar = ({ environment }: Props) => {
+    const inProgress = isInProgress(environment);
+    return inProgress ? (
+        <BootstrapProgressBar
+            now={progressOrFullBar(environment)}
+            className={classNames(
+                className(environment),
+
+                'tw-absolute tw-bottom-0 tw-left-0 tw-right-0 tw-h-1 tw-w-full tw-rounded-none tw-bg-none'
+            )}
+        />
+    ) : null;
+};
 
 export default ProgressBar;

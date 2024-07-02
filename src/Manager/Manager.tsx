@@ -26,7 +26,6 @@ import {
     setInstallDir,
 } from '../InstallDir/installDirSlice';
 import InstallPackageDialog from '../InstallPackageDialog/InstallPackageDialog';
-import NrfCard from '../NrfCard/NrfCard';
 import {
     persistedInstallDirOfToolChainDefault as persistedInstallDirOrToolChainDefault,
     setPersistedInstallDir,
@@ -79,21 +78,21 @@ const Environments = () => {
 
     if (environments.length === 0) {
         return (
-            <NrfCard>
+            <div className="tw-preflight tw-relative tw-flex tw-w-full tw-items-center tw-bg-white tw-p-4 tw-leading-none">
                 <p>There are no environments available for installation.</p>
-            </NrfCard>
+            </div>
         );
     }
 
     return (
-        <>
+        <div className="tw-flex tw-flex-col tw-gap-2">
             {environments.map(environment => (
                 <Environment
                     key={environment.version}
                     environment={environment}
                 />
             ))}
-        </>
+        </div>
     );
 };
 

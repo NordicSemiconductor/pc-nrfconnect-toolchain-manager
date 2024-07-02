@@ -6,41 +6,45 @@
 
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { Button, openUrl } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import { Environment } from '../../state';
 import { selectEnvironment, showFirstSteps } from '../managerSlice';
-import Button from './Button';
 import {
     isLegacyEnvironment,
     isOnlyAvailable,
     version,
 } from './environmentReducer';
 
-type Props = { environment: Environment };
-const ShowFirstSteps = ({ environment }: Props) => {
+const ShowFirstSteps = ({ environment }: { environment: Environment }) => {
     const dispatch = useDispatch();
     if (isOnlyAvailable(environment)) return null;
 
     return isLegacyEnvironment(environment.version) ? (
         <Button
-            icon="x-mdi-dog-service"
             onClick={() => {
                 dispatch(selectEnvironment(version(environment)));
                 dispatch(showFirstSteps());
             }}
-            label="First steps"
             title="Show how to build a sample project"
             variant="secondary"
-        />
+            size="lg"
+        >
+            First steps
+        </Button>
     ) : (
         <Button
-            icon="x-mdi-dog-service"
-            label="First steps"
             title="Show how to build a sample project (External website)"
             variant="secondary"
-            href="https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/create_application.html"
-            target="_blank"
-        />
+            onClick={() =>
+                openUrl(
+                    'https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/create_application.html'
+                )
+            }
+            size="lg"
+        >
+            First steps
+        </Button>
     );
 };
 
