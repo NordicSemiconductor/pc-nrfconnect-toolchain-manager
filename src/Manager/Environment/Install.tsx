@@ -7,6 +7,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+    Button,
     DialogButton,
     ExternalLink,
     GenericDialog,
@@ -16,13 +17,16 @@ import {
 import { showConfirmInstallDirDialog } from '../../InstallDir/installDirSlice';
 import { Environment } from '../../state';
 import { isAnyToolchainInProgress } from '../managerSlice';
-import Button from './Button';
 import { install } from './effects/installEnvironment';
 import { isOnlyAvailable, version } from './environmentReducer';
 
-type Props = { environment: Environment; showExperimentalWarning: boolean };
-
-const Install = ({ environment, showExperimentalWarning }: Props) => {
+const Install = ({
+    environment,
+    showExperimentalWarning,
+}: {
+    environment: Environment;
+    showExperimentalWarning: boolean;
+}) => {
     const dispatch = useDispatch();
     const anyInProgress = useSelector(isAnyToolchainInProgress);
     const [showExperimentalDialog, setShowExperimentalDialog] = useState(false);
@@ -87,7 +91,7 @@ const Install = ({ environment, showExperimentalWarning }: Props) => {
                 .
             </GenericDialog>
             <Button
-                icon="x-mdi-briefcase-download-outline"
+                size="lg"
                 onClick={() => {
                     if (showExperimentalWarning) {
                         setShowExperimentalDialog(true);
@@ -95,10 +99,11 @@ const Install = ({ environment, showExperimentalWarning }: Props) => {
                         onClick();
                     }
                 }}
-                label="Install"
                 variant="secondary"
                 disabled={anyInProgress}
-            />
+            >
+                Install
+            </Button>
         </>
     );
 };

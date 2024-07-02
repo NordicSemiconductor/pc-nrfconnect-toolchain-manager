@@ -5,65 +5,66 @@
  */
 
 import React from 'react';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
 
-import NrfCard from '../../NrfCard/NrfCard';
 import { Environment as Model } from '../../state';
 import Cancel from './Cancel';
 import EnvironmentMenu from './EnvironmentMenu';
+import { progressLabel } from './environmentReducer';
 import Install from './Install';
-import Name from './Name';
+import {
+    generateArchFromEnvironment,
+    generateNameFromEnvironment,
+} from './Name';
 import OpenSegger from './OpenSegger';
 import { OpenVsCode } from './OpenVsCode';
 import ProgressBar from './ProgressBar';
-import ProgressLabel from './ProgressLabel';
 import ShowFirstSteps from './ShowFirstSteps';
 
 import './style.scss';
 
-type Props = { environment: Model };
-
-const Environment = ({ environment }: Props) => {
+export default ({ environment }: { environment: Model }) => {
     const showWarningNCS27 = !!environment.version.match('(2.6.99)|(2.7.\\d+)');
+    const arch = generateArchFromEnvironment(environment);
 
     return (
-        <NrfCard>
-            <Row noGutters>
-                <Col>
-                    <div className="tw-flex tw-flex-row tw-items-baseline">
-                        <Name environment={environment} />
-                        {showWarningNCS27 && (
-                            <div className="tw-px-2 tw-text-xs tw-text-amber-700">
-                                <span className="mdi mdi-alert tw-text-amber-700" />{' '}
-                                Experimental support in VS Code
-                            </div>
-                        )}
-                    </div>
+        <div className="tw-relative tw-flex tw-w-full tw-items-center tw-bg-white tw-p-4">
+            <div className="tw-flex tw-w-full tw-flex-row tw-items-center tw-justify-between tw-text-left">
+                <div className="tw-items-starttw-gap-1 tw-flex tw-h-full tw-w-fit tw-flex-col ">
+                    {showWarningNCS27 && (
+                        <div className="tw-absolute tw-left-0 tw-top-0 tw-bg-amber-700 tw-px-1 tw-py-0.5 tw-text-xs tw-text-white">
+                            <span className="mdi mdi-alert" /> Experimental
+                            support in VS Code
+                        </div>
+                    )}
 
-                    <ProgressLabel environment={environment} />
-                </Col>
-                <Col
-                    as={ButtonToolbar}
-                    // @ts-expect-error this property exists
-                    xs="auto ml-auto"
-                    className="d-flex align-items-center wide-btns my-3 pl-3"
-                >
-                    <ShowFirstSteps environment={environment} />
-                    <Install
-                        environment={environment}
-                        showExperimentalWarning={showWarningNCS27}
-                    />
-                    <Cancel environment={environment} />
-                    <OpenVsCode environment={environment} />
-                    <OpenSegger environment={environment} />
+                    <div className="tw-relative tw-flex tw-flex-row tw-items-center tw-py-4 tw-text-lg tw-font-medium">
+                        {generateNameFromEnvironment(environment)}
+                        {arch && (
+                            <span className="tw-pl-3 tw-text-sm tw-font-light tw-text-gray-500">
+                                {` ${arch}`}
+                            </span>
+                        )}
+                        <div className="tw-absolute tw-bottom-0 tw-h-4 tw-text-xs tw-font-normal tw-italic tw-text-gray-400">
+                            {progressLabel(environment)}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="tw-flex tw-flex-row tw-items-center tw-justify-between tw-gap-2">
+                    <div className="tw-flex tw-flex-row tw-flex-wrap tw-items-center tw-justify-end tw-gap-2">
+                        <ShowFirstSteps environment={environment} />
+                        <Install
+                            environment={environment}
+                            showExperimentalWarning={showWarningNCS27}
+                        />
+                        <Cancel environment={environment} />
+                        <OpenVsCode environment={environment} />
+                        <OpenSegger environment={environment} />
+                    </div>
                     <EnvironmentMenu environment={environment} />
-                </Col>
-            </Row>
+                </div>
+            </div>
             <ProgressBar environment={environment} />
-        </NrfCard>
+        </div>
     );
 };
-
-export default Environment;

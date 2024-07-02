@@ -5,11 +5,10 @@
  */
 
 import React from 'react';
-import { telemetry } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import { Button, telemetry } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import { getExistingAbortController } from '../../globalAbortControler';
 import { Environment } from '../../state';
-import Button from './Button';
 import { isDoingFreshInstall, isLegacyEnvironment } from './environmentReducer';
 
 type Props = { environment: Environment };
@@ -29,12 +28,9 @@ const Cancel = ({ environment }: Props) => {
         return null;
 
     return (
-        <Button
-            icon="x-mdi-briefcase-download-outline"
-            onClick={onCancel}
-            label="Cancel"
-            variant="secondary"
-        />
+        <Button onClick={onCancel} variant="secondary" size="lg">
+            Cancel
+        </Button>
     );
 };
 
