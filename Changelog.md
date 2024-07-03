@@ -1,4 +1,4 @@
-## 1.5.0 - Unreleased
+## 1.5.0 - 2024-07-03
 
 ### Added
 
@@ -16,7 +16,7 @@
 -   Multiple confirmation dialogs will not overlap each other and instead
     temporarily hide one of them.
 -   Open VS Code works also when VS Code was not added to the system `PATH` on
-    Linux or macOS.
+    macOS.
 
 ## 1.4.1 - 2024-06-07
 
