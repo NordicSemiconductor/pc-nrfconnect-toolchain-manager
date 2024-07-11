@@ -6,13 +6,13 @@
 
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { Button } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import path from 'path';
 
 import { Environment } from '../../state';
 import { openVsCode } from '../../VsCodeDialog/vscode';
 import { setVsCodeOpenDir } from '../../VsCodeDialog/vscodeSlice';
 import sdkPath from '../sdkPath';
-import Button from './Button';
 import {
     isInProgress,
     isInstalled,
@@ -30,8 +30,6 @@ export const OpenVsCode = ({ environment }: { environment: Environment }) => {
 
     return (
         <Button
-            icon="x-mdi-rocket"
-            label="Open VS Code"
             title="Open Visual Studio Code"
             variant="primary"
             disabled={isInProgress(environment)}
@@ -39,7 +37,10 @@ export const OpenVsCode = ({ environment }: { environment: Environment }) => {
                 dispatch(setVsCodeOpenDir(await sdkDir()));
                 dispatch(openVsCode());
             }}
-        />
+            size="lg"
+        >
+            Open VS Code
+        </Button>
     );
 };
 

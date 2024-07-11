@@ -184,7 +184,7 @@ const VsCodeDialog = () => {
                     status === VsCodeStatus.NRFJPROG_RECOMMEND_UNIVERSAL) && (
                     <DialogButton
                         onClick={() => {
-                            dispatch(openVsCode());
+                            dispatch(openVsCode(true));
                         }}
                         variant="secondary"
                     >

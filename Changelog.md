@@ -4,7 +4,7 @@
 
 -   Updated nRF Util's `toolchain-manager` package to v0.15.0.
 
-## 1.5.0 - 2024-07-01
+## 1.5.0 - 2024-07-03
 
 ### Added
 
@@ -21,7 +21,8 @@
 -   Skipping installing VS Code extension will not reopen the same dialog.
 -   Multiple confirmation dialogs will not overlap each other and instead
     temporarily hide one of them.
--   Open VS Code works also when VS Code was not added to the system `PATH`.
+-   Open VS Code works also when VS Code was not added to the system `PATH` on
+    macOS.
 
 ## 1.4.1 - 2024-06-07
 

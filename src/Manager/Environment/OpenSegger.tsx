@@ -5,29 +5,26 @@
  */
 
 import React from 'react';
+import { Button } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import { Environment } from '../../state';
-import Button from './Button';
 import { isInProgress } from './environmentReducer';
 import { openSegger } from './segger';
 
-type Props = { environment: Environment };
-
-const OpenSegger = ({ environment }: Props) => {
+export default ({ environment }: { environment: Environment }) => {
     if (environment.isWestPresent && environment.type === 'legacy') {
         return (
             <Button
-                icon="x-mdi-rocket"
                 onClick={() => openSegger(environment.toolchainDir)}
-                label="Open Segger Embedded Studio"
                 title="Open SEGGER Embedded Studio"
                 disabled={isInProgress(environment)}
                 variant="primary"
-            />
+                size="lg"
+            >
+                Open Segger Embedded Studio
+            </Button>
         );
     }
 
     return null;
 };
-
-export default OpenSegger;
