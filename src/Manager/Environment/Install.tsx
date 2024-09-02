@@ -20,13 +20,7 @@ import { isAnyToolchainInProgress } from '../managerSlice';
 import { install } from './effects/installEnvironment';
 import { isOnlyAvailable, version } from './environmentReducer';
 
-const Install = ({
-    environment,
-    showExperimentalWarning,
-}: {
-    environment: Environment;
-    showExperimentalWarning: boolean;
-}) => {
+const Install = ({ environment }: { environment: Environment }) => {
     const dispatch = useDispatch();
     const anyInProgress = useSelector(isAnyToolchainInProgress);
     const [showExperimentalDialog, setShowExperimentalDialog] = useState(false);
@@ -93,11 +87,7 @@ const Install = ({
             <Button
                 size="lg"
                 onClick={() => {
-                    if (showExperimentalWarning) {
-                        setShowExperimentalDialog(true);
-                    } else {
-                        onClick();
-                    }
+                    onClick();
                 }}
                 variant="secondary"
                 disabled={anyInProgress}

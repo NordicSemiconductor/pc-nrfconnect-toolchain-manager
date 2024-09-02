@@ -1,3 +1,9 @@
+## 1.5.2 - Unreleased
+
+### Removed
+
+-   Warning for NCS 2.7 experimental usage with VSCode.
+
 ## 1.5.1 - 2024-07-25
 
 ### Changed
