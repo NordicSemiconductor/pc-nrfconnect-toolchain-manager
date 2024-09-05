@@ -23,20 +23,12 @@ import ShowFirstSteps from './ShowFirstSteps';
 import './style.scss';
 
 export default ({ environment }: { environment: Model }) => {
-    const showWarningNCS27 = !!environment.version.match('(2.6.99)|(2.7.\\d+)');
     const arch = generateArchFromEnvironment(environment);
 
     return (
         <div className="tw-relative tw-flex tw-w-full tw-items-center tw-bg-white tw-p-4">
             <div className="tw-flex tw-w-full tw-flex-row tw-items-center tw-justify-between tw-text-left">
                 <div className="tw-items-starttw-gap-1 tw-flex tw-h-full tw-w-fit tw-flex-col ">
-                    {showWarningNCS27 && (
-                        <div className="tw-absolute tw-left-0 tw-top-0 tw-bg-amber-700 tw-px-1 tw-py-0.5 tw-text-xs tw-text-white">
-                            <span className="mdi mdi-alert" /> Experimental
-                            support in VS Code
-                        </div>
-                    )}
-
                     <div className="tw-relative tw-flex tw-flex-row tw-items-center tw-py-4 tw-text-lg tw-font-medium">
                         {generateNameFromEnvironment(environment)}
                         {arch && (
@@ -53,10 +45,7 @@ export default ({ environment }: { environment: Model }) => {
                 <div className="tw-flex tw-flex-row tw-items-center tw-justify-between tw-gap-2">
                     <div className="tw-flex tw-flex-row tw-flex-wrap tw-items-center tw-justify-end tw-gap-2">
                         <ShowFirstSteps environment={environment} />
-                        <Install
-                            environment={environment}
-                            showExperimentalWarning={showWarningNCS27}
-                        />
+                        <Install environment={environment} />
                         <Cancel environment={environment} />
                         <OpenVsCode environment={environment} />
                         <OpenSegger environment={environment} />

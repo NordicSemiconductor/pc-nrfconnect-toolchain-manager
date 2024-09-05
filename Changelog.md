@@ -1,3 +1,10 @@
+## 1.5.2 - 2024-09-05
+
+### Removed
+
+-   Warning for the nRF Connect SDK v2.7.0 experimental support in the nRF
+    Connect for Visual Studio Code extension.
+
 ## 1.5.1 - 2024-07-25
 
 ### Changed
