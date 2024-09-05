@@ -2,7 +2,7 @@
 
 ### Removed
 
--   Warning for NCS 2.7 experimental usage with VSCode.
+-   Warning for the nRF Connect SDK v2.7.0 experimental support in the nRF Connect for Visual Studio Code extension.
 
 ## 1.5.1 - 2024-07-25
 
