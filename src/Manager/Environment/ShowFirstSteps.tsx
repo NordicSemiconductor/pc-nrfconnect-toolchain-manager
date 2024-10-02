@@ -38,7 +38,7 @@ const ShowFirstSteps = ({ environment }: { environment: Environment }) => {
             variant="secondary"
             onClick={() =>
                 openUrl(
-                    'https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/create_application.html'
+                    'https://docs.nordicsemi.com/bundle/ncs-latest/page/nrf/app_dev/create_application.html'
                 )
             }
             size="lg"
