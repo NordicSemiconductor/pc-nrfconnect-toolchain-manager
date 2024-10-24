@@ -17,8 +17,8 @@ import {
     Spinner,
     telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
-import semver from 'semver';
 import { webUtils } from 'electron';
+import semver from 'semver';
 
 import FirstInstallInstructions from '../FirstInstall/FirstInstallInstructions';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
@@ -163,7 +163,7 @@ export default () => {
                 evt.preventDefault();
 
                 let pkg = evt.dataTransfer.getData('text');
-                if (! pkg) {
+                if (!pkg) {
                     pkg = webUtils.getPathForFile(evt.dataTransfer.files[0]);
                 }
 
