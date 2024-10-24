@@ -18,6 +18,7 @@ import {
     telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 import semver from 'semver';
+import { webUtils } from 'electron';
 
 import FirstInstallInstructions from '../FirstInstall/FirstInstallInstructions';
 import InstallDirDialog from '../InstallDir/InstallDirDialog';
@@ -160,9 +161,12 @@ export default () => {
             }}
             onDrop={evt => {
                 evt.preventDefault();
-                const pkg =
-                    evt.dataTransfer.getData('text') ||
-                    (evt.dataTransfer.files[0] || {}).path;
+
+                let pkg = evt.dataTransfer.getData('text');
+                if (! pkg) {
+                    pkg = webUtils.getPathForFile(evt.dataTransfer.files[0]);
+                }
+
                 dispatch(showInstallPackageDialog(pkg));
             }}
             className="toolchain-manager-main-window"
