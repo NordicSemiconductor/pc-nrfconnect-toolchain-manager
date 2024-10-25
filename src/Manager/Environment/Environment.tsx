@@ -36,7 +36,7 @@ export default ({ environment }: { environment: Model }) => {
                                 {` ${arch}`}
                             </span>
                         )}
-                        <div className="tw-absolute tw-bottom-0 tw-h-4 tw-text-xs tw-font-normal tw-italic tw-text-gray-400">
+                        <div className="tw-absolute tw-bottom-0 tw-h-4 tw-whitespace-nowrap tw-text-xs tw-font-normal tw-italic tw-text-gray-400">
                             {progressLabel(environment)}
                         </div>
                     </div>
