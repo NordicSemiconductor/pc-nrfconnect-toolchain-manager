@@ -1,3 +1,9 @@
+## 1.5.3 - 2024-11-11
+
+### Changed
+
+-   Minor fixes and improvements.
+
 ## 1.5.2 - 2024-09-05
 
 ### Removed

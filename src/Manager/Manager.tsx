@@ -17,6 +17,7 @@ import {
     Spinner,
     telemetry,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
+import { webUtils } from 'electron';
 import semver from 'semver';
 
 import FirstInstallInstructions from '../FirstInstall/FirstInstallInstructions';
@@ -160,9 +161,12 @@ export default () => {
             }}
             onDrop={evt => {
                 evt.preventDefault();
-                const pkg =
-                    evt.dataTransfer.getData('text') ||
-                    (evt.dataTransfer.files[0] || {}).path;
+
+                let pkg = evt.dataTransfer.getData('text');
+                if (!pkg) {
+                    pkg = webUtils.getPathForFile(evt.dataTransfer.files[0]);
+                }
+
                 dispatch(showInstallPackageDialog(pkg));
             }}
             className="toolchain-manager-main-window"
