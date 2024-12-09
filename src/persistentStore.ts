@@ -58,14 +58,12 @@ const indexJson =
 export const toolchainIndexUrl = () => {
     const value = store().get(
         'toolchainIndexUrl',
-        'https://developer.nordicsemi.com/.pc-tools/toolchain'
+        'https://files.nordicsemi.com/ui/api/v1/download?isNativeBrowsing=true&repoKey=swtools&path=external/legacy-toolchains'
     ) as string;
     return `${value.replace(/\/index.*.json$/, '')}/${indexJson}`;
 };
 export const toolchainUrl = (name: string) =>
     `${path.dirname(toolchainIndexUrl())}/${name}`;
-export const setToolchainIndexUrl = (value: string) =>
-    store().set('toolchainIndexUrl', value);
 
 export const persistedShowMaster = () => store().get('showMaster', false);
 export const setPersistedShowMaster = (visible: boolean) =>
