@@ -3,24 +3,23 @@ name: Release
 on:
     workflow_dispatch:
         inputs:
-            run_id:
-                description: 'The workflow id where the artifacts were uploaded'
-                required: true
-                type: string
-            tag:
-                description: 'Tag to be used (e.g. v1.2.3)'
-                required: true
-                type: string
             source:
-                description: 'What source to release to'
-                required: true
+                description: 'Source to release to'
                 type: choice
                 options:
-                    - release-test
-                    - internal
-                    - official
+                    - release-test (internal)
+                    - experimental (internal)
+                    - official (external)
+            ref:
+                description:
+                    'Ref (Tag, branch, commit SHA) to release. Default to the
+                    default branch'
+                type: string
 
 jobs:
     release:
-        uses: NordicSemiconductor/pc-nrfconnect-shared/.github/workflows/release.yml@main
+        uses: NordicSemiconductor/pc-nrfconnect-shared/.github/workflows/release-app.yml@main
+        with:
+            source: ${{ inputs.source }}
+            ref: ${{ inputs.ref }}
         secrets: inherit
