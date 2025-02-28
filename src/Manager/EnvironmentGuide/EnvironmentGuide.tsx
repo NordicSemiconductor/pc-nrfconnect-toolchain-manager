@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import { useSelector } from 'react-redux';
 import {
     Button,
     classNames,

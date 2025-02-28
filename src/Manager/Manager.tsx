@@ -36,7 +36,7 @@ import {
     arePreReleaseShown,
     isOlderEnvironmentsHidden,
 } from '../Settings/settingsSlice';
-import { RootState, Toolchain } from '../state';
+import { RootState } from '../state';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import EventAction from '../usageDataActions';
 import {
