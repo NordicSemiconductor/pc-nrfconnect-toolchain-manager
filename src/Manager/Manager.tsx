@@ -49,6 +49,7 @@ import { VsCodeStatus } from '../VsCodeDialog/vscodeSlice';
 import detectMultipleInstallDirs from './detectMultipleInstallDirs';
 import Environment from './Environment/Environment';
 import RemoveEnvironmentDialog from './Environment/RemoveEnvironmentDialog';
+import EnvironmentGuide from './EnvironmentGuide/EnvironmentGuide';
 import initEnvironments from './initEnvironments';
 import {
     environmentsByVersion,
@@ -60,7 +61,6 @@ import NrfUtilEnvDialog from './nrfutil/NrfUtilDialog';
 import PlatformInstructions from './PlatformInstructions';
 import toolchainManager from './ToolchainManager/toolchainManager';
 import { filterEnvironments } from './versionFilter';
-import EnvironmentGuide from "./EnvironmentGuide/EnvironmentGuide";
 
 const Environments = () => {
     const hideOlderAndPreRelease = useSelector(isOlderEnvironmentsHidden);
