@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
+ */
+
 import React, { useState } from 'react';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import {
