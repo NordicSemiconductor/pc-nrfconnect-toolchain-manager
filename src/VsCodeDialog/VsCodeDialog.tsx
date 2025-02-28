@@ -349,7 +349,7 @@ const ExtensionsMissing = ({
     );
 };
 
-const installLink = () => {
+export const installLink = () => {
     if (process.platform === 'win32') {
         return 'https://code.visualstudio.com/docs/setup/windows';
     }

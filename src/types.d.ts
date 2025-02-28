@@ -14,6 +14,11 @@ declare module '*.svg' {
     export default url;
 }
 
+declare module '*.png' {
+    const url: string;
+    export default url;
+}
+
 declare module '*.module.scss' {
     const properties: {
         [property: string]: string;

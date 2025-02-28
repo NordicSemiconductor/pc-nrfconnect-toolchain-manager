@@ -36,7 +36,7 @@ import {
     arePreReleaseShown,
     isOlderEnvironmentsHidden,
 } from '../Settings/settingsSlice';
-import { RootState } from '../state';
+import { RootState, Toolchain } from '../state';
 import ToolchainSourceDialog from '../ToolchainSource/ToolchainSourceDialog';
 import EventAction from '../usageDataActions';
 import {
@@ -60,6 +60,7 @@ import NrfUtilEnvDialog from './nrfutil/NrfUtilDialog';
 import PlatformInstructions from './PlatformInstructions';
 import toolchainManager from './ToolchainManager/toolchainManager';
 import { filterEnvironments } from './versionFilter';
+import EnvironmentGuide from "./EnvironmentGuide/EnvironmentGuide";
 
 const Environments = () => {
     const hideOlderAndPreRelease = useSelector(isOlderEnvironmentsHidden);
@@ -186,6 +187,7 @@ export default () => {
                 </a>
             </Alert>
             <PlatformInstructions />
+            <EnvironmentGuide />
             <Environments />
             <ButtonToolbar className="justify-content-end flex-row pt-3">
                 <Button
