@@ -23,7 +23,10 @@ import {
 import { Environment, RootState } from '../state';
 import EventAction from '../usageDataActions';
 import { isWestPresent } from './Environment/effects/helpers';
-import { isLegacyEnvironment } from './Environment/environmentReducer';
+import {
+    isLegacyEnvironment,
+    isUnsupportedEnvironment,
+} from './Environment/environmentReducer';
 import { addEnvironment, clearEnvironments } from './managerSlice';
 import logNrfutilVersion from './nrfutil/logVersion';
 import toolchainManager from './ToolchainManager/toolchainManager';
@@ -98,7 +101,9 @@ const downloadIndexByNrfUtil =
                     await toolchainManager.list(persistedInstallDir())
                 ).toolchains
                     .filter(
-                        toolchain => !isLegacyEnvironment(toolchain.ncs_version)
+                        toolchain =>
+                            !isLegacyEnvironment(toolchain.ncs_version) &&
+                            !isUnsupportedEnvironment(toolchain.ncs_version)
                     )
                     .map<Promise<Environment>>(async toolchain => {
                         const environment: Environment = {
@@ -128,7 +133,8 @@ const downloadIndexByNrfUtil =
             ).ncs_versions
                 .filter(
                     environmentVersion =>
-                        !isLegacyEnvironment(environmentVersion)
+                        !isLegacyEnvironment(environmentVersion) &&
+                        !isUnsupportedEnvironment(environmentVersion)
                 )
                 .map<Environment>(environmentVersion => {
                     const installedEnvironment = installed.find(

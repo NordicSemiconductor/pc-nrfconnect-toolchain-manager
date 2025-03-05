@@ -1,3 +1,9 @@
+## 1.6.0 - unreleased
+
+### Added
+
+-   Guideline how to install SDK and Toolchains with VS Code or CLI.
+
 ## 1.5.3 - 2024-11-11
 
 ### Changed

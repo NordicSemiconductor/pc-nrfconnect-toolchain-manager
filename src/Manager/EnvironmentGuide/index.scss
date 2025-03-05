@@ -1,0 +1,7 @@
+@import '~@nordicsemiconductor/pc-nrfconnect-shared/styles';
+
+.modal-with-scrollbar {
+    @include scrollbars($white);
+
+    max-height: calc(80vh - 120px);
+}

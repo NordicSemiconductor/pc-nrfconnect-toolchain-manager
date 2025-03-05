@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { AnyAction } from 'redux';
-import { lte, valid } from 'semver';
+import { AnyAction } from "redux";
+import { gte, lte, valid } from "semver";
 
-import type { Environment } from '../../state';
+import type { Environment } from "../../state";
 
 const START_INSTALL_TOOLCHAIN = 'START_INSTALL_TOOLCHAIN';
 export const startInstallToolchain = (version: string) => ({
@@ -166,6 +166,11 @@ export const progressLabel = (env: Environment) =>
               env.progress !== undefined ? '%' : ''
           }`
         : '';
+
+export const isUnsupportedEnvironment = (environmentVersion: string) => {
+    if (valid(environmentVersion) === null) return true;
+    return gte(environmentVersion, 'v2.9.99');
+};
 
 export const isLegacyEnvironment = (environmentVersion: string) => {
     if (valid(environmentVersion) === null) return true;

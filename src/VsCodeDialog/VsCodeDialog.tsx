@@ -359,6 +359,8 @@ export const installLink = () => {
     if (process.platform === 'linux') {
         return 'https://code.visualstudio.com/docs/setup/linux';
     }
+
+    return 'https://code.visualstudio.com/docs';
 };
 
 export default VsCodeDialog;

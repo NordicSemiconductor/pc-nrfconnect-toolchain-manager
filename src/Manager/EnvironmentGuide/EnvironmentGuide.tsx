@@ -10,17 +10,20 @@ import {
     Button,
     classNames,
     DialogButton,
+    ExternalLink,
     GenericDialog,
+    InfoBox,
+    NoticeBox,
     openUrl,
 } from '@nordicsemiconductor/pc-nrfconnect-shared';
 
 import { isVsCodeInstalled } from '../../VsCodeDialog/vscode';
 import { installLink } from '../../VsCodeDialog/VsCodeDialog';
-import logo from './nrf_connect_for_vs_code.svg';
-import sidebarManageSdkScreenshot from './sidebar_manage_sdk.png';
-import activityBarImage from './vs_code_activity_bar.png';
+import logo from './images/nrf_connect_for_vs_code.svg';
+import sidebarManageSdkScreenshot from './images/sidebar_manage_sdk.png';
+import activityBarImage from './images/vs_code_activity_bar.png';
 
-import '../Environment/style.scss';
+import './index.scss';
 
 interface Link {
     label: string;
@@ -39,22 +42,28 @@ const Resource = ({ label, description, link }: ResourceProps) => (
         <br />
         {description}
         <div className="tw-pt-0.5">
-            <a
-                target="_blank"
-                rel="noreferrer noopener"
-                href={link.href}
-                title={link.href}
-                onClick={() => {}}
-                className={classNames(
-                    'tw-underline',
-                    'tw-text-primary',
-                    `hover:tw-text-primary`
-                )}
-            >
-                {link.label}
-            </a>
+            <ExternalLink href={link.href} label={link.label} />
         </div>
     </div>
+);
+
+const DeveloperAcademy = () => (
+    <NoticeBox
+        mdiIcon="mdi-book-open-variant"
+        color="tw-text-primary"
+        title="Find out more in the Developer Academy"
+        content={
+            <p>
+                Get the know-how to build wireless products using Nordic
+                Semiconductor solutions.
+                <br />
+                <ExternalLink
+                    href="https://academy.nordicsemi.com"
+                    label="Nordic Developer Academy"
+                />
+            </p>
+        }
+    />
 );
 
 export default () => {
@@ -119,7 +128,7 @@ export default () => {
                 size="m"
                 isVisible={cliModalVisible}
             >
-                <div className="tw-mb-2 tw-flex tw-flex-col tw-gap-4">
+                <div className="modal-with-scrollbar tw-mb-2 tw-flex tw-flex-col tw-gap-4 tw-overflow-y-auto">
                     <Resource
                         label="Installing the nRF Connect SDK"
                         description="Install the nRF Connect toolchain and SDK."
@@ -144,26 +153,8 @@ export default () => {
                             label: 'West overview',
                         }}
                     />
-                    <div className="tw-mt-4 tw-bg-primary/10 tw-px-6 tw-py-4">
-                        <b>Find out more in the Developer Academy</b>
-                        <br />
-                        Get the know-how to build wireless products using Nordic
-                        Semiconductor solutions.
-                        <br />
-                        <a
-                            target="_blank"
-                            rel="noreferrer noopener"
-                            href="https://academy.nordicsemi.com"
-                            title={installLink()}
-                            onClick={() => {}}
-                            className={classNames(
-                                'tw-underline',
-                                'tw-text-primary',
-                                `hover:tw-text-primary`
-                            )}
-                        >
-                            Nordic Developer Academy
-                        </a>
+                    <div className="tw-mt-4">
+                        <DeveloperAcademy />
                     </div>
                 </div>
             </GenericDialog>
@@ -181,7 +172,7 @@ export default () => {
                 size="m"
                 isVisible={vscodeModalVisible}
             >
-                <div className="tw-mb-2">
+                <div className="modal-with-scrollbar tw-mb-2 tw-overflow-y-auto">
                     <p>
                         Use the recommended nRF Connect Extension Pack for
                         building and debugging applications based on the nRF
@@ -195,20 +186,10 @@ export default () => {
                             </p>
                             <p>
                                 You first need to{' '}
-                                <a
-                                    target="_blank"
-                                    rel="noreferrer noopener"
+                                <ExternalLink
                                     href={installLink()}
-                                    title={installLink()}
-                                    onClick={() => {}}
-                                    className={classNames(
-                                        'tw-underline',
-                                        'tw-text-primary',
-                                        `hover:tw-text-primary`
-                                    )}
-                                >
-                                    download and install VS Code
-                                </a>
+                                    label="download and install VS Code"
+                                />
                                 . As soon as you did that, this app will guide
                                 you how to open Nordic Semiconductor&apos;s nRF
                                 Connect for VS Code extension.
@@ -249,8 +230,8 @@ export default () => {
                             <div className="tw-flex tw-items-center tw-justify-between tw-gap-2">
                                 <img
                                     src={logo}
-                                    alt=""
-                                    className="tw-h-12 tw-h-6 tw-w-6"
+                                    alt="VS Code logo"
+                                    className="tw-h-6 tw-w-6"
                                 />
                                 <span>Open VS Code with extension</span>
                             </div>
@@ -278,42 +259,25 @@ export default () => {
                         SDKs&quot; in the welcome tab.
                     </p>
                     <img
-                        // style={{ width: '-webkit-fill-available' }}
+                        className="tw-mt-2"
                         src={sidebarManageSdkScreenshot}
                         alt="VSCode Screenshot with extension"
                     />
 
-                    <p className="tw-mt-2">
+                    <p className="tw-my-6">
                         Follow the instructions in the extension to install the
                         toolchain and the SDK, and start developing.
                     </p>
 
-                    <p>
-                        <span className="tw-font-bold">Important!</span> Do not
-                        forget to install both SDK and toolchain, as they are
-                        installed separately.
-                    </p>
+                    <InfoBox
+                        mdiIcon="mdi-information-outline"
+                        color="tw-text-amber-900"
+                        title="Reminder"
+                        content="Do not forget to install both SDK and toolchain, as they are installed separately."
+                    />
 
-                    <div className="tw-mt-4 tw-bg-primary/10 tw-px-6 tw-py-4">
-                        <b>Find out more in the Developer Academy</b>
-                        <br />
-                        Get the know-how to build wireless products using Nordic
-                        Semiconductor solutions.
-                        <br />
-                        <a
-                            target="_blank"
-                            rel="noreferrer noopener"
-                            href="https://academy.nordicsemi.com"
-                            title={installLink()}
-                            onClick={() => {}}
-                            className={classNames(
-                                'tw-underline',
-                                'tw-text-primary',
-                                `hover:tw-text-primary`
-                            )}
-                        >
-                            Nordic Developer Academy
-                        </a>
+                    <div className="tw-mt-4">
+                        <DeveloperAcademy />
                     </div>
                 </div>
             </GenericDialog>
