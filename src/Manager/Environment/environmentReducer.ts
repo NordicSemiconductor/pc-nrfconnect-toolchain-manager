@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-4-Clause
  */
 
-import { AnyAction } from "redux";
-import { gte, lte, valid } from "semver";
+import { AnyAction } from 'redux';
+import { gte, lte, valid } from 'semver';
 
-import type { Environment } from "../../state";
+import type { Environment } from '../../state';
 
 const START_INSTALL_TOOLCHAIN = 'START_INSTALL_TOOLCHAIN';
 export const startInstallToolchain = (version: string) => ({

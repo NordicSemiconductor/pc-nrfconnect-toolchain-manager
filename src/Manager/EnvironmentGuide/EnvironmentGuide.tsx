@@ -8,7 +8,6 @@ import React, { useState } from 'react';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import {
     Button,
-    classNames,
     DialogButton,
     ExternalLink,
     GenericDialog,
