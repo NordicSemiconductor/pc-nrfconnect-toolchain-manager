@@ -67,8 +67,6 @@ const Environments = () => {
     const showPreReleases = useSelector(arePreReleaseShown);
     const allEnvironments = useSelector(environmentsByVersion);
 
-    console.log('allEnvironments', allEnvironments);
-
     const environments = (
         hideOlderAndPreRelease
             ? filterEnvironments(allEnvironments)
