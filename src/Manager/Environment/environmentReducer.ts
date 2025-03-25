@@ -5,7 +5,7 @@
  */
 
 import { AnyAction } from 'redux';
-import { lte, valid } from 'semver';
+import { gte, lte, valid } from 'semver';
 
 import type { Environment } from '../../state';
 
@@ -166,6 +166,11 @@ export const progressLabel = (env: Environment) =>
               env.progress !== undefined ? '%' : ''
           }`
         : '';
+
+export const isUnsupportedEnvironment = (environmentVersion: string) => {
+    if (valid(environmentVersion) === null) return true;
+    return gte(environmentVersion, 'v2.9.99');
+};
 
 export const isLegacyEnvironment = (environmentVersion: string) => {
     if (valid(environmentVersion) === null) return true;
