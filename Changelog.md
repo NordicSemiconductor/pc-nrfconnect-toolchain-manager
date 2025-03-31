@@ -1,8 +1,9 @@
-## 1.6.0 - unreleased
+## 1.6.0 - 2025-03-31
 
 ### Added
 
 -   Guideline how to install SDK and Toolchains with VS Code or CLI.
+-   Deprecation warning.
 
 ## 1.5.3 - 2024-11-11
 
